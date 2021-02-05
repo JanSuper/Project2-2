@@ -11,7 +11,14 @@ import javafx.stage.Stage;
 
 public class ChatApp extends Application {
 
+    private Stage stage;
+
     private TextArea messages = new TextArea();
+
+    public ChatApp() throws Exception {
+        this.stage = new Stage();
+        start(this.stage);
+    }
 
     private Parent createContent(){
         messages.setPrefHeight(550);

@@ -1,5 +1,6 @@
 package Interface;
 
+import Interface.Chat.ChatApp;
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
@@ -31,7 +32,12 @@ public class StartScreen extends Application {
 
     private List<Pair<String, Runnable>> menuData = Arrays.asList(
             new Pair<String, Runnable>("Play", () -> {
-                this.stage.close();
+                try {
+                    new ChatApp();
+                    this.stage.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }),
             new Pair<String, Runnable>("Settings", () -> {
                 try {
@@ -80,7 +86,7 @@ public class StartScreen extends Application {
 
 
     private void addTitle() {
-        MenuTitle title = new MenuTitle("BLOKUS");
+        MenuTitle title = new MenuTitle("Project 2-2 Prototype");
         title.setTranslateX(WIDTH / 2. - title.getTitleWidth() / 2);
         title.setTranslateY(HEIGHT / 3.);
         root.getChildren().add(title);
