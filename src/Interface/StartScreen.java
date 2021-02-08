@@ -1,6 +1,8 @@
 package Interface;
 
 import Interface.Chat.ChatApp;
+import Interface.MenuTools.MenuItem;
+import Interface.MenuTools.MenuTitle;
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
@@ -34,13 +36,6 @@ public class StartScreen extends Application {
             new Pair<String, Runnable>("Play", () -> {
                 try {
                     new ChatApp();
-                    this.stage.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }),
-            new Pair<String, Runnable>("Settings", () -> {
-                try {
                     this.stage.close();
                 } catch (Exception e) {
                     e.printStackTrace();

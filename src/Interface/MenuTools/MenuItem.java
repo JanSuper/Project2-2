@@ -1,4 +1,4 @@
-package Interface;
+package Interface.MenuTools;
 
 import javafx.beans.binding.Bindings;
 import javafx.scene.layout.Pane;

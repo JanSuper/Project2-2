@@ -28,10 +28,10 @@ public class ChatApp extends Application {
         root.setPrefSize(600,600);
         return root;
     }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setScene(new Scene(createContent()));
         primaryStage.show();
-
     }
 }
