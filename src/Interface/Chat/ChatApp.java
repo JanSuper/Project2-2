@@ -1,37 +1,155 @@
 package Interface.Chat;
 
-import javafx.application.Application;
-import javafx.scene.Parent;
+import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 
-public class ChatApp extends Application {
+public class ChatApp {
 
-    private Stage stage;
-
-    private TextArea messages = new TextArea();
-
-    public ChatApp() throws Exception {
-        this.stage = new Stage();
-        start(this.stage);
+    public ChatApp() {
+        start(new Stage());
     }
 
-    private Parent createContent(){
-        messages.setPrefHeight(550);
-        TextField input = new TextField();
-
-        VBox root = new VBox(20,messages,input);
-        root.setPrefSize(600,600);
-        return root;
-    }
-
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        primaryStage.setScene(new Scene(createContent()));
+    public void start(Stage primaryStage) {
+        primaryStage.setScene(new Scene(new ChatAppComponents("User Name"))); //  TODO
+        primaryStage.setResizable(false);
         primaryStage.show();
+    }
+
+    public static class MessageBubble extends HBox {
+        private Background userBubbleBackground;
+        private Background assistantBubbleBackground;
+
+        public MessageBubble(String message, int direction) {
+            userBubbleBackground = new Background(new BackgroundFill(Color.GRAY, new CornerRadii(7,0,7,7,false), Insets.EMPTY));
+            assistantBubbleBackground = new Background(new BackgroundFill(Color.DARKSLATEGRAY, new CornerRadii(0,7,7,7,false), Insets.EMPTY));
+            createLabel(message, direction);
+        }
+
+        private void createLabel(String message, int direction) {
+            Label messageLabel = new Label(message);
+            messageLabel.setPadding(new Insets(6));
+            messageLabel.setTextFill(Color.WHITE);
+            messageLabel.setWrapText(true);
+            messageLabel.setFont((Font.font("Cambria", 15)));
+            messageLabel.maxWidthProperty().bind(widthProperty().multiply(0.75));
+
+            if(direction == 0){
+                messageLabel.setBackground(assistantBubbleBackground);
+                messageLabel.setAlignment(Pos.CENTER_LEFT);
+                messageLabel.setTranslateX(7);
+                setAlignment(Pos.CENTER_LEFT);
+            }
+            else{
+                messageLabel.setBackground(userBubbleBackground);
+                messageLabel.setAlignment(Pos.CENTER_RIGHT);
+                messageLabel.setTranslateX(-7);
+                setAlignment(Pos.CENTER_RIGHT);
+            }
+            getChildren().setAll(messageLabel);
+        }
+    }
+
+    public static class ChatAppComponents extends VBox {
+        private ObservableList<Node> messages = FXCollections.observableArrayList();
+        private ScrollPane scroller;
+        private HBox typeField;
+        private String lastMessage;
+
+        public ChatAppComponents(String userName) {
+            super(7);
+            super.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+            super.setPrefSize(480, 680);
+
+            Label userNameLabel = new Label(userName);
+            userNameLabel.setAlignment(Pos.CENTER);
+            userNameLabel.setTranslateX(10);
+            userNameLabel.setFont((Font.font("Cambria", FontWeight.EXTRA_BOLD, 17)));
+            userNameLabel.setStyle("-fx-text-fill: white");
+
+            createComponents();
+            getChildren().setAll(userNameLabel, scroller, typeField);
+            setPadding(new Insets(10));
+            receiveMessage("Welcome! How may I help you?"); //Assistant's first message
+        }
+
+        private void createComponents() {
+            createMessageView();
+            createInputView();
+        }
+
+        private void createMessageView() {
+            VBox messagesBox = new VBox(6);
+            Bindings.bindContentBidirectional(messages, messagesBox.getChildren());
+
+            scroller = new ScrollPane(messagesBox);
+            scroller.setPrefHeight(590);
+            scroller.setFitToWidth(true);
+            scroller.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            scroller.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+            scroller.vvalueProperty().bind(messagesBox.heightProperty());   //updating scroller
+        }
+
+        private void createInputView() {
+            typeField = new HBox(7);
+
+            TextField userInput = new TextField();
+            userInput.setPromptText("Enter message");
+            userInput.setPrefWidth(390);
+            userInput.setTranslateY(6);
+
+            Button sendMessageButton = new Button(">>");
+            sendMessageButton.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 15));
+            sendMessageButton.setTextFill(Color.LIGHTSEAGREEN);
+            sendMessageButton.setBackground(null);
+            sendMessageButton.setBorder(null);
+            sendMessageButton.setCursor(Cursor.HAND);
+            sendMessageButton.setTranslateY(6);
+
+            sendMessageButton.disableProperty().bind(userInput.lengthProperty().isEqualTo(0));
+            sendMessageButton.setOnAction(event-> {
+                sendMessage(userInput.getText());
+                userInput.setText("");
+            });
+
+            //For testing
+            /*Button receiveMessageButton = new Button("Receive");
+            receiveMessageButton.setTranslateY(6);
+            receiveMessageButton.disableProperty().bind(userInput.lengthProperty().isEqualTo(0));
+            receiveMessageButton.setOnAction(event-> {
+                receiveMessage(userInput.getText());
+                userInput.setText("");
+            });*/
+
+            typeField.getChildren().setAll(userInput, sendMessageButton); //, receiveMessageButton);
+        }
+
+        public void sendMessage(String message) {
+            messages.add(new MessageBubble(message, 1));
+            lastMessage = message;
+        }
+
+        public void receiveMessage(String message) {    //adds assistant's response
+            messages.add(new MessageBubble(message, 0));
+        }
+
+        public String getLastMessage() {    //returns the user's last message
+            return lastMessage;
+        }
     }
 }
