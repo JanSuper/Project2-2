@@ -28,12 +28,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class StartScreen extends Application {
-    public String [][] dataSet;
-    private int counter = 0;
-    private boolean login = false;
-
-    private static final int WIDTH = 1500;
-    private static final int HEIGHT = 800;
+    private final int WIDTH = 1500;
+    private final int HEIGHT = 800;
 
     private Stage stage;
 
@@ -41,7 +37,12 @@ public class StartScreen extends Application {
     private TextField psw;
     private Text left;
 
-    //each button contains a function that is run everytime it is pressed
+    public String [][] dataSet;
+    private int counter = 0;
+    private boolean login = false;
+
+    private StackPane root = new StackPane();
+    private VBox menuBox = new VBox(-5);
 
     private List<Pair<String, Runnable>> menuData = Arrays.asList(
             new Pair<String, Runnable>("Enter", () -> {
@@ -73,11 +74,6 @@ public class StartScreen extends Application {
 
             new Pair<String, Runnable>("Exit to Desktop", Platform::exit)
     );
-
-    private StackPane root = new StackPane();
-    private VBox menuBox = new VBox(-5);
-
-
 
     public static void main(String[] args) {
         launch(args);
