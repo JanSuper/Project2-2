@@ -20,7 +20,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
-import DataBase.*;
 import javafx.scene.control.TextField;
 import DataBase.Data;
 
@@ -29,8 +28,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class StartScreen extends Application {
-    public static String [][] dataSet;
-    private static int counter = 0;
+    public String [][] dataSet;
+    private int counter = 0;
     private boolean login = false;
 
     private static final int WIDTH = 1500;
@@ -56,7 +55,7 @@ public class StartScreen extends Application {
                     if(login) {
                         Data.setUsername(user.getText());
                         Data.setPassword(psw.getText());
-                        new ChatApp();
+                        new MainScreen();
                         this.stage.close();
                     }else if(counter ==1 ) {
                         left.setText("Try again, 2 attempts left");
@@ -64,6 +63,7 @@ public class StartScreen extends Application {
                         left.setText("Try again, 1 attempts left");
                     }else if(counter >=3 ) {
                         left.setText("Sorry, you have used your 3 attempts");
+                        System.out.println("Sorry, you have used your 3 attempts");
                         System.exit(0);
                     }
                 } catch (Exception e) {
