@@ -22,6 +22,7 @@ import javafx.util.Duration;
 import javafx.util.Pair;
 import DataBase.*;
 import javafx.scene.control.TextField;
+import DataBase.Data;
 
 import java.io.*;
 import java.util.Arrays;
@@ -53,6 +54,8 @@ public class StartScreen extends Application {
                         }
                     }
                     if(login) {
+                        Data.setUsername(user.getText());
+                        Data.setPassword(psw.getText());
                         new ChatApp();
                         this.stage.close();
                     }else if(counter ==1 ) {

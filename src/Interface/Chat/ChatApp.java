@@ -1,5 +1,6 @@
 package Interface.Chat;
 
+import DataBase.Data;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,6 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -26,7 +28,7 @@ public class ChatApp {
     }
 
     public void start(Stage primaryStage) {
-        primaryStage.setScene(new Scene(new ChatAppComponents("User Name"))); //  TODO
+        primaryStage.setScene(new Scene(new ChatAppComponents(Data.getUsername())));
         primaryStage.setResizable(false);
         primaryStage.show();
     }
@@ -71,6 +73,8 @@ public class ChatApp {
         private HBox typeField;
         private String lastMessage;
 
+        private TextField userInput;
+
         public ChatAppComponents(String userName) {
             super(7);
             super.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
@@ -85,7 +89,7 @@ public class ChatApp {
             createComponents();
             getChildren().setAll(userNameLabel, scroller, typeField);
             setPadding(new Insets(10));
-            receiveMessage("Welcome! How may I help you?"); //Assistant's first message
+            receiveMessage("Welcome " + Data.getUsername() + "! How may I help you?"); //Assistant's first message
         }
 
         private void createComponents() {
@@ -108,10 +112,16 @@ public class ChatApp {
         private void createInputView() {
             typeField = new HBox(7);
 
-            TextField userInput = new TextField();
+            userInput = new TextField();
             userInput.setPromptText("Enter message");
             userInput.setPrefWidth(390);
             userInput.setTranslateY(6);
+            userInput.setOnKeyReleased(event -> {
+                if (event.getCode() == KeyCode.ENTER){
+                    sendMessage(userInput.getText());
+                    userInput.setText("");
+                }
+            });
 
             Button sendMessageButton = new Button(">>");
             sendMessageButton.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 15));

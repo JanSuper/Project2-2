@@ -4,6 +4,8 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 
 public class Data {
+    private static String username;
+    private static String password;
 
     public static Background createBackGround(){
         Image image = new Image(String.valueOf(Data.class.getResource("background.jpg")),800,800,false,true);
@@ -18,4 +20,19 @@ public class Data {
         return background;
     }
 
+    public static String getUsername() {
+        return username;
+    }
+
+    public static void setUsername(String username) {
+        Data.username = username;
+    }
+
+    public static String getPassword() {
+        return password;
+    }
+
+    public static void setPassword(String password) {
+        Data.password = password;
+    }
 }
