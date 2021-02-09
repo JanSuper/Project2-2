@@ -19,8 +19,6 @@ public class MenuTitle extends Pane {
         text = new Text(spread);
         text.setId("title");
         text.setFill(Color.WHITE);
-        Font font = Font.loadFont("file:res/fonts/PlayMeGames-Demo.otf", 40);
-        text.setFont(font);
         text.setEffect(new DropShadow(30, Color.BLACK));
         getChildren().addAll(text);
     }
