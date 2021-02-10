@@ -1,10 +1,10 @@
 package Interface;
 
+import DataBase.Data;
 import Interface.Chat.ChatApp;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class MainScreen {
@@ -26,11 +26,14 @@ public class MainScreen {
 
     public void createContent(){
         StackPane right = new StackPane();
-        right.setTranslateX(-10);
         right.getChildren().add(chat.root);
         root = new BorderPane();
         root.setRight(right);
-    }
+        root.setBackground(Data.createBackGround());
 
+        Border border = new Border(new BorderStroke(Color.GRAY,
+                BorderStrokeStyle.SOLID, new CornerRadii(25), new BorderWidths(30)));
+        root.setBorder(border);
+    }
 
 }

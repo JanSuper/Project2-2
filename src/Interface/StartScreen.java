@@ -1,5 +1,7 @@
 package Interface;
 
+import Agents.Assistant;
+import Agents.User;
 import Interface.Chat.ChatApp;
 import Interface.MenuTools.MenuItem;
 import Interface.MenuTools.MenuTitle;
@@ -9,6 +11,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.PasswordField;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -34,7 +37,7 @@ public class StartScreen extends Application {
     private Stage stage;
 
     private TextField user;
-    private TextField psw;
+    private PasswordField psw;
     private Text left;
 
     public String [][] dataSet;
@@ -54,8 +57,7 @@ public class StartScreen extends Application {
                         }
                     }
                     if(login) {
-                        Data.setUsername(user.getText());
-                        Data.setPassword(psw.getText());
+                        initializeAgents();
                         new MainScreen();
                         this.stage.close();
                     }else if(counter ==1 ) {
@@ -75,9 +77,14 @@ public class StartScreen extends Application {
             new Pair<String, Runnable>("Exit to Desktop", Platform::exit)
     );
 
-    public static void main(String[] args) {
-        launch(args);
+    public void initializeAgents(){
+        Data.setUsername(user.getText());
+        Data.setPassword(psw.getText());
+
+        Data.setUser(new User(user.getText(), psw.getText()));
+        Data.setAssistant(new Assistant());
     }
+
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -93,6 +100,7 @@ public class StartScreen extends Application {
         primaryStage.setMaximized(true);
         primaryStage.show();
         this.stage = primaryStage;
+
 
         left = new Text("");
         left.setFont(Font.font("Verdana", FontWeight.BOLD, 10));
@@ -190,15 +198,15 @@ public class StartScreen extends Application {
 
         user = new TextField();
         user.setFont(Font.font("Verdana", FontWeight.BOLD,15));
-        user.setStyle("-fx-text-fill: red;");
+        user.setStyle("-fx-text-fill: dimgray;");
         user.setMaxWidth(200);
         user.setTranslateX(WIDTH / 2. - 50);
         user.setTranslateY(-300);
         menuBox.getChildren().add(user);
 
-        psw = new TextField();
+        psw = new PasswordField();
         psw.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
-        psw.setStyle("-fx-text-fill: red;");
+        psw.setStyle("-fx-text-fill: dimgray;");
         psw.setMaxWidth(200);
         psw.setTranslateX(WIDTH / 2. - 50);
         psw.setTranslateY(-250);

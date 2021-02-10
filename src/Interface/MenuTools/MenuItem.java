@@ -18,7 +18,7 @@ public class MenuItem extends Pane {
                 200, 30,
                 0, 30
         );
-        bg.setStroke(Color.WHITE);
+        bg.setStroke(Color.GRAY);
 
         bg.fillProperty().bind(
                 Bindings.when(pressedProperty())
@@ -32,7 +32,7 @@ public class MenuItem extends Pane {
         text.setFont(font);
         text.setTranslateX(5);
         text.setTranslateY(20);
-        text.setFill(Color.WHITE);
+        text.setFill(Color.BLACK);
 
 
         getChildren().addAll(bg, text);

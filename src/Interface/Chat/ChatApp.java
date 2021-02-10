@@ -97,7 +97,7 @@ public class ChatApp {
             Bindings.bindContentBidirectional(messages, messagesBox.getChildren());
 
             scroller = new ScrollPane(messagesBox);
-            scroller.setPrefHeight(700);
+            scroller.setPrefHeight(875);
             scroller.setFitToWidth(true);
             scroller.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
             scroller.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
