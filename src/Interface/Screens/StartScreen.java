@@ -1,8 +1,7 @@
-package Interface;
+package Interface.Screens;
 
 import Agents.Assistant;
 import Agents.User;
-import Interface.Chat.ChatApp;
 import Interface.MenuTools.MenuItem;
 import Interface.MenuTools.MenuTitle;
 import javafx.animation.ScaleTransition;
@@ -31,7 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class StartScreen extends Application {
-    private final int WIDTH = 1500;
+    private final int WIDTH = 650;
     private final int HEIGHT = 800;
 
     private Stage stage;
@@ -97,7 +96,6 @@ public class StartScreen extends Application {
         scene.setFill(Color.BLACK);
         primaryStage.setTitle("Blokus Start Screen");
         primaryStage.setScene(scene);
-        primaryStage.setMaximized(true);
         primaryStage.show();
         this.stage = primaryStage;
 
@@ -105,7 +103,7 @@ public class StartScreen extends Application {
         left = new Text("");
         left.setFont(Font.font("Verdana", FontWeight.BOLD, 10));
         left.setFill(Color.RED);
-        left.setTranslateY(-65);left.setTranslateX(-15);
+        left.setTranslateY(40);left.setTranslateX(0);
         root.getChildren().add(left);
 
         //create 2 arrays, one to store the data of the user and the other to split the data between password and username

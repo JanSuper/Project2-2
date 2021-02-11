@@ -33,8 +33,8 @@ public class ChatApp {
         private Background assistantBubbleBackground;
 
         public MessageBubble(String message, int direction) {
-            userBubbleBackground = new Background(new BackgroundFill(Color.GRAY, new CornerRadii(7,0,7,7,false), Insets.EMPTY));
-            assistantBubbleBackground = new Background(new BackgroundFill(Color.DARKSLATEGRAY, new CornerRadii(0,7,7,7,false), Insets.EMPTY));
+            userBubbleBackground = new Background(new BackgroundFill(new Color(0,0.47379,1,1), new CornerRadii(7,0,7,7,false), Insets.EMPTY));
+            assistantBubbleBackground = new Background(new BackgroundFill(Color.DARKGRAY, new CornerRadii(0,7,7,7,false), Insets.EMPTY));
             createLabel(message, direction);
         }
 
@@ -72,7 +72,7 @@ public class ChatApp {
 
         public ChatAppComponents(String userName) {
             super(7);
-            super.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+            super.setBackground(new Background(new BackgroundFill(new Color(0,0.47379,1,1), CornerRadii.EMPTY, Insets.EMPTY)));
             super.setPrefSize(480, 680);
 
             Label userNameLabel = new Label(userName);

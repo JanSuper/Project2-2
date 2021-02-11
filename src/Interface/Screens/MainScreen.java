@@ -1,4 +1,4 @@
-package Interface;
+package Interface.Screens;
 
 import DataBase.Data;
 import Interface.Chat.ChatApp;
@@ -31,8 +31,8 @@ public class MainScreen {
         root.setRight(right);
         root.setBackground(Data.createBackGround());
 
-        Border border = new Border(new BorderStroke(Color.GRAY,
-                BorderStrokeStyle.SOLID, new CornerRadii(25), new BorderWidths(30)));
+        Border border = new Border(new BorderStroke(Color.DARKGRAY,
+                BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(30)));
         root.setBorder(border);
     }
 
