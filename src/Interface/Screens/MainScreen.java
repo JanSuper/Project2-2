@@ -32,7 +32,7 @@ public class MainScreen {
         root.setBackground(Data.createBackGround());
 
         Border border = new Border(new BorderStroke(Color.DARKGRAY,
-                BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(30)));
+                BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(15)));
         root.setBorder(border);
     }
 
