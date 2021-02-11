@@ -25,7 +25,7 @@ public class MainScreen {
 
     public void start(Stage primaryStage) {
         primaryStage.setScene(new Scene(root));
-        primaryStage.setResizable(false);
+        primaryStage.setResizable(true);
         primaryStage.setMaximized(true);
         primaryStage.show();
     }
@@ -38,8 +38,9 @@ public class MainScreen {
         StackPane left = new StackPane();
         left.getChildren().add(displayView);
 
-        Border border = new Border(new BorderStroke(Color.DARKGRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(15)));
+        Border border = new Border(new BorderStroke(Color.DARKGRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(30)));
         root = new BorderPane();
+        root.setBackground(Data.createBackGround());
         root.setBorder(border);
         root.setRight(right);
         root.setLeft(left);

@@ -37,8 +37,8 @@ public class ChatApp extends VBox {
         private Background assistantBubbleBackground;
 
         public MessageBubble(String message, int direction) {
-            userBubbleBackground = new Background(new BackgroundFill(Color.GRAY.darker(), new CornerRadii(7,0,7,7,false), Insets.EMPTY));
-            assistantBubbleBackground = new Background(new BackgroundFill(Color.DARKSLATEGRAY, new CornerRadii(0,7,7,7,false), Insets.EMPTY));
+            userBubbleBackground = new Background(new BackgroundFill(new Color(0,0.47379,1,1), new CornerRadii(7,0,7,7,false), Insets.EMPTY));
+            assistantBubbleBackground = new Background(new BackgroundFill(Color.DARKGRAY, new CornerRadii(0,7,7,7,false), Insets.EMPTY));
             createLabel(message, direction);
         }
 
@@ -69,7 +69,7 @@ public class ChatApp extends VBox {
 
     public ChatApp(String userName) throws IOException {
         super(7);
-        super.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+        super.setBackground(new Background(new BackgroundFill(new Color(0,0.47379,1,1), CornerRadii.EMPTY, Insets.EMPTY)));
         super.setPrefWidth(590);
 
         Label userNameLabel = new Label(userName);
@@ -101,7 +101,7 @@ public class ChatApp extends VBox {
         Bindings.bindContentBidirectional(messages, messagesBox.getChildren());
 
         scroller = new ScrollPane(messagesBox);
-        scroller.setPrefHeight(660);
+        scroller.setPrefHeight(750);
         scroller.setFitToWidth(true);
         scroller.setStyle("-fx-background: transparent; -fx-background-color: lightslategray;");
         scroller.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
