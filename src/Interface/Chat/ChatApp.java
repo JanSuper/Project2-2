@@ -1,6 +1,7 @@
 package Interface.Chat;
 
 import DataBase.Data;
+import Interface.Screens.MainScreen;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,19 +27,22 @@ import java.io.IOException;
 
 public class ChatApp extends VBox {
     private ObservableList<Node> messages = FXCollections.observableArrayList();
+    private HBox user;
     private ScrollPane scroller;
     private HBox typeField;
     private String lastMessage;
     private TextField userInput;
+    private Button sendMessageButton;
     private Image image;
+    private Color themeColor = MainScreen.themeColor;
 
-    public static class MessageBubble extends HBox {
+    private class MessageBubble extends HBox {
         private Background userBubbleBackground;
         private Background assistantBubbleBackground;
 
         public MessageBubble(String message, int direction) {
-            userBubbleBackground = new Background(new BackgroundFill(new Color(0,0.47379,1,1), new CornerRadii(7,0,7,7,false), Insets.EMPTY));
-            assistantBubbleBackground = new Background(new BackgroundFill(Color.DARKGRAY, new CornerRadii(0,7,7,7,false), Insets.EMPTY));
+            userBubbleBackground = new Background(new BackgroundFill(Color.GRAY.darker(), new CornerRadii(7,0,7,7,false), Insets.EMPTY));
+            assistantBubbleBackground = new Background(new BackgroundFill(themeColor, new CornerRadii(0,7,7,7,false), Insets.EMPTY));
             createLabel(message, direction);
         }
 
@@ -69,8 +73,7 @@ public class ChatApp extends VBox {
 
     public ChatApp(String userName) throws IOException {
         super(7);
-        super.setBackground(new Background(new BackgroundFill(new Color(0,0.47379,1,1), CornerRadii.EMPTY, Insets.EMPTY)));
-        super.setPrefWidth(590);
+        super.setBackground(new Background(new BackgroundFill(themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
 
         Label userNameLabel = new Label(userName);
         userNameLabel.setAlignment(Pos.CENTER);
@@ -82,7 +85,7 @@ public class ChatApp extends VBox {
         image = new Image(fis,26,26,false,true);
         ImageView userIcon = new ImageView(image);
 
-        HBox user = new HBox();
+        user = new HBox();
         user.getChildren().addAll(userIcon, userNameLabel);
 
         createComponents();
@@ -114,7 +117,7 @@ public class ChatApp extends VBox {
 
         userInput = new TextField();
         userInput.setPromptText("Type message");
-        userInput.setPrefWidth(440);
+        userInput.setPrefWidth(410);
         userInput.setTranslateY(12);
         userInput.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGRAY.brighter(), new CornerRadii(3,3,3,3,false), Insets.EMPTY)));
         userInput.setFont((Font.font("Cambria", 14)));
@@ -126,7 +129,7 @@ public class ChatApp extends VBox {
             }
         });
 
-        Button sendMessageButton = new Button(">>");
+        sendMessageButton = new Button(">>");
         sendMessageButton.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 22));
         sendMessageButton.setTextFill(Color.LIGHTSEAGREEN);
         sendMessageButton.setBackground(null);

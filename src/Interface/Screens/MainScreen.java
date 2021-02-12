@@ -3,7 +3,6 @@ package Interface.Screens;
 import DataBase.Data;
 import Interface.Chat.ChatApp;
 import Interface.Display.DisplaySkills;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -13,12 +12,14 @@ import java.io.IOException;
 
 public class MainScreen {
     public ChatApp chat;
-    public DisplaySkills displayView;
+    public DisplaySkills displaySkills;
     public BorderPane root;
+    public static Color themeColor = new Color(0,0.47379, 1, 1);
+    //public static Color themeColor = Color.DARKSLATEGRAY;
 
     public MainScreen() throws IOException {
         chat = new ChatApp(Data.getUsername());
-        displayView = new DisplaySkills();
+        displaySkills = new DisplaySkills();
         createContent();
         start(new Stage());
     }
@@ -31,18 +32,18 @@ public class MainScreen {
     }
 
     public void createContent() {
-        StackPane right = new StackPane();
-        right.getChildren().add(chat);
-        right.setAlignment(Pos.CENTER_RIGHT);
+        int borderWidth = 10;   //30
+        Border border = new Border(new BorderStroke(Color.DARKGRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(borderWidth)));
 
-        StackPane left = new StackPane();
-        left.getChildren().add(displayView);
-
-        Border border = new Border(new BorderStroke(Color.DARKGRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(30)));
         root = new BorderPane();
-        root.setBackground(Data.createBackGround());
         root.setBorder(border);
-        root.setRight(right);
-        root.setLeft(left);
+
+        chat.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));  //check scroller
+        chat.prefWidthProperty().bind(root.widthProperty().divide(2.5));
+        displaySkills.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
+        displaySkills.prefWidthProperty().bind(root.widthProperty().subtract(chat.prefWidthProperty()).subtract(borderWidth*2));
+
+        root.setRight(chat);
+        root.setLeft(displaySkills);
     }
 }
