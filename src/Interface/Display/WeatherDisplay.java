@@ -1,6 +1,7 @@
 package Interface.Display;
 
 import Interface.Screens.MainScreen;
+import Weather.WeatherFetch;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -17,21 +18,39 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class WeatherDisplay extends BorderPane {
     private String cityName;
+    private String countryName;
     private Map<String, Object> weatherData;
 
-    public WeatherDisplay() throws FileNotFoundException {
+    public WeatherDisplay() throws Exception {
         getData();
         setTop();
         setCurrent();
         setDaily();
     }
 
-    private void getData() {    //For testing example main logic  //TODO get actual data
-        cityName = "Maastricht, NL";
+    private void getData() throws Exception {    //For testing example main logic  //TODO get actual data
+        cityName = "Maastricht";
+        countryName = "NL";
+        String rawWeatherData = WeatherFetch.getWeather(cityName, countryName);
+        String[] splitData = rawWeatherData.split(",");
+        System.out.println("splitdata: " + splitData.length);
+
+        ArrayList<Double> dayH = new ArrayList<>();
+        for(int i = 33; i <= 200; i+= 25){
+            dayH.add(Double.parseDouble(splitData[i]));
+            //System.out.println((i + 1) + " " + splitData[i]);
+        }
+        ArrayList<Double> dayL = new ArrayList<>();
+        for(int i = 32; i <= 200; i+= 25){
+            dayL.add(Double.parseDouble(splitData[i]));
+            //System.out.println((i + 1) + " " + splitData[i]);
+        }
+
         weatherData = new HashMap<>();
 
         Map<String, String> currentData = new HashMap<>();
@@ -42,11 +61,11 @@ public class WeatherDisplay extends BorderPane {
         int[] dayLow = {7, 8, 9, 10, 11, 12, 13};
         String[] daySummary = {"summary1", "summary2", "summary3", "summary4", "summary5", "summary6", "summary7"};
 
-        for(int i = 1; i<7; i++) {
+        for(int i = 0; i<7; i++) {
             Map<String, String> daily = new HashMap<>();
             daily.put("day", days[i]);
-            daily.put("high", dayHigh[i]+"");
-            daily.put("low", dayLow[i]+"");
+            daily.put("high", dayH.get(i)+"");
+            daily.put("low", dayL.get(i)+"");
             daily.put("summary", daySummary[i]);
 
             dailyData.add(daily);

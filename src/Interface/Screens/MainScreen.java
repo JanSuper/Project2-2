@@ -17,7 +17,7 @@ public class MainScreen {
     //public static Color themeColor = new Color(0,0.47379, 1, 1);
     public static Color themeColor = Color.DARKSLATEGRAY;
 
-    public MainScreen() throws IOException {
+    public MainScreen() throws Exception {
         chat = new ChatApp(Data.getUsername());
         displaySkills = new DisplaySkills();
         createContent();

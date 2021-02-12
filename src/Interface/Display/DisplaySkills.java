@@ -10,7 +10,7 @@ public class DisplaySkills extends VBox {
     private Background background = Data.createBackGround();
     //private Background background = new Background(new BackgroundFill(MainScreen.themeColor, CornerRadii.EMPTY, Insets.EMPTY));
 
-    public DisplaySkills() throws FileNotFoundException {
+    public DisplaySkills() throws Exception {
         super(7);
         super.setBackground(background);
 
@@ -18,7 +18,7 @@ public class DisplaySkills extends VBox {
         getChildren().setAll(getWeatherDisplay());
     }
 
-    public WeatherDisplay getWeatherDisplay() throws FileNotFoundException {
+    public WeatherDisplay getWeatherDisplay() throws Exception {
         return new WeatherDisplay();
     }
 }
