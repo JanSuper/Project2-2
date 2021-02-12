@@ -117,7 +117,7 @@ public class ChatApp extends VBox {
 
         userInput = new TextField();
         userInput.setPromptText("Type message");
-        userInput.setPrefWidth(410);
+        userInput.setPrefWidth(380);
         userInput.setTranslateY(12);
         userInput.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGRAY.brighter(), new CornerRadii(3,3,3,3,false), Insets.EMPTY)));
         userInput.setFont((Font.font("Cambria", 14)));

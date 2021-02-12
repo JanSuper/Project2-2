@@ -12,10 +12,10 @@ import java.io.IOException;
 
 public class MainScreen {
     public ChatApp chat;
-    public DisplaySkills displaySkills;
+    public static DisplaySkills displaySkills;
     public BorderPane root;
-    public static Color themeColor = new Color(0,0.47379, 1, 1);
-    //public static Color themeColor = Color.DARKSLATEGRAY;
+    //public static Color themeColor = new Color(0,0.47379, 1, 1);
+    public static Color themeColor = Color.DARKSLATEGRAY;
 
     public MainScreen() throws IOException {
         chat = new ChatApp(Data.getUsername());
@@ -32,14 +32,14 @@ public class MainScreen {
     }
 
     public void createContent() {
-        int borderWidth = 10;   //30
+        int borderWidth = 10;
         Border border = new Border(new BorderStroke(Color.DARKGRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(borderWidth)));
 
         root = new BorderPane();
         root.setBorder(border);
 
-        chat.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));  //check scroller
-        chat.prefWidthProperty().bind(root.widthProperty().divide(2.5));
+        chat.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
+        chat.prefWidthProperty().bind(root.widthProperty().divide(2.8));
         displaySkills.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
         displaySkills.prefWidthProperty().bind(root.widthProperty().subtract(chat.prefWidthProperty()).subtract(borderWidth*2));
 
