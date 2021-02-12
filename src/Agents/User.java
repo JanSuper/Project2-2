@@ -15,7 +15,11 @@ public class User {
 
     private List<String> messages;
 
-    public User(){
+    private String password;
+
+    public User(String name, String password){
+        this.name = name;
+        this.password = password;
         messages = new ArrayList<>();
     }
 

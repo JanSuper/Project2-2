@@ -18,7 +18,7 @@ public class MenuTitle extends Pane {
 
         text = new Text(spread);
         text.setId("title");
-        text.setFill(Color.WHITE);
+        text.setFill(Color.BLACK);
         text.setEffect(new DropShadow(30, Color.BLACK));
         getChildren().addAll(text);
     }
