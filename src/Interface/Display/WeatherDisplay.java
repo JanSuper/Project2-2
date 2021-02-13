@@ -2,6 +2,7 @@ package Interface.Display;
 
 import Interface.Screens.MainScreen;
 import Skills.SkillsInfo;
+import Weather.WeatherFetch;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -28,7 +29,7 @@ public class WeatherDisplay extends BorderPane {
 
     private SkillsInfo skillsInfo;
 
-    public WeatherDisplay() throws FileNotFoundException {
+    public WeatherDisplay() throws Exception {
         skillsInfo = new SkillsInfo();
         getData();
         setTop();
