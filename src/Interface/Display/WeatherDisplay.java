@@ -1,7 +1,7 @@
 package Interface.Display;
 
 import Interface.Screens.MainScreen;
-import Weather.WeatherFetch;
+import Skills.SkillsInfo;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -26,7 +26,10 @@ public class WeatherDisplay extends BorderPane {
     private String countryName;
     private Map<String, Object> weatherData;
 
-    public WeatherDisplay() throws Exception {
+    private SkillsInfo skillsInfo;
+
+    public WeatherDisplay() throws FileNotFoundException {
+        skillsInfo = new SkillsInfo();
         getData();
         setTop();
         setCurrent();
@@ -158,10 +161,10 @@ public class WeatherDisplay extends BorderPane {
                 day.setText("Day");
                 day.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 18));
                 day.setTextFill(Color.GRAY.darker());
-                high.setText("High");
+                high.setText("Highest");
                 high.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 18));
                 high.setTextFill(Color.DARKGREEN.darker());
-                low.setText("Low");
+                low.setText("Lowest");
                 low.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 18));
                 low.setTextFill(Color.DARKGREEN.darker());
             }
