@@ -1,18 +1,19 @@
 package Interface.Display;
 
 import DataBase.Data;
+import Interface.Screens.MainScreen;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.VBox;
 
-import java.io.FileNotFoundException;
-
 public class DisplaySkills extends VBox {
     private Background background = Data.createBackGround();
-    //private Background background = new Background(new BackgroundFill(MainScreen.themeColor, CornerRadii.EMPTY, Insets.EMPTY));
 
     public DisplaySkills() throws Exception {
         super(7);
         super.setBackground(background);
+        super.setScaleX(0.8);
+        super.setScaleY(0.8);
+        super.setBorder(MainScreen.border);
 
         //for testing
         getChildren().setAll(getWeatherDisplay());

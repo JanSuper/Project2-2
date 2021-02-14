@@ -8,15 +8,19 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,61 +30,68 @@ public class WeatherDisplay extends BorderPane {
     private String cityName;
     private String countryName;
     private Map<String, Object> weatherData;
+    private double imgDim = 65;
 
     private SkillsInfo skillsInfo;
 
     public WeatherDisplay() throws Exception {
         skillsInfo = new SkillsInfo();
+
         getData();
         setTop();
         setCurrent();
         setDaily();
     }
 
-    private void getData() throws Exception {    //For testing example main logic  //TODO get actual data
+    private void getData() throws Exception {
         cityName = "Maastricht";
         countryName = "NL";
-        String rawWeatherData = WeatherFetch.getWeather(cityName, countryName);
-        String[] splitData = rawWeatherData.split(",");
-        System.out.println("splitdata: " + splitData.length);
 
-        ArrayList<Double> dayH = new ArrayList<>();
-        for(int i = 33; i <= 200; i+= 25){
-            dayH.add(Double.parseDouble(splitData[i]));
-            //System.out.println((i + 1) + " " + splitData[i]);
-        }
-        ArrayList<Double> dayL = new ArrayList<>();
-        for(int i = 32; i <= 200; i+= 25){
-            dayL.add(Double.parseDouble(splitData[i]));
-            //System.out.println((i + 1) + " " + splitData[i]);
+        String rawWeatherData = WeatherFetch.getWeather(cityName, countryName);
+        List<String[]> separateLines = new ArrayList<>();
+        rawWeatherData.lines().forEach(s -> separateLines.add(s.split(",")));
+
+        ArrayList<String> dayH = new ArrayList<>();
+        ArrayList<String> dayL = new ArrayList<>();
+        ArrayList<String> daySummary = new ArrayList<>();
+        for(int i = 1; i <= 8; i++) {
+            dayH.add(separateLines.get(i)[12]);
+            dayL.add(separateLines.get(i)[11]);
+
+            int count = separateLines.get(i).length;
+            if(count==27) {
+                String sum = separateLines.get(i)[count - 2] + "," + separateLines.get(i)[count - 1];
+                daySummary.add(sum.replace("\"", ""));
+            }
+            else {
+                daySummary.add(separateLines.get(i)[count - 1].replace("\"", ""));
+            }
         }
 
         weatherData = new HashMap<>();
-
         Map<String, String> currentData = new HashMap<>();
         ArrayList<Object> dailyData = new ArrayList<>();
 
-        String[] days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
-        int[] dayHigh = {15, 16, 17, 18, 19, 20, 21};
-        int[] dayLow = {7, 8, 9, 10, 11, 12, 13};
-        String[] daySummary = {"summary1", "summary2", "summary3", "summary4", "summary5", "summary6", "summary7"};
+        DayOfWeek currentDayOfWeek = DayOfWeek.of(LocalDate.now().getDayOfWeek().getValue());
+        String[] days = {currentDayOfWeek.plus(1).name(), currentDayOfWeek.plus(2).name(), currentDayOfWeek.plus(3).name(), currentDayOfWeek.plus(4).name(), currentDayOfWeek.plus(5).name(), currentDayOfWeek.plus(6).name(), currentDayOfWeek.plus(7).name()};
 
         for(int i = 0; i<7; i++) {
             Map<String, String> daily = new HashMap<>();
             daily.put("day", days[i]);
-            daily.put("high", dayH.get(i)+"");
-            daily.put("low", dayL.get(i)+"");
-            daily.put("summary", daySummary[i]);
+            daily.put("high", dayH.get(i+1));
+            daily.put("low", dayL.get(i+1));
+            daily.put("summary", daySummary.get(i+1));
 
             dailyData.add(daily);
         }
         weatherData.put("daily", dailyData);
 
 
-        currentData.put("icon", "clear-day");
-        currentData.put("temp", 15+"  °C");
+        currentData.put("icon", daySummary.get(0));
+        currentData.put("temp", 15+"  °C"); //TODO
+        currentData.put("high", dayH.get(0));
+        currentData.put("low", dayL.get(0));
         weatherData.put("current", currentData);
-
     }
 
     private void setTop() {
@@ -88,7 +99,7 @@ public class WeatherDisplay extends BorderPane {
         top.setAlignment(Pos.CENTER);
         top.setBackground(new Background(new BackgroundFill(MainScreen.themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
 
-        Label city = new Label(cityName);
+        Label city = new Label(cityName + ", " + countryName);
         city.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 40));
         city.setTextFill(Color.WHITE);
 
@@ -111,8 +122,17 @@ public class WeatherDisplay extends BorderPane {
         current.setPadding(new Insets(15));
 
         Map<String, String> currentWeather = (Map<String, String>) weatherData.get("current");
-        Image currentImage = getImage(currentWeather.get("icon"));
-        ImageView currentImageView = new ImageView(currentImage);
+
+        Rectangle currentConditionImage = new Rectangle(0, 0, 65, 65);
+        currentConditionImage.setArcWidth(40.0);
+        currentConditionImage.setArcHeight(40.0);
+        ImagePattern pattern = new ImagePattern(getImage(currentWeather.get("icon")));
+        currentConditionImage.setFill(pattern);
+        currentConditionImage.setEffect(new DropShadow(20, Color.BLACK));
+
+        Label currentConditionLabel = new Label(currentWeather.get("icon"));
+        currentConditionLabel.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 18));
+        currentConditionLabel.setTextFill(Color.DARKRED.darker());
 
         Label currently = new Label("Currently: ");
         currently.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 18));
@@ -121,19 +141,36 @@ public class WeatherDisplay extends BorderPane {
         currentTemp.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 25));
         currentTemp.setTextFill(Color.BLACK);
 
-        HBox tempBox = new HBox(20);
-        tempBox.setAlignment(Pos.CENTER);
-        tempBox.getChildren().addAll(currently, currentTemp);
+        HBox currentTempBox = new HBox(20);
+        currentTempBox.setAlignment(Pos.CENTER);
+        currentTempBox.getChildren().addAll(currently, currentTemp);
 
-        current.getChildren().addAll(currentImageView, tempBox);
+        Label h = new Label("H:");
+        h.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 20));
+        h.setTextFill(MainScreen.themeColor);
+        Label hTemp = new Label(currentWeather.get("high")+"°");
+        hTemp.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 19));
+        hTemp.setTextFill(Color.BLACK);
+        Label l = new Label("L:");
+        l.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 20));
+        l.setTextFill(MainScreen.themeColor);
+        Label lTemp = new Label(currentWeather.get("low")+"°");
+        lTemp.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 19));
+        lTemp.setTextFill(Color.BLACK);
+
+        HBox hLBox = new HBox(10);
+        hLBox.setAlignment(Pos.CENTER);
+        hLBox.getChildren().addAll(h, hTemp, l, lTemp);
+
+        current.getChildren().addAll(currentConditionImage, currentConditionLabel, currentTempBox, hLBox);
         setLeft(current);
     }
 
     private void setDaily() {
         VBox dailyVBox = new VBox(45);
         dailyVBox.setBackground(Background.EMPTY);
-        dailyVBox.setAlignment(Pos.BOTTOM_LEFT);
-        dailyVBox.setPadding(new Insets(40));
+        dailyVBox.setAlignment(Pos.BOTTOM_CENTER);
+        dailyVBox.setPadding(new Insets(60));
 
         ArrayList<Map<String, String>> dailyForecast = (ArrayList<Map<String, String>>) weatherData.get("daily");
         for(int i = -1; i < dailyForecast.size(); i++) {
@@ -146,7 +183,7 @@ public class WeatherDisplay extends BorderPane {
             if(i>-1) {
                 day = new Label(dailyForecast.get(i).get("day"));
                 day.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 18));
-                day.setTextFill(Color.DARKGRAY.darker());
+                day.setTextFill(Color.LIGHTSLATEGRAY.darker().darker());
                 high = new Label(dailyForecast.get(i).get("high") + " °C");
                 high.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 20));
                 high.setTextFill(MainScreen.themeColor);
@@ -154,20 +191,20 @@ public class WeatherDisplay extends BorderPane {
                 low.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 20));
                 low.setTextFill(MainScreen.themeColor);
                 summary = new Label(dailyForecast.get(i).get("summary"));
-                summary.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 12));
+                summary.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 14));
                 summary.setTextFill(Color.BLACK);
                 summary.setWrapText(true);
             }
             else {
-                day.setText("Day");
+                day.setText("");
                 day.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 18));
-                day.setTextFill(Color.GRAY.darker());
-                high.setText("Highest");
+                day.setTextFill(MainScreen.themeColor.brighter());
+                high.setText("High");
                 high.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 18));
-                high.setTextFill(Color.DARKGREEN.darker());
-                low.setText("Lowest");
+                high.setTextFill(Color.LIGHTSLATEGRAY.darker());
+                low.setText("Low");
                 low.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 18));
-                low.setTextFill(Color.DARKGREEN.darker());
+                low.setTextFill(Color.LIGHTSLATEGRAY.darker());
             }
             Region region1 = new Region();
             HBox.setHgrow(region1, Priority.ALWAYS);
@@ -184,25 +221,53 @@ public class WeatherDisplay extends BorderPane {
     }
 
     private Image getImage(String status) throws FileNotFoundException {
-        double imgDim = 65;
-        switch (status) {
-            case "clear-day":
-                return new Image(new FileInputStream("src/res/weatherIcons/sunny.png"),imgDim,imgDim,false,true);
-            case "clear-night":
-                return new Image(new FileInputStream("src/res/weatherIcons/clear_night.png"),imgDim,imgDim,false,true);
-            case "rain":
-                return new Image(new FileInputStream("src/res/weatherIcons/rain.png"),imgDim,imgDim,false,true);
-            case "snow":
-                return new Image(new FileInputStream("src/res/weatherIcons/snow.png"),imgDim,imgDim,false,true);
-            case "wind":
-                return new Image(new FileInputStream("src/res/weatherIcons/wind.png"),imgDim,imgDim,false,true);
-            case "cloudy":
-                return new Image(new FileInputStream("src/res/weatherIcons/cloudy.png"),imgDim,imgDim,false,true);
-            case "partly-cloudy-day":
-                return new Image(new FileInputStream("src/res/weatherIcons/partly_cloudy.png"),imgDim,imgDim,false,true);
-            case "cloudy-night":
-                return new Image(new FileInputStream("src/res/weatherIcons/cloudy_night.png"),imgDim,imgDim,false,true);
+        Image img;
+        if(status.contains(",")) {
+            String[] s = status.split(",");
+            status = s[0];
         }
-        return null;
+        switch (status) {
+            case "Clear":
+                img = new Image(new FileInputStream("src/res/weatherIcons/day_clear.png"),imgDim,imgDim,false,true);
+                break;
+            case "Partially cloudy":
+                img = new Image(new FileInputStream("src/res/weatherIcons/day_partial_cloud.png"),imgDim,imgDim,false,true);
+                break;
+            case "Overcast":
+                img =  new Image(new FileInputStream("src/res/weatherIcons/overcast.png"),imgDim,imgDim,false,true);
+                break;
+            case "Thunderstorm":
+                img = new Image(new FileInputStream("ssrc/res/weatherIcons/rain_thunder.png"),imgDim,imgDim,false,true);
+                break;
+            case "Thunderstorm Without Precipitation":
+                img = new Image(new FileInputStream("src/res/weatherIcons/thunder.png"),imgDim,imgDim,false,true);
+                break;
+            case "Rain": case "Rain Showers": case "Heavy Rain": case "Light Rain": case "Drizzle": case "Heavy Drizzle": case "Light Drizzle":
+                case "Heavy Drizzle/Rain": case "Freezing Drizzle/Freezing Rain": case "Heavy Freezing Drizzle/Freezing Rain":
+                case "Light Freezing Drizzle/Freezing Rain": case "Heavy Freezing Rain": case "Light Freezing Rain":
+                img = new Image(new FileInputStream("src/res/weatherIcons/rain.png"),imgDim,imgDim,false,true);
+                break;
+            case "Snow And Rain Showers": case "Heavy Rain And Snow": case "Light Rain And Snow":
+                img = new Image(new FileInputStream("src/res/weatherIcons/sleet.png"),imgDim,imgDim,false,true);
+                break;
+            case "Snow": case "Snow Showers": case "Heavy Snow": case "Light Snow": case "Blowing Or Drifting Snow":
+                img = new Image(new FileInputStream("src/res/weatherIcons/snow.png"),imgDim,imgDim,false,true);
+                break;
+            case "Mist":
+                img = new Image(new FileInputStream("src/res/weatherIcons/mist.png"),imgDim,imgDim,false,true);
+                break;
+            case "Squalls":
+                img = new Image(new FileInputStream("src/res/weatherIcons/wind.png"),imgDim,imgDim,false,true);
+                break;
+            case "Fog": case "Freezing Fog":
+                img = new Image(new FileInputStream("src/res/weatherIcons/fog.png"),imgDim,imgDim,false,true);
+                break;
+            case "Funnel Cloud/Tornado":
+                img = new Image(new FileInputStream("src/res/weatherIcons/tornado.png"),imgDim,imgDim,false,true);
+                break;
+            default:
+                return new Image(new FileInputStream("src/res/weatherIcons/unknown.png"),imgDim,imgDim,false,true);
+        }
+        return img;
     }
 }
