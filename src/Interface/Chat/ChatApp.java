@@ -2,6 +2,7 @@ package Interface.Chat;
 
 import DataBase.Data;
 import Interface.Screens.MainScreen;
+import Skills.Schedule.Skill_Schedule;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -158,6 +159,11 @@ public class ChatApp extends VBox {
     public void sendMessage(String message) {
         messages.add(new MessageBubble(message, 1));
         lastMessage = message;
+        if(message.equals("Schedule"))
+        {
+           String schedule_answer = new Skill_Schedule().getCourse();
+           receiveMessage(schedule_answer);
+        }
     }
 
     public void receiveMessage(String message) {    //adds assistant's response

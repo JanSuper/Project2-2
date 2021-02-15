@@ -1,37 +1,39 @@
 package Skills.Schedule;
 
-import java.io.FileNotFoundException;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class UM_Schedule{
 
-    private Scanner file_reader = null;
-    private String schedule_text = null;
-    private ArrayList<Course> courses = new ArrayList<Course>();
+    private Scanner file_reader;
+    private String schedule_text;
+    private ArrayList<Course> courses = new ArrayList<>();
 
     /**
      * Gets the .ics file from Maastricht University Timetable
      * @param UM_file (.ics at url: https://timetable.maastrichtuniversity.nl/ical?602942e1&group=false&eu=STYyMjE4NDQ=&h=Msp_x9ez0v2UDuVhKbtJ82wTla65FcnvbVxh-lPS3DM=)
      */
-    public UM_Schedule(URL UM_file)
+    public UM_Schedule(String UM_file)
     {
-        try{
-            file_reader = new Scanner(UM_file.openStream());
-            while (file_reader.hasNextLine())
+        try{URL UM_Url = new URL(UM_file);
+            BufferedReader file_reader = new BufferedReader(new InputStreamReader(UM_Url.openStream()));
+
+            while (file_reader.readLine() != null)
             {
-                schedule_text = file_reader.nextLine();
+                schedule_text = file_reader.readLine();
                 if(schedule_text.equals("BEGIN:VEVENT"))
                 {
-                    file_reader.nextLine();
-                    String start_DateTime = file_reader.nextLine();
-                    String end_DateTime = file_reader.nextLine();
-                    String summary = file_reader.nextLine();
-                    String location = null;
+                    file_reader.readLine();
+                    String start_DateTime = file_reader.readLine();
+                    String end_DateTime = file_reader.readLine();
+                    String summary = file_reader.readLine();
+                    String location;
 
-                    schedule_text = file_reader.nextLine();
+                    schedule_text = file_reader.readLine();
                     if(schedule_text.startsWith("LOCATION"))
                     {
                         location = schedule_text;
@@ -39,16 +41,14 @@ public class UM_Schedule{
                     else
                     {
                         summary = summary + schedule_text;
-                        location = file_reader.nextLine();
+                        location = file_reader.readLine();
                     }
 
                     Course course = new Course(start_DateTime,end_DateTime,summary,location);
                     courses.add(course);
                 }
             }
-        } catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
+            file_reader.close();
         } catch (IOException e)
         {
             e.printStackTrace();
