@@ -23,14 +23,16 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.List;
+
 
 public class WeatherDisplay extends BorderPane {
     private String cityName;
     private String countryName;
     private Map<String, Object> weatherData;
     private double imgDim = 65;
+
 
     private SkillsInfo skillsInfo;
 
