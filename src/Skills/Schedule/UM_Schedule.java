@@ -14,7 +14,7 @@ public class UM_Schedule{
 
     /**
      * Gets the .ics file from Maastricht University Timetable
-     * @param UM_file
+     * @param UM_file (.ics at url: https://timetable.maastrichtuniversity.nl/ical?602942e1&group=false&eu=STYyMjE4NDQ=&h=Msp_x9ez0v2UDuVhKbtJ82wTla65FcnvbVxh-lPS3DM=)
      */
     public UM_Schedule(URL UM_file)
     {
