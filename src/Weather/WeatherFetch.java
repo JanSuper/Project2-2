@@ -13,14 +13,14 @@ import java.nio.charset.Charset;
 
 public class WeatherFetch {
 
-    public static String getWeather(String city, String Country) throws Exception{
+    public static String getWeather(String city, String country) throws Exception{
         URIBuilder builder = new URIBuilder("https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/weatherdata/forecast");
         builder.setParameter("aggregateHours", "24")
                 .setParameter("contentType", "csv")
                 .setParameter("unitGroup", "metric")
                 .setParameter("locationMode", "single")
                 .setParameter("key", "1PYNQ6AWUDJE9AFERDCHJHSXK")
-                .setParameter("locations", "Maastricht,NL");
+                .setParameter("locations", city+","+country);
 
         HttpGet get = new HttpGet(builder.build());
 

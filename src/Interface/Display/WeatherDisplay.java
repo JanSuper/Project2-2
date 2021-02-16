@@ -1,7 +1,6 @@
 package Interface.Display;
 
 import Interface.Screens.MainScreen;
-import Skills.SkillsInfo;
 import Weather.WeatherFetch;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -23,32 +22,34 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 
-public class WeatherDisplay extends BorderPane {
+public class WeatherDisplay extends VBox {
     private String cityName;
     private String countryName;
     private Map<String, Object> weatherData;
     private double imgDim = 65;
+    private HBox top;
+    private VBox current;
+    private VBox dailyVBox;
 
-
-    private SkillsInfo skillsInfo;
-
-    public WeatherDisplay() throws Exception {
-        skillsInfo = new SkillsInfo();
+    public WeatherDisplay(String city, String country) throws Exception {
+        this.cityName = city;
+        this.countryName = country;
 
         getData();
         setTop();
         setCurrent();
         setDaily();
+
+        getChildren().setAll(top, current, dailyVBox);
+        setMaxHeight(Double.MAX_VALUE);
+        setMinHeight(Double.MIN_VALUE);
     }
 
     private void getData() throws Exception {
-        cityName = "Maastricht";
-        countryName = "NL";
-
         String rawWeatherData = WeatherFetch.getWeather(cityName, countryName);
         List<String[]> separateLines = new ArrayList<>();
         rawWeatherData.lines().forEach(s -> separateLines.add(s.split(",")));
@@ -97,28 +98,44 @@ public class WeatherDisplay extends BorderPane {
     }
 
     private void setTop() {
-        HBox top = new HBox(40);
+        top = new HBox(60);
         top.setAlignment(Pos.CENTER);
         top.setBackground(new Background(new BackgroundFill(MainScreen.themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
 
         Label city = new Label(cityName + ", " + countryName);
         city.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 40));
         city.setTextFill(Color.WHITE);
+        city.setAlignment(Pos.CENTER);
 
         Button change = new Button("Change");
         change.setCursor(Cursor.HAND);
         change.setBackground(Background.EMPTY);
-        change.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 12));
-        change.setTextFill(Color.LIGHTSLATEGRAY.brighter());
+        change.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 13));
+        change.setTextFill(Color.LIGHTGRAY);
         change.setBorder(new Border(new BorderStroke(Color.DARKGRAY.darker(), BorderStrokeStyle.SOLID, new CornerRadii(3,3,3,3,false), new BorderWidths(3))));
+        change.setAlignment(Pos.CENTER);
         change.setOnAction(e -> {});    //TODO
 
-        top.getChildren().addAll(city, change);
-        setTop(top);
+        Button exit = new Button("x");
+        exit.setCursor(Cursor.HAND);
+        exit.setBackground(Background.EMPTY);
+        exit.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 20));
+        exit.setTextFill(Color.DARKRED);
+        exit.setBorder(null);
+        exit.setAlignment(Pos.CENTER_RIGHT);
+        exit.setOnAction(e -> {});    //TODO
+
+        Region region1 = new Region();
+        HBox.setHgrow(region1, Priority.ALWAYS);
+
+        Region region2 = new Region();
+        HBox.setHgrow(region2, Priority.ALWAYS);
+
+        top.getChildren().addAll(region1, city, change, region2, exit);
     }
 
     private void setCurrent() throws FileNotFoundException {
-        VBox current = new VBox(40);
+        current = new VBox(35);
         current.setBackground(Background.EMPTY);
         current.setAlignment(Pos.CENTER);
         current.setPadding(new Insets(15));
@@ -165,11 +182,10 @@ public class WeatherDisplay extends BorderPane {
         hLBox.getChildren().addAll(h, hTemp, l, lTemp);
 
         current.getChildren().addAll(currentConditionImage, currentConditionLabel, currentTempBox, hLBox);
-        setLeft(current);
     }
 
     private void setDaily() {
-        VBox dailyVBox = new VBox(45);
+        dailyVBox = new VBox(25);
         dailyVBox.setBackground(Background.EMPTY);
         dailyVBox.setAlignment(Pos.BOTTOM_CENTER);
         dailyVBox.setPadding(new Insets(60));
@@ -218,8 +234,7 @@ public class WeatherDisplay extends BorderPane {
             daily.getChildren().addAll(day, region1, high, region2, low, region3, summary);
             dailyVBox.getChildren().add(daily);
         }
-        dailyVBox.setTranslateY(55);
-        setCenter(dailyVBox);
+        dailyVBox.setTranslateY(-50);
     }
 
     private Image getImage(String status) throws FileNotFoundException {

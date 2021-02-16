@@ -31,7 +31,6 @@ public class ChatApp extends VBox {
     private HBox user;
     private ScrollPane scroller;
     private HBox typeField;
-    private String lastMessage;
     private TextField userInput;
     private Button sendMessageButton;
     private Image image;
@@ -125,7 +124,11 @@ public class ChatApp extends VBox {
         userInput.setStyle("-fx-text-fill: black; -fx-prompt-text-fill: white");
         userInput.setOnKeyReleased(event -> {
             if (event.getCode() == KeyCode.ENTER){
-                sendMessage(userInput.getText());
+                try {
+                    sendMessage(userInput.getText());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 userInput.setText("");
             }
         });
@@ -140,7 +143,11 @@ public class ChatApp extends VBox {
 
         sendMessageButton.disableProperty().bind(userInput.lengthProperty().isEqualTo(0));
         sendMessageButton.setOnAction(event-> {
-            sendMessage(userInput.getText());
+            try {
+                sendMessage(userInput.getText());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             userInput.setText("");
         });
 
@@ -156,21 +163,20 @@ public class ChatApp extends VBox {
         typeField.getChildren().setAll(userInput, sendMessageButton); //, receiveMessageButton);
     }
 
-    public void sendMessage(String message) {
+    public void sendMessage(String message) throws Exception {
         messages.add(new MessageBubble(message, 1));
-        lastMessage = message;
+
         if(message.equals("Schedule"))
         {
            String schedule_answer = new Skill_Schedule().getCourse();
            receiveMessage(schedule_answer);
         }
+        else if (message.toLowerCase().contains("weather")) {
+            MainScreen.setWeatherDisplay("Maastricht", "NL");
+        }
     }
 
     public void receiveMessage(String message) {    //adds assistant's response
         messages.add(new MessageBubble(message, 0));
-    }
-
-    public String getLastMessage() {    //returns the user's last message
-        return lastMessage;
     }
 }

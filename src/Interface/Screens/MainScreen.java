@@ -2,17 +2,16 @@ package Interface.Screens;
 
 import DataBase.Data;
 import Interface.Chat.ChatApp;
-import Interface.Display.DisplaySkills;
+import Interface.Display.WeatherDisplay;
 import javafx.scene.Scene;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class MainScreen {
-    public ChatApp chat;
-    public DisplaySkills displaySkills;
-    public BorderPane root;
-    private int borderWidth;
+    public static ChatApp chat;
+    public static BorderPane root;
+    public static int borderWidth;
     public static Border border;
     public static Color themeColor = new Color(0,0.47379, 1, 1);
     //public static Color themeColor = Color.DARKSLATEGRAY;
@@ -20,9 +19,7 @@ public class MainScreen {
     public MainScreen() throws Exception {
         borderWidth = 10;
         border = new Border(new BorderStroke(Color.DARKGRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(borderWidth)));
-
         chat = new ChatApp(Data.getUsername());
-        displaySkills = new DisplaySkills();
 
         createContent();
         start(new Stage());
@@ -42,10 +39,20 @@ public class MainScreen {
 
         chat.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
         chat.prefWidthProperty().bind(root.widthProperty().divide(2.8));
-        displaySkills.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
-        displaySkills.prefWidthProperty().bind(root.widthProperty().subtract(chat.prefWidthProperty()).subtract(borderWidth*2));
 
         root.setRight(chat);
-        root.setLeft(displaySkills);
+    }
+
+    public static void setWeatherDisplay(String city, String country) throws Exception {
+        WeatherDisplay weatherDisplay = new WeatherDisplay(city, country);
+        weatherDisplay.setSpacing(7);
+        weatherDisplay.setBackground(Data.createBackGround());
+        weatherDisplay.setBorder(border);
+        weatherDisplay.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
+        weatherDisplay.prefWidthProperty().bind(root.widthProperty().subtract(chat.prefWidthProperty()).subtract(borderWidth*2));
+        weatherDisplay.setScaleX(0.8);
+        weatherDisplay.setScaleY(0.8);
+
+        root.setLeft(weatherDisplay);
     }
 }
