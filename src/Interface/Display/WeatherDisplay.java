@@ -123,7 +123,7 @@ public class WeatherDisplay extends VBox {
         exit.setTextFill(Color.DARKRED);
         exit.setBorder(null);
         exit.setAlignment(Pos.CENTER_RIGHT);
-        exit.setOnAction(e -> {});    //TODO
+        exit.setOnAction(e -> MainScreen.setOptionsMenu());
 
         Region region1 = new Region();
         HBox.setHgrow(region1, Priority.ALWAYS);

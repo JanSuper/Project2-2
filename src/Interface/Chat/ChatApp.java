@@ -81,16 +81,18 @@ public class ChatApp extends VBox {
         userNameLabel.setFont((Font.font("Cambria", FontWeight.EXTRA_BOLD, 20)));
         userNameLabel.setStyle("-fx-text-fill: white");
 
-        FileInputStream fis = new FileInputStream("src/res/userIcon.jpg");
-        image = new Image(fis,26,26,false,true);
+        FileInputStream fis = new FileInputStream("src/res/userIcon.png");
+        image = new Image(fis,25,25,true,true);
         ImageView userIcon = new ImageView(image);
 
-        user = new HBox();
+        user = new HBox(20);
         user.getChildren().addAll(userIcon, userNameLabel);
 
         createComponents();
         getChildren().setAll(user, scroller, typeField);
         setPadding(new Insets(40));
+        setMaxHeight(Double.MAX_VALUE);
+        setMinHeight(Double.MIN_VALUE);
         receiveMessage("Welcome " + Data.getUsername() + "! How may I help you?"); //Assistant's first message
     }
 
@@ -119,9 +121,9 @@ public class ChatApp extends VBox {
         userInput.setPromptText("Type message");
         userInput.setPrefWidth(380);
         userInput.setTranslateY(12);
-        userInput.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGRAY.brighter(), new CornerRadii(3,3,3,3,false), Insets.EMPTY)));
+        userInput.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, new CornerRadii(3,3,3,3,false), Insets.EMPTY)));
         userInput.setFont((Font.font("Cambria", 14)));
-        userInput.setStyle("-fx-text-fill: black; -fx-prompt-text-fill: white");
+        userInput.setStyle("-fx-text-fill: black; -fx-prompt-text-fill: gray");
         userInput.setOnKeyReleased(event -> {
             if (event.getCode() == KeyCode.ENTER){
                 try {
@@ -135,7 +137,7 @@ public class ChatApp extends VBox {
 
         sendMessageButton = new Button(">>");
         sendMessageButton.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 22));
-        sendMessageButton.setTextFill(Color.LIGHTSEAGREEN);
+        sendMessageButton.setTextFill(Color.LIGHTSEAGREEN.brighter());
         sendMessageButton.setBackground(null);
         sendMessageButton.setBorder(null);
         sendMessageButton.setCursor(Cursor.HAND);
@@ -150,17 +152,7 @@ public class ChatApp extends VBox {
             }
             userInput.setText("");
         });
-
-        //For testing
-            /*Button receiveMessageButton = new Button("Receive");
-            receiveMessageButton.setTranslateY(6);
-            receiveMessageButton.disableProperty().bind(userInput.lengthProperty().isEqualTo(0));
-            receiveMessageButton.setOnAction(event-> {
-                receiveMessage(userInput.getText());
-                userInput.setText("");
-            });*/
-
-        typeField.getChildren().setAll(userInput, sendMessageButton); //, receiveMessageButton);
+        typeField.getChildren().setAll(userInput, sendMessageButton);
     }
 
     public void sendMessage(String message) throws Exception {
@@ -177,6 +169,10 @@ public class ChatApp extends VBox {
     }
 
     public void receiveMessage(String message) {    //adds assistant's response
-        messages.add(new MessageBubble(message, 0));
+        MessageBubble messageBubble = new MessageBubble(message, 0);
+        if(messages.isEmpty()) {    //fixing position of first message
+            messageBubble.setAlignment(Pos.TOP_LEFT);
+        }
+        messages.add(messageBubble);
     }
 }
