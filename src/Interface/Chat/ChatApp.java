@@ -3,6 +3,7 @@ package Interface.Chat;
 import DataBase.Data;
 import Interface.Screens.MainScreen;
 import Skills.Schedule.Skill_Schedule;
+import Skills.SkillEditor;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -24,10 +25,12 @@ import javafx.scene.text.FontWeight;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class ChatApp extends VBox {
-    private ObservableList<Node> messages = FXCollections.observableArrayList();
+    private ObservableList messages = FXCollections.observableArrayList();
     private HBox user;
     private ScrollPane scroller;
     private HBox typeField;
@@ -35,6 +38,8 @@ public class ChatApp extends VBox {
     private Button sendMessageButton;
     private Image image;
     private Color themeColor = MainScreen.themeColor;
+
+    private SkillEditor skillEditor;
 
     private class MessageBubble extends HBox {
         private Background userBubbleBackground;
@@ -44,6 +49,7 @@ public class ChatApp extends VBox {
             userBubbleBackground = new Background(new BackgroundFill(Color.GRAY.darker(), new CornerRadii(7,0,7,7,false), Insets.EMPTY));
             assistantBubbleBackground = new Background(new BackgroundFill(themeColor, new CornerRadii(0,7,7,7,false), Insets.EMPTY));
             createLabel(message, direction);
+            skillEditor = new SkillEditor();
         }
 
         private void createLabel(String message, int direction) {
@@ -171,6 +177,34 @@ public class ChatApp extends VBox {
         else if (message.toLowerCase().contains("weather")) {
             MainScreen.setWeatherDisplay("Maastricht", "NL");
         }
+        else if(message.toLowerCase().contains("create skill")){
+            if(message.length() == 12){
+                messages.add(new MessageBubble("Please add the title of the skill after \"create skill\"",0));
+            }else{
+                skillEditor.createSkill(getNewSkillName(message));
+            }
+        }
+    }
+    public String getNewSkillName(String allMessage){
+        List<Character> nameInList = new ArrayList<>();
+        for (int i = 0; i < allMessage.length(); i++){
+            if(allMessage.charAt(i)=='s'&&allMessage.charAt(i+1)=='k'&&allMessage.charAt(i+2)=='i'&&allMessage.charAt(i+3)=='l'&&allMessage.charAt(i+4)=='l'){
+                char nextChar = allMessage.charAt(i+6);
+                int counter = 0;
+                while(nextChar!=' '&&i+6+counter<allMessage.toCharArray().length){
+                    System.out.println("oui");
+                    nameInList.add(counter,allMessage.charAt(i+6 + counter));
+                    counter++;
+                    if(i+6+counter>=allMessage.toCharArray().length)break;
+                    nextChar = allMessage.charAt(i+6+counter);
+                }
+            }
+        }
+        char[] skillName = new char[nameInList.size()];
+        for (int i = 0; i < nameInList.size(); i++) {
+            skillName[i] = nameInList.get(i);
+        }
+        return String.valueOf(skillName);
     }
 
     public void receiveMessage(String message) {    //adds assistant's response
