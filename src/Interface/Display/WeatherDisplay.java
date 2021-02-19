@@ -35,9 +35,13 @@ public class WeatherDisplay extends VBox {
     private VBox current;
     private VBox dailyVBox;
 
-    public WeatherDisplay(String city, String country) throws Exception {
+    private MainScreen mainScreen;
+
+    public WeatherDisplay(String city, String country,MainScreen mainScreen) throws Exception {
         this.cityName = city;
         this.countryName = country;
+
+        this.mainScreen = mainScreen;
 
         getData();
         setTop();
@@ -123,7 +127,7 @@ public class WeatherDisplay extends VBox {
         exit.setTextFill(Color.DARKRED);
         exit.setBorder(null);
         exit.setAlignment(Pos.CENTER_RIGHT);
-        exit.setOnAction(e -> MainScreen.setOptionsMenu());
+        exit.setOnAction(e -> mainScreen.setOptionsMenu());
 
         Region region1 = new Region();
         HBox.setHgrow(region1, Priority.ALWAYS);

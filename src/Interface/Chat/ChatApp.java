@@ -40,6 +40,7 @@ public class ChatApp extends VBox {
     private Color themeColor = MainScreen.themeColor;
 
     private SkillEditor skillEditor;
+    private MainScreen mainScreen;
 
     private class MessageBubble extends HBox {
         private Background userBubbleBackground;
@@ -77,9 +78,11 @@ public class ChatApp extends VBox {
         }
     }
 
-    public ChatApp(String userName) throws IOException {
+    public ChatApp(String userName,MainScreen mainScreen) throws Exception {
         super(7);
         super.setBackground(new Background(new BackgroundFill(themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        this.mainScreen = mainScreen;
 
         Label userNameLabel = new Label(userName);
         userNameLabel.setAlignment(Pos.CENTER);
@@ -175,7 +178,7 @@ public class ChatApp extends VBox {
             receiveMessage(schedule_answer);
         }
         else if (message.toLowerCase().contains("weather")) {
-            MainScreen.setWeatherDisplay("Maastricht", "NL");
+            mainScreen.setWeatherDisplay("Maastricht", "NL");
         }
         else if(message.toLowerCase().contains("create skill")){
             if(message.length() == 12){
@@ -192,7 +195,6 @@ public class ChatApp extends VBox {
                 char nextChar = allMessage.charAt(i+6);
                 int counter = 0;
                 while(nextChar!=' '&&i+6+counter<allMessage.toCharArray().length){
-                    System.out.println("oui");
                     nameInList.add(counter,allMessage.charAt(i+6 + counter));
                     counter++;
                     if(i+6+counter>=allMessage.toCharArray().length)break;
