@@ -158,10 +158,15 @@ public class ChatApp extends VBox {
     public void sendMessage(String message) throws Exception {
         messages.add(new MessageBubble(message, 1));
 
-        if(message.equals("Schedule"))
+        if(message.toLowerCase().contains("next lecture"))
         {
-           String schedule_answer = new Skill_Schedule().getCourse();
+           String schedule_answer = new Skill_Schedule().getNextCourse();
            receiveMessage(schedule_answer);
+        }
+        else if(message.toLowerCase().contains("schedule") || message.toLowerCase().contains("monday"))
+        {
+            String schedule_answer = new Skill_Schedule().getCourseOnDate("20210222");
+            receiveMessage(schedule_answer);
         }
         else if (message.toLowerCase().contains("weather")) {
             MainScreen.setWeatherDisplay("Maastricht", "NL");

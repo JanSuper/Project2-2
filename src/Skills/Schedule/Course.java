@@ -26,8 +26,14 @@ public class Course {
         }
 
         String[] split_summary = pSummary.split(":");
-
-        summary = split_summary[1];
+        if(split_summary.length > 2)
+        {
+            summary = split_summary[1] + split_summary[2];
+        }
+        else
+        {
+            summary = split_summary[1];
+        }
 
         String[] split_location = pLocation.split(":");
 
