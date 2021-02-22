@@ -63,6 +63,7 @@ public class Course {
         return location;
     }
 
+    //Returns in a string everything about that course
     public String getCourse()
     {
         return getSummary()+System.lineSeparator()+" Date: "+getDate()+System.lineSeparator()+" Begins at: "+getStart_Time()

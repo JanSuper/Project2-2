@@ -171,7 +171,7 @@ public class ChatApp extends VBox {
         {
            String schedule_answer = new Skill_Schedule().getNextCourse();
            receiveMessage(schedule_answer);
-        }else if(message.toLowerCase().contains("next week"))
+        }else if(message.toLowerCase().contains("next week") || message.toLowerCase().contains("this week"))
         {
             ArrayList<String> days = new Skill_Schedule().getThisWeek();
             String schedule_answer = days.get(0);
@@ -181,7 +181,7 @@ public class ChatApp extends VBox {
             }
             receiveMessage(schedule_answer);
         }
-        else if(message.toLowerCase().contains("next month"))
+        else if(message.toLowerCase().contains("next month") || message.toLowerCase().contains("this month"))
         {
             ArrayList<String> this_month = new Skill_Schedule().getThisMonth();
             String schedule_answer = this_month.get(0);

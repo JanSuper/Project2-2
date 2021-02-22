@@ -98,6 +98,7 @@ public class Skill_Schedule {
         return getCourseOnDate(today_date);
     }
 
+    //Every item in the list is a string of the entire day
     public ArrayList<String> getThisWeek()
     {
         ArrayList<String> this_week = new ArrayList<>();
@@ -118,6 +119,7 @@ public class Skill_Schedule {
         return this_week;
     }
 
+    //Every item in the list is a string of the entire day
     public ArrayList<String> getThisMonth()
     {
         ArrayList<String> this_month = new ArrayList<>();

@@ -55,6 +55,7 @@ public class UM_Schedule{
         }
     }
 
+    //List with every course from the file
     public ArrayList<Course> getCourses()
     {
         return courses;
