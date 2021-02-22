@@ -6,7 +6,7 @@ import java.io.*;
 
 public class SkillEditor {
 
-    public void createSkill(String skillName){
+    public boolean createSkill(String skillName){
         FileWriter writer;
         {
             try {
@@ -15,9 +15,11 @@ public class SkillEditor {
                 out.println(skillName);
 
                 writer.close();
+                return true;
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+        return false;
     }
 }

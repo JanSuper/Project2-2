@@ -23,8 +23,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +37,8 @@ public class ChatApp extends VBox {
     private Button sendMessageButton;
     private Image image;
     private Color themeColor = MainScreen.themeColor;
+    private List<String>userMessages;
+    private List<String>assistantMessages;
 
     private SkillEditor skillEditor;
     private MainScreen mainScreen;
@@ -47,6 +48,11 @@ public class ChatApp extends VBox {
         private Background assistantBubbleBackground;
 
         public MessageBubble(String message, int direction) {
+            if(direction==0){
+                assistantMessages.add(message);
+            }else{
+                userMessages.add(message);
+            }
             userBubbleBackground = new Background(new BackgroundFill(Color.GRAY.darker(), new CornerRadii(7,0,7,7,false), Insets.EMPTY));
             assistantBubbleBackground = new Background(new BackgroundFill(themeColor, new CornerRadii(0,7,7,7,false), Insets.EMPTY));
             createLabel(message, direction);
@@ -82,6 +88,8 @@ public class ChatApp extends VBox {
         super(7);
         super.setBackground(new Background(new BackgroundFill(themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
 
+        userMessages = new ArrayList<>();
+        assistantMessages = new ArrayList<>();
         this.mainScreen = mainScreen;
 
         Label userNameLabel = new Label(userName);
@@ -195,32 +203,75 @@ public class ChatApp extends VBox {
             mainScreen.setWeatherDisplay("Maastricht", "NL");
         }
         else if(message.toLowerCase().contains("create skill")){
-            if(message.length() == 12){
-                messages.add(new MessageBubble("Please add the title of the skill after \"create skill\"",0));
+            messages.add(new MessageBubble("Please enter the title of the new skill",0));
+        }
+        else if(assistantMessages.get(assistantMessages.size()-1).equals("Please enter the title of the new skill")||
+                assistantMessages.get(assistantMessages.size()-1).equals("Please remove the space in the new skill")
+        ){
+            if(!message.contains(" ")){
+                if(!skillEditor.createSkill(message)){
+                    messages.add(new MessageBubble("Couldn't create the new skill for some reasons",0));
+                }
             }else{
-                skillEditor.createSkill(getNewSkillName(message));
+                messages.add(new MessageBubble("Please remove the space in the new skill",0));
+            }
+        }
+        else if(message.toLowerCase().contains("change password")){
+            messages.add(new MessageBubble("Please enter a new password",0));
+        }
+        else if(assistantMessages.get(assistantMessages.size()-1).equals("Please enter a new password")||
+                assistantMessages.get(assistantMessages.size()-1).equals("Please remove the space in the password")
+        ){
+            if(!message.contains(" ")){
+                if(!changePassword(message)){
+                    messages.add(new MessageBubble("Couldn't change the password for some reasons",0));
+                }
+            }else{
+                messages.add(new MessageBubble("Please remove the space in the password",0));
             }
         }
     }
-    public String getNewSkillName(String allMessage){
-        List<Character> nameInList = new ArrayList<>();
-        for (int i = 0; i < allMessage.length(); i++){
-            if(allMessage.charAt(i)=='s'&&allMessage.charAt(i+1)=='k'&&allMessage.charAt(i+2)=='i'&&allMessage.charAt(i+3)=='l'&&allMessage.charAt(i+4)=='l'){
-                char nextChar = allMessage.charAt(i+6);
-                int counter = 0;
-                while(nextChar!=' '&&i+6+counter<allMessage.toCharArray().length){
-                    nameInList.add(counter,allMessage.charAt(i+6 + counter));
-                    counter++;
-                    if(i+6+counter>=allMessage.toCharArray().length)break;
-                    nextChar = allMessage.charAt(i+6+counter);
+
+    public boolean changePassword(String message){
+        System.out.println(Data.getPassword());
+        String[][]dataset = Data.getDataSet();
+        for (int i = 0; i < dataset.length; i++) {
+            for (int j = 0; j < dataset[i].length; j++) {
+                System.out.println(dataset[i][j]);
+                if(dataset[i][j].equals(Data.getPassword())&&j == 1){
+                    dataset[i][j] = message;
+                    Data.setPassword(message);
+                    rewriteUsers(dataset);
+                    System.out.println("new password " + message);
+                    return true;
                 }
             }
         }
-        char[] skillName = new char[nameInList.size()];
-        for (int i = 0; i < nameInList.size(); i++) {
-            skillName[i] = nameInList.get(i);
+        return false;
+    }
+
+    public void rewriteUsers(String[][]dataset){
+        FileWriter writer;
+        {
+            try {
+                writer = new FileWriter(new File("src\\DataBase\\users.txt"));
+                PrintWriter out = new PrintWriter(writer);
+                for (int i = 0; i < dataset.length; i++) {
+                    for (int j = 0; j < dataset[i].length; j++) {
+                        if(j==1){
+                            out.print(dataset[i][j]);
+                        }else{
+                            out.print(dataset[i][j] + " ");
+                        }
+                    }
+                    out.println();
+                }
+
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        return String.valueOf(skillName);
     }
 
     public void receiveMessage(String message) {    //adds assistant's response
