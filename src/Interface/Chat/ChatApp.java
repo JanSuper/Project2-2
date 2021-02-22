@@ -171,10 +171,24 @@ public class ChatApp extends VBox {
         {
            String schedule_answer = new Skill_Schedule().getNextCourse();
            receiveMessage(schedule_answer);
-        }
-        else if(message.toLowerCase().contains("schedule") || message.toLowerCase().contains("monday"))
+        }else if(message.toLowerCase().contains("next week"))
         {
-            String schedule_answer = new Skill_Schedule().getCourseOnDate("20210222");
+            ArrayList<String> days = new Skill_Schedule().getThisWeek();
+            String schedule_answer = days.get(0);
+            for(int i = 1; i < days.size(); i++)
+            {
+                schedule_answer = schedule_answer + System.lineSeparator() + System.lineSeparator() + days.get(i);
+            }
+            receiveMessage(schedule_answer);
+        }
+        else if(message.toLowerCase().contains("next month"))
+        {
+            ArrayList<String> this_month = new Skill_Schedule().getThisMonth();
+            String schedule_answer = this_month.get(0);
+            for(int i = 1; i < this_month.size(); i++)
+            {
+                schedule_answer = schedule_answer + System.lineSeparator() + System.lineSeparator() + this_month.get(i);
+            }
             receiveMessage(schedule_answer);
         }
         else if (message.toLowerCase().contains("weather")) {

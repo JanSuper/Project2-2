@@ -65,6 +65,7 @@ public class Course {
 
     public String getCourse()
     {
-        return getSummary()+" Date: "+getDate()+" Begins at: "+getStart_Time()+" Ends at: "+getEnd_Time()+" At place: "+getLocation();
+        return getSummary()+System.lineSeparator()+" Date: "+getDate()+System.lineSeparator()+" Begins at: "+getStart_Time()
+                +System.lineSeparator()+" Ends at: "+getEnd_Time()+System.lineSeparator()+" At place: "+getLocation();
     }
 }

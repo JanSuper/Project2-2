@@ -11,6 +11,9 @@ public class Skill_Schedule {
     private UM_Schedule schedule;
     private String today_date;
     private String today_time;
+    private int weekday;
+    private int month;
+    private int year;
 
     public Skill_Schedule()
     {
@@ -18,6 +21,9 @@ public class Skill_Schedule {
         courses = schedule.getCourses();
 
         LocalDateTime todayDateTime = LocalDateTime.now();
+        weekday = todayDateTime.getDayOfWeek().getValue();
+        month = todayDateTime.getMonthValue();
+        year = todayDateTime.getYear();
         DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
         String todayFormattedDateTime = todayDateTime.format(formatter);
         String[] split_today_DateTime = todayFormattedDateTime.split("T");
@@ -75,7 +81,7 @@ public class Skill_Schedule {
 
         if(courses_thatDay.isEmpty())
         {
-            return "There are no Lecture on that day.";
+            return "There are no Lecture on that day. Date: "+date;
         }
         else
         {
@@ -87,8 +93,64 @@ public class Skill_Schedule {
         }
     }
 
-    public String getCourse()
+    public String getToday()
     {
-        return courses.get(1).getCourse();
+        return getCourseOnDate(today_date);
+    }
+
+    public ArrayList<String> getThisWeek()
+    {
+        ArrayList<String> this_week = new ArrayList<>();
+
+        int up = weekday;
+        int down = weekday-1;
+
+        while(down >= 0)
+        {
+            this_week.add(getCourseOnDate(dateMinusDate(down)));
+            down--;
+        }
+        while(up < 7)
+        {
+            this_week.add(getCourseOnDate(datePlusDays(up)));
+            up++;
+        }
+        return this_week;
+    }
+
+    public ArrayList<String> getThisMonth()
+    {
+        ArrayList<String> this_month = new ArrayList<>();
+        String this_YearMonth = today_date.substring(0,6);
+
+        for(int i = 0; i < courses.size(); i++)
+        {
+            if(courses.get(i).getDate().startsWith(this_YearMonth))
+            {
+                this_month.add(courses.get(i).getCourse());
+            }
+        }
+
+        return this_month;
+    }
+
+    public String dateMinusDate(int minus_days)
+    {
+        LocalDateTime todayDateTime = LocalDateTime.now();
+        LocalDateTime minus_dateTime = todayDateTime.minusDays(minus_days);
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+        String minus_FormattedDateTime = minus_dateTime.format(formatter);
+        String[] split_minus_DateTime = minus_FormattedDateTime.split("T");
+        return split_minus_DateTime[0].replaceAll("-", "");
+    }
+
+    public String datePlusDays(int plus_days)
+    {
+        LocalDateTime todayDateTime = LocalDateTime.now();
+        LocalDateTime plus_dateTime = todayDateTime.plusDays(plus_days);
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+        String minus_FormattedDateTime = plus_dateTime.format(formatter);
+        String[] split_plus_DateTime = minus_FormattedDateTime.split("T");
+        return split_plus_DateTime[0].replaceAll("-", "");
     }
 }
