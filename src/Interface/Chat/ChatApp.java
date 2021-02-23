@@ -1,6 +1,7 @@
 package Interface.Chat;
 
 import DataBase.Data;
+import Interface.Display.MediaPlayerDisplay;
 import Interface.Screens.MainScreen;
 import Skills.Schedule.Skill_Schedule;
 import Skills.SkillEditor;
@@ -10,7 +11,6 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -19,6 +19,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -229,6 +231,17 @@ public class ChatApp extends VBox {
             }else{
                 messages.add(new MessageBubble("Please remove the space in the password",0));
             }
+        }
+        else if(message.toLowerCase().contains("media player")){
+            String uriString = new File("src\\res\\test.mp3").toURI().toString();
+
+            // create media player
+            Media media = new Media (uriString);
+            MediaPlayer mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.setAutoPlay(true);
+            MediaPlayerDisplay mediaControl = new MediaPlayerDisplay(mediaPlayer);
+
+            mainScreen.setMediaPlayerDisplay(mediaControl);
         }
     }
 

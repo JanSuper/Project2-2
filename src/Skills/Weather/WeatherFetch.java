@@ -1,4 +1,4 @@
-package Weather;
+package Skills.Weather;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;

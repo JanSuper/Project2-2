@@ -2,6 +2,7 @@ package Interface.Screens;
 
 import DataBase.Data;
 import Interface.Chat.ChatApp;
+import Interface.Display.MediaPlayerDisplay;
 import Interface.Display.WeatherDisplay;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -140,5 +141,17 @@ public class MainScreen {
         weatherDisplay.setScaleY(0.8);
 
         root.setLeft(weatherDisplay);
+    }
+
+    public void setMediaPlayerDisplay(MediaPlayerDisplay mediaPlayerDisplay){
+        //mediaPlayerDisplay.setSpacing(7);
+        mediaPlayerDisplay.setBackground(Data.createBackGround());
+        mediaPlayerDisplay.setBorder(border);
+        mediaPlayerDisplay.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
+        mediaPlayerDisplay.prefWidthProperty().bind(root.widthProperty().subtract(chat.prefWidthProperty()).subtract(borderWidth*2));
+        mediaPlayerDisplay.setScaleX(0.8);
+        mediaPlayerDisplay.setScaleY(0.8);
+
+        root.setLeft(mediaPlayerDisplay);
     }
 }

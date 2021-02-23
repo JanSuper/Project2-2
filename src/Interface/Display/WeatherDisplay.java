@@ -1,7 +1,7 @@
 package Interface.Display;
 
 import Interface.Screens.MainScreen;
-import Weather.WeatherFetch;
+import Skills.Weather.WeatherFetch;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
