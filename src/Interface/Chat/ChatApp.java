@@ -233,7 +233,7 @@ public class ChatApp extends VBox {
             }
         }
         else if(message.toLowerCase().contains("media player")){
-            String uriString = new File("src\\res\\test.mp3").toURI().toString();
+            String uriString = new File("src\\res\\test.mp4").toURI().toString();
 
             // create media player
             Media media = new Media (uriString);
