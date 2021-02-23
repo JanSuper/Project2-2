@@ -8,12 +8,12 @@ import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.PasswordField;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -44,7 +44,7 @@ public class StartScreen extends Application {
     private boolean login = false;
 
     private StackPane root = new StackPane();
-    private VBox menuBox = new VBox(-5);
+    private VBox menuBox;
 
     private List<Pair<String, Runnable>> menuData = Arrays.asList(
             new Pair<String, Runnable>("Log in", () -> {
@@ -126,10 +126,18 @@ public class StartScreen extends Application {
         Data.setUser(new User(user.getText(), psw.getText()));
         Data.setAssistant(new Assistant());
     }
+    int borderWidth = 10;
 
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        menuBox = new VBox();
+        menuBox.setAlignment(Pos.CENTER);
+        menuBox.setBackground(new Background(new BackgroundFill(new Color(0.2,0.35379, 0.65, 0.5), CornerRadii.EMPTY, Insets.EMPTY)));
+        menuBox.setBorder(new Border(new BorderStroke(Color.DARKGRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(borderWidth))));
+        //menuBox.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*4));
+        //menuBox.prefWidthProperty().bind(root.widthProperty().subtract(borderWidth*4));
+        menuBox.setPrefSize(borderWidth*2,borderWidth*2);
         primaryStage = new Stage();
         root.setId("start-screen-pane");
         Background background = Data.createBackGround();
@@ -192,12 +200,13 @@ public class StartScreen extends Application {
         }
         //the array we use in the actionlistener need to be final, or we can't use it
         dataSet = data;
+        Data.setDataSet(dataSet);
     }
 
     private void addContent() {
         addTitle();
-        double lineX = WIDTH / 2. ;
-        double lineY = HEIGHT / 3. + 250;
+        double lineX = WIDTH / 6 ;
+        double lineY = HEIGHT/6;
         addMenu(lineX + 5, lineY + 5);
 
         startAnimation();

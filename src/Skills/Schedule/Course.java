@@ -26,8 +26,14 @@ public class Course {
         }
 
         String[] split_summary = pSummary.split(":");
-
-        summary = split_summary[1];
+        if(split_summary.length > 2)
+        {
+            summary = split_summary[1] + split_summary[2];
+        }
+        else
+        {
+            summary = split_summary[1];
+        }
 
         String[] split_location = pLocation.split(":");
 
@@ -57,8 +63,10 @@ public class Course {
         return location;
     }
 
+    //Returns in a string everything about that course
     public String getCourse()
     {
-        return getSummary()+" Date: "+getDate()+" Begins at: "+getStart_Time()+" Ends at: "+getEnd_Time()+" At place: "+getLocation();
+        return getSummary()+System.lineSeparator()+" Date: "+getDate()+System.lineSeparator()+" Begins at: "+getStart_Time()
+                +System.lineSeparator()+" Ends at: "+getEnd_Time()+System.lineSeparator()+" At place: "+getLocation();
     }
 }
