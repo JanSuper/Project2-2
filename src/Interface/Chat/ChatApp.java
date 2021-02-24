@@ -20,6 +20,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.media.Media;
+import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -245,6 +246,8 @@ public class ChatApp extends VBox {
                 mainScreen.setMediaPlayerDisplay(mediaControl);
             } catch(NullPointerException e){
                 messages.add(new MessageBubble("No file chosen",0));
+            } catch(MediaException e){
+                messages.add(new MessageBubble("filetype not supported",0));
             }
             // create media player
 
