@@ -163,6 +163,10 @@ public class MediaPlayerDisplay extends BorderPane {
         mediaBar.getChildren().add(volumeSlider);
 
         setBottom(mediaBar);
+
+        mediaView.setFitHeight(getHeight());
+        mediaView.setFitWidth(getWidth());
+        mediaView.setPreserveRatio(true);
     }
 
     protected void updateValues() {
@@ -224,5 +228,9 @@ public class MediaPlayerDisplay extends BorderPane {
                         elapsedSeconds);
             }
         }
+    }
+
+    public MediaView getMediaView() {
+        return mediaView;
     }
 }

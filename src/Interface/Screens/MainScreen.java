@@ -4,9 +4,12 @@ import DataBase.Data;
 import Interface.Chat.ChatApp;
 import Interface.Display.MediaPlayerDisplay;
 import Interface.Display.WeatherDisplay;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.DoubleProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -150,6 +153,11 @@ public class MainScreen {
         mediaPlayerDisplay.prefWidthProperty().bind(root.widthProperty().subtract(chat.prefWidthProperty()).subtract(borderWidth*2));
         mediaPlayerDisplay.setScaleX(0.8);
         mediaPlayerDisplay.setScaleY(0.8);
+
+        mediaPlayerDisplay.getMediaView().setFitHeight(root.getHeight()/(borderWidth*0.1175));
+        mediaPlayerDisplay.getMediaView().setFitWidth(root.getWidth()/(borderWidth*0.1175));
+        mediaPlayerDisplay.getMediaView().setPreserveRatio(true);
+
 
         root.setLeft(mediaPlayerDisplay);
     }
