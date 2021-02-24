@@ -4,10 +4,10 @@ import Interface.Screens.MainScreen;
 import Skills.Weather.WeatherFetch;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
@@ -16,6 +16,9 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -35,13 +38,13 @@ public class WeatherDisplay extends VBox {
     private HBox top;
     private VBox current;
     private VBox dailyVBox;
+    private ScrollPane scrollPane;
 
     private MainScreen mainScreen;
 
-    public WeatherDisplay(String city, String country,MainScreen mainScreen) throws Exception {
+    public WeatherDisplay(String city, String country, MainScreen mainScreen) throws Exception {
         this.cityName = city;
         this.countryName = country;
-
         this.mainScreen = mainScreen;
 
         getData();
@@ -49,7 +52,16 @@ public class WeatherDisplay extends VBox {
         setCurrent();
         setDaily();
 
-        getChildren().setAll(top, current, dailyVBox);
+        VBox currentDaily = new VBox();
+        currentDaily.getChildren().addAll(current, dailyVBox);
+
+        scrollPane = new ScrollPane(currentDaily);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+
+        getChildren().setAll(top, scrollPane);
         setMaxHeight(Double.MAX_VALUE);
         setMinHeight(Double.MIN_VALUE);
     }
@@ -119,9 +131,7 @@ public class WeatherDisplay extends VBox {
         change.setTextFill(Color.LIGHTGRAY);
         change.setBorder(new Border(new BorderStroke(Color.DARKGRAY.darker(), BorderStrokeStyle.SOLID, new CornerRadii(3,3,3,3,false), new BorderWidths(3))));
         change.setAlignment(Pos.CENTER);
-        change.setOnAction(e -> {
-            setWeatherOptions();
-        });    //TODO
+        change.setOnAction(e -> setChangeLocation());
 
         Button exit = new Button("x");
         exit.setCursor(Cursor.HAND);
@@ -242,22 +252,107 @@ public class WeatherDisplay extends VBox {
         }
     }
 
-    private void setWeatherOptions(){
-        current.getChildren().clear();
-        dailyVBox.getChildren().clear();
+    private void setChangeLocation() {
+        VBox vBox = new VBox(20);
+        vBox.setAlignment(Pos.TOP_CENTER);
+        vBox.setPrefSize(300, 285);
+        vBox.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(7))));
+        vBox.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        Stage stage = new Stage();
+        stage.setAlwaysOnTop(true);
+        stage.setOpacity(0.85);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.setScene(new Scene(vBox, 450, 450));
+        stage.show();
+
+        Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
+        stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2 - 280);
+        stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 4 + 110);
+
+        Label changeLocation = new Label("Change Location");
+        changeLocation.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 17));
+        changeLocation.setTextFill(Color.WHITE);
+        changeLocation.setAlignment(Pos.TOP_LEFT);
+        changeLocation.setTranslateX(15);
+
+        Button exit = new Button("x");
+        exit.setCursor(Cursor.HAND);
+        exit.setBackground(Background.EMPTY);
+        exit.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 17));
+        exit.setTextFill(Color.DARKRED);
+        exit.setBorder(null);
+        exit.setAlignment(Pos.TOP_RIGHT);
+        exit.setOnAction(e -> stage.close());
+
+        Region region = new Region();
+        HBox.setHgrow(region, Priority.ALWAYS);
+
+        HBox topBox = new HBox(60);
+        topBox.setAlignment(Pos.CENTER);
+        topBox.setBackground(new Background(new BackgroundFill(MainScreen.themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
+        topBox.getChildren().addAll(changeLocation, region, exit);
+
+        Label cityLabel = new Label("City: ");
+        cityLabel.setPrefWidth(100);
+        cityLabel.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 16));
+        cityLabel.setTextFill(Color.LIGHTSLATEGRAY.darker().darker());
+
         TextField city = new TextField();
-        city.setFont(Font.font("Verdana", FontWeight.BOLD,15));
-        city.setStyle("-fx-text-fill: dimgray;");
+        city.setPromptText("Maastricht");
+        city.setFont(Font.font("Arial", FontWeight.BOLD,15));
+        city.setStyle("-fx-text-fill: dimgray; -fx-prompt-text-fill: lightgray");
         city.setMaxWidth(200);
 
+        HBox cityBox = new HBox(20);
+        cityBox.setAlignment(Pos.CENTER);
+        cityBox.getChildren().addAll(cityLabel, city);
+
+        Label countryLabel = new Label("Country: ");
+        countryLabel.setPrefWidth(100);
+        countryLabel.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 16));
+        countryLabel.setTextFill(Color.LIGHTSLATEGRAY.darker().darker());
+
         TextField country = new TextField();
-        country.setFont(Font.font("Verdana", FontWeight.BOLD,15));
-        country.setStyle("-fx-text-fill: dimgray;");
+        country.setPromptText("NL");
+        country.setFont(Font.font("Arial", FontWeight.BOLD,15));
+        country.setStyle("-fx-text-fill: dimgray; -fx-prompt-text-fill: lightgray");
         country.setMaxWidth(200);
 
-        dailyVBox.getChildren().addAll(city, country);
+        HBox countryBox = new HBox(20);
+        countryBox.setAlignment(Pos.CENTER);
+        countryBox.getChildren().addAll(countryLabel, country);
 
+        VBox textFieldBox = new VBox(25);
+        textFieldBox.setBackground(Background.EMPTY);
+        textFieldBox.setPadding(new Insets(70, 0, 0, 0));
+        textFieldBox.setAlignment(Pos.CENTER);
+        textFieldBox.getChildren().addAll(cityBox, countryBox);
 
+        Label warning = new Label();
+        warning.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
+        warning.setTextFill(Color.RED);
+        warning.setTranslateY(-15);
+        warning.setTranslateY(60);
+
+        Button change = new Button("Change");
+        change.setCursor(Cursor.HAND);
+        change.setBackground(Background.EMPTY);
+        change.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 14));
+        change.setTextFill(Color.DARKGREEN.darker());
+        change.setBorder(new Border(new BorderStroke(Color.LIGHTSLATEGRAY.brighter(), BorderStrokeStyle.SOLID, new CornerRadii(3,3,3,3,false), new BorderWidths(3))));
+        change.setAlignment(Pos.CENTER);
+        change.setTranslateY(70);
+        change.setOnAction(e -> {
+            try {
+                mainScreen.setWeatherDisplay(city.getText(), country.getText());
+                stage.close();
+            } catch (Exception ex) {
+                warning.setText("Please enter a valid location.");
+            }
+        });
+
+        vBox.getChildren().addAll(topBox, textFieldBox, warning, change);
     }
 
     private Image getImage(String status) throws FileNotFoundException {
