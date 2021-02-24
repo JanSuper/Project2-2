@@ -237,15 +237,17 @@ public class ChatApp extends VBox {
             messages.add(new MessageBubble("Please choose a file",0));
             FileChooser fileChooser = new FileChooser();
             File selectedFile = fileChooser.showOpenDialog(mainScreen.stage);
-
-            
+            try {
+                Media media = new Media (selectedFile.toURI().toString());
+                MediaPlayer mediaPlayer = new MediaPlayer(media);
+                mediaPlayer.setAutoPlay(true);
+                MediaPlayerDisplay mediaControl = new MediaPlayerDisplay(mediaPlayer);
+                mainScreen.setMediaPlayerDisplay(mediaControl);
+            } catch(NullPointerException e){
+                messages.add(new MessageBubble("No file chosen",0));
+            }
             // create media player
-            Media media = new Media (selectedFile.toURI().toString());
-            MediaPlayer mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.setAutoPlay(true);
-            MediaPlayerDisplay mediaControl = new MediaPlayerDisplay(mediaPlayer);
 
-            mainScreen.setMediaPlayerDisplay(mediaControl);
         }
     }
 

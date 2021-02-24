@@ -7,6 +7,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
@@ -118,7 +119,9 @@ public class WeatherDisplay extends VBox {
         change.setTextFill(Color.LIGHTGRAY);
         change.setBorder(new Border(new BorderStroke(Color.DARKGRAY.darker(), BorderStrokeStyle.SOLID, new CornerRadii(3,3,3,3,false), new BorderWidths(3))));
         change.setAlignment(Pos.CENTER);
-        change.setOnAction(e -> {});    //TODO
+        change.setOnAction(e -> {
+            setWeatherOptions();
+        });    //TODO
 
         Button exit = new Button("x");
         exit.setCursor(Cursor.HAND);
@@ -237,6 +240,24 @@ public class WeatherDisplay extends VBox {
             daily.setAlignment(Pos.CENTER);
             dailyVBox.getChildren().add(daily);
         }
+    }
+
+    private void setWeatherOptions(){
+        current.getChildren().clear();
+        dailyVBox.getChildren().clear();
+        TextField city = new TextField();
+        city.setFont(Font.font("Verdana", FontWeight.BOLD,15));
+        city.setStyle("-fx-text-fill: dimgray;");
+        city.setMaxWidth(200);
+
+        TextField country = new TextField();
+        country.setFont(Font.font("Verdana", FontWeight.BOLD,15));
+        country.setStyle("-fx-text-fill: dimgray;");
+        country.setMaxWidth(200);
+
+        dailyVBox.getChildren().addAll(city, country);
+
+
     }
 
     private Image getImage(String status) throws FileNotFoundException {
