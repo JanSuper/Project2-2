@@ -72,10 +72,9 @@ public class MainScreen {
         settings.setTextFill(Color.LIGHTGRAY);
         settings.setCursor(Cursor.HAND);
         settings.setOnMouseClicked(event -> {
-            displaySettings(vBox);
+            displaySettings();
         });
 
-        userNameLabel.setTranslateX(10);
         userNameLabel.setFont((Font.font("Cambria", FontWeight.EXTRA_BOLD, 45)));
         userNameLabel.setStyle("-fx-text-fill: white");
 
@@ -113,14 +112,14 @@ public class MainScreen {
         root.setLeft(vBox);
     }
 
-    public void displaySettings(VBox vBox){
+    public void displaySettings(){
         userNameLabel.setText("Settings");
         settings.setText("Volume");
-        help.setText("Help");
+        help.setText("Change Password");
         logOut.setText("Back");
 
         settings.setOnMouseClicked(event -> {
-            displaySettings(vBox);
+            displaySettings();
         });
 
         help.setOnKeyReleased(event -> {});   //TODO

@@ -2,20 +2,20 @@ package Interface.Screens;
 
 import Agents.Assistant;
 import Agents.User;
-import Interface.MenuTools.MenuItem;
-import Interface.MenuTools.MenuTitle;
+import Interface.Screens.StartScreenTools.MenuTitle;
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -126,26 +126,21 @@ public class StartScreen extends Application {
         Data.setUser(new User(user.getText(), psw.getText()));
         Data.setAssistant(new Assistant());
     }
-    int borderWidth = 10;
-
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        menuBox = new VBox();
+        menuBox = new VBox(20);
         menuBox.setAlignment(Pos.CENTER);
         menuBox.setBackground(new Background(new BackgroundFill(new Color(0.2,0.35379, 0.65, 0.5), CornerRadii.EMPTY, Insets.EMPTY)));
-        menuBox.setBorder(new Border(new BorderStroke(Color.DARKGRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(borderWidth))));
-        //menuBox.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*4));
-        //menuBox.prefWidthProperty().bind(root.widthProperty().subtract(borderWidth*4));
-        menuBox.setPrefSize(borderWidth*2,borderWidth*2);
+        menuBox.setBorder(new Border(new BorderStroke(Color.DARKGRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(10))));
+        menuBox.setMaxSize(520, 600);
+
         primaryStage = new Stage();
         root.setId("start-screen-pane");
         Background background = Data.createBackGround();
         root.setBackground(background);
         Scene scene = new Scene(root, 800, 800);
         addContent();
-        scene.setFill(Color.BLACK);
-        primaryStage.setTitle("Blokus Start Screen");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
@@ -154,7 +149,7 @@ public class StartScreen extends Application {
         left = new Text("");
         left.setFont(Font.font("Verdana", FontWeight.BOLD, 10));
         left.setFill(Color.RED);
-        left.setTranslateY(-10);left.setTranslateX(30);
+        left.setTranslateY(-10);
         root.getChildren().add(left);
 
         //create 2 arrays, one to store the data of the user and the other to split the data between password and username
@@ -205,62 +200,52 @@ public class StartScreen extends Application {
 
     private void addContent() {
         addTitle();
-        double lineX = WIDTH / 6 ;
-        double lineY = HEIGHT/6;
-        addMenu(lineX + 5, lineY + 5);
-
+        addMenu();
         startAnimation();
     }
 
-
     private void addTitle() {
         MenuTitle title = new MenuTitle("Project 2-2 Assistant");
-        title.setTranslateX(WIDTH / 2. + title.getTitleWidth()/10);
-        title.setTranslateY(HEIGHT / 3. );
+        title.setTranslateX(WIDTH / 2. -14);
+        title.setTranslateY(HEIGHT / 3. - 25);
         root.getChildren().add(title);
 
         MenuTitle username = new MenuTitle("Username :");
-        username.setTranslateX(WIDTH / 2. - 100);
-        username.setTranslateY(HEIGHT / 3. + 90);
+        username.setTranslateX(WIDTH / 2. - 140);
+        username.setTranslateY(HEIGHT / 3. + 37);
         root.getChildren().add(username);
 
         MenuTitle password = new MenuTitle("Password :");
-        password.setTranslateX(WIDTH / 2. - 100);
-        password.setTranslateY(HEIGHT / 3. + 164);
+        password.setTranslateX(WIDTH / 2. - 140);
+        password.setTranslateY(HEIGHT / 3. + 87);
         root.getChildren().add(password);
     }
 
-    private void addMenu(double x, double y) {
-        menuBox.setTranslateX(x);
-        menuBox.setTranslateY(y);
-        menuData.forEach(data -> {
-            MenuItem item = new MenuItem(data.getKey());
-            item.setOnAction(data.getValue());
-            item.setTranslateX(-300);item.setTranslateY(-50);
-
-            Rectangle clip = new Rectangle(300, 30);
-            clip.translateXProperty().bind(item.translateXProperty().negate());
-
-            item.setClip(clip);
-
-            menuBox.getChildren().addAll(item);
-        });
-
+    private void addMenu() {
         user = new TextField();
         user.setFont(Font.font("Verdana", FontWeight.BOLD,15));
         user.setStyle("-fx-text-fill: dimgray;");
         user.setMaxWidth(200);
-        user.setTranslateX(WIDTH / 2. - 50);
-        user.setTranslateY(-300);
-        menuBox.getChildren().add(user);
 
         psw = new PasswordField();
         psw.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
         psw.setStyle("-fx-text-fill: dimgray;");
         psw.setMaxWidth(200);
-        psw.setTranslateX(WIDTH / 2. - 50);
-        psw.setTranslateY(-250);
-        menuBox.getChildren().add(psw);
+
+        menuBox.getChildren().addAll(user, psw);
+
+        menuData.forEach(data -> {
+            Button button = new Button(data.getKey());
+            button.setBackground(new Background(new BackgroundFill(Color.SLATEGREY.darker(), new CornerRadii(3,3,3,3,false), Insets.EMPTY)));
+            button.setFont((Font.font("Cambria", FontWeight.EXTRA_BOLD, 16)));
+            button.setPrefSize(200, 30);
+            button.setTextFill(Color.LIGHTGRAY);
+            button.setCursor(Cursor.HAND);
+            button.setTranslateY(30);
+            button.setOnMouseClicked(e -> data.getValue().run());
+
+            menuBox.getChildren().add(button);
+        });
 
         root.getChildren().add(menuBox);
     }
@@ -281,5 +266,4 @@ public class StartScreen extends Application {
         });
         st.play();
     }
-
 }

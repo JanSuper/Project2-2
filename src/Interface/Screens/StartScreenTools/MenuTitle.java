@@ -1,9 +1,8 @@
-package Interface.MenuTools;
+package Interface.Screens.StartScreenTools;
 
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 public class MenuTitle extends Pane {
