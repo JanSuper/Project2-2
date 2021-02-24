@@ -192,7 +192,7 @@ public class WeatherDisplay extends VBox {
         dailyVBox = new VBox(25);
         dailyVBox.setBackground(Background.EMPTY);
         dailyVBox.setAlignment(Pos.BOTTOM_CENTER);
-        dailyVBox.setPadding(new Insets(60));
+        dailyVBox.setPadding(new Insets(60, 5, 10, 70));
 
         ArrayList<Map<String, String>> dailyForecast = (ArrayList<Map<String, String>>) weatherData.get("daily");
         for(int i = -1; i < dailyForecast.size(); i++) {
@@ -228,17 +228,15 @@ public class WeatherDisplay extends VBox {
                 low.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 18));
                 low.setTextFill(Color.LIGHTSLATEGRAY.darker());
             }
-            Region region1 = new Region();
-            HBox.setHgrow(region1, Priority.ALWAYS);
-            Region region2 = new Region();
-            HBox.setHgrow(region2, Priority.ALWAYS);
-            Region region3 = new Region();
-            HBox.setHgrow(region3, Priority.ALWAYS);
+            day.prefWidthProperty().bind(dailyVBox.widthProperty().divide(3));
+            high.prefWidthProperty().bind(dailyVBox.widthProperty().divide(9/2));
+            low.prefWidthProperty().bind(dailyVBox.widthProperty().divide(9/2));
+            summary.prefWidthProperty().bind(dailyVBox.widthProperty().divide(9/2));
 
-            daily.getChildren().addAll(day, region1, high, region2, low, region3, summary);
+            daily.getChildren().addAll(day, high, low, summary);
+            daily.setAlignment(Pos.CENTER);
             dailyVBox.getChildren().add(daily);
         }
-        dailyVBox.setTranslateY(-50);
     }
 
     private Image getImage(String status) throws FileNotFoundException {
@@ -264,8 +262,8 @@ public class WeatherDisplay extends VBox {
                 img = new Image(new FileInputStream("src/res/weatherIcons/thunder.png"),imgDim,imgDim,false,true);
                 break;
             case "Rain": case "Rain Showers": case "Heavy Rain": case "Light Rain": case "Drizzle": case "Heavy Drizzle": case "Light Drizzle":
-                case "Heavy Drizzle/Rain": case "Freezing Drizzle/Freezing Rain": case "Heavy Freezing Drizzle/Freezing Rain":
-                case "Light Freezing Drizzle/Freezing Rain": case "Heavy Freezing Rain": case "Light Freezing Rain":
+            case "Heavy Drizzle/Rain": case "Freezing Drizzle/Freezing Rain": case "Heavy Freezing Drizzle/Freezing Rain":
+            case "Light Freezing Drizzle/Freezing Rain": case "Heavy Freezing Rain": case "Light Freezing Rain":
                 img = new Image(new FileInputStream("src/res/weatherIcons/rain.png"),imgDim,imgDim,false,true);
                 break;
             case "Snow And Rain Showers": case "Heavy Rain And Snow": case "Light Rain And Snow":
