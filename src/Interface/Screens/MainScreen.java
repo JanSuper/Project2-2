@@ -146,7 +146,6 @@ public class MainScreen {
     }
 
     public void setMediaPlayerDisplay(MediaPlayerDisplay mediaPlayerDisplay){
-        //mediaPlayerDisplay.setSpacing(7);
         mediaPlayerDisplay.setBackground(Data.createBackGround());
         mediaPlayerDisplay.setBorder(border);
         mediaPlayerDisplay.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
@@ -154,8 +153,9 @@ public class MainScreen {
         mediaPlayerDisplay.setScaleX(0.8);
         mediaPlayerDisplay.setScaleY(0.8);
 
-        mediaPlayerDisplay.getMediaView().setFitHeight(root.getHeight()/(borderWidth*0.1175));
-        mediaPlayerDisplay.getMediaView().setFitWidth(root.getWidth()/(borderWidth*0.1175));
+
+        //mediaPlayerDisplay.getMediaView().setFitHeight(root.getHeight()/(borderWidth*0.1175));
+        //mediaPlayerDisplay.getMediaView().setFitWidth(root.getWidth()/(borderWidth*0.1175));
         mediaPlayerDisplay.getMediaView().setPreserveRatio(true);
 
 

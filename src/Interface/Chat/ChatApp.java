@@ -24,6 +24,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.FileChooser;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -233,10 +234,13 @@ public class ChatApp extends VBox {
             }
         }
         else if(message.toLowerCase().contains("media player")){
-            String uriString = new File("src\\res\\test.mp4").toURI().toString();
+            messages.add(new MessageBubble("Please choose a file",0));
+            FileChooser fileChooser = new FileChooser();
+            File selectedFile = fileChooser.showOpenDialog(mainScreen.stage);
 
+            
             // create media player
-            Media media = new Media (uriString);
+            Media media = new Media (selectedFile.toURI().toString());
             MediaPlayer mediaPlayer = new MediaPlayer(media);
             mediaPlayer.setAutoPlay(true);
             MediaPlayerDisplay mediaControl = new MediaPlayerDisplay(mediaPlayer);
