@@ -46,6 +46,41 @@ public class WeatherFetch {
         return "";
     }
 
+    public static String getHourlyWeather(String city, String country) throws Exception {
+        URIBuilder builder = new URIBuilder("https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/weatherdata/forecast");
+        builder.setParameter("forecastDays", "1")
+                .setParameter("aggregateHours", "1")
+                .setParameter("contentType", "csv")
+                .setParameter("unitGroup", "metric")
+                .setParameter("locationMode", "single")
+                .setParameter("iconSet", "icons1")
+                .setParameter("key", "1PYNQ6AWUDJE9AFERDCHJHSXK")
+                .setParameter("locations", city+","+country);
+
+        HttpGet get = new HttpGet(builder.build());
+
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+
+        CloseableHttpResponse response = httpclient.execute(get);
+
+        try {
+            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                //System.out.printf("Bad response status code:%d%n", response.getStatusLine().getStatusCode());
+                return "Bad response status code:%d%n" + response.getStatusLine().getStatusCode();
+            }
+
+            HttpEntity entity = response.getEntity();
+            if (entity != null) {
+                String rawResult=EntityUtils.toString(entity, Charset.forName("utf-8"));
+                return rawResult;
+            }
+
+        } finally {
+            response.close();
+        }
+        return "";
+    }
+
     public static void retrieveWeatherForecastAsCsv() throws Exception {
         //set up the end point
 

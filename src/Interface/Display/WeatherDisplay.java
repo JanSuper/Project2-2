@@ -7,7 +7,10 @@ import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
@@ -68,6 +71,7 @@ public class WeatherDisplay extends VBox {
 
     private void getData() throws Exception {
         String rawWeatherData = WeatherFetch.getWeather(cityName, countryName);
+        //System.out.println(rawWeatherData);   //For testing
         List<String[]> separateLines = new ArrayList<>();
         rawWeatherData.lines().forEach(s -> separateLines.add(s.split(",")));
 
@@ -75,17 +79,30 @@ public class WeatherDisplay extends VBox {
         ArrayList<String> dayL = new ArrayList<>();
         ArrayList<String> daySummary = new ArrayList<>();
         for(int i = 1; i <= 8; i++) {
-            dayH.add(separateLines.get(i)[12]);
-            dayL.add(separateLines.get(i)[11]);
+            int lineLength = separateLines.get(i).length;
 
-            int count = separateLines.get(i).length;
-            if(count==27) {
-                String sum = separateLines.get(i)[count - 2] + "," + separateLines.get(i)[count - 1];
-                daySummary.add(sum.replace("\"", ""));
+            //getting daily min and max temperature
+            int cnt = 0;
+            for(int j = 0; j < lineLength; j++) {
+                if(separateLines.get(i)[j].equals(countryName+"\"")) {
+                    if(cnt == 1) {
+                        dayH.add(separateLines.get(i)[j+3]);
+                        dayL.add(separateLines.get(i)[j+2]);
+                    }
+                    cnt++;
+                }
+            }
+
+            //getting daily summaries
+            String summary = separateLines.get(i)[lineLength-1];
+            int count = summary.length() - summary.replace("\"", "").length();    //count for " character
+            if(count == 1) {
+                summary = separateLines.get(i)[lineLength-2].replace("\"", "") + "," + separateLines.get(i)[lineLength-1].replace("\"", "");
             }
             else {
-                daySummary.add(separateLines.get(i)[count - 1].replace("\"", ""));
+                summary = summary.replace("\"", "");
             }
+            daySummary.add(summary);
         }
 
         weatherData = new HashMap<>();
@@ -106,12 +123,43 @@ public class WeatherDisplay extends VBox {
         }
         weatherData.put("daily", dailyData);
 
-
-        currentData.put("icon", daySummary.get(0));
-        currentData.put("temp", 15+"  °C"); //TODO
         currentData.put("high", dayH.get(0));
         currentData.put("low", dayL.get(0));
+        getHourlyData(currentData);
         weatherData.put("current", currentData);
+    }
+
+    private void getHourlyData(Map<String, String> currentData) throws Exception {
+        String rawHourlyWeatherData = WeatherFetch.getHourlyWeather(cityName, countryName);
+        //System.out.println(rawHourlyWeatherData);   //For testing
+        List<String[]> separateLines = new ArrayList<>();
+        rawHourlyWeatherData.lines().forEach(s -> separateLines.add(s.split(",")));
+
+        //getting current temperature (hourly)
+        String currentTemp = null;
+        int cnt = 0;
+        for(int j = 0; j < separateLines.get(1).length; j++) {
+            if(separateLines.get(1)[j].equals(countryName+"\"")) {
+                if(cnt == 1) {
+                    currentTemp = separateLines.get(1)[j+2];
+                }
+                cnt++;
+            }
+        }
+
+        //getting current summary (hourly)
+        String currentSummary = separateLines.get(1)[separateLines.get(1).length-1];
+        int count = currentSummary.length() - currentSummary.replace("\"", "").length();    //count for " character
+        if(count == 1) {
+            currentSummary = separateLines.get(1)[separateLines.get(1).length-2].replace("\"", "") + "," + separateLines.get(1)[separateLines.get(1).length-1].replace("\"", "");
+        }
+        else {
+            currentSummary = currentSummary.replace("\"", "");
+        }
+
+        currentData.put("icon", currentSummary); //TODO
+        currentData.put("currentSummary", currentSummary);
+        currentData.put("temp", currentTemp + "  °C");
     }
 
     private void setTop() {
@@ -166,7 +214,7 @@ public class WeatherDisplay extends VBox {
         currentConditionImage.setFill(pattern);
         currentConditionImage.setEffect(new DropShadow(20, Color.BLACK));
 
-        Label currentConditionLabel = new Label(currentWeather.get("icon"));
+        Label currentConditionLabel = new Label(currentWeather.get("currentSummary"));
         currentConditionLabel.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 18));
         currentConditionLabel.setTextFill(Color.DARKRED.darker());
 
