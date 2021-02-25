@@ -1,0 +1,25 @@
+// U stands for User input (Don't use punctuation)
+// B stands for Bot output (Punctuation allowed, more than one possible answer allowed)
+// U is the question/request from the User, B is/are the answers from our Bot
+// If U ask for specific task (like "weather") then use a number as code to launch the method (doesn't work yet !!!)
+
+U Hi
+B Hi!
+B Hey, how are you?
+B Hey!
+U Help
+B You can check the weather by typing "Weather" or your UM schedule by typing "Next Lecture", "This week Lecture".
+B Ask me what I can do
+U What can you do
+B I can show you the weather (type "Weather") or your UM schedule (type "this week lecture").
+U How are you
+B Fine, and you?
+B Good and you?
+U How is the weather
+B 1
+U How is the weather in
+B 2
+U What is my next Lecture
+B 10
+U What are my Lectures next week
+B 11

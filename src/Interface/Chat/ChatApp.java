@@ -1,5 +1,6 @@
 package Interface.Chat;
 
+import Agents.Assistant;
 import DataBase.Data;
 import Interface.Display.MediaPlayerDisplay;
 import Interface.Screens.MainScreen;
@@ -183,15 +184,10 @@ public class ChatApp extends VBox {
         {
            String schedule_answer = new Skill_Schedule().getNextCourse();
            receiveMessage(schedule_answer);
-        }else if(message.toLowerCase().contains("next week") || message.toLowerCase().contains("this week"))
+        }else if(message.toLowerCase().contains("help"))
         {
-            ArrayList<String> days = new Skill_Schedule().getThisWeek();
-            String schedule_answer = days.get(0);
-            for(int i = 1; i < days.size(); i++)
-            {
-                schedule_answer = schedule_answer + System.lineSeparator() + System.lineSeparator() + days.get(i);
-            }
-            receiveMessage(schedule_answer);
+            String assistant_answer = new Assistant().getResponse(message);
+            receiveMessage(assistant_answer);
         }
         else if(message.toLowerCase().contains("next month") || message.toLowerCase().contains("this month"))
         {
