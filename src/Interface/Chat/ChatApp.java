@@ -29,6 +29,10 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
 
 import java.io.*;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -230,22 +234,48 @@ public class ChatApp extends VBox {
                 messages.add(new MessageBubble("Please remove the space in the password",0));
             }
         }
-        else if(message.toLowerCase().contains("media player")){
-            messages.add(new MessageBubble("Please choose a file",0));
-            FileChooser fileChooser = new FileChooser();
-            File selectedFile = fileChooser.showOpenDialog(mainScreen.stage);
-            try {
-                Media media = new Media (selectedFile.toURI().toString());
+        else if(message.toLowerCase().contains("media player")) {
+            messages.add(new MessageBubble("Do you want a \"local file\" or a \"url\" ? ", 0));
+        }
+        else if(assistantMessages.get(assistantMessages.size()-1).equals("Do you want a \"local file\" or a \"url\" ? ")){
+            if(message.equals("local file")){
+                messages.add(new MessageBubble("Please choose a file",0));
+                FileChooser fileChooser = new FileChooser();
+                File selectedFile = fileChooser.showOpenDialog(mainScreen.stage);
+                try {
+                    Media media = new Media (selectedFile.toURI().toString());
+                    MediaPlayer mediaPlayer = new MediaPlayer(media);
+                    mediaPlayer.setAutoPlay(true);
+                    MediaPlayerDisplay mediaControl = new MediaPlayerDisplay(mediaPlayer);
+                    mainScreen.setMediaPlayerDisplay(mediaControl);
+                } catch(NullPointerException e){
+                    messages.add(new MessageBubble("No file chosen",0));
+                } catch(MediaException e){
+                    messages.add(new MessageBubble("filetype not supported",0));
+                }
+            }else if(message.equals("url")){
+                // create media player
+
+                URL url = new URL("https://gaana.com/song/sun-moon");
+
+                Path mp3 = Files.createTempFile("now-playing", ".mp3");
+
+                try (InputStream stream = url.openStream()) {
+                    Files.copy(stream, mp3, StandardCopyOption.REPLACE_EXISTING);
+                }
+
+                Media media = new Media(mp3.toFile().toURI().toString());
+
+
+                // create media player
+                //Media media = new Media (selectedFile.toURI().toString());
                 MediaPlayer mediaPlayer = new MediaPlayer(media);
                 mediaPlayer.setAutoPlay(true);
                 MediaPlayerDisplay mediaControl = new MediaPlayerDisplay(mediaPlayer);
                 mainScreen.setMediaPlayerDisplay(mediaControl);
-            } catch(NullPointerException e){
-                messages.add(new MessageBubble("No file chosen",0));
-            } catch(MediaException e){
-                messages.add(new MessageBubble("filetype not supported",0));
             }
-            // create media player
+
+
 
         }
     }
