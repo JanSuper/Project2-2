@@ -2,6 +2,7 @@ package Interface.Screens;
 
 import DataBase.Data;
 import Interface.Chat.ChatApp;
+import Interface.Display.ClockAppDisplay;
 import Interface.Display.MediaPlayerDisplay;
 import Interface.Display.WeatherDisplay;
 import javafx.geometry.Insets;
@@ -57,6 +58,7 @@ public class MainScreen {
 
         root.setRight(chat);
         setOptionsMenu();
+        //setClockAppDisplay(); //For testing
     }
 
     public void setOptionsMenu() {
@@ -66,30 +68,16 @@ public class MainScreen {
         logOut = new Button("Log out");
         vBox = new VBox(40);
 
-        settings.setBackground(new Background(new BackgroundFill(Color.SLATEGREY.darker(), new CornerRadii(8,8,8,8,false), Insets.EMPTY)));
-        settings.setFont((Font.font("Cambria", FontWeight.EXTRA_BOLD, 20)));
-        settings.setPrefWidth(250);
-        settings.setTextFill(Color.LIGHTGRAY);
-        settings.setCursor(Cursor.HAND);
-        settings.setOnMouseClicked(event -> {
-            displaySettings();
-        });
-
         userNameLabel.setFont((Font.font("Cambria", FontWeight.EXTRA_BOLD, 45)));
         userNameLabel.setStyle("-fx-text-fill: white");
 
-        help.setBackground(new Background(new BackgroundFill(Color.SLATEGREY.darker(), new CornerRadii(8,8,8,8,false), Insets.EMPTY)));
-        help.setFont((Font.font("Cambria", FontWeight.EXTRA_BOLD, 20)));
-        help.setPrefWidth(250);
-        help.setTextFill(Color.LIGHTGRAY);
-        help.setOnKeyReleased(event -> {});   //TODO
-        help.setCursor(Cursor.HAND);
+        designOptionButton(settings);
+        settings.setOnMouseClicked(event -> displaySettings());
 
-        logOut.setBackground(new Background(new BackgroundFill(Color.SLATEGREY.darker(), new CornerRadii(8,8,8,8,false), Insets.EMPTY)));
-        logOut.setFont((Font.font("Cambria", FontWeight.EXTRA_BOLD, 20)));
-        logOut.setPrefWidth(250);
-        logOut.setTextFill(Color.LIGHTGRAY);
-        logOut.setCursor(Cursor.HAND);
+        designOptionButton(help);
+        help.setOnKeyReleased(event -> {});   //TODO
+
+        designOptionButton(logOut);
         logOut.setOnMouseClicked(event -> {
             stage.close();
             StartScreen startScreen= new StartScreen();
@@ -112,21 +100,25 @@ public class MainScreen {
         root.setLeft(vBox);
     }
 
+    private void designOptionButton(Button button) {
+        button.setBackground(new Background(new BackgroundFill(Color.SLATEGREY.darker(), new CornerRadii(8,8,8,8,false), Insets.EMPTY)));
+        button.setFont((Font.font("Cambria", FontWeight.EXTRA_BOLD, 20)));
+        button.setPrefWidth(250);
+        button.setTextFill(Color.LIGHTGRAY);
+        button.setCursor(Cursor.HAND);
+    }
+
     public void displaySettings(){
         userNameLabel.setText("Settings");
         settings.setText("Volume");
         help.setText("Change Password");
         logOut.setText("Back");
 
-        settings.setOnMouseClicked(event -> {
-            displaySettings();
-        });
+        settings.setOnMouseClicked(event -> {}); //TODO
 
         help.setOnKeyReleased(event -> {});   //TODO
 
-        logOut.setOnMouseClicked(event -> {
-            setOptionsMenu();
-        });
+        logOut.setOnMouseClicked(event -> setOptionsMenu());
     }
 
     public void setWeatherDisplay(String city, String country) throws Exception {
@@ -140,6 +132,17 @@ public class MainScreen {
         weatherDisplay.setScaleY(0.8);
 
         root.setLeft(weatherDisplay);
+    }
+
+    public void setClockAppDisplay() {
+        ClockAppDisplay clockAppDisplay = new ClockAppDisplay(this);
+        clockAppDisplay.setBorder(border);
+        clockAppDisplay.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
+        clockAppDisplay.prefWidthProperty().bind(root.widthProperty().subtract(chat.prefWidthProperty()).subtract(borderWidth*2));
+        clockAppDisplay.setScaleX(0.8);
+        clockAppDisplay.setScaleY(0.8);
+
+        root.setLeft(clockAppDisplay);
     }
 
     public void setMediaPlayerDisplay(MediaPlayerDisplay mediaPlayerDisplay){
