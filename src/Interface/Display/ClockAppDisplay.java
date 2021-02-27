@@ -4,22 +4,29 @@ import Interface.Screens.MainScreen;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 
+import javax.swing.event.ChangeListener;
+import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class ClockAppDisplay extends VBox {
     private HBox tabs;
@@ -141,8 +148,75 @@ public class ClockAppDisplay extends VBox {
         clockVBox.getChildren().addAll(digitalClock, dateLabel);
         getChildren().add(clockVBox);
     }
+    private int getTime(String time,int nbr){
+        char x = 'e'; char y = 'e';
+        int counter = 0;
+        for (int i = 0;i<time.length();i++){
+            if(time.charAt(i)==':'){
+                x = time.charAt(i-2-counter+nbr);
+                y = time.charAt(i-1-counter+nbr);
+                counter++;
+            }
+        }
+        x = (char)(x + y);
+        return x;
+    }
 
-    private void setTimerView() {   //TODO
+    private void setTimerView() {
+        VBox timerVBox = new VBox(40);
+        timerVBox.setAlignment(Pos.CENTER);
+        timerVBox.setPadding(new Insets(80,0,80,0));
+
+        TextField timerTime = new TextField("00:00:00");
+        timerTime.setPrefWidth(10);
+        timerTime.setFont(Font.font("Tahoma", FontWeight.BOLD, 58));
+        //timerTime.setTextFormatter(MainScreen.themeColor.darker().darker());
+        timerTime.setAlignment(Pos.CENTER);
+        minutes = getTime(timerTime.getText(),0);
+        secs = getTime(timerTime.getText(),1);
+        millis = getTime(timerTime.getText(),2);
+        bindStopwatchLabelToTime(timerTime);
+
+        Button startPause = new Button("Start");
+        Button stop = new Button("Stop");
+        stop.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY.brighter(), new CornerRadii(90,true), Insets.EMPTY)));
+        designStopwatchButton(stop);
+        stop.setOnAction(e-> {
+            minutes = 0;
+            secs = 0;
+            millis = 0;
+            stopwatchTimeline.pause();
+            startPause.setText("Start");
+            startPause.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(90,true), Insets.EMPTY)));
+            timerTime.setText("00:00:000");
+        });
+
+        startPause.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(90,true), Insets.EMPTY)));
+        designStopwatchButton(startPause);
+        startPause.setOnAction(e-> {
+            if(startPause.getText().equals("Start")) {
+                minutes = getTime(timerTime.getText(),0);
+                secs = getTime(timerTime.getText(),1);
+                millis = getTime(timerTime.getText(),2);
+                bindStopwatchLabelToTime(timerTime);
+                stopwatchTimeline.play();
+
+                startPause.setText("Pause");
+                startPause.setBackground(new Background(new BackgroundFill(Color.OLIVE, new CornerRadii(90,true), Insets.EMPTY)));
+            }
+            else if(startPause.getText().equals("Pause")) {
+                stopwatchTimeline.pause();
+                startPause.setText("Start");
+                startPause.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(90,true), Insets.EMPTY)));
+            }
+        });
+
+        HBox buttons = new HBox(60);
+        buttons.setAlignment(Pos.CENTER);
+        buttons.getChildren().addAll(stop, startPause);
+
+        timerVBox.getChildren().addAll(timerTime, buttons);
+        getChildren().add(timerVBox);
     }
 
     private void setStopwatchView() {
@@ -264,6 +338,25 @@ public class ClockAppDisplay extends VBox {
         stopwatchTimeline.setCycleCount(Timeline.INDEFINITE);
         stopwatchTimeline.setAutoReverse(false);
     }
+
+    private void bindStopwatchLabelToTime(TextField timer) {
+        stopwatchTimeline = new Timeline(new KeyFrame(Duration.millis(1), event -> {
+            if(millis == 1000) {
+                secs--;
+                millis = 0;
+            }
+            if(secs == 60) {
+                minutes--;
+                secs = 0;
+            }
+            timer.setText((((minutes /10) == 0) ? "0" : "") + minutes + ":"
+                    + (((secs/10) == 0) ? "0" : "") + secs + ":"
+                    + (((millis/10) == 0) ? "00" : (((millis/100) == 0) ? "0" : "")) + millis++);
+        }));
+        stopwatchTimeline.setCycleCount(Timeline.INDEFINITE);
+        stopwatchTimeline.setAutoReverse(false);
+    }
+
 
     //returns padded string from specified width
     public static String pad(int fieldWidth, char padChar, String s) {

@@ -238,7 +238,7 @@ public class ChatApp extends VBox {
             messages.add(new MessageBubble("Do you want a \"local file\" or a \"url\" ? ", 0));
         }
         else if(assistantMessages.get(assistantMessages.size()-1).equals("Do you want a \"local file\" or a \"url\" ? ")){
-            if(message.equals("local file")){
+            if(message.toLowerCase().contains("local file")){
                 messages.add(new MessageBubble("Please choose a file",0));
                 FileChooser fileChooser = new FileChooser();
                 File selectedFile = fileChooser.showOpenDialog(mainScreen.stage);
@@ -253,7 +253,7 @@ public class ChatApp extends VBox {
                 } catch(MediaException e){
                     messages.add(new MessageBubble("filetype not supported",0));
                 }
-            }else if(message.equals("url")){
+            }else if(message.toLowerCase().contains("url")){
                 // create media player
 
                 URL url = new URL("https://gaana.com/song/sun-moon");
@@ -274,9 +274,9 @@ public class ChatApp extends VBox {
                 MediaPlayerDisplay mediaControl = new MediaPlayerDisplay(mediaPlayer);
                 mainScreen.setMediaPlayerDisplay(mediaControl);
             }
-
-
-
+        }
+        else if(message.toLowerCase().contains("clock")){
+            mainScreen.setClockAppDisplay();
         }
     }
 
