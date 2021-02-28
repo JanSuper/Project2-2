@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 
 public class MainScreen {
     public ChatApp chat;
+    private ClockAppDisplay clockAppDisplay;
     public BorderPane root;
     public int borderWidth;
     public Border border;
@@ -35,6 +36,7 @@ public class MainScreen {
         borderWidth = 10;
         border = new Border(new BorderStroke(Color.DARKGRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(borderWidth)));
         chat = new ChatApp(Data.getUsername(),this);
+        clockAppDisplay = new ClockAppDisplay(this);
 
         createContent();
         start(new Stage());
@@ -135,7 +137,6 @@ public class MainScreen {
     }
 
     public void setClockAppDisplay() {
-        ClockAppDisplay clockAppDisplay = new ClockAppDisplay(this);
         clockAppDisplay.setBorder(border);
         clockAppDisplay.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
         clockAppDisplay.prefWidthProperty().bind(root.widthProperty().subtract(chat.prefWidthProperty()).subtract(borderWidth*2));
