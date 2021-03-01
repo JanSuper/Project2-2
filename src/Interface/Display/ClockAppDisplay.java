@@ -1,5 +1,6 @@
 package Interface.Display;
 
+import Interface.Display.ClockTools.AlarmVBox;
 import Interface.Display.ClockTools.ClockVBox;
 import Interface.Display.ClockTools.StopwatchVBox;
 import Interface.Display.ClockTools.TimerVBox;
@@ -7,7 +8,9 @@ import Interface.Screens.MainScreen;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -105,7 +108,12 @@ public class ClockAppDisplay extends VBox {
         prevTab.setBorder(null);
     }
 
-    private void setAlarmView() {   //TODO
+    private void setAlarmView() {
+        /*
+        AlarmVBox alarmVBox = new AlarmVBox();
+        getChildren().add(alarmVBox);
+        
+         */
     }
 
     private void setClockView() {
