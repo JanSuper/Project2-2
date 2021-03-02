@@ -32,7 +32,7 @@ public class MediaPlayerDisplay extends BorderPane {
         this.mp = mp;
         setStyle("-fx-background-color: #bfc2c7;");
         mediaView = new MediaView(mp);
-        Pane mvPane = new Pane() {                };
+        Pane mvPane = new Pane();
         mvPane.getChildren().add(mediaView);
         mvPane.setStyle("-fx-background-color: black;");
         setCenter(mvPane);

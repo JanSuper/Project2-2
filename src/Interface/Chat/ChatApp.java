@@ -26,6 +26,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 
 import java.io.*;
@@ -254,26 +255,18 @@ public class ChatApp extends VBox {
                     messages.add(new MessageBubble("filetype not supported",0));
                 }
             }else if(message.toLowerCase().contains("url")){
-                // create media player
-
-                URL url = new URL("https://gaana.com/song/sun-moon");
-
-                Path mp3 = Files.createTempFile("now-playing", ".mp3");
-
-                try (InputStream stream = url.openStream()) {
-                    Files.copy(stream, mp3, StandardCopyOption.REPLACE_EXISTING);
-                }
-
-                Media media = new Media(mp3.toFile().toURI().toString());
-
-
-                // create media player
-                //Media media = new Media (selectedFile.toURI().toString());
-                MediaPlayer mediaPlayer = new MediaPlayer(media);
-                mediaPlayer.setAutoPlay(true);
-                MediaPlayerDisplay mediaControl = new MediaPlayerDisplay(mediaPlayer);
-                mainScreen.setMediaPlayerDisplay(mediaControl);
+                messages.add(new MessageBubble("Please write the url of the video",0));
             }
+        }
+        else if(assistantMessages.get(assistantMessages.size()-1).equals("Please write the url of the video")){
+            WebView webview = new WebView();
+            webview.getEngine().load(
+                    message
+            );
+
+            Pane pane = new Pane();
+            pane.getChildren().add(webview);
+            mainScreen.setMediaPlayerDisplay(pane);
         }
         else if(message.toLowerCase().contains("clock")){
             mainScreen.setClockAppDisplay();
