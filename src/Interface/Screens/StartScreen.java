@@ -124,7 +124,7 @@ public class StartScreen extends Application {
         Data.setPassword(psw.getText());
 
         Data.setUser(new User(user.getText(), psw.getText()));
-        Data.setAssistant(new Assistant());
+        //Data.setAssistant(new Assistant());
     }
 
     @Override

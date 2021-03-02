@@ -49,6 +49,7 @@ public class ChatApp extends VBox {
     private Color themeColor = MainScreen.themeColor;
     private List<String>userMessages;
     private List<String>assistantMessages;
+    private Assistant assistant_answer;
 
     private SkillEditor skillEditor;
     private MainScreen mainScreen;
@@ -101,6 +102,8 @@ public class ChatApp extends VBox {
         userMessages = new ArrayList<>();
         assistantMessages = new ArrayList<>();
         this.mainScreen = mainScreen;
+
+        assistant_answer = new Assistant(this.mainScreen, userName);
 
         Label userNameLabel = new Label(userName);
         userNameLabel.setAlignment(Pos.CENTER);
@@ -187,12 +190,11 @@ public class ChatApp extends VBox {
 
         if(message.toLowerCase().contains("next lecture"))
         {
-           String schedule_answer = new Skill_Schedule().getNextCourse();
-           receiveMessage(schedule_answer);
+           receiveMessage(assistant_answer.getResponse(message));
         }else if(message.toLowerCase().contains("help"))
         {
-            String assistant_answer = new Assistant().getResponse(message);
-            receiveMessage(assistant_answer);
+            String answer = assistant_answer.getResponse(message);
+            receiveMessage(answer);
         }
         else if(message.toLowerCase().contains("next month") || message.toLowerCase().contains("this month"))
         {
@@ -205,7 +207,7 @@ public class ChatApp extends VBox {
             receiveMessage(schedule_answer);
         }
         else if (message.toLowerCase().contains("weather")) {
-            mainScreen.setWeatherDisplay("Maastricht", "NL");
+            receiveMessage(assistant_answer.getResponse(message));
         }
         else if(message.toLowerCase().contains("create skill")){
             messages.add(new MessageBubble("Please enter the title of the new skill",0));
@@ -268,8 +270,8 @@ public class ChatApp extends VBox {
             pane.getChildren().add(webview);
             mainScreen.setMediaPlayerDisplay(pane);
         }
-        else if(message.toLowerCase().contains("clock")){
-            mainScreen.setClockAppDisplay();
+        else if(message.toLowerCase().contains("clock") || message.toLowerCase().contains("time")){
+            receiveMessage(assistant_answer.getResponse(message));
         }
     }
 
