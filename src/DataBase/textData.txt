@@ -40,3 +40,10 @@ U Get my alarm
 U Show me the clock
 U Start a stopwatch
 B 20
+
+U Create skill
+U New skill
+B 30
+
+//NEW SKILL
+

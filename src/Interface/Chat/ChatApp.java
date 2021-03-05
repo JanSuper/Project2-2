@@ -103,7 +103,7 @@ public class ChatApp extends VBox {
         assistantMessages = new ArrayList<>();
         this.mainScreen = mainScreen;
 
-        assistant_answer = new Assistant(this.mainScreen, userName);
+        assistant_answer = new Assistant(this.mainScreen, userName, assistantMessages);
 
         Label userNameLabel = new Label(userName);
         userNameLabel.setAlignment(Pos.CENTER);
@@ -187,32 +187,13 @@ public class ChatApp extends VBox {
 
     public void sendMessage(String message) throws Exception {
         messages.add(new MessageBubble(message, 1));
+        assistant_answer.setAssistantMessage(assistantMessages);
 
-        if(message.toLowerCase().contains("next lecture"))
-        {
-           receiveMessage(assistant_answer.getResponse(message));
-        }else if(message.toLowerCase().contains("help"))
-        {
-            String answer = assistant_answer.getResponse(message);
-            receiveMessage(answer);
-        }
-        else if(message.toLowerCase().contains("next month") || message.toLowerCase().contains("this month"))
-        {
-            ArrayList<String> this_month = new Skill_Schedule().getThisMonth();
-            String schedule_answer = this_month.get(0);
-            for(int i = 1; i < this_month.size(); i++)
-            {
-                schedule_answer = schedule_answer + System.lineSeparator() + System.lineSeparator() + this_month.get(i);
-            }
-            receiveMessage(schedule_answer);
-        }
-        else if (message.toLowerCase().contains("weather")) {
-            receiveMessage(assistant_answer.getResponse(message));
-        }
-        else if(message.toLowerCase().contains("create skill")){
+        /*if(message.toLowerCase().contains("create skill")){
             messages.add(new MessageBubble("Please enter the title of the new skill",0));
         }
-        else if(assistantMessages.get(assistantMessages.size()-1).equals("Please enter the title of the new skill")||
+        else
+        if(assistantMessages.get(assistantMessages.size()-1).equals("Please enter the title of the new skill")||
                 assistantMessages.get(assistantMessages.size()-1).equals("Please remove the space in the new skill")
         ){
             if(!message.contains(" ")){
@@ -222,8 +203,8 @@ public class ChatApp extends VBox {
             }else{
                 messages.add(new MessageBubble("Please remove the space in the new skill",0));
             }
-        }
-        else if(message.toLowerCase().contains("change password")){
+        }*/
+        if(message.toLowerCase().contains("change password")){
             messages.add(new MessageBubble("Please enter a new password",0));
         }
         else if(assistantMessages.get(assistantMessages.size()-1).equals("Please enter a new password")||
@@ -270,7 +251,8 @@ public class ChatApp extends VBox {
             pane.getChildren().add(webview);
             mainScreen.setMediaPlayerDisplay(pane);
         }
-        else if(message.toLowerCase().contains("clock") || message.toLowerCase().contains("time")){
+        else
+        {
             receiveMessage(assistant_answer.getResponse(message));
         }
     }
@@ -323,5 +305,10 @@ public class ChatApp extends VBox {
             messageBubble.setAlignment(Pos.TOP_LEFT);
         }
         messages.add(messageBubble);
+    }
+
+    public List getAssistantMessage()
+    {
+        return assistantMessages;
     }
 }
