@@ -251,6 +251,9 @@ public class ChatApp extends VBox {
             pane.getChildren().add(webview);
             mainScreen.setMediaPlayerDisplay(pane);
         }
+        else if(message.toLowerCase().contains("c")){
+            mainScreen.setClockAppDisplay();
+        }
         else
         {
             receiveMessage(assistant_answer.getResponse(message));
