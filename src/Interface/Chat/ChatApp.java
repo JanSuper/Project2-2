@@ -254,6 +254,16 @@ public class ChatApp extends VBox {
         else if(message.toLowerCase().contains("c")){
             mainScreen.setClockAppDisplay();
         }
+        else if (message.toLowerCase().contains("look up")){
+            messages.add(new MessageBubble("Please enter your search",0));
+
+        }
+        else if(assistantMessages.get(assistantMessages.size()-1).equals("Please enter your search")){
+            String searchURL = "https://www.google.com/search" + "?q=" + message;
+            Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start chrome.exe " + searchURL});
+            messages.add(new MessageBubble("Done!",0));
+        }
+
         else
         {
             receiveMessage(assistant_answer.getResponse(message));
