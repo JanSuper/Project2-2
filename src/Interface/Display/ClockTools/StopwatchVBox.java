@@ -56,10 +56,7 @@ public class StopwatchVBox extends VBox {
         designStopwatchButton(lapReset);
         lapReset.setOnAction(e-> {
             if(lapReset.getText().equals("Reset")) {
-                minutesStopwatch = 0;
-                secondsStopwatch = 0;
-                millisStopwatch = 0;
-                stopwatchTimeline.pause();
+                resetStopwatch();
                 stopwatchTime.setText("00:00:000");
 
                 lapReset.setText("Lap");

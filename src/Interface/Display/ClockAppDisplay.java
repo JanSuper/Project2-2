@@ -8,9 +8,7 @@ import Interface.Screens.MainScreen;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -18,7 +16,10 @@ import javafx.scene.text.FontWeight;
 
 public class ClockAppDisplay extends VBox {
     private HBox tabs;
+    private Button alarm;
     private Button prevTab;
+    private AlarmVBox alarmVBox;
+    private ClockVBox clockVBox;
     private TimerVBox timerVBox;
     private StopwatchVBox stopwatchVBox;
 
@@ -27,11 +28,13 @@ public class ClockAppDisplay extends VBox {
     public ClockAppDisplay(MainScreen mainScreen) {
         this.mainScreen = mainScreen;
         timerVBox = new TimerVBox();
+        stopwatchVBox = new StopwatchVBox();
 
         setBackground(new Background(new BackgroundFill(new Color(0.08,0.12, 0.15, 0.3), CornerRadii.EMPTY, Insets.EMPTY)));
 
         setTabs();
         getChildren().add(tabs);
+        selectTab(alarm);
     }
 
     public void setTabs() {
@@ -40,7 +43,7 @@ public class ClockAppDisplay extends VBox {
         tabs.setPrefHeight(80);
         tabs.setBackground(new Background(new BackgroundFill(MainScreen.themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
 
-        Button alarm = new Button("Alarm");
+        alarm = new Button("Alarm");
         designTab(alarm);
 
         Button clock = new Button("Clock");
@@ -62,8 +65,6 @@ public class ClockAppDisplay extends VBox {
         exit.setTranslateY(-17);
         exit.setTranslateX(-2);
         exit.setOnAction(e -> mainScreen.setOptionsMenu());
-
-        selectTab(alarm);
 
         Region region = new Region();
         HBox.setHgrow(region, Priority.ALWAYS);
@@ -87,9 +88,6 @@ public class ClockAppDisplay extends VBox {
         selectedTab.setTextFill(Color.LIGHTGRAY.brighter());
         selectedTab.setBorder(new Border(new BorderStroke(Color.LIGHTSLATEGRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(1))));
 
-        if(getChildren().size() == 2) {
-            getChildren().remove(1);
-        }
         switch(selectedTab.getText()) {
             case "Alarm": setAlarmView(); break;
             case "Clock": setClockView(); break;
@@ -99,25 +97,25 @@ public class ClockAppDisplay extends VBox {
     }
 
     private void deselectTab(Button prevTab) {
-        if(prevTab.getText().equals("Stopwatch")) {
-            stopwatchVBox.resetStopwatch();
-        }
-
         prevTab.setBackground(Background.EMPTY);
         prevTab.setTextFill(Color.LIGHTGRAY);
         prevTab.setBorder(null);
+
+        switch(prevTab.getText()) {
+            case "Alarm": getChildren().remove(alarmVBox); break;
+            case "Clock": getChildren().remove(clockVBox); break;
+            case "Timer": getChildren().remove(timerVBox); break;
+            case "Stopwatch": getChildren().remove(stopwatchVBox); break;
+        }
     }
 
     private void setAlarmView() {
-        /*
-        AlarmVBox alarmVBox = new AlarmVBox();
+        alarmVBox = new AlarmVBox();
         getChildren().add(alarmVBox);
-        
-         */
     }
 
     private void setClockView() {
-        ClockVBox clockVBox = new ClockVBox();
+        clockVBox = new ClockVBox();
         getChildren().add(clockVBox);
     }
 
@@ -126,7 +124,6 @@ public class ClockAppDisplay extends VBox {
     }
 
     private void setStopwatchView() {
-        stopwatchVBox = new StopwatchVBox();
         getChildren().add(stopwatchVBox);
     }
 }

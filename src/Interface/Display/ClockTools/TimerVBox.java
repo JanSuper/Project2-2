@@ -10,7 +10,6 @@ import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -226,7 +225,7 @@ public class TimerVBox extends VBox {
         topBox.setBackground(new Background(new BackgroundFill(MainScreen.themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
         topBox.getChildren().addAll(timerLabel, region, exit);
 
-        Label label = new Label("Time's up! ");
+        Label label = new Label("Time's up!");
         label.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 26));
         label.setTextFill(Color.WHITESMOKE);
         label.setAlignment(Pos.CENTER);
