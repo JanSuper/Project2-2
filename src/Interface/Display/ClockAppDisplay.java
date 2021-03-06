@@ -110,7 +110,7 @@ public class ClockAppDisplay extends VBox {
     }
 
     private void setAlarmView() {
-        alarmVBox = new AlarmVBox();
+        alarmVBox = new AlarmVBox(mainScreen);
         getChildren().add(alarmVBox);
     }
 

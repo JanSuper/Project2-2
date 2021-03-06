@@ -18,6 +18,7 @@ import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 
 import java.io.*;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -35,7 +36,10 @@ public class AlarmVBox extends VBox {
 
     private Button enter;
 
-    public AlarmVBox() {
+    private MainScreen mainScreen;
+
+    public AlarmVBox(MainScreen mainScreen) {
+        this.mainScreen = mainScreen;
         setSpacing(30);
         setAlignment(Pos.CENTER);
         setPadding(new Insets(40,0,0,0));
@@ -87,7 +91,7 @@ public class AlarmVBox extends VBox {
         enter.setOnAction(e-> {
             try {
                 createAlert();
-            } catch (IOException ioException) {
+            } catch (IOException | ParseException ioException) {
                 ioException.printStackTrace();
             }
             hoursTimer = 0;
@@ -108,9 +112,10 @@ public class AlarmVBox extends VBox {
         button.setAlignment(Pos.CENTER);
     }
 
-    private void createAlert() throws IOException {
+    private void createAlert() throws IOException, ParseException {
         String res = getAlreadyOnFile();
         addNewAlarm(res);
+        //mainScreen.prepareAlarms();
     }
     private String getAlreadyOnFile() throws IOException {
         String res = "";
@@ -124,12 +129,12 @@ public class AlarmVBox extends VBox {
     private void addNewAlarm(String res){
         String da = "";
         //convert date to string
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyy");
         LocalDate date = d.getValue();
         if (date != null) {
             da = (formatter.format(date));
         } else {
-            da = LocalDate.now().toString();
+            da = LocalDate.now().format(formatter);
         }
 
         FileWriter writer;

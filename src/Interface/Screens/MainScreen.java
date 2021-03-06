@@ -17,6 +17,16 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 public class MainScreen {
     public ChatApp chat;
     private ClockAppDisplay clockAppDisplay;
@@ -32,6 +42,8 @@ public class MainScreen {
     private Button logOut;
     private VBox vBox;
 
+    private ArrayList<String[]> alarmsTime;
+
     public MainScreen() throws Exception {
         borderWidth = 10;
         border = new Border(new BorderStroke(Color.DARKGRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(borderWidth)));
@@ -39,6 +51,8 @@ public class MainScreen {
         clockAppDisplay = new ClockAppDisplay(this);
 
         createContent();
+        alarmsTime = new ArrayList<>();
+        //prepareAlarms();
         start(new Stage());
     }
 
@@ -60,7 +74,7 @@ public class MainScreen {
 
         root.setRight(chat);
         setOptionsMenu();
-        //setClockAppDisplay(); //For testing
+
     }
 
     public void setOptionsMenu() {
@@ -169,6 +183,86 @@ public class MainScreen {
         pane.setScaleY(0.8);
 
         root.setLeft(pane);
+    }
+
+    public void prepareAlarms() throws IOException, ParseException {
+        String allAlarms = getAlreadyOnFile();
+        System.out.println(allAlarms);
+        int counter = 0;
+        String username = "";
+        String day = "";
+        String time = "";
+        String desc = "";
+        int alreadyIn = 0;
+        for (int i = 0; i < allAlarms.length(); i++) {
+            if(allAlarms.charAt(i)==';'&&counter==0){
+                counter++;
+                int counter1 = alreadyIn;
+                while(counter1<i){
+                    username+=allAlarms.charAt(alreadyIn + counter1++);
+                }
+                System.out.println("username = " + username);
+            }else if(allAlarms.charAt(i)==';'&&counter<3){
+                if(counter==1){
+                    counter++;
+                    int counter1 = alreadyIn + username.length()+1;
+                    while(counter1<alreadyIn + username.length()+1 + 10){
+                        day+=allAlarms.charAt(alreadyIn + counter1++);
+                    }
+                    System.out.println("day = " + day);
+                }else if(counter==2){
+                    counter++;
+                    int counter1 = alreadyIn + username.length() + day.length() +2;
+                    while(counter1<alreadyIn + username.length() + day.length() +2 + 12){
+                        time+=allAlarms.charAt(alreadyIn + counter1++);
+                    }
+                    System.out.println("time = " + time);
+                }
+            }else if(allAlarms.charAt(i)=='\n'&&counter==3){
+                int counter1 = (alreadyIn+username.length()+day.length()+time.length()+3);
+                while(allAlarms.charAt(counter1)!='\n'){
+                    if(allAlarms.charAt(counter1)!='\n'){
+                        desc+=allAlarms.charAt(counter1);
+                    }
+                    counter1++;
+                }
+                System.out.println("desc = " + desc);
+                Date date1=new SimpleDateFormat("dd/MM/yyyy").parse(day);
+                if(username.equals(Data.getUsername())&&date1.equals(LocalDate.now())){
+                    manageAlarm(time,desc);
+                }
+                alreadyIn+=(username.length()+day.length()+time.length()+desc.length()+3);
+                counter = 0;
+                username = "";
+                day = "";
+                time = "";
+                desc = "";
+            }
+        }
+    }
+
+    private String getAlreadyOnFile() throws IOException {
+        String res = "";
+        FileReader fr=new FileReader("src\\DataBase\\alarm.txt");
+        int i;
+        while((i=fr.read())!=-1)
+            res += ((char)i);
+        fr.close();
+        return res;
+    }
+
+    private void manageAlarm(String time,String desc){
+        boolean alreadyIn = false;
+        for (int i = 0; i < alarmsTime.size(); i++) {
+            if(alarmsTime.get(i)[0].equals(time)&&alarmsTime.get(i)[1].equals(desc)){
+                alreadyIn = true;
+            }
+        }
+        if(!alreadyIn){
+            alarmsTime.add(new String[]{time,desc});
+        }
+        //TODO create the alert at the time in question
+
     }
 
 }
