@@ -47,3 +47,5 @@ B 30
 
 //NEW SKILL
 
+U Hi how are you
+B Hi Im fine thanks
