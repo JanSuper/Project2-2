@@ -207,7 +207,7 @@ public class AlarmVBox extends VBox {
     }
 
     private void setTimerTime() {
-        timerTime.setText(twoDigitString(hoursTimer)+" : "+twoDigitString(minutesTimer)+" : "+twoDigitString(secondsTimer));
+        timerTime.setText(twoDigitString(hoursTimer)+":"+twoDigitString(minutesTimer)+":"+twoDigitString(secondsTimer));
     }
 
     private String twoDigitString(long number) {

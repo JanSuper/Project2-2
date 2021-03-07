@@ -5,8 +5,11 @@ import Interface.Chat.ChatApp;
 import Interface.Display.ClockAppDisplay;
 import Interface.Display.MediaPlayerDisplay;
 import Interface.Display.WeatherDisplay;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -15,18 +18,16 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.util.Duration;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class MainScreen {
     public ChatApp chat;
@@ -44,6 +45,7 @@ public class MainScreen {
     private VBox vBox;
 
     private ArrayList<String[]> alarmsTime;
+    private Timeline timeline;
 
     public MainScreen() throws Exception {
         borderWidth = 10;
@@ -53,8 +55,10 @@ public class MainScreen {
 
         createContent();
         alarmsTime = new ArrayList<>();
+        timeline = new Timeline();
         prepareAlarms();
         start(new Stage());
+
     }
 
     public void start(Stage primaryStage) {
@@ -250,7 +254,7 @@ public class MainScreen {
         return res;
     }
 
-    private void manageAlarm(String time,String desc){
+    private void manageAlarm(String time,String desc) throws ParseException {
         boolean alreadyIn = false;
         for (int i = 0; i < alarmsTime.size(); i++) {
             if(alarmsTime.get(i)[0].equals(time)&&alarmsTime.get(i)[1].equals(desc)){
@@ -260,9 +264,74 @@ public class MainScreen {
         if(!alreadyIn){
             System.out.println("Today, there will be the alarm at " + time + " with description \"" + desc + "\"");
             alarmsTime.add(new String[]{time,desc});
+            displayAlarmAtTime(time,desc);
         }
-        //TODO create the alert at the time in question
+    }
 
+    public void displayAlarmAtTime(String time,String desc) throws ParseException {
+        KeyFrame keyFrame = new KeyFrame(Duration.seconds(getTimeDiffInSec(time)), event -> notifyUser(desc));
+        timeline.getKeyFrames().add(keyFrame);
+        timeline.play();
+    }
+
+    public int getTimeDiffInSec(String time) throws ParseException {
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+        Date date1 = format.parse(time);
+        Date date2 = format.parse(java.time.LocalTime.now().toString());
+        int difference = (int) (date2.getTime() - date1.getTime());
+        if(date2.before(date1)){
+            return -difference/1000;
+        }
+        return difference/1000;
+    }
+
+    private void notifyUser(String desc) { //TODO add sound
+        VBox notification = new VBox(40);
+        notification.setAlignment(Pos.TOP_CENTER);
+        notification.setPrefSize(300, 285);
+        notification.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(7))));
+        notification.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        Stage stage = new Stage();
+        stage.setAlwaysOnTop(true);
+        stage.setOpacity(0.91);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.setScene(new Scene(notification, 320, 190));
+        stage.show();
+
+        Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
+        stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2 - 280);
+        stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 4 + 110);
+
+        Label timerLabel = new Label("Timer");
+        timerLabel.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 17));
+        timerLabel.setTextFill(Color.WHITE);
+        timerLabel.setAlignment(Pos.TOP_LEFT);
+        timerLabel.setTranslateX(15);
+
+        Button exit = new Button("x");
+        exit.setCursor(Cursor.HAND);
+        exit.setBackground(Background.EMPTY);
+        exit.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 17));
+        exit.setTextFill(Color.DARKRED);
+        exit.setBorder(null);
+        exit.setAlignment(Pos.TOP_RIGHT);
+        exit.setOnAction(e -> stage.close());
+
+        Region region = new Region();
+        HBox.setHgrow(region, Priority.ALWAYS);
+
+        HBox topBox = new HBox(60);
+        topBox.setAlignment(Pos.CENTER);
+        topBox.setBackground(new Background(new BackgroundFill(MainScreen.themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
+        topBox.getChildren().addAll(timerLabel, region, exit);
+
+        Label label = new Label(desc);
+        label.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 26));
+        label.setTextFill(Color.WHITESMOKE);
+        label.setAlignment(Pos.CENTER);
+
+        notification.getChildren().addAll(topBox, label);
     }
 
 }
