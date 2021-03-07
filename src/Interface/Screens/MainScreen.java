@@ -22,6 +22,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,7 +53,7 @@ public class MainScreen {
 
         createContent();
         alarmsTime = new ArrayList<>();
-        //prepareAlarms();
+        prepareAlarms();
         start(new Stage());
     }
 
@@ -187,51 +188,49 @@ public class MainScreen {
 
     public void prepareAlarms() throws IOException, ParseException {
         String allAlarms = getAlreadyOnFile();
-        System.out.println(allAlarms);
+        //System.out.println(allAlarms.length());
         int counter = 0;
         String username = "";
         String day = "";
         String time = "";
         String desc = "";
-        int alreadyIn = 0;
+        int linesNbrChar = 0;
         for (int i = 0; i < allAlarms.length(); i++) {
-            if(allAlarms.charAt(i)==';'&&counter==0){
-                counter++;
-                int counter1 = alreadyIn;
-                while(counter1<i){
-                    username+=allAlarms.charAt(alreadyIn + counter1++);
-                }
-                System.out.println("username = " + username);
-            }else if(allAlarms.charAt(i)==';'&&counter<3){
-                if(counter==1){
-                    counter++;
-                    int counter1 = alreadyIn + username.length()+1;
-                    while(counter1<alreadyIn + username.length()+1 + 10){
-                        day+=allAlarms.charAt(alreadyIn + counter1++);
+            if(allAlarms.charAt(i)==';'&&counter<3){
+                if(counter==0){
+                    int counter1 = linesNbrChar;
+                    while(counter1<i){
+                        username+=allAlarms.charAt(counter1++);
                     }
-                    System.out.println("day = " + day);
+                    //System.out.println("username = " + username);
+                }else if(counter==1){
+                    int counter1 = linesNbrChar+username.length()+1;
+                    while(counter1<i){
+                        day+=allAlarms.charAt(counter1++);
+                    }
+                    //System.out.println("day = " + day);
                 }else if(counter==2){
-                    counter++;
-                    int counter1 = alreadyIn + username.length() + day.length() +2;
-                    while(counter1<alreadyIn + username.length() + day.length() +2 + 12){
-                        time+=allAlarms.charAt(alreadyIn + counter1++);
+                    int counter1 = linesNbrChar+username.length() + day.length() +2;
+                    while(counter1<i){
+                        time+=allAlarms.charAt(counter1++);
                     }
-                    System.out.println("time = " + time);
+                    //System.out.println("time = " + time);
                 }
-            }else if(allAlarms.charAt(i)=='\n'&&counter==3){
-                int counter1 = (alreadyIn+username.length()+day.length()+time.length()+3);
+                counter++;
+            }
+            if(allAlarms.charAt(i)=='\n'&&counter==3){
+                int counter1 = linesNbrChar+username.length()+day.length()+time.length()+3;
                 while(allAlarms.charAt(counter1)!='\n'){
-                    if(allAlarms.charAt(counter1)!='\n'){
-                        desc+=allAlarms.charAt(counter1);
-                    }
+                    desc+=allAlarms.charAt(counter1);
                     counter1++;
                 }
-                System.out.println("desc = " + desc);
-                Date date1=new SimpleDateFormat("dd/MM/yyyy").parse(day);
-                if(username.equals(Data.getUsername())&&date1.equals(LocalDate.now())){
+                //System.out.println("desc = " + desc);
+
+                String today = java.time.LocalDate.now().toString();
+                if(username.equals(Data.getUsername())&&day.equals(today)){
                     manageAlarm(time,desc);
                 }
-                alreadyIn+=(username.length()+day.length()+time.length()+desc.length()+3);
+                linesNbrChar=i+1;
                 counter = 0;
                 username = "";
                 day = "";
@@ -259,6 +258,7 @@ public class MainScreen {
             }
         }
         if(!alreadyIn){
+            System.out.println("Today, there will be the alarm at " + time + " with description \"" + desc + "\"");
             alarmsTime.add(new String[]{time,desc});
         }
         //TODO create the alert at the time in question

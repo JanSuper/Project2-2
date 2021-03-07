@@ -39,7 +39,7 @@ import java.util.List;
 
 
 public class ChatApp extends VBox {
-    private ObservableList messages = FXCollections.observableArrayList();
+    public ObservableList messages = FXCollections.observableArrayList();
     private HBox user;
     private ScrollPane scroller;
     private HBox typeField;
@@ -54,7 +54,7 @@ public class ChatApp extends VBox {
     private SkillEditor skillEditor;
     private MainScreen mainScreen;
 
-    private class MessageBubble extends HBox {
+    public class MessageBubble extends HBox {
         private Background userBubbleBackground;
         private Background assistantBubbleBackground;
 

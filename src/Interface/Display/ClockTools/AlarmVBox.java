@@ -115,7 +115,7 @@ public class AlarmVBox extends VBox {
     private void createAlert() throws IOException, ParseException {
         String res = getAlreadyOnFile();
         addNewAlarm(res);
-        //mainScreen.prepareAlarms();
+        mainScreen.prepareAlarms();
     }
     private String getAlreadyOnFile() throws IOException {
         String res = "";
@@ -129,7 +129,7 @@ public class AlarmVBox extends VBox {
     private void addNewAlarm(String res){
         String da = "";
         //convert date to string
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate date = d.getValue();
         if (date != null) {
             da = (formatter.format(date));
@@ -151,6 +151,7 @@ public class AlarmVBox extends VBox {
                 e.printStackTrace();
             }
         }
+        System.out.println("Alarm at " + timerTime.getText() + " with description \"" + description.getText() + "\" has been added");
     }
 
     private void disablePlusMinus(boolean b, HBox plus, HBox minus) {
