@@ -189,6 +189,16 @@ public class MainScreen {
 
         root.setLeft(pane);
     }
+    public void setCalendarDisplay(Pane pane){
+        pane.setBackground(Data.createBackGround());
+        pane.setBorder(border);
+        pane.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
+        pane.prefWidthProperty().bind(root.widthProperty().subtract(chat.prefWidthProperty()).subtract(borderWidth*2));
+        pane.setScaleX(0.8);
+        pane.setScaleY(0.8);
+
+        root.setLeft(pane);
+    }
 
     public void prepareAlarms() throws IOException, ParseException {
         String allAlarms = getAlreadyOnFile();
@@ -269,7 +279,7 @@ public class MainScreen {
     }
 
     public void displayAlarmAtTime(String time,String desc) throws ParseException {
-        KeyFrame keyFrame = new KeyFrame(Duration.seconds(getTimeDiffInSec(time)), event -> notifyUser(desc));
+        KeyFrame keyFrame = new KeyFrame(Duration.seconds(getTimeDiffInSec(time)), event -> notifyUser(time,desc));
         timeline.getKeyFrames().add(keyFrame);
         timeline.play();
     }
@@ -285,7 +295,7 @@ public class MainScreen {
         return difference/1000;
     }
 
-    private void notifyUser(String desc) { //TODO add sound
+    private void notifyUser(String time,String desc) { //TODO add sound
         VBox notification = new VBox(40);
         notification.setAlignment(Pos.TOP_CENTER);
         notification.setPrefSize(300, 285);
@@ -303,7 +313,7 @@ public class MainScreen {
         stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2 - 280);
         stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 4 + 110);
 
-        Label timerLabel = new Label("Timer");
+        Label timerLabel = new Label("Alarm of " + time);
         timerLabel.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 17));
         timerLabel.setTextFill(Color.WHITE);
         timerLabel.setAlignment(Pos.TOP_LEFT);

@@ -2,6 +2,7 @@ package Interface.Chat;
 
 import Agents.Assistant;
 import DataBase.Data;
+import Interface.Display.CalendarDisplay;
 import Interface.Display.MediaPlayerDisplay;
 import Interface.Screens.MainScreen;
 import Skills.Schedule.Skill_Schedule;
@@ -251,9 +252,13 @@ public class ChatApp extends VBox {
             pane.getChildren().add(webview);
             mainScreen.setMediaPlayerDisplay(pane);
         }
-        else if(message.toLowerCase().contains("c")){
+        else if(message.toLowerCase().contains("clock")){
             mainScreen.setClockAppDisplay();
         }
+        else if(message.toLowerCase().contains("calendar")){
+            mainScreen.setCalendarDisplay(new CalendarDisplay());
+        }
+
         else if (message.toLowerCase().contains("look up")){
             messages.add(new MessageBubble("Please enter your search",0));
 

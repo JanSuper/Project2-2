@@ -11,23 +11,25 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
-public class CalendarDisplay extends Application {
-    public static void main(String[] args) {
-        launch(args);
-    }
+public class CalendarDisplay extends HBox {
 
-    @Override
-    public void start(Stage primaryStage) {
+    public CalendarDisplay(){
         TableView tableView = new TableView();
         final ObservableList<Agenda> data = FXCollections.observableArrayList(
-                new Agenda("07:00"," 1","211", "Doe","1","hhh","1","1"),
-                new Agenda("08:00","", "","", "","", "",""),
+                new Agenda("01:00","", "","", "","", "",""),
+                new Agenda("02:00","", "","", "","", "",""),
+                new Agenda("03:00","", "","", "","", "",""),
+                new Agenda("04:00","", "","", "","", "",""),
+                new Agenda("05:00","", "","", "","", "",""),
+                new Agenda("06:00"," 1","211", "Doe","1","hhh","1","1"),
+                new Agenda("07:00","", "","", "","", "",""),
                 new Agenda("08:00","", "","", "","", "",""),
                 new Agenda("09:00","", "","", "","", "",""),
                 new Agenda("10:00","", "","", "","", "",""),
@@ -49,13 +51,13 @@ public class CalendarDisplay extends Application {
         final HBox hb = new HBox();
         tableView.setEditable(true);
 
+        /*
         Scene scene = new Scene(new Group());
         final Label label = new Label("Week Calendar");
         label.setFont(new Font("Arial", 20));
         tableView.setEditable(true);
-        primaryStage.setTitle("Calendar");
-        primaryStage.setWidth(800);
-        primaryStage.setHeight(500);
+
+         */
 
         tableView.setEditable(true);
         Callback<TableColumn, TableCell> cellFactory =
@@ -179,20 +181,11 @@ public class CalendarDisplay extends Application {
                 addSaturday,addSunday, addButton);
         hb.setSpacing(3);
 
-
-
         tableView.getSortOrder().add(column0);
+        setPadding(new Insets(10, 0, 0, 10));
+        getChildren().addAll(tableView ,hb);
+        setSpacing(5);
 
-        final VBox vbox = new VBox();
-        vbox.setSpacing(5);
-        vbox.setPadding(new Insets(10, 0, 0, 10));
-        vbox.getChildren().addAll(label,tableView ,hb);
-
-        ((Group) scene.getRoot()).getChildren().addAll(vbox);
-
-        primaryStage.setScene(scene);
-
-        primaryStage.show();
 
            /* VBox vbox = new VBox(tableView);
             vbox.setSpacing(500);
