@@ -1,5 +1,7 @@
 package Interface.Display;
 
+import Interface.Display.ClockTools.AlarmVBox;
+import Interface.Screens.MainScreen;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,8 +21,10 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 public class CalendarDisplay extends HBox {
+    private MainScreen mainScreen;
 
-    public CalendarDisplay(){
+    public CalendarDisplay(MainScreen mainScreen){
+        this.mainScreen = mainScreen;
         TableView tableView = new TableView();
         final ObservableList<Agenda> data = FXCollections.observableArrayList(
                 new Agenda("01:00","", "","", "","", "",""),
@@ -48,7 +52,6 @@ public class CalendarDisplay extends HBox {
                 new Agenda("23:00","", "","", "","", "",""),
                 new Agenda("24:00","", "","", "","", "","")
         );
-        final HBox hb = new HBox();
         tableView.setEditable(true);
 
         /*
@@ -59,7 +62,6 @@ public class CalendarDisplay extends HBox {
 
          */
 
-        tableView.setEditable(true);
         Callback<TableColumn, TableCell> cellFactory =
                 new Callback<TableColumn, TableCell>() {
                     public TableCell call(TableColumn p) {
@@ -121,12 +123,10 @@ public class CalendarDisplay extends HBox {
         column7.setMinWidth(100);
         column7.setCellValueFactory(new PropertyValueFactory<Agenda, String>("sunday"));
 
-
-
-
         tableView.setItems(data);
         tableView.getColumns().addAll(column0,column1,column2,column3,column4,column5,column6,column7);
 
+        /*
         final TextField addHours = new TextField();
         addHours.setPromptText("hour");
         addHours.setMaxWidth(column0.getPrefWidth());
@@ -179,12 +179,30 @@ public class CalendarDisplay extends HBox {
         });
         hb.getChildren().addAll(addHours, addMonday, addTuesday,addWednesday,addThursday,addFriday,
                 addSaturday,addSunday, addButton);
-        hb.setSpacing(3);
+
+         */
+        AlarmVBox alarmVBox = new AlarmVBox(mainScreen);
+        alarmVBox.setVisible(false);
+
+        Button addReminder = new Button("Add");
+        addReminder.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                if(alarmVBox.isVisible()){
+                    alarmVBox.setVisible(false);
+                }else{
+                    alarmVBox.setVisible(true);
+                }
+            }
+        });
+
+
 
         tableView.getSortOrder().add(column0);
         setPadding(new Insets(10, 0, 0, 10));
-        getChildren().addAll(tableView ,hb);
         setSpacing(5);
+
+        getChildren().addAll(tableView,addReminder,alarmVBox);
 
 
            /* VBox vbox = new VBox(tableView);

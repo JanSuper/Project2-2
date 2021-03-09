@@ -40,7 +40,7 @@ public class AlarmVBox extends VBox {
 
     public AlarmVBox(MainScreen mainScreen) {
         this.mainScreen = mainScreen;
-        setSpacing(30);
+        setSpacing(20);
         setAlignment(Pos.CENTER);
         setPadding(new Insets(40,0,0,0));
 
