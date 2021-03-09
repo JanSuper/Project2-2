@@ -181,7 +181,7 @@ public class CalendarDisplay extends HBox {
                 addSaturday,addSunday, addButton);
 
          */
-        AlarmVBox alarmVBox = new AlarmVBox(mainScreen);
+        AlarmVBox alarmVBox = new AlarmVBox(mainScreen,true);
         alarmVBox.setVisible(false);
 
         Button addReminder = new Button("Add");

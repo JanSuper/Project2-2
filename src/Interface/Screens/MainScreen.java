@@ -242,7 +242,7 @@ public class MainScreen {
 
                 String today = java.time.LocalDate.now().toString();
                 if(username.equals(Data.getUsername())&&day.equals(today)){
-                    manageAlarm(time,desc);
+                    manageReminders(time,desc);
                 }
                 linesNbrChar=i+1;
                 counter = 0;
@@ -256,7 +256,7 @@ public class MainScreen {
 
     private String getAlreadyOnFile() throws IOException {
         String res = "";
-        FileReader fr=new FileReader("src\\DataBase\\alarm.txt");
+        FileReader fr=new FileReader("src\\DataBase\\reminders.txt");
         int i;
         while((i=fr.read())!=-1)
             res += ((char)i);
@@ -264,7 +264,7 @@ public class MainScreen {
         return res;
     }
 
-    private void manageAlarm(String time,String desc) throws ParseException {
+    private void manageReminders(String time, String desc) throws ParseException {
         boolean alreadyIn = false;
         for (int i = 0; i < alarmsTime.size(); i++) {
             if(alarmsTime.get(i)[0].equals(time)&&alarmsTime.get(i)[1].equals(desc)){
@@ -274,11 +274,11 @@ public class MainScreen {
         if(!alreadyIn){
             System.out.println("Today, there will be the alarm at " + time + " with description \"" + desc + "\"");
             alarmsTime.add(new String[]{time,desc});
-            displayAlarmAtTime(time,desc);
+            displayReminderAtTime(time,desc);
         }
     }
 
-    public void displayAlarmAtTime(String time,String desc) throws ParseException {
+    public void displayReminderAtTime(String time, String desc) throws ParseException {
         KeyFrame keyFrame = new KeyFrame(Duration.seconds(getTimeDiffInSec(time)), event -> notifyUser(time,desc));
         timeline.getKeyFrames().add(keyFrame);
         timeline.play();
@@ -313,7 +313,7 @@ public class MainScreen {
         stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2 - 280);
         stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 4 + 110);
 
-        Label timerLabel = new Label("Alarm of " + time);
+        Label timerLabel = new Label("Reminder of " + time);
         timerLabel.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 17));
         timerLabel.setTextFill(Color.WHITE);
         timerLabel.setAlignment(Pos.TOP_LEFT);
