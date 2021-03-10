@@ -297,7 +297,7 @@ public class ChatApp extends VBox {
         FileWriter writer;
         {
             try {
-                writer = new FileWriter(new File("src\\DataBase\\users.txt"));
+                writer = new FileWriter(Data.getUsersFile());
                 PrintWriter out = new PrintWriter(writer);
                 for (int i = 0; i < dataset.length; i++) {
                     for (int j = 0; j < dataset[i].length; j++) {

@@ -5,6 +5,8 @@ import Agents.User;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 
+import java.io.File;
+
 public class Data {
     private static String username = "defaultUsername";
     private static String password = "defaultPasseword";
@@ -13,6 +15,9 @@ public class Data {
 
     private static User user;
     private static Assistant assistant;
+
+    private static File usersFile = new File("src\\DataBase\\users.txt");
+    private static File remindersFile = new File("src\\DataBase\\reminders.txt");
 
     public static Background createBackGround(){
         Image image = new Image(String.valueOf(Data.class.getResource("background.jpg")),Double.MAX_VALUE,Double.MAX_VALUE,false,true);
@@ -63,5 +68,21 @@ public class Data {
 
     public static void setAssistant(Assistant assistant) {
         Data.assistant = assistant;
+    }
+
+    public static File getUsersFile() {
+        return usersFile;
+    }
+
+    public static void setUsersFile(File usersFile) {
+        Data.usersFile = usersFile;
+    }
+
+    public static File getRemindersFile() {
+        return remindersFile;
+    }
+
+    public static void setRemindersFile(File remindersFile) {
+        Data.remindersFile = remindersFile;
     }
 }

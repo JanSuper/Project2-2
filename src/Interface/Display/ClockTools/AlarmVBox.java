@@ -140,7 +140,7 @@ public class AlarmVBox extends VBox {
     }
     private String getAlreadyOnFile() throws IOException {
         String res = "";
-        FileReader fr=new FileReader("src\\DataBase\\reminders.txt");
+        FileReader fr=new FileReader(Data.getRemindersFile());
         int i;
         while((i=fr.read())!=-1)
             res += ((char)i);
@@ -161,7 +161,7 @@ public class AlarmVBox extends VBox {
         FileWriter writer;
         {
             try {
-                writer = new FileWriter("src\\DataBase\\reminders.txt");
+                writer = new FileWriter(Data.getRemindersFile());
                 PrintWriter out = new PrintWriter(writer);
                 out.print(res);
 

@@ -256,7 +256,7 @@ public class MainScreen {
 
     private String getAlreadyOnFile() throws IOException {
         String res = "";
-        FileReader fr=new FileReader("src\\DataBase\\reminders.txt");
+        FileReader fr=new FileReader(Data.getRemindersFile());
         int i;
         while((i=fr.read())!=-1)
             res += ((char)i);

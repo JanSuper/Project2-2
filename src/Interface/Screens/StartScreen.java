@@ -77,7 +77,7 @@ public class StartScreen extends Application {
                     FileWriter writer;
                     {
                         try {
-                            writer = new FileWriter("src\\DataBase\\users.txt");
+                            writer = new FileWriter(Data.getUsersFile());
                             PrintWriter out = new PrintWriter(writer);
 
                             for (int i = 0; i < dataSet.length; i++) {
@@ -157,14 +157,13 @@ public class StartScreen extends Application {
         String [][] data = new String [0][];
 
         // Begin a new file reader object directed at the text file we want to read (input)
-        File file = new File("src\\DataBase\\users.txt");
         // We want to cast out file reader to a buffered reader! (for reasons which will be clear next lecture).
         BufferedReader br;
         {
             // If the file does not exist, we will get an error, so try catch to make java happy
             try {
                 // create buffered reader
-                br = new BufferedReader(new FileReader(file));
+                br = new BufferedReader(new FileReader(Data.getUsersFile()));
                 String st = "";
 
                 // while another line exists in our text file, we read it!
