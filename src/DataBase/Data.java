@@ -16,8 +16,8 @@ public class Data {
     private static User user;
     private static Assistant assistant;
 
-    private static File usersFile = new File("src\\DataBase\\users.txt");
-    private static File remindersFile = new File("src\\DataBase\\reminders.txt");
+    private static File usersFile = new File("src/DataBase/users.txt");
+    private static File remindersFile = new File("src/DataBase/reminders.txt");
 
     public static Background createBackGround(){
         Image image = new Image(String.valueOf(Data.class.getResource("background.jpg")),Double.MAX_VALUE,Double.MAX_VALUE,false,true);
