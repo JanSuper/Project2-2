@@ -168,10 +168,23 @@ public class Assistant {
         String final_answer = null;
         if(skill_num == 1)
         {
-            mainScreen.setWeatherDisplay("Maastricht","NL");
+            //TODO get user's city and country when creating a new account and use it here
+            String city = "Maastricht";
+            String country = "NL";
+            mainScreen.setWeatherDisplay(city,country);
+            final_answer = "This is what I found for the weather in "+ city + ", " + country + ". If you want to change the location type 'Change weather location to City, Country.' (e.g. Amsterdam, NL).";
         }
         else if(skill_num == 2){
-            mainScreen.setWeatherDisplay(lastWord,lastWord);
+            try {
+                //mainScreen.setWeatherDisplay(lastWord,lastWord);  //TODO some issues with lastWord?
+                String city = "Amsterdam";  //TODO get from message
+                String country = "NL";
+                mainScreen.setWeatherDisplay(city, country);
+                final_answer = "This is what I found for the weather in "+ city + ", " + country + ".";
+
+            } catch (Exception ex) {
+                final_answer = "Something went wrong! Please try again.";
+            }
         }
         else if(skill_num == 10)
         {
