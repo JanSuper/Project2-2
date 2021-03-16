@@ -219,12 +219,6 @@ public class ChatApp extends VBox {
                 messages.add(new MessageBubble("Please remove the space in the password",0));
             }
         }
-        else if (message.toLowerCase().contains("map")) {
-            mainScreen.setMapDisplay(false);
-        }
-        else if (message.toLowerCase().contains("google")) {
-            mainScreen.setMapDisplay(true);
-        }
         else if(message.toLowerCase().contains("media player")) {
             messages.add(new MessageBubble("Do you want a \"local file\" or a \"url\" ? ", 0));
         }
