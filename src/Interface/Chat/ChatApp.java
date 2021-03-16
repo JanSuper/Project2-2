@@ -264,7 +264,7 @@ public class ChatApp extends VBox {
 
         }
         else if(assistantMessages.get(assistantMessages.size()-1).equals("Please enter your search")){
-            String searchURL = "https://www.google.com/search" + "?q=" + message;
+            String searchURL = "https://www.google.com/search" + "?q=" + messageToUrl(message);
             Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start chrome.exe " + searchURL});
             messages.add(new MessageBubble("Done!",0));
         }
@@ -273,6 +273,18 @@ public class ChatApp extends VBox {
         {
             receiveMessage(assistant_answer.getResponse(message));
         }
+    }
+
+    public String messageToUrl(String message){
+        String url = "";
+        for (int i = 0; i < message.length(); i++) {
+            if(message.charAt(i) == ' '){
+                url+='+';
+            }else{
+                url+=message.charAt(i);
+            }
+        }
+        return url;
     }
 
     public boolean changePassword(String message){

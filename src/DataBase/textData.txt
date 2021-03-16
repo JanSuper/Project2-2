@@ -49,3 +49,5 @@ B 30
 
 U Hi how are you
 B Hi Im fine thanks
+U what time is it
+B it is 1226
