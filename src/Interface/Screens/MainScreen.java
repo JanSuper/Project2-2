@@ -3,6 +3,7 @@ package Interface.Screens;
 import DataBase.Data;
 import Interface.Chat.ChatApp;
 import Interface.Display.ClockAppDisplay;
+import Interface.Display.MapDisplay;
 import Interface.Display.MediaPlayerDisplay;
 import Interface.Display.WeatherDisplay;
 import javafx.animation.KeyFrame;
@@ -164,6 +165,20 @@ public class MainScreen {
 
         root.setLeft(clockAppDisplay);
     }
+
+    public void setMapDisplay(boolean googlewebview) throws Exception {
+        MapDisplay mapDisplay = new MapDisplay(googlewebview);
+        mapDisplay.setSpacing(7);
+        mapDisplay.setBackground(Data.createBackGround());
+        mapDisplay.setBorder(border);
+        mapDisplay.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
+        mapDisplay.prefWidthProperty().bind(root.widthProperty().subtract(chat.prefWidthProperty()).subtract(borderWidth*2));
+        mapDisplay.setScaleX(0.8);
+        mapDisplay.setScaleY(0.8);
+
+        root.setLeft(mapDisplay);
+    }
+
 
     public void setMediaPlayerDisplay(MediaPlayerDisplay mediaPlayerDisplay){
         mediaPlayerDisplay.setBackground(Data.createBackGround());
