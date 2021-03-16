@@ -23,6 +23,9 @@ B I can show you the weather (type "Weather") or your UM schedule (type "this we
 U How is the weather
 B 1
 
+U How is the weather in
+B 2
+
 U What is my next Lecture
 B 10
 U What are my lectures this week

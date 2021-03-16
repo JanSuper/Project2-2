@@ -150,6 +150,9 @@ public class Assistant {
         {
             mainScreen.setWeatherDisplay("Maastricht","NL");
         }
+        else if(skill_num == 2){
+            mainScreen.setWeatherDisplay(lastWord.substring(0, lastWord.indexOf(' ')),lastWord.substring(0, lastWord.indexOf(' ')));
+        }
         else if(skill_num == 10)
         {
             final_answer = "Your next lecture is:" + System.lineSeparator();
