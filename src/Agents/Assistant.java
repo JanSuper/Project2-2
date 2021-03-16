@@ -6,33 +6,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import Agents.Assistant;
-import DataBase.Data;
-import Interface.Display.MediaPlayerDisplay;
+
 import Skills.Schedule.Skill_Schedule;
-import Skills.SkillEditor;
-import javafx.beans.binding.Bindings;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Cursor;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.layout.*;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaException;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.web.WebView;
-import javafx.stage.FileChooser;
 
 public class Assistant {
     private List<String> messages;
@@ -41,6 +16,8 @@ public class Assistant {
     private MainScreen mainScreen;
     private String user_name;
     private List<String> assistantMessage;
+    private String lastWord;
+    private String response;
 
     public Assistant(MainScreen pMainScreen, String pUser_name, List pAssistantMessage)
     {
@@ -48,11 +25,32 @@ public class Assistant {
         user_name = pUser_name;
         messages = new ArrayList<>();
         assistantMessage = pAssistantMessage;
+        lastWord = "";
+        response = "";
     }
 
     public String getResponse(String uMessage) throws Exception
     {
         String clean_uMessage = removePunctuation(uMessage).toLowerCase();
+        while(!getInfo(clean_uMessage)){
+            setLastWord(clean_uMessage);
+            clean_uMessage = removeLastWord(clean_uMessage);
+            if(clean_uMessage.isEmpty()){
+                String searchURL = "https://www.google.com/search" + "?q=" + messageToUrl(clean_uMessage);
+                Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start chrome.exe " + searchURL});
+                response = "I could not understand your demand...";
+                break;
+            }
+        }
+        return response;
+    }
+
+    public String removeLastWord(String message){
+        var lastIndex = message.lastIndexOf(" ");
+        return message.substring(0, lastIndex);
+    }
+
+    public boolean getInfo(String clean_uMessage) throws Exception{
         ArrayList<String> res = new ArrayList<>();
         try{
             BufferedReader data = new BufferedReader(new FileReader(dataBase));
@@ -83,42 +81,41 @@ public class Assistant {
 
         if(assistantMessage.get(assistantMessage.size()-1).startsWith("To add a new skill to the assistant you have to follow these rules:"))
         {
-            if(addNewSkill(uMessage) == 1)
+            if(addNewSkill(clean_uMessage) == 1)
             {
-                return "The new skill was successfully added to the database.";
+                response =  "The new skill was successfully added to the database.";
             }
             else
             {
-                return "Sorry something went wrong, the new skill could not be added to the database";
+                response =  "Sorry something went wrong, the new skill could not be added to the database";
             }
         }
         else if(res.isEmpty())
         {
-            String searchURL = "https://www.google.com/search" + "?q=" + messageToUrl(clean_uMessage);
-            Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start chrome.exe " + searchURL});
-            return "I could not understand your demand...";
+            return false;
         }
         else
         {
             if(isNumber(res.get(0)))
             {
-                String skill_answer = getSkill(res.get(0));
+                String skill_answer = getSkill(res.get(0),clean_uMessage);
                 if(skill_answer == null)
                 {
-                    return "This is what I found for your request.";
+                    response =  "This is what I found for your request.";
                 }
                 else
                 {
-                    return skill_answer;
+                    response =  skill_answer;
                 }
             }
             else
             {
                 int max = res.size();
                 int n = random.nextInt(max);
-                return res.get(n);
+                response =  res.get(n);
             }
         }
+        return true;
     }
 
     public String messageToUrl(String message){
@@ -144,7 +141,7 @@ public class Assistant {
         return true;
     }
 
-    public String getSkill(String pNumb) throws Exception
+    public String getSkill(String pNumb,String message) throws Exception
     {
         //The specific Skills will be called here
         int skill_num = Integer.parseInt(pNumb);
@@ -177,6 +174,11 @@ public class Assistant {
         {
             mainScreen.setClockAppDisplay();
         }
+        else if(skill_num == 21)
+        {
+            mainScreen.clockAppDisplay.clockVBox.setCountry(lastWord);
+            mainScreen.setClockAppDisplay();
+        }
         else if(skill_num == 30)
         {
             final_answer = "To add a new skill to the assistant you have to follow these rules:" + System.lineSeparator() +
@@ -186,6 +188,17 @@ public class Assistant {
                            "4. Send everything into one message.";
         }
         return final_answer;
+    }
+
+    public void setLastWord(String message){
+        String newLastWord = "";
+        int counter1 = message.length()-1;
+        while(message.charAt(counter1)!=' '){
+            newLastWord+=message.charAt(counter1--);
+        }
+        newLastWord = new StringBuilder(newLastWord).reverse().toString() + " ";
+        lastWord = newLastWord + lastWord;
+        System.out.println(lastWord);
     }
 
     public int addNewSkill(String uMessage)

@@ -45,6 +45,10 @@ U Create skill
 U New skill
 B 30
 
+//VariableSkills
+U What time is it in
+B 21
+
 //NEW SKILL
 
 U Hi how are you

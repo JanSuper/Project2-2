@@ -19,7 +19,7 @@ public class ClockAppDisplay extends VBox {
     private Button alarm;
     private Button prevTab;
     private AlarmVBox alarmVBox;
-    private ClockVBox clockVBox;
+    public ClockVBox clockVBox;
     private TimerVBox timerVBox;
     private StopwatchVBox stopwatchVBox;
 
