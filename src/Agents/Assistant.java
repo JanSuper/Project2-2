@@ -31,7 +31,8 @@ public class Assistant {
 
     public String getResponse(String uMessage) throws Exception
     {
-        String clean_uMessage = removePunctuation(uMessage).toLowerCase();
+        //String clean_uMessage = removePunctuation(uMessage).toLowerCase();
+        String clean_uMessage = uMessage;
         while(!getInfo(clean_uMessage)){
             setLastWord(clean_uMessage);
             clean_uMessage = removeLastWord(clean_uMessage);
@@ -181,6 +182,9 @@ public class Assistant {
         {
             mainScreen.clockAppDisplay.clockVBox.setCountry(lastWord);
             mainScreen.setClockAppDisplay();
+        }
+        else if(skill_num == 22){
+            mainScreen.clockAppDisplay.alarmVBox.addAlarm(lastWord,"no desc");
         }
         else if(skill_num == 30)
         {

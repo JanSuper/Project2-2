@@ -174,7 +174,7 @@ public class AlarmVBox extends VBox {
         }
         System.out.println("Reminder at " + timerTime.getText() + " with description \"" + description.getText() + "\" has been added");
     }
-    private void addAlarm(String time,String desc) throws ParseException {
+    public void addAlarm(String time,String desc) throws ParseException {
         System.out.println("Today, there will be the alarm at " + time + " with description \"" + desc + "\"");
         displayAlarmAtTime(time,desc);
     }
