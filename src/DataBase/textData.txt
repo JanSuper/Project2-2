@@ -63,6 +63,9 @@ B 21
 U Set an alarm at
 B 22
 
+U Look up
+B 40
+
 //NEW SKILL
 
 U Hi how are you

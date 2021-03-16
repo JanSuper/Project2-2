@@ -6,12 +6,15 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class Data {
     private static String username = "defaultUsername";
     private static String password = "defaultPasseword";
 
     private static String [][] dataSet;
+
+    private static String[] variables = new String[]{"<DAY>","<TIME>","<COUNTRY>"};
 
     private static User user;
     private static Assistant assistant;

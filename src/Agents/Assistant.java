@@ -3,7 +3,9 @@ package Agents;
 import Interface.Screens.MainScreen;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -36,6 +38,7 @@ public class Assistant {
         while(!getInfo(clean_uMessage)){
             setLastWord(clean_uMessage);
             clean_uMessage = removeLastWord(clean_uMessage);
+            //clean_uMessage = removeRandomWord(uMessage);
             if(clean_uMessage.isEmpty()){
                 String searchURL = "https://www.google.com/search" + "?q=" + messageToUrl(clean_uMessage);
                 Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start chrome.exe " + searchURL});
@@ -51,7 +54,22 @@ public class Assistant {
         return message.substring(0, lastIndex);
     }
 
+    public String removeRandomWord(String message){
+        String [] arr = message.split(" ");
+        Random random = new Random();
+        String randomWord = arr[random.nextInt(arr.length)];
+        lastWord = randomWord;
+        String newMessage = message.replaceAll(randomWord, "");
+        if(newMessage.charAt(newMessage.length()-1)==' '){
+            newMessage.replaceAll(" ","");
+        }
+        System.out.println(newMessage);
+        return newMessage;
+    }
+
+
     public boolean getInfo(String clean_uMessage) throws Exception{
+        System.out.println(clean_uMessage);
         ArrayList<String> res = new ArrayList<>();
         try{
             BufferedReader data = new BufferedReader(new FileReader(dataBase));
@@ -66,6 +84,7 @@ public class Assistant {
                         String r;
                         while ((r = data.readLine()).startsWith("B"))
                         {
+                            System.out.println("oui");
                             res.add(r.substring(2));
                         }
                     }
@@ -152,7 +171,7 @@ public class Assistant {
             mainScreen.setWeatherDisplay("Maastricht","NL");
         }
         else if(skill_num == 2){
-            mainScreen.setWeatherDisplay(lastWord.substring(0, lastWord.indexOf(' ')),lastWord.substring(0, lastWord.indexOf(' ')));
+            mainScreen.setWeatherDisplay(lastWord,lastWord);
         }
         else if(skill_num == 10)
         {
@@ -193,6 +212,10 @@ public class Assistant {
                            "2. After the question(s) add a semicolon ; " + System.lineSeparator() +
                            "3. Write down the answer(s) you want from the assistant. If there is more than one answer (for the same question) make sure to separate them with a comma , " + System.lineSeparator() +
                            "4. Send everything into one message.";
+        }
+        else if(skill_num == 40){
+            String searchURL = "https://www.google.com/search" + "?q=" + messageToUrl(lastWord);
+            Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start chrome.exe " + searchURL});
         }
         return final_answer;
     }
