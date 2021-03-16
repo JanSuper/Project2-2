@@ -23,52 +23,36 @@ B I can show you the weather (type "Weather") or your UM schedule (type "this we
 U How is the weather
 B 1
 
-U What is my next Lecture
+U What next Lecture
 B 10
 U What are my lectures this week
 B 11
 U What are my lectures this month
 B 12
+U What are my lectures today , which lecture do I have today
+B 13
 
-U What time is it
-B 20
-U Set a timer
-B 20
-U Set a stopwatch
-B 20
-U Get a timer
-B 20
-U Get a stopwatch
-B 20
-U Set an alarm
-B 20
-U Get my alarm
-B 20
-U Show me the clock
-B 20
-U Start a stopwatch
+U What time is it , Set a timer , Set a stopwatch , Get a timer , Get a stopwatch , Set an alarm , Get my alarm , Show me the clock , Start a stopwatch
 B 20
 
-U Create skill
-B 30
-U New skill
+U Create skill , new skill
 B 30
 
-//VariableSkills
-U How is the weather in
-B 2
+U Open google map , open map
+B 40
+U Open google
+B 41
+U Look up , search on google , search on web
+B 42
 
-U What time is it in
-B 21
-U Set an alarm at
-B 22
+U Open mediaplayer
+B 50
+
+U Open my calendar , show calendar
+B 60
 
 U Look up
 B 40
 
 //NEW SKILL
 
-U Hi how are you
-B Hi Im fine thanks
-U what time is it
-B it is 1226

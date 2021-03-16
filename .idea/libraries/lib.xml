@@ -1,34 +1,13 @@
 <component name="libraryTable">
   <library name="lib">
     <CLASSES>
-<<<<<<< Updated upstream
-      <root url="file://$PROJECT_DIR$/../../../../../../java/javafx-sdk-11.0.2/lib" />
+      <root url="file://$PATH_TO_FX$" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="file://$PROJECT_DIR$/../../../../../../java/javafx-sdk-11.0.2/lib/src/javafx.base" />
-      <root url="file://$PROJECT_DIR$/../../../../../../java/javafx-sdk-11.0.2/lib/src/javafx.controls" />
-      <root url="file://$PROJECT_DIR$/../../../../../../java/javafx-sdk-11.0.2/lib/src/javafx.fxml" />
-      <root url="file://$PROJECT_DIR$/../../../../../../java/javafx-sdk-11.0.2/lib/src/javafx.graphics" />
-      <root url="file://$PROJECT_DIR$/../../../../../../java/javafx-sdk-11.0.2/lib/src/javafx.media" />
-      <root url="file://$PROJECT_DIR$/../../../../../../java/javafx-sdk-11.0.2/lib/src/javafx.swing" />
-      <root url="file://$PROJECT_DIR$/../../../../../../java/javafx-sdk-11.0.2/lib/src/javafx.web" />
+      <root url="file://$PATH_TO_FX$" />
     </SOURCES>
-    <jarDirectory url="file://$PROJECT_DIR$/../../../../../../java/javafx-sdk-11.0.2/lib" recursive="false" />
-=======
-      <root url="file://$PROJECT_DIR$/../../java/javafx-sdk-11.0.2/lib" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES>
-      <root url="file://$PROJECT_DIR$/../../java/javafx-sdk-11.0.2/lib/javafx.base" />
-      <root url="file://$PROJECT_DIR$/../../java/javafx-sdk-11.0.2/lib/javafx.controls" />
-      <root url="file://$PROJECT_DIR$/../../java/javafx-sdk-11.0.2/lib/javafx.fxml" />
-      <root url="file://$PROJECT_DIR$/../../java/javafx-sdk-11.0.2/lib/javafx.graphics" />
-      <root url="file://$PROJECT_DIR$/../../java/javafx-sdk-11.0.2/lib/javafx.media" />
-      <root url="file://$PROJECT_DIR$/../../java/javafx-sdk-11.0.2/lib/javafx.swing" />
-      <root url="file://$PROJECT_DIR$/../../java/javafx-sdk-11.0.2/lib/javafx.web" />
-    </SOURCES>
-    <jarDirectory url="file://$PROJECT_DIR$/../../java/javafx-sdk-11.0.2/lib" recursive="false" />
->>>>>>> Stashed changes
+    <jarDirectory url="file://$PATH_TO_FX$" recursive="false" />
+    <jarDirectory url="file://$PATH_TO_FX$" recursive="false" type="SOURCES" />
   </library>
 </component>

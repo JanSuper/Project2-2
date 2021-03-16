@@ -1,11 +1,11 @@
 package Agents;
 
+import Interface.Chat.ChatApp;
+import Interface.Display.CalendarDisplay;
 import Interface.Screens.MainScreen;
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -35,10 +35,10 @@ public class Assistant {
     {
         //String clean_uMessage = removePunctuation(uMessage).toLowerCase();
         String clean_uMessage = uMessage;
+
         while(!getInfo(clean_uMessage)){
             setLastWord(clean_uMessage);
             clean_uMessage = removeLastWord(clean_uMessage);
-            //clean_uMessage = removeRandomWord(uMessage);
             if(clean_uMessage.isEmpty()){
                 String searchURL = "https://www.google.com/search" + "?q=" + messageToUrl(clean_uMessage);
                 Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start chrome.exe " + searchURL});
@@ -54,22 +54,7 @@ public class Assistant {
         return message.substring(0, lastIndex);
     }
 
-    public String removeRandomWord(String message){
-        String [] arr = message.split(" ");
-        Random random = new Random();
-        String randomWord = arr[random.nextInt(arr.length)];
-        lastWord = randomWord;
-        String newMessage = message.replaceAll(randomWord, "");
-        if(newMessage.charAt(newMessage.length()-1)==' '){
-            newMessage.replaceAll(" ","");
-        }
-        System.out.println(newMessage);
-        return newMessage;
-    }
-
-
     public boolean getInfo(String clean_uMessage) throws Exception{
-        System.out.println(clean_uMessage);
         ArrayList<String> res = new ArrayList<>();
         try{
             BufferedReader data = new BufferedReader(new FileReader(dataBase));
@@ -84,7 +69,6 @@ public class Assistant {
                         String r;
                         while ((r = data.readLine()).startsWith("B"))
                         {
-                            System.out.println("oui");
                             res.add(r.substring(2));
                         }
                     }
@@ -109,6 +93,10 @@ public class Assistant {
             {
                 response =  "Sorry something went wrong, the new skill could not be added to the database";
             }
+        }
+        else if(assistantMessage.get(assistantMessage.size()-1).startsWith("Do you want a \"local file\" or a \"url\" ?"))
+        {
+            //Mediaplayer options (youtube or local)
         }
         else if(res.isEmpty())
         {
@@ -138,18 +126,6 @@ public class Assistant {
         return true;
     }
 
-    public String messageToUrl(String message){
-        String url = "";
-        for (int i = 0; i < message.length(); i++) {
-            if(message.charAt(i) == ' '){
-                url+='+';
-            }else{
-                url+=message.charAt(i);
-            }
-        }
-        return url;
-    }
-
     public boolean isNumber(String res)
     {
         try{
@@ -171,7 +147,7 @@ public class Assistant {
             mainScreen.setWeatherDisplay("Maastricht","NL");
         }
         else if(skill_num == 2){
-            mainScreen.setWeatherDisplay(lastWord,lastWord);
+            mainScreen.setWeatherDisplay(lastWord.substring(0, lastWord.indexOf(' ')),lastWord.substring(0, lastWord.indexOf(' ')));
         }
         else if(skill_num == 10)
         {
@@ -193,8 +169,14 @@ public class Assistant {
                 final_answer = final_answer + System.lineSeparator() + System.lineSeparator() + this_month.get(i);
             }
         }
+        else if(skill_num == 13)
+        {
+            final_answer = "Your lecture(s) today is (are):" + System.lineSeparator();
+            final_answer = final_answer + new Skill_Schedule().getToday();
+        }
         else if(skill_num == 20)
         {
+            final_answer = "Opened the clock/timer/stopwatch";
             mainScreen.setClockAppDisplay();
         }
         else if(skill_num == 21)
@@ -213,9 +195,32 @@ public class Assistant {
                            "3. Write down the answer(s) you want from the assistant. If there is more than one answer (for the same question) make sure to separate them with a comma , " + System.lineSeparator() +
                            "4. Send everything into one message.";
         }
-        else if(skill_num == 40){
-            String searchURL = "https://www.google.com/search" + "?q=" + messageToUrl(lastWord);
+        else if(skill_num == 40)
+        {
+            final_answer = "Opened map.";
+            mainScreen.setMapDisplay(false);
+        }
+        else if(skill_num == 41)
+        {
+            final_answer = "Opened google.";
+            mainScreen.setMapDisplay(true);
+        }
+        else if(skill_num == 42)
+        {
+            String search = removeText(message);
+            System.out.println("Skill 42: "+ search);
+            String searchURL = "https://www.google.com/search" + "?q=" + messageToUrl(search);
             Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start chrome.exe " + searchURL});
+            final_answer = "Done.";
+        }
+        else if(skill_num == 50)
+        {
+            final_answer = "Do you want a \"local file\" or a \"url\" ? ";
+        }
+        else if(skill_num == 60)
+        {
+            final_answer = "Opened your calendar.";
+            mainScreen.setCalendarDisplay(new CalendarDisplay(mainScreen));
         }
         return final_answer;
     }
@@ -245,7 +250,6 @@ public class Assistant {
             String[] bAnswers = split_uMessage[1].split(",");
 
             try{BufferedWriter newData = new BufferedWriter(new FileWriter(dataBase, true));
-                System.out.println("Here now");
                 for(int j = 0; j <= uQuestions.length-1; j++)
                 {
                     uQuestions[j] = removePunctuation(uQuestions[j]);
@@ -280,5 +284,26 @@ public class Assistant {
     public void setAssistantMessage(List pAssistantMessage)
     {
         assistantMessage = pAssistantMessage;
+    }
+
+    public String removeText(String pMessage)
+    {
+        String res = pMessage.replace("search on google", "");
+        String temp = res.replace("look up", "");
+        res = temp.replace("search on web", "");
+        temp = removePunctuation(res);
+        return temp;
+    }
+
+    public String messageToUrl(String message){
+        String url = "";
+        for (int i = 0; i < message.length(); i++) {
+            if(message.charAt(i) == ' '){
+                url+='+';
+            }else{
+                url+=message.charAt(i);
+            }
+        }
+        return url;
     }
 }
