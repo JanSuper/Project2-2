@@ -32,7 +32,7 @@ import java.util.*;
 
 public class MainScreen {
     public ChatApp chat;
-    private ClockAppDisplay clockAppDisplay;
+    public ClockAppDisplay clockAppDisplay;
     public BorderPane root;
     public int borderWidth;
     public Border border;

@@ -5,8 +5,6 @@ import DataBase.Data;
 import Interface.Display.CalendarDisplay;
 import Interface.Display.MediaPlayerDisplay;
 import Interface.Screens.MainScreen;
-import Skills.Schedule.Skill_Schedule;
-import Skills.SkillEditor;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -31,10 +29,6 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 
 import java.io.*;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +46,6 @@ public class ChatApp extends VBox {
     private List<String>assistantMessages;
     private Assistant assistant_answer;
 
-    private SkillEditor skillEditor;
     private MainScreen mainScreen;
 
     public class MessageBubble extends HBox {
@@ -68,7 +61,6 @@ public class ChatApp extends VBox {
             userBubbleBackground = new Background(new BackgroundFill(Color.GRAY.darker(), new CornerRadii(7,0,7,7,false), Insets.EMPTY));
             assistantBubbleBackground = new Background(new BackgroundFill(themeColor, new CornerRadii(0,7,7,7,false), Insets.EMPTY));
             createLabel(message, direction);
-            skillEditor = new SkillEditor();
         }
 
         private void createLabel(String message, int direction) {
@@ -190,21 +182,6 @@ public class ChatApp extends VBox {
         messages.add(new MessageBubble(message, 1));
         assistant_answer.setAssistantMessage(assistantMessages);
 
-        /*if(message.toLowerCase().contains("create skill")){
-            messages.add(new MessageBubble("Please enter the title of the new skill",0));
-        }
-        else
-        if(assistantMessages.get(assistantMessages.size()-1).equals("Please enter the title of the new skill")||
-                assistantMessages.get(assistantMessages.size()-1).equals("Please remove the space in the new skill")
-        ){
-            if(!message.contains(" ")){
-                if(!skillEditor.createSkill(message)){
-                    messages.add(new MessageBubble("Couldn't create the new skill for some reasons",0));
-                }
-            }else{
-                messages.add(new MessageBubble("Please remove the space in the new skill",0));
-            }
-        }*/
         if(message.toLowerCase().contains("change password")){
             messages.add(new MessageBubble("Please enter a new password",0));
         }

@@ -16,19 +16,22 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class ClockVBox extends VBox {
-
+    private String country;
+    private Label digitalClock;
     public ClockVBox() {
         setSpacing(20);
         setAlignment(Pos.CENTER);
         setPadding(new Insets(140,0,0,0));
 
-        Label digitalClock = new Label();
+        digitalClock = new Label();
         digitalClock.setFont(Font.font("Tahoma", FontWeight.EXTRA_BOLD, 58));
         digitalClock.setTextFill(MainScreen.themeColor.darker().darker());
         digitalClock.setAlignment(Pos.CENTER);
-        bindClockLabelToTime(digitalClock);
+        bindClockLabelToTime();
 
         LocalDate currentDate = LocalDate.now();
         DayOfWeek dayOfWeek = currentDate.getDayOfWeek();
@@ -43,11 +46,17 @@ public class ClockVBox extends VBox {
         getChildren().addAll(digitalClock, dateLabel);
     }
 
-    private void bindClockLabelToTime(Label digitalClock) {
+    private void bindClockLabelToTime() {
         //digital clock updates per second
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0),
                 actionEvent -> {
-                    Calendar time = Calendar.getInstance();
+                    Calendar time = null;
+                    if(country==null){
+                        time = Calendar.getInstance();
+                    }else{
+                        TimeZone timeZone = TimeZone.getTimeZone(country);
+                        time = Calendar.getInstance(timeZone);
+                    }
                     String hourString = pad(2, ' ', time.get(Calendar.HOUR) == 0 ? "12" : time.get(Calendar.HOUR) + "");
                     String minuteString = pad(2, '0', time.get(Calendar.MINUTE) + "");
                     String secondString = pad(2, '0', time.get(Calendar.SECOND) + "");
@@ -62,5 +71,10 @@ public class ClockVBox extends VBox {
     //returns padded string from specified width
     public static String pad(int fieldWidth, char padChar, String s) {
         return String.valueOf(padChar).repeat(Math.max(0, fieldWidth - s.length())) + s;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+        bindClockLabelToTime();
     }
 }
