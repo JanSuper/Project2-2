@@ -60,19 +60,21 @@ public class Assistant {
     public String getResponse(String uMessage) throws Exception
     {
         lastWord = "";
+        int nbrOfTrail = 0;
         //String clean_uMessage = removePunctuation(uMessage).toLowerCase();
         String clean_uMessage = uMessage.toLowerCase();
         while(!getInfo(clean_uMessage)){
-            System.out.println("Question not known");
-            setLastWord(clean_uMessage);
-            clean_uMessage = removeLastWord(clean_uMessage);
-            //clean_uMessage = removeRandomWord(uMessage);
-            if(clean_uMessage.isEmpty()){
+            //System.out.println("Question not known");
+            //setLastWord(clean_uMessage);
+            //clean_uMessage = removeLastWord(clean_uMessage);
+            clean_uMessage = removeRandomWord(uMessage);
+            if(clean_uMessage.isEmpty()||nbrOfTrail>=1000){
                 String searchURL = "https://www.google.com/search" + "?q=" + messageToUrl(clean_uMessage);
                 Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start chrome.exe " + searchURL});
                 response = "I could not understand your demand...";
                 break;
             }
+            nbrOfTrail++;
         }
         return response;
     }
@@ -84,20 +86,34 @@ public class Assistant {
 
     public String removeRandomWord(String message){
         String [] arr = message.split(" ");
-        Random random = new Random();
-        String randomWord = arr[random.nextInt(arr.length)];
+        int randomNbr = new Random().nextInt(arr.length);
+        System.out.println(randomNbr);
+        String randomWord = arr[randomNbr];
         lastWord = randomWord;
+        System.out.println("last word : " + lastWord);
+        if(randomNbr!=arr.length-1){
+            randomWord = addCharToString(randomWord,' ',randomWord.length());
+        }
         String newMessage = message.replaceAll(randomWord, "");
-        if(newMessage.charAt(newMessage.length()-1)==' '){
-            newMessage.replaceAll(" ","");
+        String newMessage1 = "";
+        if(randomNbr==arr.length-1){
+            for (int i = 0; i < newMessage.length()-1; i++) {
+                newMessage1+=newMessage.charAt(i);
+            }
+            newMessage = newMessage1;
         }
         System.out.println(newMessage);
         return newMessage;
     }
+    public String addCharToString(String str, char c, int pos) {
+        StringBuilder stringBuilder = new StringBuilder(str);
+        stringBuilder.insert(pos, c);
+        return stringBuilder.toString();
+    }
 
 
     public boolean getInfo(String clean_uMessage) throws Exception{
-        System.out.println(clean_uMessage);
+        //System.out.println(clean_uMessage);
         ArrayList<String> res = new ArrayList<>();
         try{
             BufferedReader data = new BufferedReader(new FileReader(dataBase));
@@ -112,7 +128,9 @@ public class Assistant {
                         String r = "";
                         while ((r = data.readLine()).startsWith("B"))
                         {
-                            res.add(r.substring(2));
+                            if(!Data.getVariables().contains(r)){
+                                res.add(r.substring(2));
+                            }
                         }
                     }
                 }

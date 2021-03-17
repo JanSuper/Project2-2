@@ -59,10 +59,12 @@ U How is the weather in
 B 2
 U Change weather location to
 B 2
+U How is <CITY> today
+B 2
 
-U What time is it in
+U What time is it in <CITY>
 B 21
-U Set an alarm at
+U Set an alarm at <TIME>
 B 22
 
 U Look up
