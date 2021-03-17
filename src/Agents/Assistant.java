@@ -61,7 +61,7 @@ public class Assistant {
     {
         lastWord = "";
         //String clean_uMessage = removePunctuation(uMessage).toLowerCase();
-        String clean_uMessage = uMessage;
+        String clean_uMessage = uMessage.toLowerCase();
         while(!getInfo(clean_uMessage)){
             System.out.println("Question not known");
             setLastWord(clean_uMessage);
