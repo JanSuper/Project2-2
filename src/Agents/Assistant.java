@@ -59,9 +59,11 @@ public class Assistant {
 
     public String getResponse(String uMessage) throws Exception
     {
+        lastWord = "";
         //String clean_uMessage = removePunctuation(uMessage).toLowerCase();
         String clean_uMessage = uMessage;
         while(!getInfo(clean_uMessage)){
+            System.out.println("Question not known");
             setLastWord(clean_uMessage);
             clean_uMessage = removeLastWord(clean_uMessage);
             //clean_uMessage = removeRandomWord(uMessage);
@@ -107,10 +109,9 @@ public class Assistant {
                 {
                     if(s.toLowerCase().contains(clean_uMessage))
                     {
-                        String r;
+                        String r = "";
                         while ((r = data.readLine()).startsWith("B"))
                         {
-                            System.out.println("oui");
                             res.add(r.substring(2));
                         }
                     }
@@ -202,9 +203,8 @@ public class Assistant {
         }
         else if(skill_num == 2){
             try {
-                //mainScreen.setWeatherDisplay(lastWord,lastWord);  //TODO some issues with lastWord?
-                String city = "Amsterdam";  //TODO get from message
-                String country = "NL";
+                String city = "cityName";  //TODO being able to recognize if there is only a city name, a country name or both
+                String country = lastWord;
                 mainScreen.setWeatherDisplay(city, country);
                 final_answer = "This is what I found for the weather in "+ city + ", " + country + ".";
 
@@ -238,6 +238,7 @@ public class Assistant {
         }
         else if(skill_num == 21)
         {
+            System.out.println("Get time in " + lastWord);
             mainScreen.clockAppDisplay.clockVBox.setCountry(lastWord);
             mainScreen.setClockAppDisplay();
         }
@@ -267,7 +268,7 @@ public class Assistant {
         }
         newLastWord = new StringBuilder(newLastWord).reverse().toString() + " ";
         lastWord = newLastWord + lastWord;
-        System.out.println(lastWord);
+        System.out.println("last word : " + lastWord);
     }
 
     public int addNewSkill(String uMessage)

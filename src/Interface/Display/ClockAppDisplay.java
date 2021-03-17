@@ -29,6 +29,7 @@ public class ClockAppDisplay extends VBox {
         this.mainScreen = mainScreen;
         timerVBox = new TimerVBox();
         stopwatchVBox = new StopwatchVBox();
+        clockVBox = new ClockVBox();
 
         setBackground(new Background(new BackgroundFill(new Color(0.08,0.12, 0.15, 0.3), CornerRadii.EMPTY, Insets.EMPTY)));
 
@@ -115,7 +116,6 @@ public class ClockAppDisplay extends VBox {
     }
 
     private void setClockView() {
-        clockVBox = new ClockVBox();
         getChildren().add(clockVBox);
     }
 
