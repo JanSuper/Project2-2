@@ -3,9 +3,8 @@ package Agents;
 import Interface.Screens.MainScreen;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+
 import Agents.Assistant;
 import DataBase.Data;
 import Interface.Display.MediaPlayerDisplay;
@@ -41,13 +40,35 @@ public class Assistant {
     private MainScreen mainScreen;
     private String user_name;
     private List<String> assistantMessage;
+    private ArrayList SkillKeys;
+    private Properties keySet;
 
-    public Assistant(MainScreen pMainScreen, String pUser_name, List pAssistantMessage)
-    {
+    public void loadKeys() throws IOException {
+        Properties keys = new Properties();
+        String fileName = "keys.properties";
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileName);
+        if (inputStream != null) {
+            keys.load(inputStream);
+            keySet = keys;
+            Set<Object> allKeys = keys.keySet();
+            for(Object k:allKeys)
+            {
+                String key = (String) k;
+                SkillKeys.add(k);
+            }
+
+        } else {
+            throw new FileNotFoundException("property file '" + fileName + "' not found in the classpath");
+        }
+
+    }
+
+    public Assistant(MainScreen pMainScreen, String pUser_name, List pAssistantMessage) throws IOException {
         mainScreen = pMainScreen;
         user_name = pUser_name;
         messages = new ArrayList<>();
         assistantMessage = pAssistantMessage;
+        loadKeys();
     }
 
     public String getResponse(String uMessage) throws Exception
