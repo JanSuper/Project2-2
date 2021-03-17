@@ -1,11 +1,16 @@
 package Agents;
 
-import Interface.Chat.ChatApp;
-import Interface.Display.CalendarDisplay;
 import Interface.Screens.MainScreen;
 
 import java.io.*;
+import java.util.*;
+
+import Agents.Assistant;
+import DataBase.Data;
+import Interface.Display.MediaPlayerDisplay;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -18,11 +23,32 @@ public class Assistant {
     private MainScreen mainScreen;
     private String user_name;
     private List<String> assistantMessage;
+    private ArrayList SkillKeys;
+    private Properties keySet;
     private String lastWord;
     private String response;
 
-    public Assistant(MainScreen pMainScreen, String pUser_name, List pAssistantMessage)
-    {
+    public void loadKeys() throws IOException {
+        Properties keys = new Properties();
+        String fileName = "keys.properties";
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileName);
+        if (inputStream != null) {
+            keys.load(inputStream);
+            keySet = keys;
+            Set<Object> allKeys = keys.keySet();
+            for(Object k:allKeys)
+            {
+                String key = (String) k;
+                SkillKeys.add(k);
+            }
+
+        } else {
+            throw new FileNotFoundException("property file '" + fileName + "' not found in the classpath");
+        }
+
+    }
+
+    public Assistant(MainScreen pMainScreen, String pUser_name, List pAssistantMessage) throws IOException {
         mainScreen = pMainScreen;
         user_name = pUser_name;
         messages = new ArrayList<>();
@@ -33,18 +59,22 @@ public class Assistant {
 
     public String getResponse(String uMessage) throws Exception
     {
+        lastWord = "";
+        int nbrOfTrail = 0;
         //String clean_uMessage = removePunctuation(uMessage).toLowerCase();
-        String clean_uMessage = uMessage;
-
+        String clean_uMessage = uMessage.toLowerCase();
         while(!getInfo(clean_uMessage)){
-            setLastWord(clean_uMessage);
-            clean_uMessage = removeLastWord(clean_uMessage);
-            if(clean_uMessage.isEmpty()){
+            //System.out.println("Question not known");
+            //setLastWord(clean_uMessage);
+            //clean_uMessage = removeLastWord(clean_uMessage);
+            clean_uMessage = removeRandomWord(uMessage);
+            if(clean_uMessage.isEmpty()||nbrOfTrail>=1000){
                 String searchURL = "https://www.google.com/search" + "?q=" + messageToUrl(clean_uMessage);
                 Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start chrome.exe " + searchURL});
                 response = "I could not understand your demand...";
                 break;
             }
+            nbrOfTrail++;
         }
         return response;
     }
@@ -54,7 +84,36 @@ public class Assistant {
         return message.substring(0, lastIndex);
     }
 
+    public String removeRandomWord(String message){
+        String [] arr = message.split(" ");
+        int randomNbr = new Random().nextInt(arr.length);
+        System.out.println(randomNbr);
+        String randomWord = arr[randomNbr];
+        lastWord = randomWord;
+        System.out.println("last word : " + lastWord);
+        if(randomNbr!=arr.length-1){
+            randomWord = addCharToString(randomWord,' ',randomWord.length());
+        }
+        String newMessage = message.replaceAll(randomWord, "");
+        String newMessage1 = "";
+        if(randomNbr==arr.length-1){
+            for (int i = 0; i < newMessage.length()-1; i++) {
+                newMessage1+=newMessage.charAt(i);
+            }
+            newMessage = newMessage1;
+        }
+        System.out.println(newMessage);
+        return newMessage;
+    }
+    public String addCharToString(String str, char c, int pos) {
+        StringBuilder stringBuilder = new StringBuilder(str);
+        stringBuilder.insert(pos, c);
+        return stringBuilder.toString();
+    }
+
+
     public boolean getInfo(String clean_uMessage) throws Exception{
+        //System.out.println(clean_uMessage);
         ArrayList<String> res = new ArrayList<>();
         try{
             BufferedReader data = new BufferedReader(new FileReader(dataBase));
@@ -66,10 +125,12 @@ public class Assistant {
                 {
                     if(s.toLowerCase().contains(clean_uMessage))
                     {
-                        String r;
+                        String r = "";
                         while ((r = data.readLine()).startsWith("B"))
                         {
-                            res.add(r.substring(2));
+                            if(!Data.getVariables().contains(r)){
+                                res.add(r.substring(2));
+                            }
                         }
                     }
                 }
@@ -93,10 +154,6 @@ public class Assistant {
             {
                 response =  "Sorry something went wrong, the new skill could not be added to the database";
             }
-        }
-        else if(assistantMessage.get(assistantMessage.size()-1).startsWith("Do you want a \"local file\" or a \"url\" ?"))
-        {
-            //Mediaplayer options (youtube or local)
         }
         else if(res.isEmpty())
         {
@@ -126,6 +183,18 @@ public class Assistant {
         return true;
     }
 
+    public String messageToUrl(String message){
+        String url = "";
+        for (int i = 0; i < message.length(); i++) {
+            if(message.charAt(i) == ' '){
+                url+='+';
+            }else{
+                url+=message.charAt(i);
+            }
+        }
+        return url;
+    }
+
     public boolean isNumber(String res)
     {
         try{
@@ -144,10 +213,22 @@ public class Assistant {
         String final_answer = null;
         if(skill_num == 1)
         {
-            mainScreen.setWeatherDisplay("Maastricht","NL");
+            //TODO get user's city and country when creating a new account and use it here
+            String city = "Maastricht";
+            String country = "NL";
+            mainScreen.setWeatherDisplay(city,country);
+            final_answer = "This is what I found for the weather in "+ city + ", " + country + ". If you want to change the location type 'Change weather location to City, Country.' (e.g. Amsterdam, NL).";
         }
         else if(skill_num == 2){
-            mainScreen.setWeatherDisplay(lastWord.substring(0, lastWord.indexOf(' ')),lastWord.substring(0, lastWord.indexOf(' ')));
+            try {
+                String city = "cityName";  //TODO being able to recognize if there is only a city name, a country name or both
+                String country = lastWord;
+                mainScreen.setWeatherDisplay(city, country);
+                final_answer = "This is what I found for the weather in "+ city + ", " + country + ".";
+
+            } catch (Exception ex) {
+                final_answer = "Something went wrong! Please try again.";
+            }
         }
         else if(skill_num == 10)
         {
@@ -169,18 +250,13 @@ public class Assistant {
                 final_answer = final_answer + System.lineSeparator() + System.lineSeparator() + this_month.get(i);
             }
         }
-        else if(skill_num == 13)
-        {
-            final_answer = "Your lecture(s) today is (are):" + System.lineSeparator();
-            final_answer = final_answer + new Skill_Schedule().getToday();
-        }
         else if(skill_num == 20)
         {
-            final_answer = "Opened the clock/timer/stopwatch";
             mainScreen.setClockAppDisplay();
         }
         else if(skill_num == 21)
         {
+            System.out.println("Get time in " + lastWord);
             mainScreen.clockAppDisplay.clockVBox.setCountry(lastWord);
             mainScreen.setClockAppDisplay();
         }
@@ -195,32 +271,9 @@ public class Assistant {
                            "3. Write down the answer(s) you want from the assistant. If there is more than one answer (for the same question) make sure to separate them with a comma , " + System.lineSeparator() +
                            "4. Send everything into one message.";
         }
-        else if(skill_num == 40)
-        {
-            final_answer = "Opened map.";
-            mainScreen.setMapDisplay(false);
-        }
-        else if(skill_num == 41)
-        {
-            final_answer = "Opened google.";
-            mainScreen.setMapDisplay(true);
-        }
-        else if(skill_num == 42)
-        {
-            String search = removeText(message);
-            System.out.println("Skill 42: "+ search);
-            String searchURL = "https://www.google.com/search" + "?q=" + messageToUrl(search);
+        else if(skill_num == 40){
+            String searchURL = "https://www.google.com/search" + "?q=" + messageToUrl(lastWord);
             Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start chrome.exe " + searchURL});
-            final_answer = "Done.";
-        }
-        else if(skill_num == 50)
-        {
-            final_answer = "Do you want a \"local file\" or a \"url\" ? ";
-        }
-        else if(skill_num == 60)
-        {
-            final_answer = "Opened your calendar.";
-            mainScreen.setCalendarDisplay(new CalendarDisplay(mainScreen));
         }
         return final_answer;
     }
@@ -233,7 +286,7 @@ public class Assistant {
         }
         newLastWord = new StringBuilder(newLastWord).reverse().toString() + " ";
         lastWord = newLastWord + lastWord;
-        System.out.println(lastWord);
+        System.out.println("last word : " + lastWord);
     }
 
     public int addNewSkill(String uMessage)
@@ -250,6 +303,7 @@ public class Assistant {
             String[] bAnswers = split_uMessage[1].split(",");
 
             try{BufferedWriter newData = new BufferedWriter(new FileWriter(dataBase, true));
+                System.out.println("Here now");
                 for(int j = 0; j <= uQuestions.length-1; j++)
                 {
                     uQuestions[j] = removePunctuation(uQuestions[j]);
@@ -284,26 +338,5 @@ public class Assistant {
     public void setAssistantMessage(List pAssistantMessage)
     {
         assistantMessage = pAssistantMessage;
-    }
-
-    public String removeText(String pMessage)
-    {
-        String res = pMessage.replace("search on google", "");
-        String temp = res.replace("look up", "");
-        res = temp.replace("search on web", "");
-        temp = removePunctuation(res);
-        return temp;
-    }
-
-    public String messageToUrl(String message){
-        String url = "";
-        for (int i = 0; i < message.length(); i++) {
-            if(message.charAt(i) == ' '){
-                url+='+';
-            }else{
-                url+=message.charAt(i);
-            }
-        }
-        return url;
     }
 }

@@ -7,6 +7,7 @@ import javafx.scene.layout.*;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Data {
     private static String username = "defaultUsername";
@@ -14,7 +15,7 @@ public class Data {
 
     private static String [][] dataSet;
 
-    private static String[] variables = new String[]{"<DAY>","<TIME>","<COUNTRY>"};
+    private static ArrayList<String> variables = new ArrayList<>(Arrays.asList("<DAY>","<TIME>","<COUNTRY>","<CITY>"));
 
     private static User user;
     private static Assistant assistant;
@@ -87,5 +88,9 @@ public class Data {
 
     public static void setRemindersFile(File remindersFile) {
         Data.remindersFile = remindersFile;
+    }
+
+    public static ArrayList<String> getVariables() {
+        return variables;
     }
 }
