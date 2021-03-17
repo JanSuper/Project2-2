@@ -236,7 +236,7 @@ public class ChatApp extends VBox {
             mainScreen.setMediaPlayerDisplay(pane);
         }
         else if(message.toLowerCase().contains("clock")){
-            mainScreen.setClockAppDisplay();
+            mainScreen.setClockAppDisplay("Clock");
         }
         else if(message.toLowerCase().contains("calendar")){
             mainScreen.setCalendarDisplay(new CalendarDisplay(mainScreen));

@@ -16,12 +16,15 @@ import javafx.scene.text.FontWeight;
 
 public class ClockAppDisplay extends VBox {
     private HBox tabs;
-    private Button alarm;
-    private Button prevTab;
+    public Button alarm;
+    public Button clock;
+    public Button timer;
+    public Button stopwatch;
+    public Button prevTab;
     public AlarmVBox alarmVBox;
     public ClockVBox clockVBox;
     private TimerVBox timerVBox;
-    private StopwatchVBox stopwatchVBox;
+    public StopwatchVBox stopwatchVBox;
 
     private MainScreen mainScreen;
 
@@ -35,7 +38,6 @@ public class ClockAppDisplay extends VBox {
 
         setTabs();
         getChildren().add(tabs);
-        selectTab(alarm);
     }
 
     public void setTabs() {
@@ -47,13 +49,13 @@ public class ClockAppDisplay extends VBox {
         alarm = new Button("Alarm");
         designTab(alarm);
 
-        Button clock = new Button("Clock");
+        clock = new Button("Clock");
         designTab(clock);
 
-        Button timer = new Button("Timer");
+        timer = new Button("Timer");
         designTab(timer);
 
-        Button stopwatch = new Button("Stopwatch");
+        stopwatch = new Button("Stopwatch");
         designTab(stopwatch);
 
         Button exit = new Button("x");
@@ -83,7 +85,7 @@ public class ClockAppDisplay extends VBox {
         tab.setOnAction(e -> {deselectTab(prevTab); selectTab(tab);});
     }
 
-    private void selectTab(Button selectedTab) {
+    public void selectTab(Button selectedTab) {
         prevTab = selectedTab;
         selectedTab.setBackground(new Background(new BackgroundFill(MainScreen.themeColor.darker(), CornerRadii.EMPTY, Insets.EMPTY)));
         selectedTab.setTextFill(Color.LIGHTGRAY.brighter());
@@ -97,7 +99,7 @@ public class ClockAppDisplay extends VBox {
         }
     }
 
-    private void deselectTab(Button prevTab) {
+    public void deselectTab(Button prevTab) {
         prevTab.setBackground(Background.EMPTY);
         prevTab.setTextFill(Color.LIGHTGRAY);
         prevTab.setBorder(null);

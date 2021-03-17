@@ -1,20 +1,11 @@
 package Agents;
 
+import DataBase.Data;
 import Interface.Screens.MainScreen;
+import Skills.Schedule.Skill_Schedule;
 
 import java.io.*;
 import java.util.*;
-
-import Agents.Assistant;
-import DataBase.Data;
-import Interface.Display.MediaPlayerDisplay;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-
-import Skills.Schedule.Skill_Schedule;
 
 public class Assistant {
     private List<String> messages;
@@ -252,15 +243,42 @@ public class Assistant {
         }
         else if(skill_num == 20)
         {
-            mainScreen.setClockAppDisplay();
+            if (message.toLowerCase().contains("timer")) {
+                mainScreen.setClockAppDisplay("Timer");
+            }
+            else if (message.toLowerCase().contains("clock") || message.toLowerCase().contains("time")) {
+                mainScreen.setClockAppDisplay("Clock");
+            }
+            else if (message.toLowerCase().contains("stopwatch")) {
+                if (message.toLowerCase().contains("pause") && mainScreen.clockAppDisplay.stopwatchVBox.startPause.getText().equals("Pause")) {
+                    mainScreen.clockAppDisplay.stopwatchVBox.pauseStopwatch();
+                    final_answer = "The stopwatch is paused! Type 'reset/start stopwatch' or use the buttons on the left screen.";
+                }
+                else if (message.toLowerCase().contains("lap") && mainScreen.clockAppDisplay.stopwatchVBox.lapReset.getText().equals("Lap") && !mainScreen.clockAppDisplay.stopwatchVBox.lapReset.isDisabled()) {
+                    mainScreen.clockAppDisplay.stopwatchVBox.lapStopwatch();
+                    final_answer = mainScreen.clockAppDisplay.stopwatchVBox.lap.getText();
+                }
+                else if (message.toLowerCase().contains("reset") && mainScreen.clockAppDisplay.stopwatchVBox.lapReset.getText().equals("Reset")) {
+                    mainScreen.clockAppDisplay.stopwatchVBox.resetStopwatch();
+                }
+                else if ((message.toLowerCase().contains("set") && !message.toLowerCase().contains("reset")) || message.toLowerCase().contains("start")) {
+                    mainScreen.clockAppDisplay.stopwatchVBox.startStopwatch();
+                    final_answer = "The stopwatch has been started! Type 'lap/pause stopwatch' or use the buttons on the left screen.";
+                }
+                mainScreen.setClockAppDisplay("Stopwatch");
+            }
+            else {
+                mainScreen.setClockAppDisplay("Alarm");
+            }
         }
         else if(skill_num == 21)
         {
             System.out.println("Get time in " + lastWord);
             mainScreen.clockAppDisplay.clockVBox.setCountry(lastWord);
-            mainScreen.setClockAppDisplay();
+            mainScreen.setClockAppDisplay("Clock");
         }
         else if(skill_num == 22){
+            mainScreen.setClockAppDisplay("Alarm");
             mainScreen.clockAppDisplay.alarmVBox.addAlarm(lastWord,"no desc");
         }
         else if(skill_num == 30)

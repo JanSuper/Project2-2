@@ -156,7 +156,14 @@ public class MainScreen {
         root.setLeft(weatherDisplay);
     }
 
-    public void setClockAppDisplay() {
+    public void setClockAppDisplay(String firstTab) {
+        if (clockAppDisplay.prevTab != null) { clockAppDisplay.deselectTab(clockAppDisplay.prevTab); }
+        switch(firstTab) {
+            case "Alarm": clockAppDisplay.selectTab(clockAppDisplay.alarm); break;
+            case "Clock": clockAppDisplay.selectTab(clockAppDisplay.clock); break;
+            case "Timer": clockAppDisplay.selectTab(clockAppDisplay.timer); break;
+            case "Stopwatch": clockAppDisplay.selectTab(clockAppDisplay.stopwatch); break;
+        }
         clockAppDisplay.setBorder(border);
         clockAppDisplay.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
         clockAppDisplay.prefWidthProperty().bind(root.widthProperty().subtract(chat.prefWidthProperty()).subtract(borderWidth*2));
