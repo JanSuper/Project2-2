@@ -5,6 +5,7 @@ import Interface.Screens.MainScreen;
 import Skills.Schedule.Skill_Schedule;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 
 public class Assistant {
@@ -59,9 +60,12 @@ public class Assistant {
             //setLastWord(clean_uMessage);
             //clean_uMessage = removeLastWord(clean_uMessage);
             clean_uMessage = removeRandomWord(uMessage);
-            if(clean_uMessage.isEmpty()||nbrOfTrail>=1000){
+            if(clean_uMessage.isEmpty()||nbrOfTrail>=1000||clean_uMessage.length()==0){
+                /*
                 String searchURL = "https://www.google.com/search" + "?q=" + messageToUrl(clean_uMessage);
                 Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start chrome.exe " + searchURL});
+
+                 */
                 response = "I could not understand your demand...";
                 break;
             }
@@ -137,9 +141,13 @@ public class Assistant {
 
         if(assistantMessage.get(assistantMessage.size()-1).startsWith("To add a new skill to the assistant you have to follow these rules:"))
         {
-            if(addNewSkill(clean_uMessage) == 1)
+            int result = addNewSkill(clean_uMessage);
+            if(result == 1)
             {
                 response =  "The new skill was successfully added to the database.";
+            }
+            else if(result==-2){
+                response = "Task already implemented.";
             }
             else
             {
@@ -307,18 +315,19 @@ public class Assistant {
         System.out.println("last word : " + lastWord);
     }
 
-    public int addNewSkill(String uMessage)
-    {
+    public int addNewSkill(String uMessage) throws IOException {
         int success = -1;
         String[] split_uMessage = uMessage.split(";");
+        String[] uQuestions = split_uMessage[0].split(",");
+        String[] bAnswers = split_uMessage[1].split(",");
         if(split_uMessage.length > 2 || split_uMessage.length < 2)
         {
             success = 0;
+        }else if(skillAlreadyIn(uQuestions)){
+            success = -2;
         }
         else
         {
-            String[] uQuestions = split_uMessage[0].split(",");
-            String[] bAnswers = split_uMessage[1].split(",");
 
             try{BufferedWriter newData = new BufferedWriter(new FileWriter(dataBase, true));
                 System.out.println("Here now");
@@ -343,6 +352,18 @@ public class Assistant {
             }
         }
         return success;
+    }
+
+    public boolean skillAlreadyIn(String[] uQuestion) throws IOException {
+        String question = "";
+        String actual = Files.readString(dataBase.toPath()).toLowerCase();
+        for(int j = 0; j <= uQuestion.length-1; j++)
+        {
+            if(actual.contains(uQuestion[j])){
+                return true;
+            }
+        }
+        return false;
     }
 
     public String removePunctuation(String uMessage)
