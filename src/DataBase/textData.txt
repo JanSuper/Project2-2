@@ -32,21 +32,31 @@ B 12
 
 U What time is it
 B 20
-U Set a timer
+U Show me the clock
 B 20
-U Set a stopwatch
+U Set a timer
 B 20
 U Get a timer
 B 20
-U Get a stopwatch
+U Get the stopwatch
 B 20
 U Set an alarm
 B 20
 U Get my alarm
 B 20
-U Show me the clock
+U Set a stopwatch
 B 20
 U Start a stopwatch
+B 20
+U Set the stopwatch
+B 20
+U Pause stopwatch
+B 20
+U Start stopwatch
+B 20
+U Lap stopwatch
+B 20
+U Reset stopwatch
 B 20
 
 U Create skill

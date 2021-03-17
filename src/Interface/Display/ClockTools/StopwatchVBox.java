@@ -21,6 +21,10 @@ public class StopwatchVBox extends VBox {
     private ScrollPane lapsList;
     private Timeline stopwatchTimeline;
     private int minutesStopwatch = 0, secondsStopwatch = 0, millisStopwatch = 0;
+    public Button startPause;
+    public Button lapReset;
+    public Label lap;
+    private VBox laps;
 
     public StopwatchVBox() {
         setSpacing(40);
@@ -38,7 +42,7 @@ public class StopwatchVBox extends VBox {
         stopwatchTime.setAlignment(Pos.CENTER);
         bindStopwatchLabelToTime(stopwatchTime);
 
-        VBox laps = new VBox(17);
+        laps = new VBox(17);
         laps.setAlignment(Pos.CENTER);
         laps.setBackground(new Background(new BackgroundFill(new Color(0.1,0.1, 0.12, 0.3), CornerRadii.EMPTY, Insets.EMPTY)));
 
@@ -50,52 +54,71 @@ public class StopwatchVBox extends VBox {
         lapsList.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         lapsList.vvalueProperty().bind(laps.heightProperty());  //updating scrollPane
 
-        Button lapReset = new Button("Lap");
+        lapReset = new Button("Lap");
         lapReset.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY.brighter(), new CornerRadii(90,true), Insets.EMPTY)));
         lapReset.setDisable(true);
         designStopwatchButton(lapReset);
         lapReset.setOnAction(e-> {
             if(lapReset.getText().equals("Reset")) {
                 resetStopwatch();
-                stopwatchTime.setText("00:00:000");
-
-                lapReset.setText("Lap");
-                lapReset.setDisable(true);
-                laps.getChildren().clear();
             }
             else if(lapReset.getText().equals("Lap")) {
-                Label lap = new Label("Lap " + (laps.getChildren().size()+1) + "     " + stopwatchTime.getText());
-                lap.setFont(Font.font("Tahoma", FontWeight.EXTRA_BOLD, 18));
-                lap.setTextFill(Color.LIGHTSLATEGRAY.brighter());
-                laps.getChildren().add(lap);
+                lapStopwatch();
             }
         });
 
-        Button startPause = new Button("Start");
+        startPause = new Button("Start");
         startPause.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(90,true), Insets.EMPTY)));
         designStopwatchButton(startPause);
         startPause.setOnAction(e-> {
             if(startPause.getText().equals("Start")) {
-                stopwatchTimeline.play();
-
-                startPause.setText("Pause");
-                startPause.setBackground(new Background(new BackgroundFill(Color.OLIVE, new CornerRadii(90,true), Insets.EMPTY)));
-                lapReset.setDisable(false);
-                lapReset.setText("Lap");
+                startStopwatch();
             }
             else if(startPause.getText().equals("Pause")) {
-                stopwatchTimeline.pause();
-
-                startPause.setText("Start");
-                startPause.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(90,true), Insets.EMPTY)));
-                lapReset.setDisable(false);
-                lapReset.setText("Reset");
+                pauseStopwatch();
             }
         });
 
         buttons = new HBox(60);
         buttons.setAlignment(Pos.CENTER);
         buttons.getChildren().addAll(lapReset, startPause);
+    }
+
+    public void lapStopwatch() {
+        lap = new Label("Lap " + (laps.getChildren().size()+1) + "     " + stopwatchTime.getText());
+        lap.setFont(Font.font("Tahoma", FontWeight.EXTRA_BOLD, 18));
+        lap.setTextFill(Color.LIGHTSLATEGRAY.brighter());
+        laps.getChildren().add(lap);
+    }
+
+    public void startStopwatch() {
+        stopwatchTimeline.play();
+
+        startPause.setText("Pause");
+        startPause.setBackground(new Background(new BackgroundFill(Color.OLIVE, new CornerRadii(90,true), Insets.EMPTY)));
+        lapReset.setDisable(false);
+        lapReset.setText("Lap");
+    }
+
+    public void pauseStopwatch() {
+        stopwatchTimeline.pause();
+
+        startPause.setText("Start");
+        startPause.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(90,true), Insets.EMPTY)));
+        lapReset.setDisable(false);
+        lapReset.setText("Reset");
+    }
+
+    public void resetStopwatch() {
+        minutesStopwatch = 0;
+        secondsStopwatch = 0;
+        millisStopwatch = 0;
+        stopwatchTimeline.pause();
+        stopwatchTime.setText("00:00:000");
+
+        lapReset.setText("Lap");
+        lapReset.setDisable(true);
+        laps.getChildren().clear();
     }
 
     private void designStopwatchButton(Button button) {
@@ -123,12 +146,5 @@ public class StopwatchVBox extends VBox {
         }));
         stopwatchTimeline.setCycleCount(Timeline.INDEFINITE);
         stopwatchTimeline.setAutoReverse(false);
-    }
-
-    public void resetStopwatch() {
-        minutesStopwatch = 0;
-        secondsStopwatch = 0;
-        millisStopwatch = 0;
-        stopwatchTimeline.pause();
     }
 }
