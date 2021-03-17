@@ -252,6 +252,25 @@ public class Assistant {
         else if(skill_num == 20)
         {
             if (message.toLowerCase().contains("timer")) {
+                if (message.toLowerCase().contains("start") && !mainScreen.clockAppDisplay.timerVBox.timerTime.getText().equals("00 : 00 : 00") && mainScreen.clockAppDisplay.timerVBox.startPauseResume.getText().equals("Start")) {
+                    mainScreen.clockAppDisplay.timerVBox.startTimer();
+                    final_answer = "The timer started. Type 'Pause/Cancel timer' or use the options on the left screen.";
+                }
+                else if (message.toLowerCase().contains("pause") &&  mainScreen.clockAppDisplay.timerVBox.startPauseResume.getText().equals("Pause")) {
+                    mainScreen.clockAppDisplay.timerVBox.pauseTimer();
+                    final_answer = "The timer is paused. Type 'Resume/Cancel timer' or use the options on the left screen.";
+                }
+                else if (message.toLowerCase().contains("resume") &&  mainScreen.clockAppDisplay.timerVBox.startPauseResume.getText().equals("Resume")) {
+                    mainScreen.clockAppDisplay.timerVBox.resumeTimer();
+                    final_answer = "The timer is resumed. Type 'Pause/Cancel timer' or use the options on the left screen.";
+                }
+                else if (message.toLowerCase().contains("cancel") &&  !mainScreen.clockAppDisplay.timerVBox.cancel.isDisabled()) {
+                    mainScreen.clockAppDisplay.timerVBox.cancelTimer();
+                    final_answer = "The timer is canceled. To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
+                }
+                else {
+                    final_answer = "Here's the timer! To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
+                }
                 mainScreen.setClockAppDisplay("Timer");
             }
             else if (message.toLowerCase().contains("clock") || message.toLowerCase().contains("time")) {
@@ -288,6 +307,33 @@ public class Assistant {
         else if(skill_num == 22){
             mainScreen.setClockAppDisplay("Alarm");
             mainScreen.clockAppDisplay.alarmVBox.addAlarm(lastWord,"no desc");
+        }
+        else if(skill_num == 23){
+            String err = "Something went wrong! To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
+            mainScreen.setClockAppDisplay("Timer");
+            if (lastWord.length() == 8) {
+                String[] arr = new String[lastWord.length()];
+                for(int i = 0; i < lastWord.length(); i++)
+                {
+                    arr[i] = String.valueOf(lastWord.charAt(i));
+                }
+                if ((arr[2].equals(":") || arr[2].equals(".")) && (arr[5].equals(":")|| arr[5].equals("."))) {
+                    try {
+                        mainScreen.clockAppDisplay.timerVBox.hoursTimer = Integer.parseInt(arr[0] + arr[1]);
+                        mainScreen.clockAppDisplay.timerVBox.minutesTimer = Math.min(Integer.parseInt(arr[3] + arr[4]), 59); //max value for seconds and minutes is 59
+                        mainScreen.clockAppDisplay.timerVBox.secondsTimer = Math.min(Integer.parseInt(arr[6] + arr[7]), 59);
+
+                        mainScreen.clockAppDisplay.timerVBox.setTimerTime();
+                        mainScreen.clockAppDisplay.timerVBox.startTimer();
+                        final_answer = "A timer has been set for " + mainScreen.clockAppDisplay.timerVBox.timerTime.getText() + ". Type 'Pause/Cancel timer' or use the options on the left screen.";
+                    }
+                    catch (NumberFormatException e) {
+                        final_answer = err;
+                    }
+                }
+                else { final_answer = err; }
+            }
+            else { final_answer = err; }
         }
         else if(skill_num == 30)
         {
