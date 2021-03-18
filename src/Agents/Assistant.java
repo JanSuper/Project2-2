@@ -319,7 +319,7 @@ public class Assistant {
         else if(skill_num == 21)
         {
             System.out.println("Get time in " + lastWord);
-            mainScreen.clockAppDisplay.clockVBox.setCountry(lastWord);
+            //mainScreen.clockAppDisplay.clockVBox.setCountry(lastWord);
             mainScreen.setClockAppDisplay("Clock");
         }
         else if(skill_num == 22){
