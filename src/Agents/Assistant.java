@@ -4,6 +4,7 @@ import DataBase.Data;
 import Interface.Screens.MainScreen;
 import Skills.Schedule.Skill_Schedule;
 
+import java.awt.desktop.AboutEvent;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
@@ -19,6 +20,7 @@ public class Assistant {
     private Properties keySet;
     private String lastWord;
     private String response;
+    private final int max_Distance = 5;
 
     public void loadKeys() throws IOException {
         Properties keys = new Properties();
@@ -110,6 +112,8 @@ public class Assistant {
     public boolean getInfo(String clean_uMessage) throws Exception{
         //System.out.println(clean_uMessage);
         ArrayList<String> res = new ArrayList<>();
+        int score = 0;
+
         try{
             BufferedReader data = new BufferedReader(new FileReader(dataBase));
 
@@ -384,7 +388,6 @@ public class Assistant {
         {
 
             try{BufferedWriter newData = new BufferedWriter(new FileWriter(dataBase, true));
-                System.out.println("Here now");
                 for(int j = 0; j <= uQuestions.length-1; j++)
                 {
                     uQuestions[j] = removePunctuation(uQuestions[j]);
@@ -432,4 +435,79 @@ public class Assistant {
     {
         assistantMessage = pAssistantMessage;
     }
+
+    public int LevenshteinDistance(String uMessage, String dataBase_message, int threshold)
+    {
+        int uM = uMessage.length();
+        int dB = dataBase_message.length();
+        int[] cost_previous = new int[uM + 1];
+        int[] cost_distance = new int[uM + 1];
+        int[] cost_memory;
+        int limit = Math.min(uM,threshold);
+        int score = -1;
+
+        if(uM == 0 || dB == 0)
+        {
+            return score;
+        }
+
+        if(uM > dB)
+        {
+            String temp = uMessage;
+            uMessage = dataBase_message;
+            dataBase_message = temp;
+            int temp2 = uM;
+            uM = dB;
+            dB = temp2;
+        }
+
+        for(int i = 0; i <= limit; i++)
+        {
+            cost_previous[i] = i;
+        }
+        Arrays.fill(cost_previous, limit, cost_previous.length, Integer.MAX_VALUE);
+        Arrays.fill(cost_distance, Integer.MAX_VALUE);
+
+        for(int i = 1; i <= dB; i++)
+        {
+            char database_char = dataBase_message.charAt(i-1);
+            cost_distance[0] = i;
+
+            int min = Math.max(1, i-threshold);
+            int max = i > Integer.MAX_VALUE - threshold ? uM : Math.min(uM,threshold+i); //TODO Noo kucken
+
+            if(min > max)
+            {
+                return -1;
+            }
+
+            if(min > 1)
+            {
+                cost_distance[min-1] = Integer.MAX_VALUE;
+            }
+
+            for(int j = min; j <= max; j++)
+            {
+                if(uMessage.charAt(j-1) == database_char)
+                {
+                    cost_distance[j] = cost_previous[j-1];
+                }
+                else
+                {
+                    cost_distance[j] = 1 + Math.min(Math.min(cost_distance[j-1], cost_previous[j]), cost_previous[j-1]);
+                }
+            }
+
+            cost_memory = cost_previous;
+            cost_previous = cost_distance;
+            cost_distance = cost_memory;
+        }
+
+        if(cost_previous[uM] <= threshold)
+        {
+            score = cost_previous[uM];
+        }
+        return score;
+    }
+
 }
