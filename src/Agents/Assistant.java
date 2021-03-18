@@ -342,12 +342,14 @@ public class Assistant {
         }
         else if(skill_num == 30)
         {
-            mainScreen.displaySkill(mainScreen.newSkillDisplay);
+            mainScreen.setSkillEditorAppDisplay("Add skill");
             final_answer = "To add a new skill to the assistant you have to follow these rules:" + System.lineSeparator() +
                            "1. Write down the question(s) you will ask to the assistant. If there is more than one question (for the same answer) make sure to separate them with a comma , " + System.lineSeparator() +
                            "2. After the question(s) add a semicolon ; " + System.lineSeparator() +
                            "3. Write down the answer(s) you want from the assistant. If there is more than one answer (for the same question) make sure to separate them with a comma , " + System.lineSeparator() +
                            "4. Send everything into one message.";
+        }else if(skill_num == 31){
+            mainScreen.setSkillEditorAppDisplay("Edit skill");
         }
         else if(skill_num == 40){
             String searchURL = "https://www.google.com/search" + "?q=" + messageToUrl(lastWord);

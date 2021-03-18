@@ -1,14 +1,16 @@
-package Interface.Display;
+package Interface.Display.SkillEditorDisplayTools;
 
 import DataBase.Data;
 import Interface.Screens.MainScreen;
-import com.sun.tools.javac.Main;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -16,10 +18,9 @@ import javafx.scene.text.FontWeight;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.text.ParseException;
 import java.util.ArrayList;
 
-public class NewSkillDisplay extends VBox {
+public class EditSkillEditorVBox extends VBox {
     private MainScreen mainScreen;
     private HBox top;
     private VBox principal;
@@ -29,7 +30,7 @@ public class NewSkillDisplay extends VBox {
     private ArrayList<String> questions;
     private ArrayList<String> answers;
 
-    public NewSkillDisplay(MainScreen mainScreen){
+    public EditSkillEditorVBox(MainScreen mainScreen){
         this.mainScreen = mainScreen;
         questions = new ArrayList();
         answers = new ArrayList();
@@ -206,3 +207,4 @@ public class NewSkillDisplay extends VBox {
         return false;
     }
 }
+

@@ -71,6 +71,10 @@ U Create skill
 B 30
 U New skill
 B 30
+U Edit skill
+B 31
+U Modify skill
+B 32
 
 //VariableSkills
 U How is the weather in <CITY>
@@ -102,3 +106,5 @@ B 40
 
 U Hi how are you
 B Hi Im fine thanks
+U test etst
+B test
