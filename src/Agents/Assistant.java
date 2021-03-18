@@ -1,8 +1,17 @@
 package Agents;
 
 import DataBase.Data;
+import Interface.Chat.ChatApp;
+import Interface.Display.CalendarDisplay;
+import Interface.Display.MediaPlayerDisplay;
 import Interface.Screens.MainScreen;
 import Skills.Schedule.Skill_Schedule;
+import javafx.scene.layout.Pane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaException;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.web.WebView;
+import javafx.stage.FileChooser;
 
 import java.awt.desktop.AboutEvent;
 import java.io.*;
@@ -358,6 +367,39 @@ public class Assistant {
         else if(skill_num == 40){
             String searchURL = "https://www.google.com/search" + "?q=" + messageToUrl(lastWord);
             Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start chrome.exe " + searchURL});
+        }
+        else if(skill_num == 50){
+            FileChooser fileChooser = new FileChooser();
+            File selectedFile = fileChooser.showOpenDialog(mainScreen.stage);
+            try {
+                Media media = new Media (selectedFile.toURI().toString());
+                MediaPlayer mediaPlayer = new MediaPlayer(media);
+                mediaPlayer.setAutoPlay(true);
+                MediaPlayerDisplay mediaControl = new MediaPlayerDisplay(mediaPlayer);
+                mainScreen.displayUrlMediaPlayer(mediaControl);
+            } catch(NullPointerException e){
+                System.out.println("No file chosen");
+            } catch(MediaException e){
+                System.out.println("filetype not supported");
+            }
+        }
+        else if(skill_num == 51){
+            WebView webview = new WebView();
+            webview.getEngine().load(
+                    lastWord
+            );
+            Pane pane = new Pane();
+            pane.getChildren().add(webview);
+            mainScreen.displaySkill(pane);
+        }
+        else if(skill_num == 60){
+            mainScreen.displaySkill(new CalendarDisplay(mainScreen));
+        }
+        else if(skill_num == 70){
+            mainScreen.setMapDisplay(false);
+        }
+        else if(skill_num == 71){
+            mainScreen.setMapDisplay(true);
         }
         return final_answer;
     }

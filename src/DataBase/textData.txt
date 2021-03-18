@@ -76,6 +76,22 @@ B 31
 U Modify skill
 B 32
 
+U Listen to a music
+B 50
+U Watch a video
+B 50
+
+U Calendar
+B 60
+
+U Map
+B 70
+U Google map
+B 70
+
+U Google
+B 71
+
 //VariableSkills
 U How is the weather in <CITY>
 B 2
@@ -102,9 +118,12 @@ B 23
 U Look up
 B 40
 
+U Watch <URL>
+B 51
+
 //NEW SKILL
 
 U Hi how are you
 B Hi Im fine thanks
-U test etst
-B test
+U ouiouiiii
+B 30

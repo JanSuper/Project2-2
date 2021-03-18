@@ -10,14 +10,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Data {
-    private static ArrayList<String> skills = new ArrayList<>(Arrays.asList("Talk/Discussion","Weather","Clock","Calendar","Media Player"));
+    private static ArrayList<String> skills = new ArrayList<>(Arrays.asList("Talk/Discussion","Weather","Clock","Calendar","Media Player","Skill Editor"));
 
     private static String username = "defaultUsername";
     private static String password = "defaultPasseword";
 
     private static String [][] dataSet;
 
-    private static ArrayList<String> variables = new ArrayList<>(Arrays.asList("<DAY>","<TIME>","<COUNTRY>","<CITY>"));
+    private static ArrayList<String> variables = new ArrayList<>(Arrays.asList("<DAY>","<TIME>","<COUNTRY>","<CITY>","<URL>"));
 
     private static User user;
     private static Assistant assistant;

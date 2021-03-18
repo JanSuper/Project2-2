@@ -22,7 +22,6 @@ import java.util.ArrayList;
 
 public class AddSkillEditorVBox extends VBox {
     private MainScreen mainScreen;
-    private HBox top;
 
     private File dataBase = new File("src\\DataBase\\textData.txt");
 
@@ -53,10 +52,9 @@ public class AddSkillEditorVBox extends VBox {
         setPadding(new Insets(40,0,0,0));
         setBackground(new Background(new BackgroundFill(new Color(0.08,0.12, 0.15, 0.3), CornerRadii.EMPTY, Insets.EMPTY)));
         createContent();
-        getChildren().addAll(top,qLabel,question,qPlus,aLabel,answer,aPlus,skillDisplayLabel,skillDisplay,enter);    }
+        getChildren().addAll(qLabel,question,qPlus,aLabel,answer,aPlus,skillDisplayLabel,skillDisplay,enter);    }
 
     public void createContent(){
-        createTop();
 
         qLabel = new Label("Question:");
         qLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
@@ -64,19 +62,17 @@ public class AddSkillEditorVBox extends VBox {
         qLabel.setAlignment(Pos.CENTER);
 
         question = new TextField();
-        question.setFont(Font.font("Verdana", FontWeight.BOLD, 30));
+        question.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
         question.setPrefSize(10,50);
-        question.setScaleX(0.5);question.setScaleY(0.5);
 
         aLabel = new Label("Answer:");
         aLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
         aLabel.setTextFill(MainScreen.themeColor.darker());
         aLabel.setAlignment(Pos.CENTER);
 
-        answer = new TextField();
-        answer.setFont(Font.font("Verdana", FontWeight.BOLD, 30));
+        answer = new TextField("Either write an answer for a talk/discussion or select a skill to display");
+        answer.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
         answer.setPrefSize(10,50);
-        answer.setScaleX(0.5);answer.setScaleY(0.5);
 
         skillDisplayLabel = new Label("Which skill displays:");
         skillDisplayLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
@@ -98,7 +94,9 @@ public class AddSkillEditorVBox extends VBox {
         enter.setOnAction(e-> {
             //TODO add all the questions and answers when the possibility to add questions and answers is implemented
             questions.add(question.getText());
-            answers.add(answer.getText());
+            if(!answer.getText().equals("Either write an answer for a talk/discussion or select a skill to display")){
+                answers.add(answer.getText());
+            }
             int result = 0;
             try {
                 result = handleAddSkill();
@@ -110,7 +108,9 @@ public class AddSkillEditorVBox extends VBox {
             {
                 response =  "The new skill was successfully added to the database.";
                 question.setText("");
-                answer.setText("");
+                if(!answer.getText().equals("Either write an answer for a talk/discussion or select a skill to display")){
+                    answer.setText("");
+                }
                 skillDisplay.setValue(Data.getSkills().get(0));
                 questions.clear();
                 answers.clear();
@@ -118,7 +118,9 @@ public class AddSkillEditorVBox extends VBox {
             else if(result==-2){
                 response = "Task already implemented.";
                 question.setText("");
-                answer.setText("");
+                if(!answer.getText().equals("Either write an answer for a talk/discussion or select a skill to display")){
+                    answer.setText("");
+                }
                 skillDisplay.setValue(Data.getSkills().get(0));
                 questions.clear();
                 answers.clear();
@@ -129,37 +131,6 @@ public class AddSkillEditorVBox extends VBox {
             }
             System.out.println(response);
         });
-    }
-
-    public void createTop(){
-        top = new HBox(10);
-        top.setAlignment(Pos.CENTER);
-        top.setPrefHeight(80);
-        top.setBackground(new Background(new BackgroundFill(MainScreen.themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
-
-        Label title = new Label("Skill Editor");
-        title.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 40));
-        title.setTextFill(Color.WHITE);
-        title.setAlignment(Pos.CENTER);
-
-        Region region1 = new Region();
-        HBox.setHgrow(region1, Priority.ALWAYS);
-
-        Region region2 = new Region();
-        HBox.setHgrow(region2, Priority.ALWAYS);
-
-        Button exit = new Button("x");
-        exit.setCursor(Cursor.HAND);
-        exit.setBackground(Background.EMPTY);
-        exit.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 20));
-        exit.setTextFill(Color.DARKRED);
-        exit.setBorder(null);
-        exit.setAlignment(Pos.CENTER_RIGHT);
-        exit.setTranslateY(-17);
-        exit.setTranslateX(-2);
-        exit.setOnAction(e -> mainScreen.setOptionsMenu());
-
-        top.getChildren().addAll(region1,title,region2,exit);
     }
 
     public void setQPlusButton(HBox box){
@@ -184,9 +155,13 @@ public class AddSkillEditorVBox extends VBox {
                 {
                     newData.append("U " + questions.get(j) + System.lineSeparator());
                 }
-                for(int y = 0; y <= answers.size()-1; y++)
-                {
-                    newData.append("B " + answers.get(y) + System.lineSeparator());
+                if(answers.size()>0){
+                    for(int y = 0; y <= answers.size()-1; y++)
+                    {
+                        newData.append("B " + answers.get(y) + System.lineSeparator());
+                    }
+                }else{
+                    newData.write("B " + skillToDisplay() + System.lineSeparator());
                 }
                 success = 1;
                 newData.close();
@@ -199,6 +174,22 @@ public class AddSkillEditorVBox extends VBox {
             }
         }
         return success;
+    }
+    //"Talk/Discussion","Weather","Clock","Calendar","Media Player","Skill Editor"
+    public String skillToDisplay(){
+        String displayNbr = "";
+        if(skillDisplay.getValue().equals("Weather")){
+            displayNbr = "1";
+        }else if(skillDisplay.getValue().equals("Clock")){
+            displayNbr = "20";
+        }else if(skillDisplay.getValue().equals("Calendar")){
+            displayNbr = "10";
+        }else if(skillDisplay.getValue().equals("Media Player")){
+            displayNbr = "50";
+        }else if(skillDisplay.getValue().equals("Skill Editor")){
+            displayNbr = "30";
+        }
+        return displayNbr;
     }
 
     public boolean skillAlreadyIn(ArrayList uQuestion) throws IOException {
