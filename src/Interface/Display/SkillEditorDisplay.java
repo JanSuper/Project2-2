@@ -61,6 +61,7 @@ public class SkillEditorDisplay extends VBox {
         HBox.setHgrow(region, Priority.ALWAYS);
 
         tabs.getChildren().addAll(addSkill, editSkill, region, exit);
+        selectTab(editSkill);
     }
 
     private void designTab(Button tab) {
