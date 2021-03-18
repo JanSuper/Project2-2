@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Data {
+    private static ArrayList<String> skills = new ArrayList<>(Arrays.asList("Talk/Discussion","Weather","Clock","Calendar","Media Player"));
+
     private static String username = "defaultUsername";
     private static String password = "defaultPasseword";
 
@@ -92,5 +94,9 @@ public class Data {
 
     public static ArrayList<String> getVariables() {
         return variables;
+    }
+
+    public static ArrayList<String> getSkills() {
+        return skills;
     }
 }

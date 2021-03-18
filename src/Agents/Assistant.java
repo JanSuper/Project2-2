@@ -141,18 +141,7 @@ public class Assistant {
 
         if(assistantMessage.get(assistantMessage.size()-1).startsWith("To add a new skill to the assistant you have to follow these rules:"))
         {
-            int result = addNewSkill(clean_uMessage);
-            if(result == 1)
-            {
-                response =  "The new skill was successfully added to the database.";
-            }
-            else if(result==-2){
-                response = "Task already implemented.";
-            }
-            else
-            {
-                response =  "Sorry something went wrong, the new skill could not be added to the database";
-            }
+            response = handleNewSkill(clean_uMessage);
         }
         else if(res.isEmpty())
         {
@@ -180,6 +169,22 @@ public class Assistant {
             }
         }
         return true;
+    }
+
+    public String handleNewSkill(String clean_uMessage) throws IOException {
+        int result = addNewSkill(clean_uMessage);
+        if(result == 1)
+        {
+            response =  "The new skill was successfully added to the database.";
+        }
+        else if(result==-2){
+            response = "Task already implemented.";
+        }
+        else
+        {
+            response =  "Sorry something went wrong, the new skill could not be added to the database";
+        }
+        return response;
     }
 
     public String messageToUrl(String message){
@@ -337,6 +342,7 @@ public class Assistant {
         }
         else if(skill_num == 30)
         {
+            mainScreen.displaySkill(mainScreen.newSkillDisplay);
             final_answer = "To add a new skill to the assistant you have to follow these rules:" + System.lineSeparator() +
                            "1. Write down the question(s) you will ask to the assistant. If there is more than one question (for the same answer) make sure to separate them with a comma , " + System.lineSeparator() +
                            "2. After the question(s) add a semicolon ; " + System.lineSeparator() +
