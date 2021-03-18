@@ -30,7 +30,7 @@ import java.util.*;
 public class MainScreen {
     public ChatApp chat;
     public ClockAppDisplay clockAppDisplay;
-    public NewSkillDisplay newSkillDisplay;
+    public SkillEditorDisplay skillEditorDisplay;
     public BorderPane root;
     public int borderWidth;
     public Border border;
@@ -51,7 +51,7 @@ public class MainScreen {
         border = new Border(new BorderStroke(Color.DARKGRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(borderWidth)));
         chat = new ChatApp(Data.getUsername(),this);
         clockAppDisplay = new ClockAppDisplay(this);
-        newSkillDisplay = new NewSkillDisplay(this);
+        skillEditorDisplay = new SkillEditorDisplay(this);
 
         createContent();
         alarmsTime = new ArrayList<>();
@@ -170,6 +170,21 @@ public class MainScreen {
         clockAppDisplay.setScaleY(0.8);
 
         root.setLeft(clockAppDisplay);
+    }
+
+    public void setSkillEditorAppDisplay(String firstTab) {
+        if (skillEditorDisplay.prevTab != null) { skillEditorDisplay.deselectTab(skillEditorDisplay.prevTab); }
+        switch(firstTab) {
+            case "Add Skill": skillEditorDisplay.selectTab(skillEditorDisplay.addSkill); break;
+            case "Edit Skill": skillEditorDisplay.selectTab(skillEditorDisplay.editSkill); break;
+        }
+        skillEditorDisplay.setBorder(border);
+        skillEditorDisplay.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
+        skillEditorDisplay.prefWidthProperty().bind(root.widthProperty().subtract(chat.prefWidthProperty()).subtract(borderWidth*2));
+        skillEditorDisplay.setScaleX(0.8);
+        skillEditorDisplay.setScaleY(0.8);
+
+        root.setLeft(skillEditorDisplay);
     }
 
     public void setMapDisplay(boolean googlewebview) throws Exception {
