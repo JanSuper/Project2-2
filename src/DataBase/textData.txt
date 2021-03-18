@@ -36,13 +36,21 @@ U Show me the clock
 B 20
 U Set a timer
 B 20
-U Get a timer
+U Get the timer
 B 20
-U Get the stopwatch
+U Start timer
+B 20
+U Pause timer
+B 20
+U Resume timer
+B 20
+U Cancel timer
 B 20
 U Set an alarm
 B 20
 U Get my alarm
+B 20
+U Get the stopwatch
 B 20
 U Set a stopwatch
 B 20
@@ -65,9 +73,11 @@ U New skill
 B 30
 
 //VariableSkills
-U How is the weather in
+U How is the weather in <CITY>
 B 2
-U Change weather location to
+U What is the weather in <CITY>
+B 2
+U Change weather location to <CITY>
 B 2
 U How is <CITY> today
 B 2
@@ -76,6 +86,14 @@ U What time is it in <CITY>
 B 21
 U Set an alarm at <TIME>
 B 22
+U Set a timer for <TIME>
+B 23
+U Add a timer for <TIME>
+B 23
+U Set timer for <TIME>
+B 23
+U Start a timer for <TIME>
+B 23
 
 U Look up
 B 40

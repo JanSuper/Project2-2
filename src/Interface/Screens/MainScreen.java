@@ -2,10 +2,7 @@ package Interface.Screens;
 
 import DataBase.Data;
 import Interface.Chat.ChatApp;
-import Interface.Display.ClockAppDisplay;
-import Interface.Display.MapDisplay;
-import Interface.Display.MediaPlayerDisplay;
-import Interface.Display.WeatherDisplay;
+import Interface.Display.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Insets;
@@ -33,6 +30,7 @@ import java.util.*;
 public class MainScreen {
     public ChatApp chat;
     public ClockAppDisplay clockAppDisplay;
+    public NewSkillDisplay newSkillDisplay;
     public BorderPane root;
     public int borderWidth;
     public Border border;
@@ -53,6 +51,7 @@ public class MainScreen {
         border = new Border(new BorderStroke(Color.DARKGRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(borderWidth)));
         chat = new ChatApp(Data.getUsername(),this);
         clockAppDisplay = new ClockAppDisplay(this);
+        newSkillDisplay = new NewSkillDisplay(this);
 
         createContent();
         alarmsTime = new ArrayList<>();
@@ -187,7 +186,7 @@ public class MainScreen {
     }
 
 
-    public void setMediaPlayerDisplay(MediaPlayerDisplay mediaPlayerDisplay){
+    public void displayUrlMediaPlayer(MediaPlayerDisplay mediaPlayerDisplay){
         mediaPlayerDisplay.setBackground(Data.createBackGround());
         mediaPlayerDisplay.setBorder(border);
         mediaPlayerDisplay.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
@@ -201,17 +200,7 @@ public class MainScreen {
         root.setLeft(mediaPlayerDisplay);
     }
 
-    public void setMediaPlayerDisplay(Pane pane){
-        pane.setBackground(Data.createBackGround());
-        pane.setBorder(border);
-        pane.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
-        pane.prefWidthProperty().bind(root.widthProperty().subtract(chat.prefWidthProperty()).subtract(borderWidth*2));
-        pane.setScaleX(0.8);
-        pane.setScaleY(0.8);
-
-        root.setLeft(pane);
-    }
-    public void setCalendarDisplay(Pane pane){
+    public void displaySkill(Pane pane){
         pane.setBackground(Data.createBackGround());
         pane.setBorder(border);
         pane.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));

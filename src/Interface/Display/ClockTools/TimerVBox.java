@@ -21,10 +21,13 @@ import javafx.util.Duration;
 
 public class TimerVBox extends VBox {
     private Timeline timerTimeline;
-    private int hoursTimer = 0; int minutesTimer = 0; int secondsTimer = 0;
-    private Label timerTime;
+    public int hoursTimer = 0;
+    public int minutesTimer = 0;
+    public int secondsTimer = 0;
+    public Label timerTime;
     private HBox plus; HBox minus;
-    private Button startPauseResume; Button cancel;
+    public Button startPauseResume;
+    public Button cancel;
     private HBox buttons;
 
     public TimerVBox() {
@@ -54,14 +57,7 @@ public class TimerVBox extends VBox {
         cancel.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY.brighter(), new CornerRadii(90,true), Insets.EMPTY)));
         cancel.setDisable(true);
         designTimerButton(cancel);
-        cancel.setOnAction(e-> {
-            hoursTimer = 0;
-            minutesTimer = 0;
-            secondsTimer = 0;
-            timerTimeline.stop();
-            setTimerTime();
-            resetTimerButtons();
-        });
+        cancel.setOnAction(e-> cancelTimer());
 
         startPauseResume = new Button("Start");
         startPauseResume.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(90,true), Insets.EMPTY)));
@@ -70,23 +66,13 @@ public class TimerVBox extends VBox {
             disablePlusMinus(true, plus, minus);
             switch (startPauseResume.getText()) {
                 case "Start":
-                    timerTimeline.play();
-
-                    startPauseResume.setText("Pause");
-                    startPauseResume.setBackground(new Background(new BackgroundFill(Color.OLIVE, new CornerRadii(90, true), Insets.EMPTY)));
-                    cancel.setDisable(false);
+                    startTimer();
                     break;
                 case "Pause":
-                    timerTimeline.pause();
-
-                    startPauseResume.setText("Resume");
-                    startPauseResume.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(90, true), Insets.EMPTY)));
+                    pauseTimer();
                     break;
                 case "Resume":
-                    timerTimeline.play();
-
-                    startPauseResume.setText("Pause");
-                    startPauseResume.setBackground(new Background(new BackgroundFill(Color.OLIVE, new CornerRadii(90, true), Insets.EMPTY)));
+                    resumeTimer();
                     break;
             }
         });
@@ -94,6 +80,34 @@ public class TimerVBox extends VBox {
         buttons = new HBox(60);
         buttons.setAlignment(Pos.CENTER);
         buttons.getChildren().addAll(cancel, startPauseResume);
+    }
+
+    public void cancelTimer() {
+        hoursTimer = 0;
+        minutesTimer = 0;
+        secondsTimer = 0;
+        timerTimeline.stop();
+        setTimerTime();
+        resetTimerButtons();
+    }
+
+    public void startTimer() {
+        timerTimeline.play();
+        startPauseResume.setText("Pause");
+        startPauseResume.setBackground(new Background(new BackgroundFill(Color.OLIVE, new CornerRadii(90, true), Insets.EMPTY)));
+        cancel.setDisable(false);
+    }
+
+    public void pauseTimer() {
+        timerTimeline.pause();
+        startPauseResume.setText("Resume");
+        startPauseResume.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(90, true), Insets.EMPTY)));
+    }
+
+    public void resumeTimer() {
+        timerTimeline.play();
+        startPauseResume.setText("Pause");
+        startPauseResume.setBackground(new Background(new BackgroundFill(Color.OLIVE, new CornerRadii(90, true), Insets.EMPTY)));
     }
 
     private void disablePlusMinus(boolean b, HBox plus, HBox minus) {
@@ -168,8 +182,8 @@ public class TimerVBox extends VBox {
             else {
                 if(minutesTimer == 0 & secondsTimer == 0 & hoursTimer > 0) {
                     hoursTimer--;
-                    minutesTimer =59;
-                    secondsTimer =59;
+                    minutesTimer = 59;
+                    secondsTimer = 59;
                 }
                 else if (secondsTimer == 0 && minutesTimer > 0) {
                     minutesTimer--;
@@ -240,7 +254,7 @@ public class TimerVBox extends VBox {
         cancel.setDisable(true);
     }
 
-    private void setTimerTime() {
+    public void setTimerTime() {
         timerTime.setText(twoDigitString(hoursTimer)+" : "+twoDigitString(minutesTimer)+" : "+twoDigitString(secondsTimer));
     }
 

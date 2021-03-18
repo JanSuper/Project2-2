@@ -5,6 +5,7 @@ import Interface.Screens.MainScreen;
 import Skills.Schedule.Skill_Schedule;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 
 public class Assistant {
@@ -59,9 +60,12 @@ public class Assistant {
             //setLastWord(clean_uMessage);
             //clean_uMessage = removeLastWord(clean_uMessage);
             clean_uMessage = removeRandomWord(uMessage);
-            if(clean_uMessage.isEmpty()||nbrOfTrail>=1000){
+            if(clean_uMessage.isEmpty()||nbrOfTrail>=1000||clean_uMessage.length()==0){
+                /*
                 String searchURL = "https://www.google.com/search" + "?q=" + messageToUrl(clean_uMessage);
                 Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start chrome.exe " + searchURL});
+
+                 */
                 response = "I could not understand your demand...";
                 break;
             }
@@ -137,14 +141,7 @@ public class Assistant {
 
         if(assistantMessage.get(assistantMessage.size()-1).startsWith("To add a new skill to the assistant you have to follow these rules:"))
         {
-            if(addNewSkill(clean_uMessage) == 1)
-            {
-                response =  "The new skill was successfully added to the database.";
-            }
-            else
-            {
-                response =  "Sorry something went wrong, the new skill could not be added to the database";
-            }
+            response = handleNewSkill(clean_uMessage);
         }
         else if(res.isEmpty())
         {
@@ -172,6 +169,22 @@ public class Assistant {
             }
         }
         return true;
+    }
+
+    public String handleNewSkill(String clean_uMessage) throws IOException {
+        int result = addNewSkill(clean_uMessage);
+        if(result == 1)
+        {
+            response =  "The new skill was successfully added to the database.";
+        }
+        else if(result==-2){
+            response = "Task already implemented.";
+        }
+        else
+        {
+            response =  "Sorry something went wrong, the new skill could not be added to the database";
+        }
+        return response;
     }
 
     public String messageToUrl(String message){
@@ -244,6 +257,25 @@ public class Assistant {
         else if(skill_num == 20)
         {
             if (message.toLowerCase().contains("timer")) {
+                if (message.toLowerCase().contains("start") && !mainScreen.clockAppDisplay.timerVBox.timerTime.getText().equals("00 : 00 : 00") && mainScreen.clockAppDisplay.timerVBox.startPauseResume.getText().equals("Start")) {
+                    mainScreen.clockAppDisplay.timerVBox.startTimer();
+                    final_answer = "The timer started. Type 'Pause/Cancel timer' or use the options on the left screen.";
+                }
+                else if (message.toLowerCase().contains("pause") &&  mainScreen.clockAppDisplay.timerVBox.startPauseResume.getText().equals("Pause")) {
+                    mainScreen.clockAppDisplay.timerVBox.pauseTimer();
+                    final_answer = "The timer is paused. Type 'Resume/Cancel timer' or use the options on the left screen.";
+                }
+                else if (message.toLowerCase().contains("resume") &&  mainScreen.clockAppDisplay.timerVBox.startPauseResume.getText().equals("Resume")) {
+                    mainScreen.clockAppDisplay.timerVBox.resumeTimer();
+                    final_answer = "The timer is resumed. Type 'Pause/Cancel timer' or use the options on the left screen.";
+                }
+                else if (message.toLowerCase().contains("cancel") &&  !mainScreen.clockAppDisplay.timerVBox.cancel.isDisabled()) {
+                    mainScreen.clockAppDisplay.timerVBox.cancelTimer();
+                    final_answer = "The timer is canceled. To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
+                }
+                else {
+                    final_answer = "Here's the timer! To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
+                }
                 mainScreen.setClockAppDisplay("Timer");
             }
             else if (message.toLowerCase().contains("clock") || message.toLowerCase().contains("time")) {
@@ -281,8 +313,36 @@ public class Assistant {
             mainScreen.setClockAppDisplay("Alarm");
             mainScreen.clockAppDisplay.alarmVBox.addAlarm(lastWord,"no desc");
         }
+        else if(skill_num == 23){
+            String err = "Something went wrong! To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
+            mainScreen.setClockAppDisplay("Timer");
+            if (lastWord.length() == 8) {
+                String[] arr = new String[lastWord.length()];
+                for(int i = 0; i < lastWord.length(); i++)
+                {
+                    arr[i] = String.valueOf(lastWord.charAt(i));
+                }
+                if ((arr[2].equals(":") || arr[2].equals(".")) && (arr[5].equals(":")|| arr[5].equals("."))) {
+                    try {
+                        mainScreen.clockAppDisplay.timerVBox.hoursTimer = Integer.parseInt(arr[0] + arr[1]);
+                        mainScreen.clockAppDisplay.timerVBox.minutesTimer = Math.min(Integer.parseInt(arr[3] + arr[4]), 59); //max value for seconds and minutes is 59
+                        mainScreen.clockAppDisplay.timerVBox.secondsTimer = Math.min(Integer.parseInt(arr[6] + arr[7]), 59);
+
+                        mainScreen.clockAppDisplay.timerVBox.setTimerTime();
+                        mainScreen.clockAppDisplay.timerVBox.startTimer();
+                        final_answer = "A timer has been set for " + mainScreen.clockAppDisplay.timerVBox.timerTime.getText() + ". Type 'Pause/Cancel timer' or use the options on the left screen.";
+                    }
+                    catch (NumberFormatException e) {
+                        final_answer = err;
+                    }
+                }
+                else { final_answer = err; }
+            }
+            else { final_answer = err; }
+        }
         else if(skill_num == 30)
         {
+            mainScreen.displaySkill(mainScreen.newSkillDisplay);
             final_answer = "To add a new skill to the assistant you have to follow these rules:" + System.lineSeparator() +
                            "1. Write down the question(s) you will ask to the assistant. If there is more than one question (for the same answer) make sure to separate them with a comma , " + System.lineSeparator() +
                            "2. After the question(s) add a semicolon ; " + System.lineSeparator() +
@@ -307,18 +367,19 @@ public class Assistant {
         System.out.println("last word : " + lastWord);
     }
 
-    public int addNewSkill(String uMessage)
-    {
+    public int addNewSkill(String uMessage) throws IOException {
         int success = -1;
         String[] split_uMessage = uMessage.split(";");
+        String[] uQuestions = split_uMessage[0].split(",");
+        String[] bAnswers = split_uMessage[1].split(",");
         if(split_uMessage.length > 2 || split_uMessage.length < 2)
         {
             success = 0;
+        }else if(skillAlreadyIn(uQuestions)){
+            success = -2;
         }
         else
         {
-            String[] uQuestions = split_uMessage[0].split(",");
-            String[] bAnswers = split_uMessage[1].split(",");
 
             try{BufferedWriter newData = new BufferedWriter(new FileWriter(dataBase, true));
                 System.out.println("Here now");
@@ -343,6 +404,18 @@ public class Assistant {
             }
         }
         return success;
+    }
+
+    public boolean skillAlreadyIn(String[] uQuestion) throws IOException {
+        String question = "";
+        String actual = Files.readString(dataBase.toPath()).toLowerCase();
+        for(int j = 0; j <= uQuestion.length-1; j++)
+        {
+            if(actual.contains(uQuestion[j])){
+                return true;
+            }
+        }
+        return false;
     }
 
     public String removePunctuation(String uMessage)

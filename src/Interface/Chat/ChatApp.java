@@ -215,7 +215,7 @@ public class ChatApp extends VBox {
                     MediaPlayer mediaPlayer = new MediaPlayer(media);
                     mediaPlayer.setAutoPlay(true);
                     MediaPlayerDisplay mediaControl = new MediaPlayerDisplay(mediaPlayer);
-                    mainScreen.setMediaPlayerDisplay(mediaControl);
+                    mainScreen.displayUrlMediaPlayer(mediaControl);
                 } catch(NullPointerException e){
                     messages.add(new MessageBubble("No file chosen",0));
                 } catch(MediaException e){
@@ -233,13 +233,13 @@ public class ChatApp extends VBox {
 
             Pane pane = new Pane();
             pane.getChildren().add(webview);
-            mainScreen.setMediaPlayerDisplay(pane);
+            mainScreen.displaySkill(pane);
         }
         else if(message.toLowerCase().contains("clock")){
             mainScreen.setClockAppDisplay("Clock");
         }
         else if(message.toLowerCase().contains("calendar")){
-            mainScreen.setCalendarDisplay(new CalendarDisplay(mainScreen));
+            mainScreen.displaySkill(new CalendarDisplay(mainScreen));
         }
 
         //else if (message.toLowerCase().contains("look up")){
