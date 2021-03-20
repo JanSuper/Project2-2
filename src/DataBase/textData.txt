@@ -127,6 +127,13 @@ B 40
 U Watch <URL>
 B 51
 
+U Change password to <PSW>
+B 80
+U Set my password to <PSW>
+B 80
+U Modify password to <PSW>
+B 80
+
 //NEW SKILL
 
 U Hi how are you

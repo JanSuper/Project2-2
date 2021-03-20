@@ -396,9 +396,9 @@ public class Assistant {
                 MediaPlayerDisplay mediaControl = new MediaPlayerDisplay(mediaPlayer);
                 mainScreen.displayUrlMediaPlayer(mediaControl);
             } catch(NullPointerException e){
-                System.out.println("No file chosen");
+                mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat,"No file chosen",0));
             } catch(MediaException e){
-                System.out.println("filetype not supported");
+                mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat,"Filetype not supported",0));
             }
         }
         else if(skill_num == 51){
@@ -419,7 +419,56 @@ public class Assistant {
         else if(skill_num == 71){
             mainScreen.setMapDisplay(true);
         }
+        else if(skill_num == 80){
+            if(!lastWord.contains(" ")){
+                if(!changePassword(lastWord)){
+                    mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat, "Couldn't change the password for some reasons",0));
+                }
+            }else{
+                mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat, "Please remove the space in the password",0));
+            }
+        }
         return final_answer;
+    }
+
+    public boolean changePassword(String message){
+        String[][]dataset = Data.getDataSet();
+        for (int i = 0; i < dataset.length; i++) {
+            for (int j = 0; j < dataset[i].length; j++) {
+                if(dataset[i][j].equals(Data.getPassword())&&j == 1){
+                    dataset[i][j] = message;
+                    Data.setPassword(message);
+                    rewriteUsers(dataset);
+                    mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat, "Your new password is " + message,0));
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void rewriteUsers(String[][]dataset){
+        FileWriter writer;
+        {
+            try {
+                writer = new FileWriter(Data.getUsersFile());
+                PrintWriter out = new PrintWriter(writer);
+                for (int i = 0; i < dataset.length; i++) {
+                    for (int j = 0; j < dataset[i].length; j++) {
+                        if(j==1){
+                            out.print(dataset[i][j]);
+                        }else{
+                            out.print(dataset[i][j] + " ");
+                        }
+                    }
+                    out.println();
+                }
+
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void setLastWord(String message){

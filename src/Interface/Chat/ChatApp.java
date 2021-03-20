@@ -134,67 +134,7 @@ public class ChatApp extends VBox {
     public void sendMessage(String message) throws Exception {
         messages.add(new MessageBubble(this, message, 1));
         assistant_answer.setAssistantMessage(assistantMessages);
-
-        if(message.toLowerCase().contains("change password")){
-            messages.add(new MessageBubble(this, "Please enter a new password",0));
-        }
-        else if(assistantMessages.get(assistantMessages.size()-1).equals("Please enter a new password")||
-                assistantMessages.get(assistantMessages.size()-1).equals("Please remove the space in the password")
-        ){
-            if(!message.contains(" ")){
-                if(!changePassword(message)){
-                    messages.add(new MessageBubble(this, "Couldn't change the password for some reasons",0));
-                }
-            }else{
-                messages.add(new MessageBubble(this, "Please remove the space in the password",0));
-            }
-        }
-        /*
-        else if (message.toLowerCase().contains("map")) {
-            mainScreen.setMapDisplay(false);
-        }
-        else if (message.toLowerCase().contains("google")) {
-            mainScreen.setMapDisplay(true);
-        }
-        else if(message.toLowerCase().contains("media player")) {
-            messages.add(new MessageBubble("Do you want a \"local file\" or a \"url\" ? ", 0));
-        }
-        else if(assistantMessages.get(assistantMessages.size()-1).equals("Do you want a \"local file\" or a \"url\" ? ")){
-            if(message.toLowerCase().contains("local file")){
-                messages.add(new MessageBubble("Please choose a file",0));
-                FileChooser fileChooser = new FileChooser();
-                File selectedFile = fileChooser.showOpenDialog(mainScreen.stage);
-                try {
-                    Media media = new Media (selectedFile.toURI().toString());
-                    MediaPlayer mediaPlayer = new MediaPlayer(media);
-                    mediaPlayer.setAutoPlay(true);
-                    MediaPlayerDisplay mediaControl = new MediaPlayerDisplay(mediaPlayer);
-                    mainScreen.displayUrlMediaPlayer(mediaControl);
-                } catch(NullPointerException e){
-                    messages.add(new MessageBubble("No file chosen",0));
-                } catch(MediaException e){
-                    messages.add(new MessageBubble("filetype not supported",0));
-                }
-            }else if(message.toLowerCase().contains("url")){
-                messages.add(new MessageBubble("Please write the url of the video",0));
-            }
-        }
-        else if(assistantMessages.get(assistantMessages.size()-1).equals("Please write the url of the video")){
-            WebView webview = new WebView();
-            webview.getEngine().load(
-                    message
-            );
-
-            Pane pane = new Pane();
-            pane.getChildren().add(webview);
-            mainScreen.displaySkill(pane);
-        }
-
-         */
-        else
-        {
-            receiveMessage(assistant_answer.getResponse(message));
-        }
+        receiveMessage(assistant_answer.getResponse(message));
     }
 
     public String messageToUrl(String message){
