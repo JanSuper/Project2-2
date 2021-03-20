@@ -2,6 +2,7 @@ package Interface.Screens;
 
 import DataBase.Data;
 import Interface.Chat.ChatApp;
+import Interface.Chat.MessageBubble;
 import Interface.Display.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -96,7 +97,9 @@ public class MainScreen {
         settings.setOnMouseClicked(event -> displaySettings());
 
         designOptionButton(help);
-        help.setOnKeyReleased(event -> {});   //TODO
+        help.setOnMouseClicked(event -> {
+            chat.messages.add(new MessageBubble(chat,"Ask me what I can do, for example you can check the weather by typing \"Weather\" or your UM schedule by typing \"Next Lecture\", \"This week Lecture\".",0));
+        });
 
         designOptionButton(logOut);
         logOut.setOnMouseClicked(event -> {
@@ -135,9 +138,11 @@ public class MainScreen {
         help.setText("Change Password");
         logOut.setText("Back");
 
-        settings.setOnMouseClicked(event -> {}); //TODO
+        settings.setOnMouseClicked(event -> {}); //TODO add the volume slide
 
-        help.setOnKeyReleased(event -> {});   //TODO
+        help.setOnMouseClicked(event -> {
+            chat.messages.add(new MessageBubble(chat,"You can change your password by typing \"Set my password to <YourPassword>\".",0));
+        });
 
         logOut.setOnMouseClicked(event -> setOptionsMenu());
     }

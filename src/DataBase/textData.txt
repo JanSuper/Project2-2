@@ -14,7 +14,7 @@ B Good and you?
 
 //Help the User
 U Help
-B You can check the weather by typing "Weather" or your UM schedule by typing "Next Lecture", "This week Lecture".
+B Ask me what I can do, for example you can check the weather by typing "Weather" or your UM schedule by typing "Next Lecture", "This week Lecture".
 B Ask me what I can do
 U What can you do
 B I can show you the weather (type "Weather") or your UM schedule (type "this week lecture").
