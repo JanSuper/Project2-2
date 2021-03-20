@@ -1,6 +1,7 @@
 package Interface.Display.SkillEditorDisplayTools;
 
 import DataBase.Data;
+import Interface.Chat.MessageBubble;
 import Interface.Screens.MainScreen;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -129,7 +130,7 @@ public class AddSkillEditorVBox extends VBox {
             {
                 response =  "Sorry something went wrong, the new skill could not be added to the database";
             }
-            System.out.println(response);
+            mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat,response,0));
         });
     }
 

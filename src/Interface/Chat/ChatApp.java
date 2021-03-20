@@ -137,60 +137,6 @@ public class ChatApp extends VBox {
         receiveMessage(assistant_answer.getResponse(message));
     }
 
-    public String messageToUrl(String message){
-        String url = "";
-        for (int i = 0; i < message.length(); i++) {
-            if(message.charAt(i) == ' '){
-                url+='+';
-            }else{
-                url+=message.charAt(i);
-            }
-        }
-        return url;
-    }
-
-    public boolean changePassword(String message){
-        System.out.println(Data.getPassword());
-        String[][]dataset = Data.getDataSet();
-        for (int i = 0; i < dataset.length; i++) {
-            for (int j = 0; j < dataset[i].length; j++) {
-                System.out.println(dataset[i][j]);
-                if(dataset[i][j].equals(Data.getPassword())&&j == 1){
-                    dataset[i][j] = message;
-                    Data.setPassword(message);
-                    rewriteUsers(dataset);
-                    System.out.println("new password " + message);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public void rewriteUsers(String[][]dataset){
-        FileWriter writer;
-        {
-            try {
-                writer = new FileWriter(Data.getUsersFile());
-                PrintWriter out = new PrintWriter(writer);
-                for (int i = 0; i < dataset.length; i++) {
-                    for (int j = 0; j < dataset[i].length; j++) {
-                        if(j==1){
-                            out.print(dataset[i][j]);
-                        }else{
-                            out.print(dataset[i][j] + " ");
-                        }
-                    }
-                    out.println();
-                }
-
-                writer.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     public void receiveMessage(String message) {    //adds assistant's response
         MessageBubble messageBubble = new MessageBubble(this, message, 0);
         if(messages.isEmpty()) {    //fixing position of first message
