@@ -2,8 +2,6 @@ package Interface.Chat;
 
 import Agents.Assistant;
 import DataBase.Data;
-import Interface.Display.CalendarDisplay;
-import Interface.Display.MediaPlayerDisplay;
 import Interface.Screens.MainScreen;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -19,14 +17,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaException;
-import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.web.WebView;
-import javafx.stage.FileChooser;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -41,52 +34,12 @@ public class ChatApp extends VBox {
     private TextField userInput;
     private Button sendMessageButton;
     private Image image;
-    private Color themeColor = MainScreen.themeColor;
-    private List<String>userMessages;
-    private List<String>assistantMessages;
-    private Assistant assistant_answer;
+    public Color themeColor = MainScreen.themeColor;
+    public List<String>userMessages;
+    public List<String>assistantMessages;
+    public Assistant assistant_answer;
 
     private MainScreen mainScreen;
-
-    public class MessageBubble extends HBox {
-        private Background userBubbleBackground;
-        private Background assistantBubbleBackground;
-
-        public MessageBubble(String message, int direction) {
-            if(direction==0){
-                assistantMessages.add(message);
-            }else{
-                userMessages.add(message);
-            }
-            userBubbleBackground = new Background(new BackgroundFill(Color.GRAY.darker(), new CornerRadii(7,0,7,7,false), Insets.EMPTY));
-            assistantBubbleBackground = new Background(new BackgroundFill(themeColor, new CornerRadii(0,7,7,7,false), Insets.EMPTY));
-            createLabel(message, direction);
-        }
-
-        private void createLabel(String message, int direction) {
-            Label messageLabel = new Label(message);
-            messageLabel.setPadding(new Insets(6));
-            messageLabel.setTextFill(Color.WHITE);
-            messageLabel.setWrapText(true);
-            messageLabel.setFont((Font.font("Cambria", 17)));
-            messageLabel.maxWidthProperty().bind(widthProperty().multiply(0.75));
-            messageLabel.setTranslateY(5);
-
-            if(direction == 0){
-                messageLabel.setBackground(assistantBubbleBackground);
-                messageLabel.setAlignment(Pos.CENTER_LEFT);
-                messageLabel.setTranslateX(10);
-                setAlignment(Pos.CENTER_LEFT);
-            }
-            else{
-                messageLabel.setBackground(userBubbleBackground);
-                messageLabel.setAlignment(Pos.CENTER_RIGHT);
-                messageLabel.setTranslateX(-10);
-                setAlignment(Pos.CENTER_RIGHT);
-            }
-            getChildren().setAll(messageLabel);
-        }
-    }
 
     public ChatApp(String userName,MainScreen mainScreen) throws Exception {
         super(7);
@@ -179,21 +132,21 @@ public class ChatApp extends VBox {
     }
 
     public void sendMessage(String message) throws Exception {
-        messages.add(new MessageBubble(message, 1));
+        messages.add(new MessageBubble(this, message, 1));
         assistant_answer.setAssistantMessage(assistantMessages);
 
         if(message.toLowerCase().contains("change password")){
-            messages.add(new MessageBubble("Please enter a new password",0));
+            messages.add(new MessageBubble(this, "Please enter a new password",0));
         }
         else if(assistantMessages.get(assistantMessages.size()-1).equals("Please enter a new password")||
                 assistantMessages.get(assistantMessages.size()-1).equals("Please remove the space in the password")
         ){
             if(!message.contains(" ")){
                 if(!changePassword(message)){
-                    messages.add(new MessageBubble("Couldn't change the password for some reasons",0));
+                    messages.add(new MessageBubble(this, "Couldn't change the password for some reasons",0));
                 }
             }else{
-                messages.add(new MessageBubble("Please remove the space in the password",0));
+                messages.add(new MessageBubble(this, "Please remove the space in the password",0));
             }
         }
         /*
@@ -299,7 +252,7 @@ public class ChatApp extends VBox {
     }
 
     public void receiveMessage(String message) {    //adds assistant's response
-        MessageBubble messageBubble = new MessageBubble(message, 0);
+        MessageBubble messageBubble = new MessageBubble(this, message, 0);
         if(messages.isEmpty()) {    //fixing position of first message
             messageBubble.setAlignment(Pos.TOP_LEFT);
         }

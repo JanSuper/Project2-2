@@ -70,6 +70,8 @@ U Lap stopwatch
 B 20
 U Reset stopwatch
 B 20
+U What are the time-zones IDs
+B 21
 
 U Create skill
 B 30
@@ -106,8 +108,6 @@ B 2
 U How is <CITY> today
 B 2
 
-U What time is it in <CITY>
-B 21
 U Set an alarm at <TIME>
 B 22
 U Set a timer for <TIME>
@@ -118,6 +118,8 @@ U Set timer for <TIME>
 B 23
 U Start a timer for <TIME>
 B 23
+U What time is it in <CITY>
+B 24
 
 U Look up
 B 40

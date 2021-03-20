@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class ClockVBox extends VBox {
-    private String country;
     private VBox currentClock;
     private VBox addedClocks;
     private ScrollPane addedClocksScrollPane;
@@ -155,7 +154,7 @@ public class ClockVBox extends VBox {
         vBox.getChildren().addAll(topBox, cmb, add);
     }
 
-    private void addClock(String zoneString) {
+    public void addClock(String zoneString) {
         HBox hBox = new HBox(20);
         hBox.setAlignment(Pos.CENTER);
 
@@ -228,11 +227,6 @@ public class ClockVBox extends VBox {
     //returns padded string from specified width
     public static String pad(int fieldWidth, char padChar, String s) {
         return String.valueOf(padChar).repeat(Math.max(0, fieldWidth - s.length())) + s;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-        //bindClockLabelToTime();
     }
 }
 

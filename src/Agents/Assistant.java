@@ -2,6 +2,7 @@ package Agents;
 
 import DataBase.Data;
 import Interface.Chat.ChatApp;
+import Interface.Chat.MessageBubble;
 import Interface.Display.CalendarDisplay;
 import Interface.Display.MediaPlayerDisplay;
 import Interface.Screens.MainScreen;
@@ -13,7 +14,6 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 
-import java.awt.desktop.AboutEvent;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
@@ -318,9 +318,12 @@ public class Assistant {
         }
         else if(skill_num == 21)
         {
-            System.out.println("Get time in " + lastWord);
-            //mainScreen.clockAppDisplay.clockVBox.setCountry(lastWord);
-            mainScreen.setClockAppDisplay("Clock");
+            String messageT = "";
+            for (String string : TimeZone.getAvailableIDs(TimeZone.getTimeZone(
+                    "GMT+02:00").getRawOffset())) {
+                messageT+=string + " ; ";
+            }
+            mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat,messageT,0));
         }
         else if(skill_num == 22){
             mainScreen.setClockAppDisplay("Alarm");
@@ -352,6 +355,21 @@ public class Assistant {
                 else { final_answer = err; }
             }
             else { final_answer = err; }
+        }
+        else if(skill_num == 24){
+            boolean timezone = false;
+            for (String string : TimeZone.getAvailableIDs(TimeZone.getTimeZone(
+                    "GMT+02:00").getRawOffset())) {
+                if(string.equals(lastWord)){
+                    timezone = true;
+                    mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat,"Added time-zone " + lastWord + " to the clock skill.",0));
+                    mainScreen.clockAppDisplay.clockVBox.addClock(lastWord);
+                    mainScreen.setClockAppDisplay("Clock");
+                }
+            }
+            if(!timezone){
+                mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat,"Please enter a valid time zone",0));
+            }
         }
         else if(skill_num == 30)
         {
