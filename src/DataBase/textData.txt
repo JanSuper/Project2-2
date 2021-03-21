@@ -138,6 +138,8 @@ U What time is it in <CITY>
 B 24
 U Add a clock for <CITY>
 B 24
+U Add a new clock for <CITY>
+B 24
 
 U Watch <URL>
 B 51
