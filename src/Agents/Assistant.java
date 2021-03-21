@@ -18,7 +18,6 @@ import java.nio.file.Files;
 import java.util.*;
 
 public class Assistant {
-    private List<String> messages;
     private File dataBase = new File("src\\DataBase\\textData.txt");
     private Random random = new Random();
     private MainScreen mainScreen;
@@ -53,7 +52,6 @@ public class Assistant {
     public Assistant(MainScreen pMainScreen, String pUser_name, List pAssistantMessage) throws IOException {
         mainScreen = pMainScreen;
         user_name = pUser_name;
-        messages = new ArrayList<>();
         assistantMessage = pAssistantMessage;
         lastWord = "";
         response = "";
@@ -61,32 +59,20 @@ public class Assistant {
 
     public String getResponse(String uMessage) throws Exception
     {
+        String cleanMessage = removePunctuation(uMessage).toLowerCase();
         lastWord = "";
         int nbrOfTrail = 0;
-        //String clean_uMessage = removePunctuation(uMessage).toLowerCase();
-        String clean_uMessage = uMessage.toLowerCase();
-        while(!getInfo(clean_uMessage)){
-            //System.out.println("Question not known");
-            //setLastWord(clean_uMessage);
-            //clean_uMessage = removeLastWord(clean_uMessage);
-            clean_uMessage = removeRandomWord(uMessage);
-            if(clean_uMessage.isEmpty()||nbrOfTrail>=1000||clean_uMessage.length()==0){
-                /*
-                String searchURL = "https://www.google.com/search" + "?q=" + messageToUrl(clean_uMessage);
-                Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start chrome.exe " + searchURL});
-
-                 */
+        String messageWithHole = cleanMessage;
+        //String clean_uMessage = uMessage.toLowerCase();
+        while(!getInfo(messageWithHole)){
+            messageWithHole = removeRandomWord(cleanMessage);
+            if(messageWithHole.isEmpty()||nbrOfTrail>=1000||messageWithHole.length()==0){
                 response = "I could not understand your demand...";
                 break;
             }
             nbrOfTrail++;
         }
         return response;
-    }
-
-    public String removeLastWord(String message){
-        var lastIndex = message.lastIndexOf(" ");
-        return message.substring(0, lastIndex);
     }
 
     public String removeRandomWord(String message){
@@ -130,7 +116,7 @@ public class Assistant {
             {
                 if(s.startsWith("U"))
                 {
-                    if(s.toLowerCase().contains(clean_uMessage))
+                    if(s.toLowerCase().contains(clean_uMessage.toLowerCase()))
                     {
                         String r = "";
                         while ((r = data.readLine()).startsWith("B"))
@@ -538,7 +524,7 @@ public class Assistant {
 
     public String removePunctuation(String uMessage)
     {
-        String clean_uMessage;
+        String clean_uMessage = "";
         String temp = uMessage.replaceAll("\\p{Punct}","");
         clean_uMessage = temp.trim().replaceAll(" +", " ");
         return clean_uMessage;

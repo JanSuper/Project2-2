@@ -136,8 +136,6 @@ U Start a timer for <TIME>
 B 23
 U What time is it in <CITY>
 B 24
-U Add a new clock for <CITY>
-B 24
 U Add a clock for <CITY>
 B 24
 
