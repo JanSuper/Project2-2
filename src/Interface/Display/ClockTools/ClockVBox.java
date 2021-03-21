@@ -26,6 +26,7 @@ import javafx.stage.Window;
 import javafx.util.Duration;
 
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -35,7 +36,8 @@ public class ClockVBox extends VBox {
     private VBox currentClock;
     private VBox addedClocks;
     private ScrollPane addedClocksScrollPane;
-    private String[] listOfZoneIDs;
+    public String[] listOfZoneIDs;
+    public List<String> tempTimeZoneIDs;
 
     public ClockVBox() {
         setSpacing(20);
@@ -57,9 +59,9 @@ public class ClockVBox extends VBox {
         getChildren().addAll(currentClock, addedClocksScrollPane);
 
         //adding all options of zoneIDs to the array
-        List<String> temp = new ArrayList<>(ZoneId.getAvailableZoneIds());
-        listOfZoneIDs = new String[temp.size()];
-        temp.toArray(listOfZoneIDs);
+        tempTimeZoneIDs = new ArrayList<>(ZoneId.getAvailableZoneIds());
+        listOfZoneIDs = new String[tempTimeZoneIDs.size()];
+        tempTimeZoneIDs.toArray(listOfZoneIDs);
     }
 
     private void createCurrentClock() {
@@ -152,6 +154,13 @@ public class ClockVBox extends VBox {
         add.setOnAction(e -> {if(cmb.getValue() != null) {addClock(cmb.getValue()); stage.close();}});
 
         vBox.getChildren().addAll(topBox, cmb, add);
+    }
+
+    public String getTimeFromZoneID(String zoneString) {
+        ZoneId zoneId = ZoneId.of(zoneString);
+        LocalTime localTime = LocalTime.now(zoneId);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        return("The time in " + zoneString + " is " + localTime.format(formatter));
     }
 
     public void addClock(String zoneString) {

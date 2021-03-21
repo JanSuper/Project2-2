@@ -77,7 +77,11 @@ U Lap stopwatch
 B 20
 U Reset stopwatch
 B 20
-U What are the time-zones IDs
+U What are the time-zone IDs
+B 21
+U What time-zones can I add to the clock
+B 21
+U What areas can I add to the clock
 B 21
 
 U Create skill
@@ -131,6 +135,10 @@ B 23
 U Start a timer for <TIME>
 B 23
 U What time is it in <CITY>
+B 24
+U Add a new clock for <CITY>
+B 24
+U Add a clock for <CITY>
 B 24
 
 U Watch <URL>

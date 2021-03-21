@@ -1,7 +1,6 @@
 package Agents;
 
 import DataBase.Data;
-import Interface.Chat.ChatApp;
 import Interface.Chat.MessageBubble;
 import Interface.Display.CalendarDisplay;
 import Interface.Display.MediaPlayerDisplay;
@@ -293,6 +292,7 @@ public class Assistant {
             }
             else if (message.toLowerCase().contains("clock") || message.toLowerCase().contains("time")) {
                 mainScreen.setClockAppDisplay("Clock");
+                final_answer = "Here's the clock! To add a new clock use the options on the left screen or type 'Add a new clock for Continent/City'. If you want the available areas you can add, type 'What areas can I add to the clock'.";
             }
             else if (message.toLowerCase().contains("stopwatch")) {
                 if (message.toLowerCase().contains("pause") && mainScreen.clockAppDisplay.stopwatchVBox.startPause.getText().equals("Pause")) {
@@ -319,11 +319,10 @@ public class Assistant {
         else if(skill_num == 21)
         {
             String messageT = "";
-            for (String string : TimeZone.getAvailableIDs(TimeZone.getTimeZone(
-                    "GMT+02:00").getRawOffset())) {
-                messageT+=string + " ; ";
+            for (String string : mainScreen.clockAppDisplay.clockVBox.listOfZoneIDs) {
+                messageT += string + ", ";
             }
-            mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat,messageT,0));
+            final_answer = "The available timezones you can add to the clock are:  " + messageT;
         }
         else if(skill_num == 22){
             mainScreen.setClockAppDisplay("Alarm");
@@ -356,19 +355,24 @@ public class Assistant {
             }
             else { final_answer = err; }
         }
-        else if(skill_num == 24){
-            boolean timezone = false;
-            for (String string : TimeZone.getAvailableIDs(TimeZone.getTimeZone(
-                    "GMT+02:00").getRawOffset())) {
-                if(string.equals(lastWord)){
-                    timezone = true;
-                    mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat,"Added time-zone " + lastWord + " to the clock skill.",0));
-                    mainScreen.clockAppDisplay.clockVBox.addClock(lastWord);
-                    mainScreen.setClockAppDisplay("Clock");
+        else if(skill_num == 24) {
+            if(message.toLowerCase().contains("What time is it in")) {
+                if(mainScreen.clockAppDisplay.clockVBox.tempTimeZoneIDs.contains(lastWord)) {
+                    final_answer = mainScreen.clockAppDisplay.clockVBox.getTimeFromZoneID(lastWord);
+                }
+                else {
+                    final_answer = "The area you requested the time for couldn't be found. If you want the available areas, type 'What are the time-zone IDs'.";
                 }
             }
-            if(!timezone){
-                mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat,"Please enter a valid time zone",0));
+            else {
+                if(mainScreen.clockAppDisplay.clockVBox.tempTimeZoneIDs.contains(lastWord)) {
+                    mainScreen.clockAppDisplay.clockVBox.addClock(lastWord);
+                    final_answer = "The clock was successfully added!";
+                }
+                else {
+                    final_answer = "The area you requested couldn't be found. If you want the available areas, type 'What areas can I add to the clock' or use the options on the left screen.";
+                }
+                mainScreen.setClockAppDisplay("Clock");
             }
         }
         else if(skill_num == 30)
