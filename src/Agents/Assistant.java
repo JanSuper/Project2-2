@@ -356,14 +356,24 @@ public class Assistant {
             else { final_answer = err; }
         }
         else if(skill_num == 24) {
-            if(mainScreen.clockAppDisplay.clockVBox.tempTimeZoneIDs.contains(lastWord)) {
-                mainScreen.clockAppDisplay.clockVBox.addClock(lastWord);
-                final_answer = "The clock was successfully added!";
+            if(message.toLowerCase().contains("what time is it in")) {
+                if(mainScreen.clockAppDisplay.clockVBox.tempTimeZoneIDs.contains(lastWord)) {
+                    final_answer = mainScreen.clockAppDisplay.clockVBox.getTimeFromZoneID(lastWord);
+                }
+                else {
+                    final_answer = "The area you requested the time for couldn't be found. If you want the available areas, type 'What are the time-zone IDs'.";
+                }
             }
             else {
-                final_answer = "The area you requested couldn't be found. If you want the available areas, type 'What areas can I add to the clock' or use the options on the left screen.";
+                if(mainScreen.clockAppDisplay.clockVBox.tempTimeZoneIDs.contains(lastWord)) {
+                    mainScreen.clockAppDisplay.clockVBox.addClock(lastWord);
+                    final_answer = "The clock was successfully added!";
+                }
+                else {
+                    final_answer = "The area you requested couldn't be found. If you want the available areas, type 'What areas can I add to the clock' or use the options on the left screen.";
+                }
+                mainScreen.setClockAppDisplay("Clock");
             }
-            mainScreen.setClockAppDisplay("Clock");
         }
         else if(skill_num == 30)
         {
