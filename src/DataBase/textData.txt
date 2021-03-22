@@ -163,3 +163,5 @@ U ouiouiiii
 B 30
 U test on skill
 B 50
+U chuuuut
+B 1

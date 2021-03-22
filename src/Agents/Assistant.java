@@ -16,7 +16,6 @@ import javafx.stage.FileChooser;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
-import java.util.regex.Pattern;
 
 public class Assistant {
     private File dataBase = new File("src\\DataBase\\textData.txt");
@@ -26,11 +25,12 @@ public class Assistant {
     private List<String> assistantMessage;
     private ArrayList SkillKeys;
     private Properties keySet;
-    private String lastWord;
+    private String randomWord;
     private String response;
     private final int max_Distance = 5;
     private String originalMessage;
     private String actual_lastWord;
+    private boolean firstLoop;
 
     public void loadKeys() throws IOException {
         Properties keys = new Properties();
@@ -56,23 +56,24 @@ public class Assistant {
         mainScreen = pMainScreen;
         user_name = pUser_name;
         assistantMessage = pAssistantMessage;
-        lastWord = "";
+        randomWord = "";
         response = "";
     }
 
     public String getResponse(String uMessage) throws Exception
     {
+        this.firstLoop = true;
         this.originalMessage = uMessage;
         this.actual_lastWord = uMessage.substring(uMessage.lastIndexOf(" ")+1);
         if(actual_lastWord.endsWith("?")) {actual_lastWord = actual_lastWord.replaceAll("[?]", ""); }
         else if((actual_lastWord.endsWith("."))) { actual_lastWord = actual_lastWord.substring(0,actual_lastWord.length()-1);}
 
-        String cleanMessage = removePunctuation(uMessage).toLowerCase();
-        lastWord = "";
+        String cleanMessage = removePunctuation(uMessage);
+        randomWord = "";
         int nbrOfTrail = 0;
         String messageWithHole = cleanMessage;
-        //String clean_uMessage = uMessage.toLowerCase();
         while(!getInfo(messageWithHole)){
+            firstLoop = false;
             messageWithHole = removeRandomWord(cleanMessage);
             if(messageWithHole.isEmpty()||nbrOfTrail>=1000||messageWithHole.length()==0){
                 response = "I could not understand your demand...";
@@ -86,10 +87,8 @@ public class Assistant {
     public String removeRandomWord(String message){
         String [] arr = message.split(" ");
         int randomNbr = new Random().nextInt(arr.length);
-        System.out.println(randomNbr);
-        String randomWord = arr[randomNbr];
-        lastWord = randomWord;
-        System.out.println("last word : " + lastWord);
+        this.randomWord = arr[randomNbr];
+        System.out.println("random word : " + this.randomWord);
         if(randomNbr!=arr.length-1){
             randomWord = addCharToString(randomWord,' ',randomWord.length());
         }
@@ -124,13 +123,17 @@ public class Assistant {
             {
                 if(s.startsWith("U"))
                 {
-                    if(clean_uMessage.toLowerCase().contains(s.toLowerCase().substring(2)))
+                    if(s.contains(clean_uMessage.substring(2)))
                     {
                         String r = "";
                         while ((r = data.readLine()).startsWith("B"))
                         {
-                            if(!Data.getVariables().contains(r)){
+                            if(firstLoop){
                                 res.add(r.substring(2));
+                            }else{
+                                if(!Data.getVariables().contains(r)){
+                                    res.add(r.substring(2));
+                                }
                             }
                         }
                     }
@@ -336,7 +339,7 @@ public class Assistant {
         }
         else if(skill_num == 22){
             mainScreen.setClockAppDisplay("Alarm");
-            mainScreen.clockAppDisplay.alarmVBox.addAlarm(lastWord,"no desc");
+            mainScreen.clockAppDisplay.alarmVBox.addAlarm(randomWord,"no desc");
         }
         else if(skill_num == 23){
             String err = "Something went wrong! To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
@@ -397,7 +400,7 @@ public class Assistant {
             mainScreen.setSkillEditorAppDisplay("Edit skill");
         }
         else if(skill_num == 40){
-            String searchURL = "https://www.google.com/search" + "?q=" + messageToUrl(lastWord);
+            String searchURL = "https://www.google.com/search" + "?q=" + messageToUrl(randomWord);
             Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start chrome.exe " + searchURL});
         }
         else if(skill_num == 50){
@@ -418,7 +421,7 @@ public class Assistant {
         else if(skill_num == 51){
             WebView webview = new WebView();
             webview.getEngine().load(
-                    lastWord
+                    randomWord
             );
             Pane pane = new Pane();
             pane.getChildren().add(webview);
@@ -434,8 +437,8 @@ public class Assistant {
             mainScreen.setMapDisplay(true);
         }
         else if(skill_num == 80){
-            if(!lastWord.contains(" ")){
-                if(!changePassword(lastWord)){
+            if(!randomWord.contains(" ")){
+                if(!changePassword(randomWord)){
                     mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat, "Couldn't change the password for some reasons",0));
                 }
             }else{
@@ -485,15 +488,15 @@ public class Assistant {
         }
     }
 
-    public void setLastWord(String message){
+    public void setRandomWord(String message){
         String newLastWord = "";
         int counter1 = message.length()-1;
         while(message.charAt(counter1)!=' '){
             newLastWord+=message.charAt(counter1--);
         }
         newLastWord = new StringBuilder(newLastWord).reverse().toString() + " ";
-        lastWord = newLastWord + lastWord;
-        System.out.println("last word : " + lastWord);
+        randomWord = newLastWord + randomWord;
+        System.out.println("last word : " + randomWord);
     }
 
     public int addNewSkill(String uMessage) throws IOException {
@@ -549,8 +552,10 @@ public class Assistant {
     public String removePunctuation(String uMessage)
     {
         String clean_uMessage = "";
-        String temp = uMessage.replaceAll("\\p{Punct}","");
+        String temp = uMessage.replaceAll("\\p{Punct}&&[^/]]","");
         clean_uMessage = temp.trim().replaceAll(" +", " ");
+        if(clean_uMessage.endsWith("?")) {clean_uMessage = clean_uMessage.replaceAll("[?]", ""); }
+        else if((clean_uMessage.endsWith("."))) { clean_uMessage = clean_uMessage.substring(0,clean_uMessage.length()-1);}
         return clean_uMessage;
     }
 

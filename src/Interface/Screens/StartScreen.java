@@ -50,6 +50,7 @@ public class StartScreen extends Application {
             new Pair<String, Runnable>("Log in", () -> {
                 try {
                     counter++;
+                    getData();
                     for(int i=0;!login&&i<dataSet.length;i++){
                         if (user.getText().equals(dataSet[i][0])&&psw.getText().equals(dataSet[i][1])){
                             login=true;
@@ -152,6 +153,10 @@ public class StartScreen extends Application {
         left.setTranslateY(-10);
         root.getChildren().add(left);
 
+        getData();
+    }
+
+    private void getData(){
         //create 2 arrays, one to store the data of the user and the other to split the data between password and username
         String [] splitData;
         String [][] data = new String [0][];
