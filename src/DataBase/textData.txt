@@ -96,7 +96,9 @@ B 32
 U Look up
 B 40
 
-U Listen to a music
+U Listen to music
+B 50
+U Listen to a song
 B 50
 U Watch a video
 B 50
