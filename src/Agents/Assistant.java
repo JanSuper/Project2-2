@@ -124,7 +124,7 @@ public class Assistant {
             {
                 if(s.startsWith("U"))
                 {
-                    if(s.toLowerCase().contains(clean_uMessage.toLowerCase()))
+                    if(clean_uMessage.toLowerCase().contains(s.toLowerCase().substring(2)))
                     {
                         String r = "";
                         while ((r = data.readLine()).startsWith("B"))
