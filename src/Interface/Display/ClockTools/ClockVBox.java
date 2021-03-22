@@ -160,7 +160,7 @@ public class ClockVBox extends VBox {
         ZoneId zoneId = ZoneId.of(zoneString);
         LocalTime localTime = LocalTime.now(zoneId);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-        return("The time in " + zoneString + " is " + localTime.format(formatter));
+        return("The time in " + zoneString + " is " + localTime.format(formatter) + ".");
     }
 
     public void addClock(String zoneString) {

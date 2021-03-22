@@ -30,6 +30,7 @@ public class Assistant {
     private String response;
     private final int max_Distance = 5;
     private String originalMessage;
+    private String actual_lastWord;
 
     public void loadKeys() throws IOException {
         Properties keys = new Properties();
@@ -62,6 +63,10 @@ public class Assistant {
     public String getResponse(String uMessage) throws Exception
     {
         this.originalMessage = uMessage;
+        this.actual_lastWord = uMessage.substring(uMessage.lastIndexOf(" ")+1);
+        if(actual_lastWord.endsWith("?")) {actual_lastWord = actual_lastWord.replaceAll("[?]", ""); }
+        else if((actual_lastWord.endsWith("."))) { actual_lastWord = actual_lastWord.substring(0,actual_lastWord.length()-1);}
+
         String cleanMessage = removePunctuation(uMessage).toLowerCase();
         lastWord = "";
         int nbrOfTrail = 0;
@@ -211,7 +216,7 @@ public class Assistant {
         return true;
     }
 
-    public String getSkill(String pNumb,String message) throws Exception
+    public String getSkill(String pNumb, String message) throws Exception
     {
         //The specific Skills will be called here
         int skill_num = Integer.parseInt(pNumb);
@@ -336,11 +341,11 @@ public class Assistant {
         else if(skill_num == 23){
             String err = "Something went wrong! To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
             mainScreen.setClockAppDisplay("Timer");
-            if (lastWord.length() == 8) {
-                String[] arr = new String[lastWord.length()];
-                for(int i = 0; i < lastWord.length(); i++)
+            if (actual_lastWord.length() == 8) {
+                String[] arr = new String[actual_lastWord.length()];
+                for(int i = 0; i < actual_lastWord.length(); i++)
                 {
-                    arr[i] = String.valueOf(lastWord.charAt(i));
+                    arr[i] = String.valueOf(actual_lastWord.charAt(i));
                 }
                 if ((arr[2].equals(":") || arr[2].equals(".")) && (arr[5].equals(":")|| arr[5].equals("."))) {
                     try {
@@ -361,17 +366,17 @@ public class Assistant {
             else { final_answer = err; }
         }
         else if(skill_num == 24) {
-            if(message.toLowerCase().contains("what time is it in")) {
-                if(mainScreen.clockAppDisplay.clockVBox.tempTimeZoneIDs.contains(lastWord)) {
-                    final_answer = mainScreen.clockAppDisplay.clockVBox.getTimeFromZoneID(lastWord);
+            if(originalMessage.toLowerCase().contains("what time is it in")) {
+                if(mainScreen.clockAppDisplay.clockVBox.tempTimeZoneIDs.contains(actual_lastWord)) {
+                    final_answer = mainScreen.clockAppDisplay.clockVBox.getTimeFromZoneID(actual_lastWord) + " If you want to add a new clock use the options on the left screen or type 'Add a new clock for Continent/City'.";
                 }
                 else {
                     final_answer = "The area you requested the time for couldn't be found. If you want the available areas, type 'What are the time-zone IDs'.";
                 }
             }
             else {
-                if(mainScreen.clockAppDisplay.clockVBox.tempTimeZoneIDs.contains(lastWord)) {
-                    mainScreen.clockAppDisplay.clockVBox.addClock(lastWord);
+                if(mainScreen.clockAppDisplay.clockVBox.tempTimeZoneIDs.contains(actual_lastWord)) {
+                    mainScreen.clockAppDisplay.clockVBox.addClock(actual_lastWord);
                     final_answer = "The clock was successfully added!";
                 }
                 else {

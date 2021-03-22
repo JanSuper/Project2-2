@@ -130,6 +130,8 @@ U Add a timer for <TIME>
 B 23
 U Set timer for <TIME>
 B 23
+U Set the timer for <TIME>
+B 23
 U Start a timer for <TIME>
 B 23
 U What time is it in <CITY>
