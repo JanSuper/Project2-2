@@ -16,6 +16,7 @@ import javafx.stage.FileChooser;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class Assistant {
     private File dataBase = new File("src\\DataBase\\textData.txt");
@@ -28,6 +29,7 @@ public class Assistant {
     private String lastWord;
     private String response;
     private final int max_Distance = 5;
+    private String originalMessage;
 
     public void loadKeys() throws IOException {
         Properties keys = new Properties();
@@ -59,6 +61,7 @@ public class Assistant {
 
     public String getResponse(String uMessage) throws Exception
     {
+        this.originalMessage = uMessage;
         String cleanMessage = removePunctuation(uMessage).toLowerCase();
         lastWord = "";
         int nbrOfTrail = 0;
@@ -219,16 +222,32 @@ public class Assistant {
             String city = "Maastricht";
             String country = "NL";
             mainScreen.setWeatherDisplay(city,country);
-            final_answer = "This is what I found for the weather in "+ city + ", " + country + ". If you want to change the location type 'Change weather location to City, Country.' (e.g. Amsterdam, NL).";
+            final_answer = "This is what I found for the weather in "+ city + ", " + country + ". " + mainScreen.weatherDisplay.currentDataString() + "If you want to change the location, type 'Change weather location to City,Country.' (e.g. Amsterdam,NL).";
         }
         else if(skill_num == 2){
             try {
-                String city = "cityName";  //TODO being able to recognize if there is only a city name, a country name or both
-                String country = lastWord;
-                mainScreen.setWeatherDisplay(city, country);
-                final_answer = "This is what I found for the weather in "+ city + ", " + country + ".";
+                String city;
+                String country = "";
+                String[] split;
+                if(originalMessage.contains("in")) {
+                    split = originalMessage.split("in");
+                }
+                else { split = originalMessage.split("to"); }
 
-            } catch (Exception ex) {
+                String temp = split[1];
+                if (temp.contains(",")) {
+                    String[] split2 = temp.split(",");
+                    city = split2[0].replace(" ", "");
+                    country = split2[1];
+                }
+                else {
+                    city = temp.replace(" ", "");
+                }
+
+                mainScreen.setWeatherDisplay(city, country);
+                final_answer = "This is what I found for the weather in "+ city + ". " + mainScreen.weatherDisplay.currentDataString() + "If you want to change the location, type 'Change weather location to City,Country.' (e.g. Amsterdam,NL).";
+            }
+            catch (Exception ex) {
                 final_answer = "Something went wrong! Please try again.";
             }
         }

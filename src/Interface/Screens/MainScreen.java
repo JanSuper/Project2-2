@@ -31,6 +31,7 @@ import java.util.*;
 public class MainScreen {
     public ChatApp chat;
     public ClockAppDisplay clockAppDisplay;
+    public WeatherDisplay weatherDisplay;
     public SkillEditorDisplay skillEditorDisplay;
     public BorderPane root;
     public int borderWidth;
@@ -148,7 +149,7 @@ public class MainScreen {
     }
 
     public void setWeatherDisplay(String city, String country) throws Exception {
-        WeatherDisplay weatherDisplay = new WeatherDisplay(city, country,this);
+        weatherDisplay = new WeatherDisplay(city, country,this);
         weatherDisplay.setSpacing(7);
         weatherDisplay.setBackground(Data.createBackGround());
         weatherDisplay.setBorder(border);

@@ -121,8 +121,6 @@ U What is the weather in <CITY>
 B 2
 U Change weather location to <CITY>
 B 2
-U How is <CITY> today
-B 2
 
 U Set an alarm at <TIME>
 B 22
