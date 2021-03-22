@@ -27,7 +27,7 @@ public class Assistant {
     private Properties keySet;
     private String randomWord;
     private String response;
-    private final int max_Distance = 5;
+    private int max_Distance = 2;
     private String originalMessage;
     private String actual_lastWord;
     private boolean firstLoop;
@@ -69,19 +69,27 @@ public class Assistant {
         else if((actual_lastWord.endsWith("."))) { actual_lastWord = actual_lastWord.substring(0,actual_lastWord.length()-1);}
 
         String cleanMessage = removePunctuation(uMessage);
+        max_Distance = Math.max(2, (int)(cleanMessage.length()*0.15));
         randomWord = "";
         int nbrOfTrail = 0;
         String messageWithHole = cleanMessage;
-        while(!getInfo(messageWithHole)){
-            firstLoop = false;
-            messageWithHole = removeRandomWord(cleanMessage);
-            if(messageWithHole.isEmpty()||nbrOfTrail>=1000||messageWithHole.length()==0){
-                response = "I could not understand your demand...";
-                break;
-            }
-            nbrOfTrail++;
+        if(getInfo_withLevenshtein(cleanMessage))
+        {
+            return response;
         }
-        return response;
+        else
+        {
+            while(!getInfo(messageWithHole)){
+                firstLoop = false;
+                messageWithHole = removeRandomWord(cleanMessage);
+                if(messageWithHole.isEmpty()||nbrOfTrail>=1000||messageWithHole.length()==0){
+                    response = "I could not understand your demand...";
+                    break;
+                }
+                nbrOfTrail++;
+            }
+            return response;
+        }
     }
 
     public String removeRandomWord(String message){
@@ -108,7 +116,6 @@ public class Assistant {
         stringBuilder.insert(pos, c);
         return stringBuilder.toString();
     }
-
 
     public boolean getInfo(String clean_uMessage) throws Exception{
         //System.out.println(clean_uMessage);
@@ -175,6 +182,96 @@ public class Assistant {
                 int max = res.size();
                 int n = random.nextInt(max);
                 response =  res.get(n);
+            }
+        }
+        return true;
+    }
+
+
+    public boolean getInfo_withLevenshtein(String clean_uMessage) throws Exception{
+        ArrayList<Answers> res = new ArrayList<>();
+        ArrayList<Answers> best_score_res = new ArrayList<>();
+        int score = -1;
+        int best_score = Integer.MAX_VALUE;
+
+        try{
+            BufferedReader data = new BufferedReader(new FileReader(dataBase));
+
+            String s;
+            while ((s = data.readLine()) != null)
+            {
+                score = -1;
+                if(s.startsWith("U"))
+                {
+
+                    score = LevenshteinDistance(clean_uMessage.toLowerCase(), s.substring(2).toLowerCase(), max_Distance);
+
+                    if(score != -1)
+                    {
+                        if(score < best_score)
+                        {
+                            best_score = score;
+                        }
+
+                        String r;
+                        while ((r = data.readLine()).startsWith("B"))
+                        {
+                            if(firstLoop){
+                                res.add(new Answers(score,r.substring(2)));
+                            }else{
+                                if(!Data.getVariables().contains(r)){
+                                    res.add(new Answers(score,r.substring(2)));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            data.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if(assistantMessage.get(assistantMessage.size()-1).startsWith("To add a new skill to the assistant you have to follow these rules:"))
+        {
+            response = handleNewSkill(clean_uMessage);
+        }
+        else if(res.isEmpty())
+        {
+            return false;
+        }
+        else
+        {
+            for(int i = 0; i < res.size(); i++)
+            {
+                if(res.get(i).getScore() == best_score)
+                {
+                    System.out.println("The score is : " + best_score + " | And the answer is: "+res.get(i).getAnswer());
+                    best_score_res.add(res.get(i));
+                }
+            }
+
+            if(isNumber(best_score_res.get(0).getAnswer()))
+            {
+                String skill_answer = getSkill(res.get(0).getAnswer(),clean_uMessage);
+                if(skill_answer == null)
+                {
+                    response =  "This is what I found for your request.";
+                }
+                else
+                {
+                    response =  skill_answer;
+                }
+            }
+            else
+            {
+                int max = best_score_res.size();
+                int n = random.nextInt(max);
+                response =  best_score_res.get(n).getAnswer();
             }
         }
         return true;
@@ -502,6 +599,8 @@ public class Assistant {
     public int addNewSkill(String uMessage) throws IOException {
         int success = -1;
         String[] split_uMessage = uMessage.split(";");
+
+        //Ajouter des if pour les commas
         String[] uQuestions = split_uMessage[0].split(",");
         String[] bAnswers = split_uMessage[1].split(",");
         if(split_uMessage.length > 2 || split_uMessage.length < 2)
@@ -514,15 +613,18 @@ public class Assistant {
         {
 
             try{BufferedWriter newData = new BufferedWriter(new FileWriter(dataBase, true));
+                String all_question = "U ";
                 for(int j = 0; j <= uQuestions.length-1; j++)
                 {
                     uQuestions[j] = removePunctuation(uQuestions[j]);
-                    newData.append("U " + uQuestions[j] + System.lineSeparator());
+                    all_question = all_question + uQuestions[j] + ", ";
                 }
+                newData.append(all_question + System.lineSeparator());
                 for(int y = 0; y <= bAnswers.length-1; y++)
                 {
                     bAnswers[y] = removePunctuation(bAnswers[y]);
                     newData.append("B " + bAnswers[y] + System.lineSeparator());
+                    System.out.println("Written from here (ASSISTANT)");
                 }
                 success = 1;
                 newData.close();
@@ -636,6 +738,27 @@ public class Assistant {
             score = cost_previous[uM];
         }
         return score;
+    }
+
+    public class Answers{
+        private String answer;
+        private int score = -1;
+
+        public Answers(int pScore, String pAnswer)
+        {
+            this.answer = pAnswer;
+            this.score = pScore;
+        }
+
+        public int getScore()
+        {
+            return score;
+        }
+
+        public String getAnswer()
+        {
+            return answer;
+        }
     }
 
 }

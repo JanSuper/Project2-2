@@ -10,6 +10,9 @@ U Hi
 B Hi!
 B Hey, how are you?
 B Hey!
+U Hey
+B Hi!
+B Hey!
 U How are you
 B Fine, and you?
 B Good and you?
@@ -17,7 +20,7 @@ B Good and you?
 /////////////////////////////////////////////////////////////////////////////////////////
 // HELP THE USER
 /////////////////////////////////////////////////////////////////////////////////////////
-U Help
+U Need Help
 B Ask me what I can do, for example you can check the weather by typing "Weather" or your UM schedule by typing "Next Lecture", "This week Lecture".
 B Ask me what I can do
 U What can you do
