@@ -169,10 +169,12 @@ public class CalendarDisplay2 extends HBox {
         primaryStage.setScene(scene);
         primaryStage.show();
 */
+<<<<<<< Updated upstream
         AlarmVBox alarmVBox = new AlarmVBox(mainScreen,true);
         alarmVBox.setVisible(false);
         getChildren().addAll(calendar,alarmVBox);
     }
+
 
     public static class Slot {
 

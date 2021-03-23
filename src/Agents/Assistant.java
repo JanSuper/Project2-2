@@ -228,7 +228,7 @@ public class Assistant {
 
     /**
      * Tries to find the nearest possible answer in a given range of errors max_Distance
-     * @param clean_message the user message without punctuation
+     * @param clean_uMessage the user message without punctuation
      */
     public boolean getInfo_withLevenshtein(String clean_uMessage) throws Exception{
         ArrayList<Answers> res = new ArrayList<>();
@@ -584,7 +584,7 @@ public class Assistant {
             mainScreen.displaySkill(new CalendarDisplay2(mainScreen));
         }
         else if(skill_num == 70){
-            mainScreen.setMapDisplay(message.toLowerCase());
+            mainScreen.setMapDisplay(randomWord);
         }
         else if(skill_num == 71){
             mainScreen.setMapDisplay("");
@@ -734,7 +734,7 @@ public class Assistant {
     /**
      * Compares the difference between two Strings using the Levenshtein algorithm.
      * @param uMessage the user message without punctuation
-     * @param database_message the message in the database
+     * @param dataBase_message the message in the database
      * @param threshold the maximum accepted distance between the Strings
      * @return the score between -1 and threshold
      */
