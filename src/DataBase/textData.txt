@@ -146,7 +146,7 @@ B 24
 U Add a new clock for <CITY>
 B 24
 
-U Watch <URL>
+U Watch from url <URL>
 B 51
 
 U Change password to <PSW>
@@ -162,9 +162,5 @@ B 80
 
 U Hi how are you
 B Hi Im fine thanks
-U ouiouiiii
-B 30
-U test on skill
-B 50
-U chuuuut
+U this is a test to display weather
 B 1

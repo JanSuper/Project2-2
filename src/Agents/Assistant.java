@@ -14,8 +14,11 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 
 import java.io.*;
+import java.net.URL;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Assistant {
     private File dataBase = new File("src\\DataBase\\textData.txt");
@@ -100,17 +103,46 @@ public class Assistant {
         if(randomNbr!=arr.length-1){
             randomWord = addCharToString(randomWord,' ',randomWord.length());
         }
-        String newMessage = message.replaceAll(randomWord, "");
-        String newMessage1 = "";
-        if(randomNbr==arr.length-1){
-            for (int i = 0; i < newMessage.length()-1; i++) {
-                newMessage1+=newMessage.charAt(i);
-            }
-            newMessage = newMessage1;
+        String newMessage = "";
+        if(isValidURL(randomWord)){
+            System.out.println("random word is a url");
+            newMessage = removeUrl(message);
+        }else{
+            newMessage = message.replaceAll(randomWord, "");
         }
-        System.out.println(newMessage);
+        System.out.println("message without the random word : " + newMessage);
         return newMessage;
     }
+
+    public static boolean isValidURL(String urlString)
+    {
+        try
+        {
+            URL url = new URL(urlString);
+            url.toURI();
+            return true;
+        } catch (Exception exception)
+        {
+            return false;
+        }
+    }
+
+    private String removeUrl(String commentstr)
+    {
+        // rid of ? and & in urls since replaceAll can't deal with them
+        String commentstr1 = commentstr.replaceAll("\\?", "").replaceAll("\\&", "");
+
+        String urlPattern = "((https?|ftp|gopher|telnet|file|Unsure|http):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)";
+        Pattern p = Pattern.compile(urlPattern,Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher(commentstr);
+        int i = 0;
+        while (m.find()) {
+            commentstr = commentstr1.replaceAll(m.group(i).replaceAll("\\?", "").replaceAll("\\&", ""),"").trim();
+            i++;
+        }
+        return commentstr;
+    }
+
     public String addCharToString(String str, char c, int pos) {
         StringBuilder stringBuilder = new StringBuilder(str);
         stringBuilder.insert(pos, c);
