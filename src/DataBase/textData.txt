@@ -70,6 +70,8 @@ U Set a stopwatch
 B 20
 U Start a stopwatch
 B 20
+U Start the stopwatch
+B 20
 U Set the stopwatch
 B 20
 U Pause stopwatch
