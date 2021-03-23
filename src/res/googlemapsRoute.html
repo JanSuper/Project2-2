@@ -90,7 +90,7 @@
         const directionsService = new google.maps.DirectionsService();
         const map = new google.maps.Map(document.getElementById("map"), {
           zoom: 7,
-          center: { lat: 50.84393334875959, lng: 5.68581630341052 },
+          center: { lat: $latitude, lng: $longitude },
         });
         directionsRenderer.setMap(map);
         directionsRenderer.setPanel(document.getElementById("right-panel"));
@@ -133,14 +133,14 @@
 <div id="floating-panel">
     <strong>Start:</strong>
     <select id="start">
-        <option value="">Maastricht</option>
-        <option value="Maastricht">Maastricht</option>
+        <option value="">SHOW ROUTE</option>
+        <option value="$source">$source</option>
     </select>
     <br />
     <strong>End:</strong>
     <select id="end">
-        <option value="">Cologne</option>
-        <option value="Cologne">Cologne</option>
+        <option value="">SHOW ROUTE</option>
+        <option value="$goal">$goal</option>
     </select>
 </div>
 <div id="right-panel"></div>
