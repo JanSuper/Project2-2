@@ -186,7 +186,7 @@ public class CalendarDisplay2 extends HBox {
             this.period = period;
 
             view = new Region();
-            view.setMinSize(80, 40);
+            view.setMinSize(160, 40);
 
         }
 
