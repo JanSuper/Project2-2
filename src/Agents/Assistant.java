@@ -584,10 +584,10 @@ public class Assistant {
             mainScreen.displaySkill(new CalendarDisplay2(mainScreen));
         }
         else if(skill_num == 70){
-            mainScreen.setMapDisplay(false);
+            mainScreen.setMapDisplay(message.toLowerCase());
         }
         else if(skill_num == 71){
-            mainScreen.setMapDisplay(true);
+            mainScreen.setMapDisplay("");
         }
         else if(skill_num == 80){
             if(!randomWord.contains(" ")){
