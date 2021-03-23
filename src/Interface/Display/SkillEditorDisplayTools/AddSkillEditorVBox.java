@@ -51,7 +51,6 @@ public class AddSkillEditorVBox extends VBox {
         setSpacing(20);
         setAlignment(Pos.CENTER);
         setPadding(new Insets(40,0,0,0));
-        setBackground(new Background(new BackgroundFill(new Color(0.08,0.12, 0.15, 0.3), CornerRadii.EMPTY, Insets.EMPTY)));
         createContent();
         getChildren().addAll(qLabel,question,qPlus,aLabel,answer,aPlus,skillDisplayLabel,skillDisplay,enter);    }
 

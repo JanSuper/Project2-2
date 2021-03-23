@@ -6,7 +6,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -22,7 +21,6 @@ import java.util.ArrayList;
 
 public class EditSkillEditorVBox extends VBox {
     private MainScreen mainScreen;
-    private HBox top;
     private VBox principal;
 
     private File dataBase = new File("src\\DataBase\\textData.txt");
@@ -34,7 +32,6 @@ public class EditSkillEditorVBox extends VBox {
         this.mainScreen = mainScreen;
         questions = new ArrayList();
         answers = new ArrayList();
-        setBackground(new Background(new BackgroundFill(new Color(0.08,0.12, 0.15, 0.3), CornerRadii.EMPTY, Insets.EMPTY)));
         createContent();
         getChildren().add(principal);
     }
@@ -44,7 +41,6 @@ public class EditSkillEditorVBox extends VBox {
         principal.setBackground(Background.EMPTY);
         principal.setAlignment(Pos.CENTER);
         principal.setPadding(new Insets(15));
-        createTop();
 
         Label qLabel = new Label("Question:");
         qLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
@@ -123,38 +119,7 @@ public class EditSkillEditorVBox extends VBox {
             System.out.println(response);
         });
 
-        principal.getChildren().addAll(top,qLabel,question,qPlus,aLabel,answer,aPlus,skillDisplayLabel,skillDisplay,enter);
-    }
-
-    public void createTop(){
-        top = new HBox(10);
-        top.setAlignment(Pos.CENTER);
-        top.setPrefHeight(80);
-        top.setBackground(new Background(new BackgroundFill(MainScreen.themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
-
-        Label title = new Label("Skill Editor");
-        title.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 40));
-        title.setTextFill(Color.WHITE);
-        title.setAlignment(Pos.CENTER);
-
-        Region region1 = new Region();
-        HBox.setHgrow(region1, Priority.ALWAYS);
-
-        Region region2 = new Region();
-        HBox.setHgrow(region2, Priority.ALWAYS);
-
-        Button exit = new Button("x");
-        exit.setCursor(Cursor.HAND);
-        exit.setBackground(Background.EMPTY);
-        exit.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 20));
-        exit.setTextFill(Color.DARKRED);
-        exit.setBorder(null);
-        exit.setAlignment(Pos.CENTER_RIGHT);
-        exit.setTranslateY(-17);
-        exit.setTranslateX(-2);
-        exit.setOnAction(e -> mainScreen.setOptionsMenu());
-
-        top.getChildren().addAll(region1,title,region2,exit);
+        principal.getChildren().addAll(qLabel,question,qPlus,aLabel,answer,aPlus,skillDisplayLabel,skillDisplay,enter);
     }
 
     public void setQPlusButton(HBox box){
