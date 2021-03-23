@@ -547,7 +547,8 @@ public class Assistant {
                            "1. Write down the question(s) you will ask to the assistant. If there is more than one question (for the same answer) make sure to separate them with a comma , " + System.lineSeparator() +
                            "2. After the question(s) add a semicolon ; " + System.lineSeparator() +
                            "3. Write down the answer(s) you want from the assistant. If there is more than one answer (for the same question) make sure to separate them with a comma , " + System.lineSeparator() +
-                           "4. Send everything into one message.";
+                           "4. Send everything into one message." +System.lineSeparator() +
+                           "If you don't want to add a skill write: Cancel";
         }else if(skill_num == 31){
             mainScreen.setSkillEditorAppDisplay("Edit skill");
         }
