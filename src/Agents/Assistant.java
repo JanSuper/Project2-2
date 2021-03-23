@@ -583,6 +583,10 @@ public class Assistant {
                 mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat, "Please remove the space in the password",0));
             }
         }
+        else if(skill_num == 90)
+        {
+            mainScreen.exitWindow();
+        }
         return final_answer;
     }
 

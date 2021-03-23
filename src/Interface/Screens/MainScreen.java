@@ -6,6 +6,7 @@ import Interface.Chat.MessageBubble;
 import Interface.Display.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -371,6 +372,12 @@ public class MainScreen {
         label.setAlignment(Pos.CENTER);
 
         notification.getChildren().addAll(topBox, label);
+    }
+
+    public void exitWindow()
+    {
+        Platform.exit();
+        System.exit(0);
     }
 
 }
