@@ -2,7 +2,7 @@ package Agents;
 
 import DataBase.Data;
 import Interface.Chat.MessageBubble;
-import Interface.Display.CalendarDisplay;
+import Interface.Display.CalendarDisplay2;
 import Interface.Display.MediaPlayerDisplay;
 import Interface.Screens.MainScreen;
 import Skills.Schedule.Skill_Schedule;
@@ -525,7 +525,7 @@ public class Assistant {
             mainScreen.displaySkill(pane);
         }
         else if(skill_num == 60){
-            mainScreen.displaySkill(new CalendarDisplay(mainScreen));
+            mainScreen.displaySkill(new CalendarDisplay2(mainScreen));
         }
         else if(skill_num == 70){
             mainScreen.setMapDisplay(false);

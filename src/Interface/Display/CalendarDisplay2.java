@@ -1,32 +1,30 @@
 package Interface.Display;
 
-import javafx.application.Application;
+import Interface.Screens.MainScreen;
 import javafx.css.PseudoClass;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.Stage;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static javafx.scene.paint.Color.BLACK;
 import static javafx.scene.paint.Color.LIGHTGRAY;
 
 ;
-public class CalendarDisplay2 extends Application {
+public class CalendarDisplay2 extends HBox {
     private static final Paint WHITE = Color.LIGHTGRAY;
     private final LocalTime beginningOfTheDay = LocalTime.of(8, 00);
     private final Duration period = Duration.ofMinutes(30);
@@ -34,9 +32,10 @@ public class CalendarDisplay2 extends Application {
 
     private final List<Slot> slots = new ArrayList<>();
     private static final PseudoClass SELECTED_PSEUDO_CLASS = PseudoClass.getPseudoClass("selected");
+    private MainScreen mainScreen;
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
+    public CalendarDisplay2(MainScreen mainScreen){
+        this.mainScreen = mainScreen;
 
         GridPane calendar = new GridPane();
         //calendar.setStyle("-fx-background-color: #C0C0C0;");
@@ -109,14 +108,14 @@ public class CalendarDisplay2 extends Application {
         text.setFill(LIGHTGRAY);
 
         ScrollPane scroller = new ScrollPane(calendar);
-
+/*
         Scene scene = new Scene(scroller);
         scene.setFill(BLACK);
 
 
         primaryStage.setScene(scene);
         primaryStage.show();
-
+*/
 
     }
 
@@ -154,7 +153,5 @@ public class CalendarDisplay2 extends Application {
     }
 
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+
 }

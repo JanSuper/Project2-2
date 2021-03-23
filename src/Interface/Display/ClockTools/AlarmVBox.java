@@ -65,6 +65,9 @@ public class AlarmVBox extends VBox {
 
     }
 
+
+
+
     private void createContent(){
         datePickerTxt = new Label("Date:");
         datePickerTxt.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
