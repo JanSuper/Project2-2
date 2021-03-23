@@ -165,7 +165,7 @@ public class Assistant {
                     if(s.contains(clean_uMessage.substring(2)))
                     {
                         String r = "";
-                        while ((r = data.readLine()).startsWith("B"))
+                        while ((r = data.readLine())!=null && (r.startsWith("B")))
                         {
                             if(firstLoop){
                                 res.add(r.substring(2));
@@ -249,7 +249,7 @@ public class Assistant {
                         }
 
                         String r;
-                        while ((r = data.readLine()).startsWith("B"))
+;                        while ((r = data.readLine())!=null && (r.startsWith("B")))
                         {
                             if(firstLoop){
                                 res.add(new Answers(score,r.substring(2)));
