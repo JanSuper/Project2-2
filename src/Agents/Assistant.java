@@ -189,7 +189,14 @@ public class Assistant {
 
         if(assistantMessage.get(assistantMessage.size()-1).startsWith("To add a new skill to the assistant you have to follow these rules:"))
         {
-            response = handleNewSkill(clean_uMessage);
+            if(clean_uMessage.toLowerCase().equals("cancel") || clean_uMessage.toLowerCase().equals("cancel skill editor"))
+            {
+                response = "Canceled the skill editor, you can now type in your request.";
+            }
+            else
+            {
+                response = handleNewSkill(clean_uMessage);
+            }
         }
         else if(res.isEmpty())
         {
@@ -273,7 +280,14 @@ public class Assistant {
 
         if(assistantMessage.get(assistantMessage.size()-1).startsWith("To add a new skill to the assistant you have to follow these rules:"))
         {
-            response = handleNewSkill(clean_uMessage);
+            if(clean_uMessage.toLowerCase().equals("cancel") || clean_uMessage.toLowerCase().equals("cancel skill editor"))
+            {
+                response = "Canceled the skill editor, you can now type in your request.";
+            }
+            else
+            {
+                response = handleNewSkill(clean_uMessage);
+            }
         }
         else if(res.isEmpty())
         {
