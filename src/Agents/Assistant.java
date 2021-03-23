@@ -34,6 +34,7 @@ public class Assistant {
     private String originalMessage;
     private String actual_lastWord;
     private boolean firstLoop;
+    private String cleanMessageWithNoPonct;
 
     public void loadKeys() throws IOException {
         Properties keys = new Properties();
@@ -72,6 +73,7 @@ public class Assistant {
         else if((actual_lastWord.endsWith("."))) { actual_lastWord = actual_lastWord.substring(0,actual_lastWord.length()-1);}
 
         String cleanMessage = removePunctuation(uMessage);
+        this.cleanMessageWithNoPonct = cleanMessage;
         max_Distance = Math.max(2, (int)(cleanMessage.length()*0.15));
         randomWord = "";
         int nbrOfTrail = 0;
@@ -584,7 +586,7 @@ public class Assistant {
             mainScreen.displaySkill(new CalendarDisplay2(mainScreen));
         }
         else if(skill_num == 70){
-            mainScreen.setMapDisplay(randomWord);
+            mainScreen.setMapDisplay(cleanMessageWithNoPonct);
         }
         else if(skill_num == 71){
             mainScreen.setMapDisplay("");

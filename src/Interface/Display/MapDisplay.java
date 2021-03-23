@@ -35,7 +35,7 @@ public class MapDisplay extends VBox {
         // DISPLAY GOOGLE MAPS:
         // show a interactive google map without routes
         // read description below
-        else if (googlewebview.contains("map")) {
+        else if (googlewebview.contains("Map")) {
             // Create a webview
             WebView myWebView = new WebView();
             WebEngine engine = myWebView.getEngine();
@@ -115,14 +115,14 @@ public class MapDisplay extends VBox {
         // GOOGLE MAPS WITH ROUTES:
         // show a interactive google map with routes
         // almost same procedure - read description above starting from "DISPLAY GOOGLE MAPS"
-        else if (googlewebview.contains("route"))
+        else if (googlewebview.contains("Route"))
         {
             WebView myWebView = new WebView();
             WebEngine engine = myWebView.getEngine();
 
             googlewebview = googlewebview.split(" ",2)[1];
             String source = googlewebview.split("-",2)[0];
-            String goal = googlewebview.split("-",2)[1];
+            String goal = googlewebview.split("-",2)[1]; //yes where ?
 
             //request the starting map view coordinates
             //the route source and goal will transformed into coordinates in the googlemapsRoute.html file

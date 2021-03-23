@@ -17,7 +17,7 @@ public class Data {
 
     private static String [][] dataSet;
 
-    private static ArrayList<String> variables = new ArrayList<>(Arrays.asList("<DAY>","<TIME>","<COUNTRY>","<CITY>","<URL>","<PSW>"));
+    private static ArrayList<String> variables = new ArrayList<>(Arrays.asList("<DAY>","<TIME>","<COUNTRY>","<CITY>","<URL>","<PSW>","<LOCATION>"));
 
     private static User user;
     private static Assistant assistant;
