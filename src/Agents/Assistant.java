@@ -219,7 +219,10 @@ public class Assistant {
         return true;
     }
 
-
+    /**
+     * Tries to find the nearest possible answer in a given range of errors max_Distance
+     * @param clean_message the user message without punctuation
+     */
     public boolean getInfo_withLevenshtein(String clean_uMessage) throws Exception{
         ArrayList<Answers> res = new ArrayList<>();
         ArrayList<Answers> best_score_res = new ArrayList<>();
@@ -348,6 +351,12 @@ public class Assistant {
         return true;
     }
 
+    /**
+     * Every skill has it's specific number, finds the corresponding skill and does the appropriate
+     * action to use the skill.
+     * @param pNumb the number from the database corresponding to an action
+     * @param message the user message without punctuation
+     */
     public String getSkill(String pNumb, String message) throws Exception
     {
         //The specific Skills will be called here
@@ -628,6 +637,11 @@ public class Assistant {
         System.out.println("last word : " + randomWord);
     }
 
+    /**
+     * Adds a new skill in the database, the user has to follow a specific structure to
+     * add question(s) and answer(s) to the database.
+     * @param uMessage the message from the user containing the new skill
+     */
     public int addNewSkill(String uMessage) throws IOException {
         int success = -1;
         String[] split_uMessage = uMessage.split(";");
@@ -698,6 +712,13 @@ public class Assistant {
         assistantMessage = pAssistantMessage;
     }
 
+    /**
+     * Compares the difference between two Strings using the Levenshtein algorithm.
+     * @param uMessage the user message without punctuation
+     * @param database_message the message in the database
+     * @param threshold the maximum accepted distance between the Strings
+     * @return the score between -1 and threshold
+     */
     public int LevenshteinDistance(String uMessage, String dataBase_message, int threshold)
     {
         int uM = uMessage.length();
@@ -776,6 +797,12 @@ public class Assistant {
         private String answer;
         private int score = -1;
 
+        /**
+         * Used by the Levenshtein distance to rank the possible answers with their
+         * corresponding score in an ArrayList
+         * @param pScore the LevenshteinDistance
+         * @param pAnswer the answer from the database
+         */
         public Answers(int pScore, String pAnswer)
         {
             this.answer = pAnswer;

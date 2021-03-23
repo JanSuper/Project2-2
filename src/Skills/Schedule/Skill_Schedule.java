@@ -15,6 +15,10 @@ public class Skill_Schedule {
     private int month;
     private int year;
 
+    /**
+     * This class is used to classify the events/lectures from the UM_Schedule file, it reads/ranks/sort
+     * the Courses from the UM_Schedule ArrayList
+     */
     public Skill_Schedule()
     {
         schedule = new UM_Schedule(um_url);
@@ -35,6 +39,11 @@ public class Skill_Schedule {
         }
     }
 
+    /**
+     * Finds the next course in the UM_Schedule array, first by checking the date and then by checking the time. If
+     * there a multiple courses in the same day finds the nearest to the actual time.
+     * @return a String containing the next course
+     */
     public String getNextCourse()
     {
         Course next_Course = null;
@@ -66,6 +75,11 @@ public class Skill_Schedule {
         }
     }
 
+    /**
+     * Finds the course(s) on a specific date
+     * @param date in format DDMMYYYY
+     * @return a String containing every course on the date asked
+     */
     public String getCourseOnDate(String date)
     {
         ArrayList<Course> courses_thatDay = new ArrayList<>();
@@ -98,7 +112,10 @@ public class Skill_Schedule {
         return getCourseOnDate(today_date);
     }
 
-    //Every item in the list is a string of the entire day
+    /**
+     * Finds every course in the current week
+     * @return an Array containing 7 elements (one for each day), these elements contain the courses from one day
+     */
     public ArrayList<String> getThisWeek()
     {
         ArrayList<String> this_week = new ArrayList<>();
@@ -121,7 +138,10 @@ public class Skill_Schedule {
         return this_week;
     }
 
-    //Every item in the list is a string of the entire day
+    /**
+     * Finds every course in the current month
+     * @return an Array containing 28-31 elements (one for each day), these elements contain the courses from one day
+     */
     public ArrayList<String> getThisMonth()
     {
         ArrayList<String> this_month = new ArrayList<>();
@@ -138,6 +158,11 @@ public class Skill_Schedule {
         return this_month;
     }
 
+    /**
+     * Gets the actual date and removes a number of days (ex: Wednesday - 2 = Monday)
+     * @param minus_days the number of days we want to go back
+     * @return the date in format DDMMYYYY
+     */
     public String dateMinusDate(int minus_days)
     {
         LocalDateTime todayDateTime = LocalDateTime.now();
@@ -148,6 +173,11 @@ public class Skill_Schedule {
         return split_minus_DateTime[0].replaceAll("-", "");
     }
 
+    /**
+     * Gets the actual date and adds a number of days (ex: Wednesday + 2 = Friday)
+     * @param plus_days the number of days we want to add
+     * @return the date in format DDMMYYYY
+     */
     public String datePlusDays(int plus_days)
     {
         LocalDateTime todayDateTime = LocalDateTime.now();
