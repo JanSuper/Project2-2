@@ -60,7 +60,6 @@ public class MainScreen {
         timeline = new Timeline();
         prepareAlarms();
         start(new Stage());
-
     }
 
     public void start(Stage primaryStage) {
@@ -81,7 +80,6 @@ public class MainScreen {
 
         root.setRight(chat);
         setOptionsMenu();
-
     }
 
     public void setOptionsMenu() {
@@ -180,10 +178,9 @@ public class MainScreen {
 
     public void setSkillEditorAppDisplay(String firstTab) {
         if (skillEditorDisplay.prevTab != null) { skillEditorDisplay.deselectTab(skillEditorDisplay.prevTab); }
-        switch(firstTab) {
-            case "Add Skill": skillEditorDisplay.selectTab(skillEditorDisplay.addSkill); break;
-            case "Edit Skill": skillEditorDisplay.selectTab(skillEditorDisplay.editSkill); break;
-        }
+        if (firstTab.equals("Edit skill")) { skillEditorDisplay.selectTab(skillEditorDisplay.editSkill); }
+        else { skillEditorDisplay.selectTab(skillEditorDisplay.addSkill); }
+
         skillEditorDisplay.setBorder(border);
         skillEditorDisplay.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
         skillEditorDisplay.prefWidthProperty().bind(root.widthProperty().subtract(chat.prefWidthProperty()).subtract(borderWidth*2));
