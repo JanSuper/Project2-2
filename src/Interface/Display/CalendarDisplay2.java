@@ -171,7 +171,7 @@ public class CalendarDisplay2 extends HBox {
 */
         AlarmVBox alarmVBox = new AlarmVBox(mainScreen,true);
         alarmVBox.setVisible(false);
-        getChildren().addAll(calendar,alarmVBox);
+        getChildren().addAll(calendar);//,alarmVBox);
     }
 
     public static class Slot {
@@ -186,7 +186,7 @@ public class CalendarDisplay2 extends HBox {
             this.period = period;
 
             view = new Region();
-            view.setMinSize(160, 40);
+            view.setMinSize(130, 18);
 
         }
 
