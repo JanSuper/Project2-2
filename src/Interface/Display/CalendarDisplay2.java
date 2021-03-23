@@ -1,5 +1,6 @@
 package Interface.Display;
 
+import Interface.Display.ClockTools.AlarmVBox;
 import Interface.Screens.MainScreen;
 import javafx.css.PseudoClass;
 import javafx.geometry.HPos;
@@ -116,7 +117,9 @@ public class CalendarDisplay2 extends HBox {
         primaryStage.setScene(scene);
         primaryStage.show();
 */
-
+        AlarmVBox alarmVBox = new AlarmVBox(mainScreen,true);
+        alarmVBox.setVisible(false);
+        getChildren().addAll(calendar,alarmVBox);
     }
 
     public static class Slot {
