@@ -169,9 +169,7 @@ public class CalendarDisplay2 extends HBox {
         primaryStage.setScene(scene);
         primaryStage.show();
 */
-<<<<<<< Updated upstream
-        AlarmVBox alarmVBox = new AlarmVBox(mainScreen,true);
-        alarmVBox.setVisible(false);
+        AlarmVBox alarmVBox = new AlarmVBox(this.mainScreen,true);
         getChildren().addAll(calendar,alarmVBox);
     }
 
@@ -188,7 +186,7 @@ public class CalendarDisplay2 extends HBox {
             this.period = period;
 
             view = new Region();
-            view.setMinSize(160, 40);
+            view.setMinSize(80, 25);
 
         }
 
