@@ -21,7 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Assistant {
-    private File dataBase = new File("src\\DataBase\\textData.txt");
+    private File dataBase;
     private Random random = new Random();
     private MainScreen mainScreen;
     private String user_name;
@@ -62,6 +62,15 @@ public class Assistant {
         assistantMessage = pAssistantMessage;
         randomWord = "";
         response = "";
+
+        if (System.getProperty("os.name").contains("Mac OS"))
+        {
+            dataBase = new File("src/DataBase/textData.txt");
+        }
+        else
+        {
+            dataBase = new File("src\\DataBase\\textData.txt");
+        }
     }
 
     public String getResponse(String uMessage) throws Exception
