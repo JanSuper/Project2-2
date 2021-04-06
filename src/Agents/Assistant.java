@@ -36,6 +36,7 @@ public class Assistant {
     private String cleanMessageWithNoPonct;
     private int[] step;
     private int nbrOfTrail;
+    private final int MAX_NBR_OF_TRAILS = 1000;
 
     public void loadKeys() throws IOException {
         Properties keys = new Properties();
@@ -81,40 +82,32 @@ public class Assistant {
         else if((actual_lastWord.endsWith("."))) { actual_lastWord = actual_lastWord.substring(0,actual_lastWord.length()-1);}
 
         String cleanMessage = removePunctuation(uMessage);
-        this.cleanMessageWithNoPonct = cleanMessage;
+        cleanMessageWithNoPonct = cleanMessage;
         max_Distance = Math.max(2, (int)(cleanMessage.length()*0.15));
-        //FIRST CHECK SKILLS WITH NO VARIABLES
-        if(getInfo_withLevenshtein(cleanMessage))
-        {
-            return response;
+
+        randomWords.clear();
+        nbrOfTrail = 0;
+        int nbrOfWordRemoved = 1;
+        step = new int[cleanMessage.split("\\s+").length-1];
+        for (int i = 0; i < step.length; i++) {
+            step[i] = (MAX_NBR_OF_TRAILS/cleanMessage.split("\\s+").length)*(i+1);
         }
-        //THEN CHECK SKILLS WITH VARIABLES
-        else
-        {
-            randomWords.clear();
-            nbrOfTrail = 0;
-            int nbrOfWordRemoved = 1;
-            String messageWithHole = removeRandomWord(cleanMessage,nbrOfWordRemoved);
-            step = new int[cleanMessage.split("\\s+").length-1];
+
+        while(!getInfo_withLevenshtein(cleanMessage)){
+            nbrOfTrail++;
             for (int i = 0; i < step.length; i++) {
-                step[i] = (1000/cleanMessage.split("\\s+").length)*(i+1);
-            }
-            while(!getInfo(messageWithHole)){
-                nbrOfTrail++;
-                for (int i = 0; i < step.length; i++) {
-                    if(nbrOfTrail==step[i]){
-                        System.out.println("MORE WORD TO REMOVE");
-                        nbrOfWordRemoved++;
-                    }
-                }
-                messageWithHole = removeRandomWord(cleanMessage,nbrOfWordRemoved);
-                if(messageWithHole.isEmpty()||nbrOfTrail>=1000||messageWithHole.length()==0){
-                    response = "I could not understand your demand...";
-                    break;
+                if(nbrOfTrail==step[i]){
+                    System.out.println("MORE WORD TO REMOVE");
+                    nbrOfWordRemoved++;
                 }
             }
-            return response;
+            cleanMessage = removeRandomWord(cleanMessageWithNoPonct,nbrOfWordRemoved);
+            if(cleanMessage.isEmpty()||nbrOfTrail>=MAX_NBR_OF_TRAILS||cleanMessage.length()==0){
+                response = "I could not understand your demand...";
+                break;
+            }
         }
+        return response;
     }
 
     public String removeRandomWord(String message,int nbrOfWordToRemove){
@@ -196,76 +189,23 @@ public class Assistant {
         return false;
     }
 
-    public boolean getInfo(String clean_uMessage) throws Exception{
-        //System.out.println(clean_uMessage);
-        ArrayList<String> res = new ArrayList<>();
-
-        try{
-            BufferedReader data = new BufferedReader(new FileReader(dataBase));
-
-            String s;
-            while ((s = data.readLine()) != null)
-            {
-                if(s.startsWith("U")&&containsVariable(s)&&s.contains(clean_uMessage.substring(2))&&dataContaining(s))
-                {
-                    System.out.println("yes");
-                    String r = "";
-                    while ((r = data.readLine())!=null && r.startsWith("B"))
-                    {
-                        res.add(r.substring(2));
-                    }
-                    break;
+    public String removeVariables(String s){
+        String newS = "";
+        //REMOVE VARIABLES <CITY>,<DAY>,... from the sentence starting with U
+        String[] message = s.split(" ");
+        for (int i = 0; i < message.length; i++) {
+            if(!Data.getVariables().contains(message[i])){
+                if(i==message.length-1){
+                    newS+=message[i];
+                }else{
+                    newS+=message[i] + " ";
                 }
             }
-            data.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-
-        if(assistantMessage.get(assistantMessage.size()-1).startsWith("To add a new skill to the assistant you have to follow these rules:"))
-        {
-            if(clean_uMessage.toLowerCase().equals("cancel") || clean_uMessage.toLowerCase().equals("cancel skill editor"))
-            {
-                response = "Canceled the skill editor, you can now type in your request.";
-            }
-            else
-            {
-                response = handleNewSkill(clean_uMessage);
-            }
-        }
-        else if(res.isEmpty())
-        {
-            return false;
-        }
-        else
-        {
-            if(isNumber(res.get(0)))
-            {
-                String skill_answer = getSkill(res.get(0),clean_uMessage);
-                if(skill_answer == null)
-                {
-                    response =  "This is what I found for your request.";
-                }
-                else
-                {
-                    response =  skill_answer;
-                }
-            }
-            else
-            {
-                int max = res.size();
-                int n = random.nextInt(max);
-                response =  res.get(n);
-            }
-        }
-        return true;
+        return newS;
     }
 
-    public boolean dataContaining(String s){
+    public boolean containsSameNbrOfVariables(String s){
         int nbrOfRandomWords = 0;
         for (int i = 0; i < s.length(); i++) {
             if(s.charAt(i)=='<'){
@@ -299,22 +239,46 @@ public class Assistant {
             while ((s = data.readLine()) != null)
             {
                 score = -1;
-                if(s.startsWith("U"))
-                {
-
-                    score = LevenshteinDistance(clean_uMessage.toLowerCase(), s.substring(2).toLowerCase(), max_Distance);
-
-                    if(score != -1)
+                //WITHOUT VARIABLES
+                if(nbrOfTrail==0){
+                    if(s.startsWith("U"))
                     {
-                        if(score < best_score)
-                        {
-                            best_score = score;
-                        }
 
-                        String r;
-;                        while ((r = data.readLine())!=null && (r.startsWith("B")))
+                        score = LevenshteinDistance(clean_uMessage.toLowerCase(), s.substring(2).toLowerCase(), max_Distance);
+
+                        if(score != -1)
+                        {
+                            if(score < best_score)
+                            {
+                                best_score = score;
+                            }
+
+                            String r;
+                            ;                        while ((r = data.readLine())!=null && (r.startsWith("B")))
                         {
                             res.add(new Answers(score,r.substring(2)));
+                        }
+                        }
+                    }
+                }else{
+                    if(s.startsWith("U")&&containsVariable(s)&&containsSameNbrOfVariables(s))
+                    {
+                        s = removeVariables(s);
+
+                        score = LevenshteinDistance(clean_uMessage.toLowerCase(), s.substring(2).toLowerCase(), max_Distance);
+
+                        if(score != -1)
+                        {
+                            if(score < best_score)
+                            {
+                                best_score = score;
+                            }
+
+                            String r;
+                            while ((r = data.readLine())!=null && (r.startsWith("B")))
+                            {
+                                res.add(new Answers(score,r.substring(2)));
+                            }
                         }
                     }
                 }
