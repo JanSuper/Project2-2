@@ -161,6 +161,9 @@ B 80
 U Bye
 B 90
 
+U Test <CITY> then <DATE>
+B 100
+
 /////////////////////////////////////////////////////////////////////////////////////////
 // NEW SKILLS ADDED (WITH AND WITHOUT VARIABLES)
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -169,3 +172,7 @@ U Hi how are you
 B Hi Im fine thanks
 U this is a test to display weather
 B 1
+U How do I get to <CITY>
+B 50
+U How are you today hu ?
+B I'm fine thanks

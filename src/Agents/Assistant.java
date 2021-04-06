@@ -28,13 +28,14 @@ public class Assistant {
     private List<String> assistantMessage;
     private ArrayList SkillKeys;
     private Properties keySet;
-    private String randomWord;
+    private Stack<String> randomWords;
     private String response;
     private int max_Distance = 2;
     private String originalMessage;
     private String actual_lastWord;
-    private boolean firstLoop;
     private String cleanMessageWithNoPonct;
+
+    private int nbrOfTrail;
 
     public void loadKeys() throws IOException {
         Properties keys = new Properties();
@@ -60,9 +61,8 @@ public class Assistant {
         mainScreen = pMainScreen;
         user_name = pUser_name;
         assistantMessage = pAssistantMessage;
-        randomWord = "";
         response = "";
-
+        randomWords = new Stack<>();
         if (System.getProperty("os.name").contains("Mac OS"))
         {
             dataBase = new File("src/DataBase/textData.txt");
@@ -75,7 +75,6 @@ public class Assistant {
 
     public String getResponse(String uMessage) throws Exception
     {
-        this.firstLoop = true;
         this.originalMessage = uMessage;
         this.actual_lastWord = uMessage.substring(uMessage.lastIndexOf(" ")+1);
         if(actual_lastWord.endsWith("?")) {actual_lastWord = actual_lastWord.replaceAll("[?]", ""); }
@@ -84,44 +83,61 @@ public class Assistant {
         String cleanMessage = removePunctuation(uMessage);
         this.cleanMessageWithNoPonct = cleanMessage;
         max_Distance = Math.max(2, (int)(cleanMessage.length()*0.15));
-        randomWord = "";
-        int nbrOfTrail = 0;
-        String messageWithHole = cleanMessage;
+        //FIRST CHECK SKILLS WITH NO VARIABLES
         if(getInfo_withLevenshtein(cleanMessage))
         {
             return response;
         }
+        //THEN CHECK SKILLS WITH VARIABLES
         else
         {
+            randomWords.clear();
+            nbrOfTrail = 0;
+            String messageWithHole = removeRandomWord(cleanMessage);
             while(!getInfo(messageWithHole)){
-                firstLoop = false;
+                nbrOfTrail++;
                 messageWithHole = removeRandomWord(cleanMessage);
                 if(messageWithHole.isEmpty()||nbrOfTrail>=1000||messageWithHole.length()==0){
                     response = "I could not understand your demand...";
                     break;
                 }
-                nbrOfTrail++;
             }
             return response;
         }
     }
 
     public String removeRandomWord(String message){
-        String [] arr = message.split(" ");
-        int randomNbr = new Random().nextInt(arr.length);
-        this.randomWord = arr[randomNbr];
-        System.out.println("random word : " + this.randomWord);
-        if(randomNbr!=arr.length-1){
-            randomWord = addCharToString(randomWord,' ',randomWord.length());
-        }
+        System.out.println("REMOVE RANDOM WORD");
+        String [] arr = null;
+        int nbrOfWordRemoved = 0;
         String newMessage = "";
-        if(isValidURL(randomWord)){
-            System.out.println("random word is a url");
-            newMessage = removeUrl(message);
-        }else{
-            newMessage = message.replaceAll(randomWord, "");
+        while(nbrOfWordRemoved<nbrOfTrail+1){
+            arr = message.split(" ");
+            if(arr.length==1){
+                System.out.println("random words removed message is empty");
+                break;
+            }
+            int randomNbr = new Random().nextInt(arr.length);
+            randomWords.add(arr[randomNbr]);
+            if(randomNbr!=arr.length-1){
+                String word = randomWords.pop();
+                randomWords.push(addCharToString(word,' ', word.length()));
+            }
+            if(isValidURL(randomWords.peek())){
+                System.out.println("random word is a url");
+                newMessage = removeUrl(message);
+            }else{
+                newMessage = message.replaceAll(randomWords.peek(), "");
+            }
+            System.out.println("random word : " + randomWords.peek() + "\n"+ "message without the random word : " + newMessage);
+            if(randomNbr==arr.length-1){
+                if (newMessage != null && newMessage.length() > 0 && newMessage.charAt(newMessage.length() - 1) == ' ') {
+                    newMessage = newMessage.substring(0, newMessage.length() - 1);
+                }
+            }
+            message = newMessage;
+            nbrOfWordRemoved++;
         }
-        System.out.println("message without the random word : " + newMessage);
         return newMessage;
     }
 
@@ -176,14 +192,11 @@ public class Assistant {
                     if(s.contains(clean_uMessage.substring(2)))
                     {
                         String r = "";
-                        while ((r = data.readLine())!=null && (r.startsWith("B")))
+                        while ((r = data.readLine())!=null && r.startsWith("B"))
                         {
-                            if(firstLoop){
+                            if(dataContaining(s)){
+                                System.out.println(s);
                                 res.add(r.substring(2));
-                            }else{
-                                if(!Data.getVariables().contains(r)){
-                                    res.add(r.substring(2));
-                                }
                             }
                         }
                     }
@@ -237,6 +250,20 @@ public class Assistant {
         return true;
     }
 
+    public boolean dataContaining(String s){
+        String res = "";
+        int nbrOfRandomWords = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if(s.charAt(i)=='<'){
+                nbrOfRandomWords++;
+            }
+        }
+        if(nbrOfRandomWords==nbrOfTrail+1){
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Tries to find the nearest possible answer in a given range of errors max_Distance
      * @param clean_uMessage the user message without punctuation
@@ -269,13 +296,7 @@ public class Assistant {
                         String r;
 ;                        while ((r = data.readLine())!=null && (r.startsWith("B")))
                         {
-                            if(firstLoop){
-                                res.add(new Answers(score,r.substring(2)));
-                            }else{
-                                if(!Data.getVariables().contains(r)){
-                                    res.add(new Answers(score,r.substring(2)));
-                                }
-                            }
+                            res.add(new Answers(score,r.substring(2)));
                         }
                     }
                 }
@@ -502,7 +523,7 @@ public class Assistant {
         }
         else if(skill_num == 22){
             mainScreen.setClockAppDisplay("Alarm");
-            mainScreen.clockAppDisplay.alarmVBox.addAlarm(randomWord,"no desc");
+            mainScreen.clockAppDisplay.alarmVBox.addAlarm(randomWords.peek(),"no desc");
         }
         else if(skill_num == 23){
             String err = "Something went wrong! To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
@@ -564,7 +585,7 @@ public class Assistant {
             mainScreen.setSkillEditorAppDisplay("Edit skill");
         }
         else if(skill_num == 40){
-            String searchURL = "https://www.google.com/search" + "?q=" + messageToUrl(randomWord);
+            String searchURL = "https://www.google.com/search" + "?q=" + messageToUrl(randomWords.peek());
             Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start chrome.exe " + searchURL});
         }
         else if(skill_num == 50){
@@ -585,7 +606,7 @@ public class Assistant {
         else if(skill_num == 51){
             WebView webview = new WebView();
             webview.getEngine().load(
-                    randomWord
+                    randomWords.peek()
             );
             Pane pane = new Pane();
             pane.getChildren().add(webview);
@@ -601,8 +622,8 @@ public class Assistant {
             mainScreen.setMapDisplay("");
         }
         else if(skill_num == 80){
-            if(!randomWord.contains(" ")){
-                if(!changePassword(randomWord)){
+            if(!randomWords.contains(" ")){
+                if(!changePassword(randomWords.peek())){
                     mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat, "Couldn't change the password for some reasons",0));
                 }
             }else{
@@ -612,6 +633,9 @@ public class Assistant {
         else if(skill_num == 90)
         {
             mainScreen.exitWindow();
+        }
+        else if(skill_num == 100){
+            mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat, "Test worked",0));
         }
         return final_answer;
     }
@@ -654,17 +678,6 @@ public class Assistant {
                 e.printStackTrace();
             }
         }
-    }
-
-    public void setRandomWord(String message){
-        String newLastWord = "";
-        int counter1 = message.length()-1;
-        while(message.charAt(counter1)!=' '){
-            newLastWord+=message.charAt(counter1--);
-        }
-        newLastWord = new StringBuilder(newLastWord).reverse().toString() + " ";
-        randomWord = newLastWord + randomWord;
-        System.out.println("last word : " + randomWord);
     }
 
     /**

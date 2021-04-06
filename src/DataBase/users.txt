@@ -9,5 +9,5 @@ magali fofoma
 1 1
 lara taj
 aze azeaze
-yourUserName password
+userName password
 2 2
