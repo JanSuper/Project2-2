@@ -34,7 +34,7 @@ public class Assistant {
     private String originalMessage;
     private String actual_lastWord;
     private String cleanMessageWithNoPonct;
-
+    private int[] step;
     private int nbrOfTrail;
 
     public void loadKeys() throws IOException {
@@ -93,10 +93,21 @@ public class Assistant {
         {
             randomWords.clear();
             nbrOfTrail = 0;
-            String messageWithHole = removeRandomWord(cleanMessage);
+            int nbrOfWordRemoved = 1;
+            String messageWithHole = removeRandomWord(cleanMessage,nbrOfWordRemoved);
+            step = new int[cleanMessage.split("\\s+").length-1];
+            for (int i = 0; i < step.length; i++) {
+                step[i] = (1000/cleanMessage.split("\\s+").length)*(i+1);
+            }
             while(!getInfo(messageWithHole)){
                 nbrOfTrail++;
-                messageWithHole = removeRandomWord(cleanMessage);
+                for (int i = 0; i < step.length; i++) {
+                    if(nbrOfTrail==step[i]){
+                        System.out.println("MORE WORD TO REMOVE");
+                        nbrOfWordRemoved++;
+                    }
+                }
+                messageWithHole = removeRandomWord(cleanMessage,nbrOfWordRemoved);
                 if(messageWithHole.isEmpty()||nbrOfTrail>=1000||messageWithHole.length()==0){
                     response = "I could not understand your demand...";
                     break;
@@ -106,12 +117,12 @@ public class Assistant {
         }
     }
 
-    public String removeRandomWord(String message){
+    public String removeRandomWord(String message,int nbrOfWordToRemove){
         System.out.println("REMOVE RANDOM WORD");
         String [] arr = null;
         int nbrOfWordRemoved = 0;
         String newMessage = "";
-        while(nbrOfWordRemoved<nbrOfTrail+1){
+        while(nbrOfWordRemoved<nbrOfWordToRemove){
             arr = message.split(" ");
             if(arr.length==1){
                 System.out.println("random words removed message is empty");
@@ -129,12 +140,12 @@ public class Assistant {
             }else{
                 newMessage = message.replaceAll(randomWords.peek(), "");
             }
-            System.out.println("random word : " + randomWords.peek() + "\n"+ "message without the random word : " + newMessage);
             if(randomNbr==arr.length-1){
-                if (newMessage != null && newMessage.length() > 0 && newMessage.charAt(newMessage.length() - 1) == ' ') {
+                if(newMessage.charAt(newMessage.length()-1)==' '){
                     newMessage = newMessage.substring(0, newMessage.length() - 1);
                 }
             }
+            System.out.println("random word : " + randomWords.peek() + " , message without the random word : " + newMessage);
             message = newMessage;
             nbrOfWordRemoved++;
         }
@@ -176,10 +187,18 @@ public class Assistant {
         return stringBuilder.toString();
     }
 
+    public boolean containsVariable(String text){
+        for (int i = 0; i < Data.getVariables().size(); i++) {
+            if(text.contains(Data.getVariables().get(i))){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean getInfo(String clean_uMessage) throws Exception{
         //System.out.println(clean_uMessage);
         ArrayList<String> res = new ArrayList<>();
-        int score = 0;
 
         try{
             BufferedReader data = new BufferedReader(new FileReader(dataBase));
@@ -187,19 +206,15 @@ public class Assistant {
             String s;
             while ((s = data.readLine()) != null)
             {
-                if(s.startsWith("U"))
+                if(s.startsWith("U")&&containsVariable(s)&&s.contains(clean_uMessage.substring(2))&&dataContaining(s))
                 {
-                    if(s.contains(clean_uMessage.substring(2)))
+                    System.out.println("yes");
+                    String r = "";
+                    while ((r = data.readLine())!=null && r.startsWith("B"))
                     {
-                        String r = "";
-                        while ((r = data.readLine())!=null && r.startsWith("B"))
-                        {
-                            if(dataContaining(s)){
-                                System.out.println(s);
-                                res.add(r.substring(2));
-                            }
-                        }
+                        res.add(r.substring(2));
                     }
+                    break;
                 }
             }
             data.close();
@@ -251,15 +266,18 @@ public class Assistant {
     }
 
     public boolean dataContaining(String s){
-        String res = "";
         int nbrOfRandomWords = 0;
         for (int i = 0; i < s.length(); i++) {
             if(s.charAt(i)=='<'){
                 nbrOfRandomWords++;
             }
         }
-        if(nbrOfRandomWords==nbrOfTrail+1){
-            return true;
+        for (int i = 0; i < step.length; i++) {
+            if(nbrOfTrail<step[i]){
+                if(nbrOfRandomWords==i+1){
+                    return true;
+                }
+            }
         }
         return false;
     }
