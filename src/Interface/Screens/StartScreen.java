@@ -1,6 +1,5 @@
 package Interface.Screens;
 
-import Agents.Assistant;
 import Agents.User;
 import Interface.Screens.StartScreenTools.MenuTitle;
 import javafx.animation.ScaleTransition;
@@ -39,72 +38,23 @@ public class StartScreen extends Application {
     private PasswordField psw;
     private Text left;
 
-    public String [][] dataSet;
     private int counter = 0;
-    private boolean login = false;
 
     private StackPane root = new StackPane();
     private VBox menuBox;
 
+
     private List<Pair<String, Runnable>> menuData = Arrays.asList(
             new Pair<String, Runnable>("Log in", () -> {
                 try {
-                    counter++;
-                    getData();
-                    for(int i=0;!login&&i<dataSet.length;i++){
-                        if (user.getText().equals(dataSet[i][0])&&psw.getText().equals(dataSet[i][1])){
-                            login=true;
-                        }
-                    }
-                    if(login) {
-                        initializeAgents();
-                        new MainScreen();
-                        this.stage.close();
-                    }else if(counter ==1 ) {
-                        left.setText("Try again, 2 attempts left");
-                    }else if(counter ==2 ) {
-                        left.setText("Try again, 1 attempts left");
-                    }else if(counter >=3 ) {
-                        left.setText("Sorry, you have used your 3 attempts");
-                        System.out.println("Sorry, you have used your 3 attempts");
-                        System.exit(0);
-                    }
+                    login();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }),
             new Pair<String, Runnable>("Sign up", () -> {
                 try {
-                    FileWriter writer;
-                    {
-                        try {
-                            writer = new FileWriter(Data.getUsersFile());
-                            PrintWriter out = new PrintWriter(writer);
-
-                            for (int i = 0; i < dataSet.length; i++) {
-                                out.println(dataSet[i][0] + " "+dataSet[i][1]);
-                            }
-                            if(user.getText().isEmpty()||user.getText().isBlank() && psw.getText().isEmpty()||psw.getText().isBlank()){
-                                left.setText("Sorry, username or password not possible");
-                            }else{
-                                if(!userAlreadyExists()){
-                                    out.println(user.getText() + " "+psw.getText());
-                                    initializeAgents();
-                                    new MainScreen();
-                                    this.stage.close();
-                                }else{
-                                    if(user.getText().isEmpty()){
-                                        left.setText("Sorry, username not possible");
-                                    }else{
-                                        left.setText("Sorry, username already used");
-                                    }
-                                }
-                            }
-                            writer.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    signup();
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -113,19 +63,118 @@ public class StartScreen extends Application {
             new Pair<String, Runnable>("Exit to Desktop", Platform::exit)
     );
 
-    public boolean userAlreadyExists(){
-        for (int i = 0; i < dataSet.length; i++) {
-            if(dataSet[i][0].equals(user.getText())) return true;
+    private boolean checkInfo(String info){
+        File userFile = new File("src/DataBase/Users/"+user.getText()+".txt");
+
+        try{
+            BufferedReader data = new BufferedReader(new FileReader(userFile));
+
+            String s;
+            while ((s = data.readLine()) != null)
+            {
+                if(s.startsWith(info))
+                {
+                    if(psw.getText().equals(data.readLine())){
+                        return true;
+                    }
+                }
+            }
+            data.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return false;
     }
 
-    public void initializeAgents(){
+    private void login() throws Exception {
+        counter++;
+        if(user.getText().isEmpty()||user.getText().isBlank() && psw.getText().isEmpty()||psw.getText().isBlank()){
+            left.setText("Sorry, username or password not possible");
+        }else{
+            if(userAlreadyExists()){
+                if(checkInfo("-Password")){
+                    initializeAgents(false);
+                    new MainScreen();
+                    this.stage.close();
+                }else{
+                    if(counter ==1 ) {
+                        left.setText("Username or password is wrong, 2 attempts left");
+                    }else if(counter ==2 ) {
+                        left.setText("Username or password is wrong, 1 attempts left");
+                    }else if(counter >=3 ) {
+                        left.setText("Username or password is wrong, you have used your 3 attempts");
+                        System.out.println("Sorry, you have used your 3 attempts");
+                        System.exit(0);
+                    }
+                }
+            }else if(counter ==1 ) {
+                left.setText("Try again, 2 attempts left");
+            }else if(counter ==2 ) {
+                left.setText("Try again, 1 attempts left");
+            }else if(counter >=3 ) {
+                left.setText("Sorry, you have used your 3 attempts");
+                System.out.println("Sorry, you have used your 3 attempts");
+                System.exit(0);
+            }
+        }
+    }
+
+    private void signup() throws Exception {
+        if(user.getText().isEmpty()||user.getText().isBlank() && psw.getText().isEmpty()||psw.getText().isBlank()){
+            left.setText("Sorry, username or password not possible");
+        }else{
+            if(!userAlreadyExists()){
+                //out.println(user.getText() + " "+psw.getText());
+                initializeAgents(true);
+                new MainScreen();
+                this.stage.close();
+            }else{
+                if(user.getText().isEmpty()){
+                    left.setText("Sorry, username not possible");
+                }else{
+                    left.setText("Sorry, username already used");
+                }
+            }
+        }
+    }
+
+    public boolean userAlreadyExists(){
+        File userFile = new File("src/DataBase/Users/"+user.getText()+".txt");
+        return userFile.exists();
+    }
+
+    public void initializeAgents(boolean signup){
+        if(signup){
+            createUser();
+        }
         Data.setUsername(user.getText());
         Data.setPassword(psw.getText());
 
         Data.setUser(new User(user.getText(), psw.getText()));
-        //Data.setAssistant(new Assistant());
+    }
+
+    public void createUser(){
+        try {
+            FileWriter writer;
+            {
+                try {
+                    writer = new FileWriter("src/DataBase/Users/"+user.getText()+".txt");
+                    PrintWriter out = new PrintWriter(writer);
+                    out.println("Password: " + psw.getText());
+                    out.println("Location: /");
+                    writer.close();
+                } catch (IOException e) {
+                    left.setText("Sorry, something went wrong");
+                    e.printStackTrace();
+                }
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -152,54 +201,6 @@ public class StartScreen extends Application {
         left.setFill(Color.RED);
         left.setTranslateY(-10);
         root.getChildren().add(left);
-
-        getData();
-    }
-
-    private void getData(){
-        //create 2 arrays, one to store the data of the user and the other to split the data between password and username
-        String [] splitData;
-        String [][] data = new String [0][];
-
-        // Begin a new file reader object directed at the text file we want to read (input)
-        // We want to cast out file reader to a buffered reader! (for reasons which will be clear next lecture).
-        BufferedReader br;
-        {
-            // If the file does not exist, we will get an error, so try catch to make java happy
-            try {
-                // create buffered reader
-                br = new BufferedReader(new FileReader(Data.getUsersFile()));
-                String st = "";
-
-                // while another line exists in our text file, we read it!
-                while ((st = br.readLine()) != null) {
-                    // instead of printing them, here we can also store the users in an array
-                    splitData = st.split(" ",2);
-
-                    //split the array bewteen usernames and password
-                    if(splitData.length == 2) {
-                        String[][] res = new String[data.length+1][splitData.length];
-                        for(int i=0;i<data.length;i++){
-                            for(int j=0;j<res[0].length;j++){
-                                res[i][j]=data[i][j];
-                            }
-                        }
-                        res[data.length][0]=splitData[0];
-                        res[data.length][1]=splitData[1];
-
-                        data = res;
-                    }
-                }
-                // catch exceptions if the files are not found
-            } catch (FileNotFoundException fileNotFoundException) {
-                fileNotFoundException.printStackTrace();
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-            }
-        }
-        //the array we use in the actionlistener need to be final, or we can't use it
-        dataSet = data;
-        Data.setDataSet(dataSet);
     }
 
     private void addContent() {

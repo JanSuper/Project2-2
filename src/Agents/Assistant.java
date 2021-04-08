@@ -254,7 +254,7 @@ public class Assistant {
                             }
 
                             String r;
-                            ;                        while ((r = data.readLine())!=null && (r.startsWith("B")))
+                            while ((r = data.readLine())!=null && (r.startsWith("B")))
                         {
                             res.add(new Answers(score,r.substring(2)));
                         }
@@ -605,12 +605,15 @@ public class Assistant {
         }
         else if(skill_num == 80){
             if(!randomWords.contains(" ")){
-                if(!changePassword(randomWords.peek())){
+                if(!changeInfo("-Password",randomWords.peek())){
                     mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat, "Couldn't change the password for some reasons",0));
                 }
             }else{
                 mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat, "Please remove the space in the password",0));
             }
+        }
+        else if(skill_num==81){
+            mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat,"You can change your password by typing \"Set my password to <YourPassword>\".",0));
         }
         else if(skill_num == 90)
         {
@@ -622,43 +625,46 @@ public class Assistant {
         return final_answer;
     }
 
-    public boolean changePassword(String message){
-        String[][]dataset = Data.getDataSet();
-        for (int i = 0; i < dataset.length; i++) {
-            for (int j = 0; j < dataset[i].length; j++) {
-                if(dataset[i][j].equals(Data.getPassword())&&j == 1){
-                    dataset[i][j] = message;
-                    Data.setPassword(message);
-                    rewriteUsers(dataset);
-                    mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat, "Your new password is " + message,0));
-                    return true;
+    private boolean changeInfo(String info,String edit){
+        File userFile = new File("src/DataBase/Users/"+Data.getUsername()+".txt");
+
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(userFile));
+            String line = "", oldtext = "";
+            while((line = reader.readLine()) != null)
+            {
+                oldtext += line + "\r\n";
+            }
+            reader.close();
+
+            String[] lines = oldtext.split(System.getProperty("line.separator"));
+            for (int i = 0; i < lines.length; i++) {
+                if(lines[i].startsWith(info))
+                {
+                    lines[i+1] = edit;
+                    break;
                 }
             }
-        }
-        return false;
-    }
-
-    public void rewriteUsers(String[][]dataset){
-        FileWriter writer;
-        {
-            try {
-                writer = new FileWriter(Data.getUsersFile());
-                PrintWriter out = new PrintWriter(writer);
-                for (int i = 0; i < dataset.length; i++) {
-                    for (int j = 0; j < dataset[i].length; j++) {
-                        if(j==1){
-                            out.print(dataset[i][j]);
-                        }else{
-                            out.print(dataset[i][j] + " ");
-                        }
-                    }
-                    out.println();
-                }
-
-                writer.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            StringBuffer sb = new StringBuffer();
+            for(int i = 0; i < lines.length; i++) {
+                sb.append(lines[i] + "\n");
             }
+            String str = sb.toString();
+
+            FileWriter writer = new FileWriter(userFile);
+            writer.write(str);
+            writer.close();
+            mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat, "Your new "+info+ " is " + edit,0));
+            return true;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 

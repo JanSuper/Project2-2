@@ -22,7 +22,6 @@ public class Data {
     private static User user;
     private static Assistant assistant;
 
-    private static File usersFile = new File("src/DataBase/users.txt");
     private static File remindersFile = new File("src/DataBase/reminders.txt");
 
     public static Background createBackGround(){
@@ -74,14 +73,6 @@ public class Data {
 
     public static void setAssistant(Assistant assistant) {
         Data.assistant = assistant;
-    }
-
-    public static File getUsersFile() {
-        return usersFile;
-    }
-
-    public static void setUsersFile(File usersFile) {
-        Data.usersFile = usersFile;
     }
 
     public static File getRemindersFile() {
