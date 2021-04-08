@@ -90,19 +90,27 @@ public class Assistant {
         randomWords.clear();
         nbrOfTrail = 0;
         int nbrOfWordRemoved = 1;
+        //STEP USE
+        //example where MAX_NBR_OF_ITERATION = 1000: and message = "hi how are you"
+        //step = [125 250 375] and the  [625 750,875]
+        //those two phases of steps are:
+        //1) the step of checking only skills that contain variables with 1 then 2 and then 3 random words removed from the message
+        //2) the step of checking every skill with 1 then 2 and then 3 random words removed from the message
         step = new int[cleanMessage.split("\\s+").length-1];
         for (int i = 0; i < step.length; i++) {
-            step[i] = ((MAX_NBR_OF_TRAILS)/cleanMessage.split("\\s+").length)*(i+1);
+            step[i] = ((MAX_NBR_OF_TRAILS/2)/cleanMessage.split("\\s+").length)*(i+1);
         }
-
+//first check all skill without removing any random word
         while(!getInfo_withLevenshtein(cleanMessage)){
             nbrOfTrail++;
-            if(nbrOfTrail==MAX_NBR_OF_TRAILS){
+            //if we reach MAX_NBR_OF_TRAILS/2, it means that we reached the end of the first phase
+            if(nbrOfTrail==MAX_NBR_OF_TRAILS/2){
                 nbrOfWordRemoved = 1;
                 for (int i = 0; i < step.length; i++) {
-                    step[i] = step[i]*2;
+                    step[i] = (MAX_NBR_OF_TRAILS/2)+step[i];
                 }
             }
+            //if we reach the end of a step, we change the nbr of random word in the message to remove
             for (int i = 0; i < step.length; i++) {
                 if(nbrOfTrail==step[i]){
                     System.out.println("MORE WORD TO REMOVE");
@@ -110,7 +118,8 @@ public class Assistant {
                 }
             }
             cleanMessage = removeRandomWord(cleanMessageWithNoPonct,nbrOfWordRemoved);
-            if(cleanMessage.isEmpty()||nbrOfTrail>=MAX_NBR_OF_TRAILS*2||cleanMessage.length()==0){
+            //reach end of the algo if message is empty or if we reach the max nbr of iterations
+            if(cleanMessage.isEmpty()||nbrOfTrail>=MAX_NBR_OF_TRAILS||cleanMessage.length()==0){
                 response = "I could not understand your demand...";
                 break;
             }
@@ -248,7 +257,7 @@ public class Assistant {
                                 res.add(new Answers(score, r.substring(2)));
                             }
                         }
-                    }else if (nbrOfTrail <= MAX_NBR_OF_TRAILS) {
+                    }else if (nbrOfTrail <= MAX_NBR_OF_TRAILS/2) {
                         //WITH ONLY VARIABLES (WITH DELETING RANDOM WORDS)
                         if (s.contains("<VARIABLE>") && containsSameNbrOfVariables(s)) {
                             String sWithVar = removeVariables(s);
