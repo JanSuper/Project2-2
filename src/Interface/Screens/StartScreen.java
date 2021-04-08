@@ -164,8 +164,8 @@ public class StartScreen extends Application {
                 try {
                     writer = new FileWriter("src/DataBase/Users/"+user.getText()+".txt");
                     PrintWriter out = new PrintWriter(writer);
-                    out.println("Password: " + psw.getText());
-                    out.println("Location: /");
+                    out.println("-Password: "+"\n" + psw.getText());
+                    out.println("-Location: "+"\n" + "/");
                     writer.close();
                 } catch (IOException e) {
                     left.setText("Sorry, something went wrong");
