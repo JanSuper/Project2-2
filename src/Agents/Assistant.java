@@ -92,11 +92,17 @@ public class Assistant {
         int nbrOfWordRemoved = 1;
         step = new int[cleanMessage.split("\\s+").length-1];
         for (int i = 0; i < step.length; i++) {
-            step[i] = (MAX_NBR_OF_TRAILS/cleanMessage.split("\\s+").length)*(i+1);
+            step[i] = ((MAX_NBR_OF_TRAILS)/cleanMessage.split("\\s+").length)*(i+1);
         }
 
         while(!getInfo_withLevenshtein(cleanMessage)){
             nbrOfTrail++;
+            if(nbrOfTrail==MAX_NBR_OF_TRAILS){
+                nbrOfWordRemoved = 1;
+                for (int i = 0; i < step.length; i++) {
+                    step[i] = step[i]*2;
+                }
+            }
             for (int i = 0; i < step.length; i++) {
                 if(nbrOfTrail==step[i]){
                     System.out.println("MORE WORD TO REMOVE");
@@ -104,7 +110,7 @@ public class Assistant {
                 }
             }
             cleanMessage = removeRandomWord(cleanMessageWithNoPonct,nbrOfWordRemoved);
-            if(cleanMessage.isEmpty()||nbrOfTrail>=MAX_NBR_OF_TRAILS||cleanMessage.length()==0){
+            if(cleanMessage.isEmpty()||nbrOfTrail>=MAX_NBR_OF_TRAILS*2||cleanMessage.length()==0){
                 response = "I could not understand your demand...";
                 break;
             }
@@ -224,53 +230,52 @@ public class Assistant {
         ArrayList<Answers> best_score_res = new ArrayList<>();
         int score = -1;
         int best_score = Integer.MAX_VALUE;
-
         try{
             BufferedReader data = new BufferedReader(new FileReader(dataBase));
 
             String s;
-            while ((s = data.readLine()) != null)
-            {
-                score = -1;
-                //WITHOUT VARIABLES
-                if(nbrOfTrail==0){
-                    if(s.startsWith("U"))
-                    {
-
+            while ((s = data.readLine()) != null) {
+                if (s.startsWith("U")) {
+                    if (nbrOfTrail == 0) {
                         score = LevenshteinDistance(clean_uMessage.toLowerCase(), s.substring(2).toLowerCase(), max_Distance);
-
-                        if(score != -1)
-                        {
-                            if(score < best_score)
-                            {
+                        if (score != -1) {
+                            if (score < best_score) {
                                 best_score = score;
                             }
 
                             String r;
-                            while ((r = data.readLine())!=null && (r.startsWith("B")))
-                        {
-                            res.add(new Answers(score,r.substring(2)));
+                            while ((r = data.readLine()) != null && (r.startsWith("B"))) {
+                                res.add(new Answers(score, r.substring(2)));
+                            }
                         }
+                    }else if (nbrOfTrail <= MAX_NBR_OF_TRAILS) {
+                        //WITH ONLY VARIABLES (WITH DELETING RANDOM WORDS)
+                        if (s.contains("<VARIABLE>") && containsSameNbrOfVariables(s)) {
+                            String sWithVar = removeVariables(s);
+                            score = LevenshteinDistance(clean_uMessage.toLowerCase(), sWithVar.substring(2).toLowerCase(), max_Distance);
+                            if (score != -1) {
+                                if (score < best_score) {
+                                    best_score = score;
+                                }
+
+                                String r;
+                                while ((r = data.readLine()) != null && (r.startsWith("B"))) {
+                                    res.add(new Answers(score, r.substring(2)));
+                                }
+                            }
                         }
-                    }
-                }else{
-                    if(s.startsWith("U")&&s.contains("<VARIABLE>")&&containsSameNbrOfVariables(s))
-                    {
-                        s = removeVariables(s);
-
-                        score = LevenshteinDistance(clean_uMessage.toLowerCase(), s.substring(2).toLowerCase(), max_Distance);
-
-                        if(score != -1)
-                        {
-                            if(score < best_score)
-                            {
+                    } else {
+                        //WITH AND WITHOUT VARIABLES(WITH DELETING RANDOM WORDS)
+                        String allS = s;
+                        score = LevenshteinDistance(clean_uMessage.toLowerCase(), allS.substring(2).toLowerCase(), max_Distance);
+                        if (score != -1) {
+                            if (score < best_score) {
                                 best_score = score;
                             }
 
                             String r;
-                            while ((r = data.readLine())!=null && (r.startsWith("B")))
-                            {
-                                res.add(new Answers(score,r.substring(2)));
+                            while ((r = data.readLine()) != null && (r.startsWith("B"))) {
+                                res.add(new Answers(score, r.substring(2)));
                             }
                         }
                     }
