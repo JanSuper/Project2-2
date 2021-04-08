@@ -160,6 +160,8 @@ U Set my password to <PSW>
 B 80
 U Modify password to <PSW>
 B 80
+U Change location to <CITY>
+B 82
 
 U Bye
 B 90

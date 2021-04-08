@@ -615,6 +615,11 @@ public class Assistant {
         else if(skill_num==81){
             mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat,"You can change your password by typing \"Set my password to <YourPassword>\".",0));
         }
+        else if(skill_num==82){
+            if(!changeInfo("-Location",randomWords.peek())){
+                mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat, "Couldn't change the location for some reasons",0));
+            }
+        }
         else if(skill_num == 90)
         {
             mainScreen.exitWindow();
