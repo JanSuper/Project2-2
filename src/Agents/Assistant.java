@@ -15,7 +15,9 @@ import javafx.stage.FileChooser;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -180,21 +182,12 @@ public class Assistant {
         return stringBuilder.toString();
     }
 
-    public boolean containsVariable(String text){
-        for (int i = 0; i < Data.getVariables().size(); i++) {
-            if(text.contains(Data.getVariables().get(i))){
-                return true;
-            }
-        }
-        return false;
-    }
-
     public String removeVariables(String s){
         String newS = "";
         //REMOVE VARIABLES <CITY>,<DAY>,... from the sentence starting with U
         String[] message = s.split(" ");
         for (int i = 0; i < message.length; i++) {
-            if(!Data.getVariables().contains(message[i])){
+            if(!message[i].equals("<VARIABLE>")){
                 if(i==message.length-1){
                     newS+=message[i];
                 }else{
@@ -261,7 +254,7 @@ public class Assistant {
                         }
                     }
                 }else{
-                    if(s.startsWith("U")&&containsVariable(s)&&containsSameNbrOfVariables(s))
+                    if(s.startsWith("U")&&s.contains("<VARIABLE>")&&containsSameNbrOfVariables(s))
                     {
                         s = removeVariables(s);
 
@@ -613,11 +606,25 @@ public class Assistant {
             }
         }
         else if(skill_num==81){
-            mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat,"You can change your password by typing \"Set my password to <YourPassword>\".",0));
+            mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat,"You can change your password/location/age/profession by typing \"Change my password/location/age/profession to <...>\".",0));
         }
         else if(skill_num==82){
             if(!changeInfo("-Location",randomWords.peek())){
                 mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat, "Couldn't change the location for some reasons",0));
+            }
+        }
+        else if(skill_num==83){
+            String info = Files.readString(Path.of("src/DataBase/Users/" + Data.getUsername() + ".txt"), StandardCharsets.US_ASCII);
+            mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat, info,0));
+        }
+        else if(skill_num==84){
+            if(!changeInfo("-Age",randomWords.peek())){
+                mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat, "Couldn't change the age for some reasons",0));
+            }
+        }
+        else if(skill_num==85){
+            if(!changeInfo("-Profession",randomWords.peek())){
+                mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat, "Couldn't change the profession for some reasons",0));
             }
         }
         else if(skill_num == 90)

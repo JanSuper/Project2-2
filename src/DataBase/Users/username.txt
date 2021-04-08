@@ -2,3 +2,7 @@
 password
 -Location:
 Liege
+-Age:
+20
+-Profession:
+Student

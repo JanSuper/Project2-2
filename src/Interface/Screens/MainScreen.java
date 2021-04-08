@@ -135,13 +135,13 @@ public class MainScreen {
     public void displaySettings(){
         userNameLabel.setText("Settings");
         settings.setText("Volume");
-        help.setText("Change Password");
+        help.setText("Change profile");
         logOut.setText("Back");
 
         settings.setOnMouseClicked(event -> {}); //TODO add the volume slide
 
         help.setOnMouseClicked(event -> {
-            chat.messages.add(new MessageBubble(chat,"You can change your password by typing \"Set my password to <YourPassword>\".",0));
+            chat.messages.add(new MessageBubble(chat,"You can change your password/location by typing \"Change my password/location to <YourPassword/Location>\".",0));
         });
 
         logOut.setOnMouseClicked(event -> setOptionsMenu());

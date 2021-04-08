@@ -166,6 +166,8 @@ public class StartScreen extends Application {
                     PrintWriter out = new PrintWriter(writer);
                     out.println("-Password: "+"\n" + psw.getText());
                     out.println("-Location: "+"\n" + "/");
+                    out.println("-Age: "+"\n" + "/");
+                    out.println("-Profession: "+"\n" + "/");
                     writer.close();
                 } catch (IOException e) {
                     left.setText("Sorry, something went wrong");

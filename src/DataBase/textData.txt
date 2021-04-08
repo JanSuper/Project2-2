@@ -114,59 +114,66 @@ B 60
 U Google
 B 71
 
-U Change password
+U Change my personal info
 B 81
+
+U See my info
+B 83
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // SKILLS WITH VARIABLES
 /////////////////////////////////////////////////////////////////////////////////////////
-U Route <LOCATION>
+U Route <VARIABLE>
 B 70
-U Map <LOCATION>
+U Map <VARIABLE>
 B 72
 
-U How is the weather in <CITY>
+U How is the weather in <VARIABLE>
 B 2
-U What is the weather in <CITY>
+U What is the weather in <VARIABLE>
 B 2
-U Change weather location to <CITY>
+U Change weather location to <VARIABLE>
 B 2
 
-U Set an alarm at <TIME>
+U Set an alarm at <VARIABLE>
 B 22
-U Set a timer for <TIME>
+U Set a timer for <VARIABLE>
 B 23
-U Add a timer for <TIME>
+U Add a timer for <VARIABLE>
 B 23
-U Set timer for <TIME>
+U Set timer for <VARIABLE>
 B 23
-U Set the timer for <TIME>
+U Set the timer for <VARIABLE>
 B 23
-U Start a timer for <TIME>
+U Start a timer for <VARIABLE>
 B 23
-U What time is it in <CITY>
+U What time is it in <VARIABLE>
 B 24
-U Add a clock for <CITY>
+U Add a clock for <VARIABLE>
 B 24
-U Add a new clock for <CITY>
+U Add a new clock for <VARIABLE>
 B 24
 
-U Watch from url <URL>
+U Watch from url <VARIABLE>
 B 51
 
-U Change password to <PSW>
+U Change password to <VARIABLE>
 B 80
-U Set my password to <PSW>
+U Set my password to <VARIABLE>
 B 80
-U Modify password to <PSW>
+U Modify password to <VARIABLE>
 B 80
-U Change location to <CITY>
+U Change location to <VARIABLE>
 B 82
+U Change age to <VARIABLE>
+B 84
+U Change profession to <VARIABLE>
+B 85
 
 U Bye
 B 90
 
-U Travel from <CITY> to <CITY>
+U Travel from <VARIABLE> to <VARIABLE>
 B 100
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -177,7 +184,7 @@ U Hi how are you
 B Hi Im fine thanks
 U this is a test to display weather
 B 1
-U How do I get to <CITY>
+U How do I get to <VARIABLE>
 B 50
 U How are you today hu ?
 B I'm fine thanks
