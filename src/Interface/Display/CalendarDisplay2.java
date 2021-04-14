@@ -25,7 +25,7 @@ import static javafx.scene.paint.Color.LIGHTGRAY;
 ;
 public class CalendarDisplay2 extends HBox {
     private static final Paint WHITE = Color.LIGHTGRAY;
-    private final LocalTime beginningOfTheDay = LocalTime.of(8, 00);
+    private final LocalTime beginningOfTheDay = LocalTime.of(00, 00);
     private final Duration period = Duration.ofMinutes(30);
     private final LocalTime endOfTheDay = LocalTime.of(23, 59);
 
@@ -33,17 +33,23 @@ public class CalendarDisplay2 extends HBox {
     private static final PseudoClass SELECTED_PSEUDO_CLASS = PseudoClass.getPseudoClass("selected");
     private MainScreen mainScreen;
 
+    private AlarmVBox alarmVBox;
+    private GridPane calendar;
+    private ScrollPane scrollPane;
+
     public CalendarDisplay2(MainScreen mainScreen){
         this.mainScreen = mainScreen;
 
-        GridPane calendar = new GridPane();
-        //calendar.setStyle("-fx-background-color: #C0C0C0;");
+        createContent();
+        getChildren().addAll(scrollPane,alarmVBox);
+    }
 
+    private void createContent(){
+        calendar = new GridPane();
         calendar.setGridLinesVisible(true);
-
+        calendar.setStyle("-fx-background-color:#3d3d3d;");
 
         LocalDate today = LocalDate.now();
-
         LocalDate startOfTheWeek = today.minusDays(today.getDayOfWeek().getValue() - 1);
         LocalDate endingOfTheWeek = startOfTheWeek.plusDays(6);
 
@@ -94,6 +100,7 @@ public class CalendarDisplay2 extends HBox {
             slotIndex++;
 
         }
+        /*
         Pane pane1  = new Pane();
         Pane pane2  = new Pane();
         Pane pane3  = new Pane();
@@ -129,7 +136,8 @@ public class CalendarDisplay2 extends HBox {
         // scene.setFill(Insets.Color.BLACK);
         Text text = new Text("KEN2430/2020-400/Lecture Mo/04 - Mathematical Modelling");
         calendar.add(text, 1, 4, 6, 6);
-
+        text.setTextOrigin(VPos.CENTER);
+        text.setFill(LIGHTGRAY);
         text.setWrappingWidth(80);
 
         Text text2 = new Text("KEN2420/2020-400/Lecture Mo/04 - Theoretical Computer Science");
@@ -153,24 +161,16 @@ public class CalendarDisplay2 extends HBox {
         text5.setWrappingWidth(80);
         text5.setFill(LIGHTGRAY);
 
+         */
 
+        scrollPane = new ScrollPane();
+        scrollPane.setContent(calendar);
 
+        alarmVBox = new AlarmVBox(this.mainScreen,true);
+    }
 
-        calendar.setStyle("-fx-background-color:#3d3d3d;");
-        text.setTextOrigin(VPos.CENTER);
-        text.setFill(LIGHTGRAY);
+    public void addReminder(String text){
 
-        ScrollPane scroller = new ScrollPane(calendar);
-/*
-        Scene scene = new Scene(scroller);
-        scene.setFill(BLACK);
-
-
-        primaryStage.setScene(scene);
-        primaryStage.show();
-*/
-        AlarmVBox alarmVBox = new AlarmVBox(this.mainScreen,true);
-        getChildren().addAll(calendar,alarmVBox);
     }
 
 

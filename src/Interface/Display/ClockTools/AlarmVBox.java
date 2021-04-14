@@ -100,9 +100,8 @@ public class AlarmVBox extends VBox {
         descriptionTxt.setAlignment(Pos.CENTER);
 
         description = new TextField();
-        description.setFont(Font.font("Verdana", FontWeight.BOLD, 40));
-        description.setPrefSize(10,50);
-        description.setScaleX(0.5);description.setScaleY(0.5);
+        description.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
+        description.setPrefSize(150,400);
 
         enter = new Button("Enter");
         enter.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(90,true), Insets.EMPTY)));
