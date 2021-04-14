@@ -1,7 +1,6 @@
 package Agents;
 
 import DataBase.Data;
-import Interface.Chat.MessageBubble;
 import Interface.Display.CalendarDisplay2;
 import Interface.Display.MediaPlayerDisplay;
 import Interface.Screens.MainScreen;
@@ -587,9 +586,9 @@ public class Assistant {
                 MediaPlayerDisplay mediaControl = new MediaPlayerDisplay(mediaPlayer);
                 mainScreen.displayUrlMediaPlayer(mediaControl);
             } catch(NullPointerException e){
-                mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat,"No file chosen",0));
+                mainScreen.chat.receiveMessage("No file chosen");
             } catch(MediaException e){
-                mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat,"Filetype not supported",0));
+                mainScreen.chat.receiveMessage("Filetype not supported");
             }
         }
         else if(skill_num == 51){
@@ -613,32 +612,32 @@ public class Assistant {
         else if(skill_num == 80){
             if(!randomWords.contains(" ")){
                 if(!changeInfo("-Password",randomWords.peek())){
-                    mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat, "Couldn't change the password for some reasons",0));
+                    mainScreen.chat.receiveMessage("Couldn't change the password for some reason.");
                 }
             }else{
-                mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat, "Please remove the space in the password",0));
+                mainScreen.chat.receiveMessage("Please remove the space in the password.");
             }
         }
         else if(skill_num==81){
-            mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat,"You can change your password/location/age/profession by typing \"Change my password/location/age/profession to <...>\".",0));
+            mainScreen.chat.receiveMessage("You can change your password/location/age/profession by typing \"Change my password/location/age/profession to <...>\".");
         }
         else if(skill_num==82){
             if(!changeInfo("-Location",randomWords.peek())){
-                mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat, "Couldn't change the location for some reasons",0));
+                mainScreen.chat.receiveMessage("Couldn't change the location for some reason.");
             }
         }
         else if(skill_num==83){
             String info = Files.readString(Path.of("src/DataBase/Users/" + Data.getUsername() + ".txt"), StandardCharsets.US_ASCII);
-            mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat, info,0));
+            mainScreen.chat.receiveMessage(info);
         }
         else if(skill_num==84){
             if(!changeInfo("-Age",randomWords.peek())){
-                mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat, "Couldn't change the age for some reasons",0));
+                mainScreen.chat.receiveMessage("Couldn't change the age for some reason.");
             }
         }
         else if(skill_num==85){
             if(!changeInfo("-Profession",randomWords.peek())){
-                mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat, "Couldn't change the profession for some reasons",0));
+                mainScreen.chat.receiveMessage("Couldn't change the profession for some reason.");
             }
         }
         else if(skill_num == 90)
@@ -646,7 +645,7 @@ public class Assistant {
             mainScreen.exitWindow();
         }
         else if(skill_num == 100){
-            mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat, "Test worked",0));
+            mainScreen.chat.receiveMessage("Test worked");
         }
         return final_answer;
     }
@@ -680,7 +679,7 @@ public class Assistant {
             FileWriter writer = new FileWriter(userFile);
             writer.write(str);
             writer.close();
-            mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat, "Your new "+info+ " is " + edit,0));
+            mainScreen.chat.receiveMessage("Your new "+info+ " is " + edit);
             return true;
         } catch (FileNotFoundException e) {
             e.printStackTrace();

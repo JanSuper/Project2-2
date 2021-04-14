@@ -37,11 +37,14 @@ public class WeatherDisplay extends VBox {
     private String cityName;
     private String countryName;
     private Map<String, Object> weatherData;
-    private double imgDim = 65;
+    private double imgDim;
     private HBox top;
     private VBox current;
+    private HBox hourlyDailyChoice;
     private VBox dailyVBox;
-    private ScrollPane scrollPane;
+    private HBox hourlyHBox;
+    private ScrollPane scrollPaneDaily;
+    private ScrollPane scrollPaneHourly;
     private String addressTitle;
     private String currentTemp;
     private String currentSummary;
@@ -56,20 +59,64 @@ public class WeatherDisplay extends VBox {
         getData();
         setTop();
         setCurrent();
+        setDailyHourlyChoice();
         setDaily();
+        setHourly();
 
-        VBox currentDaily = new VBox();
-        currentDaily.getChildren().addAll(current, dailyVBox);
-
-        scrollPane = new ScrollPane(currentDaily);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-
-        getChildren().setAll(top, scrollPane);
+        getChildren().addAll(top, current, hourlyDailyChoice, scrollPaneDaily);
         setMaxHeight(Double.MAX_VALUE);
         setMinHeight(Double.MIN_VALUE);
+    }
+
+    private void setDailyHourlyChoice() {
+        hourlyDailyChoice = new HBox();
+        hourlyDailyChoice.setAlignment(Pos.CENTER);
+        Button hourly = new Button("Hourly");
+        Button daily = new Button("Daily");
+
+        hourly.setFont((Font.font("Cambria", FontWeight.EXTRA_BOLD, 15)));
+        hourly.setPrefWidth(70);
+        hourly.setTextFill(Color.WHITESMOKE);
+        hourly.setCursor(Cursor.HAND);
+        hourly.setBackground(new Background(new BackgroundFill(Color.GRAY.darker(), new CornerRadii(10,0,0,10,false), Insets.EMPTY)));
+
+        daily.setFont((Font.font("Cambria", FontWeight.EXTRA_BOLD, 15)));
+        daily.setPrefWidth(70);
+        daily.setTextFill(Color.WHITESMOKE);
+        daily.setCursor(Cursor.HAND);
+        daily.setBackground(new Background(new BackgroundFill(Color.DARKBLUE.darker(), new CornerRadii(0,10,10,0,false), Insets.EMPTY)));
+
+        hourly.setOnMouseClicked(e -> {
+            if(getChildren().contains(scrollPaneDaily)) {
+                getChildren().remove(scrollPaneDaily);
+                getChildren().add(scrollPaneHourly);
+                hourly.setBackground(new Background(new BackgroundFill(Color.DARKBLUE.darker(), new CornerRadii(10,0,0,10,false), Insets.EMPTY)));
+                daily.setBackground(new Background(new BackgroundFill(Color.GRAY.darker(), new CornerRadii(0,10,10,0,false), Insets.EMPTY)));
+            }
+            else {
+                getChildren().remove(scrollPaneHourly);
+                getChildren().add(scrollPaneDaily);
+                hourly.setBackground(new Background(new BackgroundFill(Color.GRAY.darker(), new CornerRadii(10,0,0,10,false), Insets.EMPTY)));
+                daily.setBackground(new Background(new BackgroundFill(Color.DARKBLUE.darker(), new CornerRadii(0,10,10,0,false), Insets.EMPTY)));
+            }
+        });
+
+        daily.setOnMouseClicked(e -> {
+            if(getChildren().contains(scrollPaneDaily)) {
+                getChildren().remove(scrollPaneDaily);
+                getChildren().add(scrollPaneHourly);
+                hourly.setBackground(new Background(new BackgroundFill(Color.DARKBLUE.darker(), new CornerRadii(10,0,0,10,false), Insets.EMPTY)));
+                daily.setBackground(new Background(new BackgroundFill(Color.GRAY.darker(), new CornerRadii(0,10,10,0,false), Insets.EMPTY)));
+            }
+            else {
+                getChildren().remove(scrollPaneHourly);
+                getChildren().add(scrollPaneDaily);
+                hourly.setBackground(new Background(new BackgroundFill(Color.GRAY.darker(), new CornerRadii(10,0,0,10,false), Insets.EMPTY)));
+                daily.setBackground(new Background(new BackgroundFill(Color.DARKBLUE.darker(), new CornerRadii(0,10,10,0,false), Insets.EMPTY)));
+            }
+        });
+
+        hourlyDailyChoice.getChildren().addAll(hourly, daily);
     }
 
     public String currentDataString() {
@@ -94,6 +141,7 @@ public class WeatherDisplay extends VBox {
         ArrayList<String> dayH = new ArrayList<>();
         ArrayList<String> dayL = new ArrayList<>();
         ArrayList<String> daySummary = new ArrayList<>();
+
         for(int i = 1; i <= 8; i++) {
             int lineLength = separateLines.get(i).length;
 
@@ -151,29 +199,52 @@ public class WeatherDisplay extends VBox {
         List<String[]> separateLines = new ArrayList<>();
         rawHourlyWeatherData.lines().forEach(s -> separateLines.add(s.split(",")));
 
-        //getting current temperature (hourly)
-        currentTemp = null;
+        //getting current and hourly data
+        Map<String, ArrayList<String>> hourlyData = new HashMap<>();
+        ArrayList<String> hours = new ArrayList<>();
+        ArrayList<String> hourlyTemp = new ArrayList<>();
+        ArrayList<String> iconDescriptions = new ArrayList<>();
+
         int cnt = 0;
-        for(int j = 0; j < separateLines.get(1).length; j++) {
-            if(separateLines.get(1)[j].equals(countryName+"\"")) {
-                if(cnt == 1) {
-                    currentTemp = separateLines.get(1)[j+2];
+        for(int i=1; i<26; i++) {
+            for(int j = 0; j < separateLines.get(i).length; j++) {
+                if (separateLines.get(i)[j].equals(countryName + "\"")) {
+                    if (cnt == 1) {
+                        hourlyTemp.add(separateLines.get(i)[j+2]);
+                        cnt = 0;
+                    } else {
+                        String h = separateLines.get(i)[j+1].replace("\"", "");
+                        String[] hr = h.split(" ", 0);
+                        hours.add(hr[1].substring(0, hr[1].length()-3));
+                        cnt++;
+                    }
                 }
-                cnt++;
             }
+            String iconD;
+            String summary = separateLines.get(i)[separateLines.get(i).length-1];
+            int count = summary.length() - summary.replace("\"", "").length();    //count for " character
+            if(count == 1) {
+                summary = separateLines.get(i)[separateLines.get(i).length-2].replace("\"", "") + "," + separateLines.get(i)[separateLines.get(i).length-1].replace("\"", "");
+                iconD = separateLines.get(i)[separateLines.get(i).length-3].replace("\"", "");
+            }
+            else {
+                summary = summary.replace("\"", "");
+                iconD = separateLines.get(i)[separateLines.get(i).length-2].replace("\"", "");
+            }
+
+            if(iconD.contains("night")) { iconDescriptions.add(iconD); }
+            else { iconDescriptions.add(summary); }
+
+            if(i==1) { currentSummary = summary; }
         }
 
-        //getting current summary (hourly)
-        currentSummary = separateLines.get(1)[separateLines.get(1).length-1];
-        int count = currentSummary.length() - currentSummary.replace("\"", "").length();    //count for " character
-        if(count == 1) {
-            currentSummary = separateLines.get(1)[separateLines.get(1).length-2].replace("\"", "") + "," + separateLines.get(1)[separateLines.get(1).length-1].replace("\"", "");
-        }
-        else {
-            currentSummary = currentSummary.replace("\"", "");
-        }
+        hourlyData.put("temp", hourlyTemp);
+        hourlyData.put("hours", hours);
+        hourlyData.put("icons", iconDescriptions);
+        weatherData.put("hourly", hourlyData);
 
-        currentData.put("icon", currentSummary);
+        currentTemp = hourlyTemp.get(0);
+        currentData.put("icon", iconDescriptions.get(0));
         currentData.put("currentSummary", currentSummary);
         currentData.put("temp", currentTemp + "  °C");
     }
@@ -218,22 +289,23 @@ public class WeatherDisplay extends VBox {
     }
 
     private void setCurrent() throws FileNotFoundException {
-        current = new VBox(35);
+        imgDim = 100;
+        current = new VBox(23);
         current.setBackground(Background.EMPTY);
         current.setAlignment(Pos.CENTER);
-        current.setPadding(new Insets(15));
+        current.setPadding(new Insets(15, 0, 30, 0));
 
         Map<String, String> currentWeather = (Map<String, String>) weatherData.get("current");
 
-        Rectangle currentConditionImage = new Rectangle(0, 0, 65, 65);
-        currentConditionImage.setArcWidth(40.0);
-        currentConditionImage.setArcHeight(40.0);
+        Rectangle currentConditionImage = new Rectangle(0, 0, imgDim, imgDim);
+        currentConditionImage.setArcWidth(50.0);
+        currentConditionImage.setArcHeight(50.0);
         ImagePattern pattern = new ImagePattern(getImage(currentWeather.get("icon")));
         currentConditionImage.setFill(pattern);
         currentConditionImage.setEffect(new DropShadow(20, Color.BLACK));
 
         Label currentConditionLabel = new Label(currentWeather.get("currentSummary"));
-        currentConditionLabel.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 18));
+        currentConditionLabel.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 22));
         currentConditionLabel.setTextFill(Color.DARKRED.darker());
 
         Label currently = new Label("Currently: ");
@@ -260,7 +332,7 @@ public class WeatherDisplay extends VBox {
         lTemp.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 19));
         lTemp.setTextFill(Color.BLACK);
 
-        HBox hLBox = new HBox(10);
+        HBox hLBox = new HBox(12);
         hLBox.setAlignment(Pos.CENTER);
         hLBox.getChildren().addAll(h, hTemp, l, lTemp);
 
@@ -268,10 +340,10 @@ public class WeatherDisplay extends VBox {
     }
 
     private void setDaily() {
-        dailyVBox = new VBox(25);
+        dailyVBox = new VBox(23);
         dailyVBox.setBackground(Background.EMPTY);
         dailyVBox.setAlignment(Pos.BOTTOM_CENTER);
-        dailyVBox.setPadding(new Insets(60, 5, 10, 70));
+        dailyVBox.setPadding(new Insets(20, 68, 10, 110));
 
         ArrayList<Map<String, String>> dailyForecast = (ArrayList<Map<String, String>>) weatherData.get("daily");
         for(int i = -1; i < dailyForecast.size(); i++) {
@@ -285,10 +357,10 @@ public class WeatherDisplay extends VBox {
                 day = new Label(dailyForecast.get(i).get("day"));
                 day.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 18));
                 day.setTextFill(Color.LIGHTSLATEGRAY.darker().darker());
-                high = new Label(dailyForecast.get(i).get("high") + " °C");
+                high = new Label(dailyForecast.get(i).get("high") + " °");
                 high.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 20));
                 high.setTextFill(MainScreen.themeColor);
-                low = new Label(dailyForecast.get(i).get("low") + " °C");
+                low = new Label(dailyForecast.get(i).get("low") + " °");
                 low.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 20));
                 low.setTextFill(MainScreen.themeColor);
                 summary = new Label(dailyForecast.get(i).get("summary"));
@@ -316,12 +388,57 @@ public class WeatherDisplay extends VBox {
             daily.setAlignment(Pos.CENTER);
             dailyVBox.getChildren().add(daily);
         }
+        scrollPaneDaily = new ScrollPane(dailyVBox);
+        scrollPaneDaily.setFitToWidth(true);
+        scrollPaneDaily.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+        scrollPaneDaily.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPaneDaily.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+    }
+
+    private void setHourly() throws FileNotFoundException {
+        imgDim = 60;
+        hourlyHBox = new HBox(84);
+        hourlyHBox.setBackground(Background.EMPTY);
+        hourlyHBox.setAlignment(Pos.BOTTOM_CENTER);
+        hourlyHBox.setPadding(new Insets(80, 40, 30, 40));
+
+        Map<String, ArrayList<String>> hourlyForecast = (Map<String, ArrayList<String>>) weatherData.get("hourly");
+
+        for(int i=1; i<25; i++) {
+            VBox hourlyBox = new VBox(35);
+            hourlyBox.setBackground(Background.EMPTY);
+            hourlyBox.setAlignment(Pos.CENTER);
+            //hourlyBox.setPadding(new Insets(15, 0, 30, 0));
+
+            Label hour = new Label(hourlyForecast.get("hours").get(i));
+            hour.setFont(Font.font("Arial", FontWeight.BOLD, 19));
+            hour.setTextFill(Color.DARKRED.darker());
+            hour.setUnderline(true);
+
+            Rectangle currentConditionImage = new Rectangle(0, 0, 60, 60);
+            currentConditionImage.setArcWidth(40.0);
+            currentConditionImage.setArcHeight(40.0);
+            ImagePattern pattern = new ImagePattern(getImage(hourlyForecast.get("icons").get(i)));
+            currentConditionImage.setFill(pattern);
+            currentConditionImage.setEffect(new DropShadow(20, Color.BLACK));
+
+            Label hourlyTemp = new Label(hourlyForecast.get("temp").get(i) + " °");
+            hourlyTemp.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 20));
+            hourlyTemp.setTextFill(Color.BLACK);
+
+            hourlyBox.getChildren().addAll(hour, currentConditionImage, hourlyTemp);
+            hourlyHBox.getChildren().addAll(hourlyBox);
+        }
+        scrollPaneHourly = new ScrollPane(hourlyHBox);
+        scrollPaneHourly.setPadding(new Insets(0, 15, 0, 15));
+        scrollPaneHourly.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+        scrollPaneHourly.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        scrollPaneHourly.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
     }
 
     private void setChangeLocation() {
         VBox vBox = new VBox(20);
         vBox.setAlignment(Pos.TOP_CENTER);
-        vBox.setPrefSize(300, 285);
         vBox.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(7))));
         vBox.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
 
@@ -329,7 +446,7 @@ public class WeatherDisplay extends VBox {
         stage.setAlwaysOnTop(true);
         stage.setOpacity(0.85);
         stage.initStyle(StageStyle.UNDECORATED);
-        stage.setScene(new Scene(vBox, 450, 450));
+        stage.setScene(new Scene(vBox, 440, 400));
         stage.show();
 
         Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
@@ -397,9 +514,9 @@ public class WeatherDisplay extends VBox {
 
         Label warning = new Label();
         warning.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
-        warning.setTextFill(Color.RED);
+        warning.setTextFill(Color.DARKRED.darker());
         warning.setTranslateY(-15);
-        warning.setTranslateY(60);
+        warning.setTranslateY(20);
 
         Button change = new Button("Change");
         change.setCursor(Cursor.HAND);
@@ -408,7 +525,7 @@ public class WeatherDisplay extends VBox {
         change.setTextFill(Color.DARKGREEN.darker());
         change.setBorder(new Border(new BorderStroke(Color.LIGHTSLATEGRAY.brighter(), BorderStrokeStyle.SOLID, new CornerRadii(3,3,3,3,false), new BorderWidths(3))));
         change.setAlignment(Pos.CENTER);
-        change.setTranslateY(70);
+        change.setTranslateY(30);
         change.setOnAction(e -> {
             try {
                 mainScreen.setWeatherDisplay(city.getText(), country.getText());
@@ -431,8 +548,14 @@ public class WeatherDisplay extends VBox {
             case "Clear":
                 img = new Image(new FileInputStream("src/res/weatherIcons/day_clear.png"),imgDim,imgDim,false,true);
                 break;
+            case "clear-night":
+                img = new Image(new FileInputStream("src/res/weatherIcons/night_half_moon_clear.png"),imgDim,imgDim,false,true);
+                break;
             case "Partially cloudy":
                 img = new Image(new FileInputStream("src/res/weatherIcons/day_partial_cloud.png"),imgDim,imgDim,false,true);
+                break;
+            case "partly-cloudy-night":
+                img = new Image(new FileInputStream("src/res/weatherIcons/night_full_moon_partial_cloud.png"),imgDim,imgDim,false,true);
                 break;
             case "Overcast":
                 img =  new Image(new FileInputStream("src/res/weatherIcons/overcast.png"),imgDim,imgDim,false,true);

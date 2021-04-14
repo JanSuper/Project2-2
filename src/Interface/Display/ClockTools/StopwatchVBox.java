@@ -29,7 +29,7 @@ public class StopwatchVBox extends VBox {
     public StopwatchVBox() {
         setSpacing(40);
         setAlignment(Pos.CENTER);
-        setPadding(new Insets(80,0,80,0));
+        setPadding(new Insets(80,0,20,0));
 
         createContent();
         getChildren().addAll(stopwatchTime, buttons, lapsList);
@@ -48,7 +48,7 @@ public class StopwatchVBox extends VBox {
 
         lapsList = new ScrollPane(laps);
         lapsList.setFitToWidth(true);
-        lapsList.setMaxHeight(300);
+        lapsList.setMaxHeight(400);
         lapsList.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
         lapsList.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         lapsList.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);

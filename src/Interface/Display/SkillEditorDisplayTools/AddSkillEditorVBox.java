@@ -1,13 +1,11 @@
 package Interface.Display.SkillEditorDisplayTools;
 
 import DataBase.Data;
-import Interface.Chat.MessageBubble;
 import Interface.Screens.MainScreen;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -129,7 +127,7 @@ public class AddSkillEditorVBox extends VBox {
             {
                 response =  "Sorry something went wrong, the new skill could not be added to the database";
             }
-            mainScreen.chat.messages.add(new MessageBubble(mainScreen.chat,response,0));
+            mainScreen.chat.receiveMessage(response);
         });
     }
 

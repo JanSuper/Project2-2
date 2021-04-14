@@ -2,7 +2,6 @@ package Interface.Screens;
 
 import DataBase.Data;
 import Interface.Chat.ChatApp;
-import Interface.Chat.MessageBubble;
 import Interface.Display.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -27,7 +26,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
 
 public class MainScreen {
     public ChatApp chat;
@@ -97,9 +97,7 @@ public class MainScreen {
         settings.setOnMouseClicked(event -> displaySettings());
 
         designOptionButton(help);
-        help.setOnMouseClicked(event -> {
-            chat.messages.add(new MessageBubble(chat,"Ask me what I can do, for example you can check the weather by typing \"Weather\" or your UM schedule by typing \"Next Lecture\", \"This week Lecture\".",0));
-        });
+        help.setOnMouseClicked(event -> chat.receiveMessage("Tell me what to do for you. For example you can check the weather by typing \"How is the weather?\" or your UM schedule by typing \"Next Lecture\", \"This week Lecture\"."));
 
         designOptionButton(logOut);
         logOut.setOnMouseClicked(event -> {
@@ -124,27 +122,33 @@ public class MainScreen {
         root.setLeft(vBox);
     }
 
+    public void displaySettings() {
+        Label settingsLabel = userNameLabel;
+        settingsLabel.setText("Settings");
+
+        Button editProf = settings;
+        editProf.setText("Edit profile");
+
+        Button volume = help;
+        volume.setText("Volume");
+
+        Button back = logOut;
+        back.setText("Back");
+
+        editProf.setOnMouseClicked(event -> chat.receiveMessage("You can change your password/location by typing \"Change my password/location to <YourPassword/Location>\"."));
+        volume.setOnMouseClicked(event -> {}); //TODO add the volume slide
+        back.setOnMouseClicked(event -> setOptionsMenu());
+
+        vBox.getChildren().clear();
+        vBox.getChildren().addAll(settingsLabel, editProf, volume, back);
+    }
+
     private void designOptionButton(Button button) {
         button.setBackground(new Background(new BackgroundFill(Color.SLATEGREY.darker(), new CornerRadii(8,8,8,8,false), Insets.EMPTY)));
         button.setFont((Font.font("Cambria", FontWeight.EXTRA_BOLD, 20)));
         button.setPrefWidth(250);
         button.setTextFill(Color.LIGHTGRAY);
         button.setCursor(Cursor.HAND);
-    }
-
-    public void displaySettings(){
-        userNameLabel.setText("Settings");
-        settings.setText("Volume");
-        help.setText("Change profile");
-        logOut.setText("Back");
-
-        settings.setOnMouseClicked(event -> {}); //TODO add the volume slide
-
-        help.setOnMouseClicked(event -> {
-            chat.messages.add(new MessageBubble(chat,"You can change your password/location by typing \"Change my password/location to <YourPassword/Location>\".",0));
-        });
-
-        logOut.setOnMouseClicked(event -> setOptionsMenu());
     }
 
     public void setWeatherDisplay(String city, String country) throws Exception {
