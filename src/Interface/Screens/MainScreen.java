@@ -14,17 +14,27 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaException;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -131,25 +141,42 @@ public class MainScreen {
         Button editProf = settings;
         editProf.setText("Edit profile");
 
-        Button volume = help;
-        volume.setText("Volume");
-
-        Button themeColor = new Button("Theme Color");
+        Button themeColor = help;
+        themeColor.setText("Theme Color");
         designOptionButton(themeColor);
+
+        Button changeBackground = new Button("Background");
+        designOptionButton(changeBackground);
 
         Button back = logOut;
         back.setText("Back");
 
         editProf.setOnMouseClicked(event -> chat.receiveMessage("You can change your password/location by typing \"Change my password/location to <YourPassword/Location>\"."));
-        volume.setOnMouseClicked(event -> {}); //TODO add the volume slide
         themeColor.setOnMouseClicked(e-> displayThemeColors());
+        changeBackground.setOnMouseClicked(event -> displayBackgroundEditing());
         back.setOnMouseClicked(event -> setOptionsMenu());
 
         vBox.getChildren().clear();
-        vBox.getChildren().addAll(settingsLabel, editProf, volume, themeColor, back);
+        vBox.getChildren().addAll(settingsLabel, editProf, themeColor,changeBackground, back);
     }
 
-    private void displayThemeColors() {
+    public void displayBackgroundEditing(){
+        FileChooser fileChooser = new FileChooser();
+        File selectedFile = fileChooser.showOpenDialog(stage);
+        try {
+            if(selectedFile.toURI().toString().endsWith(".png")||selectedFile.toURI().toString().endsWith(".jpg")){
+                File file = new File(selectedFile.toURI().toString());
+                Data.setImage(file);
+                root.setBackground(Data.createBackGround());
+            }else {
+                chat.receiveMessage("The file "+selectedFile.toURI().toString()+" is not an image");
+            }
+        } catch(NullPointerException e){
+            chat.receiveMessage("No file chosen");
+        }
+    }
+
+    public void displayThemeColors() {
         Label themeColorLabel = userNameLabel;
         themeColorLabel.setText("Theme Color");
 

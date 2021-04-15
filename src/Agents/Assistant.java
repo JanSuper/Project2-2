@@ -676,6 +676,12 @@ public class Assistant {
                 mainScreen.chat.receiveMessage("Couldn't change the profession for some reason.");
             }
         }
+        else if(skill_num==86){
+            mainScreen.displayBackgroundEditing();
+        }
+        else if(skill_num==87){
+            mainScreen.displayThemeColors();
+        }
         else if(skill_num==89){
             String info = Files.readString(Path.of("src/DataBase/Users/" + Data.getUsername() + ".txt"), StandardCharsets.US_ASCII);
             mainScreen.chat.receiveMessage(info);

@@ -185,6 +185,10 @@ U Change age to <VARIABLE>
 B 84
 U Change profession to <VARIABLE>
 B 85
+U Edit background
+B 86
+U Edit theme color
+B 87
 
 U Bye
 B 90
