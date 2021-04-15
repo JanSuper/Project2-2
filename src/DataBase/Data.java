@@ -4,6 +4,7 @@ import Agents.Assistant;
 import Agents.User;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
+import javafx.scene.media.MediaPlayer;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -21,6 +22,9 @@ public class Data {
     private static Assistant assistant;
 
     private static File remindersFile = new File("src/DataBase/reminders.txt");
+
+    private static MediaPlayer mp;
+
 
     public static Background createBackGround(){
         Image image = new Image(String.valueOf(Data.class.getResource("background.jpg")),Double.MAX_VALUE,Double.MAX_VALUE,false,true);
@@ -83,5 +87,13 @@ public class Data {
 
     public static ArrayList<String> getSkills() {
         return skills;
+    }
+
+    public static MediaPlayer getMp() {
+        return mp;
+    }
+
+    public static void setMp(MediaPlayer mp) {
+        Data.mp = mp;
     }
 }

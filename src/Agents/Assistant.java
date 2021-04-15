@@ -37,7 +37,7 @@ public class Assistant {
     private String cleanMessageWithNoPonct;
     private int[] step;
     private int nbrOfTrail;
-    private final int MAX_NBR_OF_TRAILS = 1000;
+    private final int MAX_NBR_OF_TRAILS = 5000;
 
     public void loadKeys() throws IOException {
         Properties keys = new Properties();
@@ -577,21 +577,57 @@ public class Assistant {
             Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start chrome.exe " + searchURL});
         }
         else if(skill_num == 50){
-            FileChooser fileChooser = new FileChooser();
-            File selectedFile = fileChooser.showOpenDialog(mainScreen.stage);
-            try {
-                Media media = new Media (selectedFile.toURI().toString());
-                MediaPlayer mediaPlayer = new MediaPlayer(media);
-                mediaPlayer.setAutoPlay(true);
-                MediaPlayerDisplay mediaControl = new MediaPlayerDisplay(mediaPlayer);
+            if(Data.getMp()!=null){
+                Data.getMp().play();
+                MediaPlayerDisplay mediaControl = new MediaPlayerDisplay(Data.getMp());
                 mainScreen.displayUrlMediaPlayer(mediaControl);
-            } catch(NullPointerException e){
-                mainScreen.chat.receiveMessage("No file chosen");
-            } catch(MediaException e){
-                mainScreen.chat.receiveMessage("Filetype not supported");
+            }else{
+                FileChooser fileChooser = new FileChooser();
+                File selectedFile = fileChooser.showOpenDialog(mainScreen.stage);
+                try {
+                    Media media = new Media (selectedFile.toURI().toString());
+                    MediaPlayer mediaPlayer = new MediaPlayer(media);
+                    Data.setMp(mediaPlayer);
+                    mediaPlayer.setAutoPlay(true);
+                    MediaPlayerDisplay mediaControl = new MediaPlayerDisplay(mediaPlayer);
+                    mainScreen.displayUrlMediaPlayer(mediaControl);
+                } catch(NullPointerException e){
+                    mainScreen.chat.receiveMessage("No file chosen");
+                } catch(MediaException e){
+                    mainScreen.chat.receiveMessage("Filetype not supported");
+                }
             }
         }
-        else if(skill_num == 51){
+        else if(skill_num==51){
+            if(Data.getMp()!=null){
+                FileChooser fileChooser = new FileChooser();
+                File selectedFile = fileChooser.showOpenDialog(mainScreen.stage);
+                try {
+                    Data.getMp().pause();
+                    Media media = new Media (selectedFile.toURI().toString());
+                    MediaPlayer mediaPlayer = new MediaPlayer(media);
+                    Data.setMp(mediaPlayer);
+                    mediaPlayer.setAutoPlay(true);
+                    MediaPlayerDisplay mediaControl = new MediaPlayerDisplay(mediaPlayer);
+                    mainScreen.displayUrlMediaPlayer(mediaControl);
+                } catch(NullPointerException e){
+                    Data.getMp().play();
+                    mainScreen.chat.receiveMessage("No file chosen");
+                } catch(MediaException e){
+                    Data.getMp().play();
+                    mainScreen.chat.receiveMessage("Filetype not supported");
+                }
+            }else{
+                mainScreen.chat.receiveMessage("No music is being played");
+            }
+        }
+        else if(skill_num==52){
+            Data.getMp().pause();
+        }
+        else if(skill_num==53){
+            Data.getMp().stop();
+        }
+        else if(skill_num == 59){
             WebView webview = new WebView();
             webview.getEngine().load(
                     randomWords.peek()

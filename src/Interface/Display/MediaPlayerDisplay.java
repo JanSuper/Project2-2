@@ -3,6 +3,7 @@ package Interface.Display;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -12,6 +13,7 @@ import javafx.scene.layout.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.media.AudioClip;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.util.Duration;
@@ -30,6 +32,20 @@ public class MediaPlayerDisplay extends BorderPane {
 
     public MediaPlayerDisplay(final MediaPlayer mp) {
         this.mp = mp;
+        duration = mp.getMedia().getDuration();
+        final Task task = new Task() {
+
+            @Override
+            protected Object call() throws Exception {
+                createAudio();
+                return null;
+            }
+        };
+        Thread thread = new Thread(task);
+        thread.start();
+    }
+
+    private void createAudio(){
         setStyle("-fx-background-color: #bfc2c7;");
         mediaView = new MediaView(mp);
         Pane mvPane = new Pane();
@@ -88,7 +104,6 @@ public class MediaPlayerDisplay extends BorderPane {
 
         mp.setOnPaused(new Runnable() {
             public void run() {
-                System.out.println("onPaused");
                 playButton.setText(">");
             }
         });

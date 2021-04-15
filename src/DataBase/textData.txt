@@ -107,6 +107,20 @@ U Listen to a song
 B 50
 U Watch a video
 B 50
+U Music
+B 50
+U Play music
+B 50
+
+U Change music
+B 51
+
+U Pause music
+B 52
+
+U Stop music
+B 53
+
 
 U Calendar
 B 60
@@ -155,7 +169,7 @@ U Add a new clock for <VARIABLE>
 B 24
 
 U Watch from url <VARIABLE>
-B 51
+B 59
 
 U Change password to <VARIABLE>
 B 80
