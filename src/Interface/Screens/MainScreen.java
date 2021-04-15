@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
@@ -80,7 +81,10 @@ public class MainScreen {
         chat.prefWidthProperty().bind(root.widthProperty().divide(2.8));
 
         root.setRight(chat);
+
+        vBox = new VBox(40);
         setOptionsMenu();
+        vBox.setBackground(new Background(new BackgroundFill(new Color(themeColor.getRed(), themeColor.getGreen(), themeColor.getBlue(), 0.5), CornerRadii.EMPTY, Insets.EMPTY)));
     }
 
     public void setOptionsMenu() {
@@ -88,7 +92,6 @@ public class MainScreen {
         settings = new Button("Settings");
         help = new Button("Help");
         logOut = new Button("Log out");
-        vBox = new VBox(40);
 
         userNameLabel.setFont((Font.font("Cambria", FontWeight.EXTRA_BOLD, 45)));
         userNameLabel.setStyle("-fx-text-fill: white");
@@ -112,7 +115,6 @@ public class MainScreen {
 
         vBox.getChildren().setAll(userNameLabel, settings, help, logOut);
         vBox.setAlignment(Pos.CENTER);
-        vBox.setBackground(new Background(new BackgroundFill(new Color(0.2,0.35379, 0.65, 0.5), CornerRadii.EMPTY, Insets.EMPTY)));
         vBox.setBorder(border);
         vBox.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
         vBox.prefWidthProperty().bind(root.widthProperty().subtract(chat.prefWidthProperty()).subtract(borderWidth*2));
@@ -132,15 +134,80 @@ public class MainScreen {
         Button volume = help;
         volume.setText("Volume");
 
+        Button themeColor = new Button("Theme Color");
+        designOptionButton(themeColor);
+
         Button back = logOut;
         back.setText("Back");
 
         editProf.setOnMouseClicked(event -> chat.receiveMessage("You can change your password/location by typing \"Change my password/location to <YourPassword/Location>\"."));
         volume.setOnMouseClicked(event -> {}); //TODO add the volume slide
+        themeColor.setOnMouseClicked(e-> displayThemeColors());
         back.setOnMouseClicked(event -> setOptionsMenu());
 
         vBox.getChildren().clear();
-        vBox.getChildren().addAll(settingsLabel, editProf, volume, back);
+        vBox.getChildren().addAll(settingsLabel, editProf, volume, themeColor, back);
+    }
+
+    private void displayThemeColors() {
+        Label themeColorLabel = userNameLabel;
+        themeColorLabel.setText("Theme Color");
+
+        HBox colors = new HBox(40);
+        colors.setAlignment(Pos.CENTER);
+
+        Color color = new Color(0.2, 0.35379, 0.65, 1);
+        String colorString = "rgb(" + color.getRed() * 255 + "," + color.getGreen() * 255 + "," + color.getBlue() * 255 + ");";
+        Button blue = new Button();
+        blue.setStyle("-fx-border-radius: 5em; -fx-border-color:black; -fx-background-radius: 5em; -fx-min-width: 40px; -fx-min-height: 40px; -fx-max-width: 40px; -fx-max-height: 40px; -fx-background-color: "+ colorString +";");
+        blue.setFocusTraversable(false);
+        blue.setCursor(Cursor.HAND);
+
+        Button black = new Button();
+        black.setStyle("-fx-border-radius: 5em; -fx-border-color:black; -fx-background-radius: 5em; -fx-min-width: 40px; -fx-min-height: 40px; -fx-max-width: 40px; -fx-max-height: 40px; -fx-background-color: black;");
+        black.setFocusTraversable(false);
+        black.setCursor(Cursor.HAND);
+
+        Button white = new Button();
+        white.setStyle("-fx-border-radius: 5em; -fx-border-color:black; -fx-background-radius: 5em; -fx-min-width: 40px; -fx-min-height: 40px; -fx-max-width: 40px; -fx-max-height: 40px; -fx-background-color: lightgray;");
+        white.setFocusTraversable(false);
+        white.setCursor(Cursor.HAND);
+
+        Button back = logOut;
+        back.setText("Back");
+
+        back.setOnMouseClicked(e -> displaySettings());
+        blue.setOnMouseClicked(e -> {
+            themeColor = new Color(0.2, 0.35379, 0.65, 1);
+            try {
+                chat.changeColor(themeColor);
+                vBox.setBackground(new Background(new BackgroundFill(new Color(0.2, 0.35379, 0.65, 0.5), CornerRadii.EMPTY, Insets.EMPTY)));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        });
+        black.setOnMouseClicked(e -> {
+            themeColor = Color.BLACK;
+            try {
+                chat.changeColor(themeColor);
+                vBox.setBackground(new Background(new BackgroundFill(new Color(themeColor.getRed(), themeColor.getGreen(), themeColor.getBlue(), 0.4), CornerRadii.EMPTY, Insets.EMPTY)));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        });
+        white.setOnMouseClicked(e -> {
+            themeColor = Color.LIGHTGRAY;
+            try {
+                chat.changeColor(themeColor);
+                vBox.setBackground(new Background(new BackgroundFill(new Color(themeColor.darker().getRed(), themeColor.darker().getGreen(), themeColor.darker().getBlue(), 0.4), CornerRadii.EMPTY, Insets.EMPTY)));
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        colors.getChildren().addAll(blue, black, white);
+        vBox.getChildren().clear();
+        vBox.getChildren().addAll(themeColorLabel, colors, back);
     }
 
     private void designOptionButton(Button button) {
@@ -383,5 +450,4 @@ public class MainScreen {
         Platform.exit();
         System.exit(0);
     }
-
 }

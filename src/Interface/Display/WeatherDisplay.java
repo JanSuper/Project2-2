@@ -233,6 +233,7 @@ public class WeatherDisplay extends VBox {
             }
 
             if(iconD.contains("night")) { iconDescriptions.add(iconD); }
+            else if (iconD.equals("cloudy") && summary.equals("Partially cloudy")) { iconDescriptions.add("Overcast"); }
             else { iconDescriptions.add(summary); }
 
             if(i==1) { currentSummary = summary; }

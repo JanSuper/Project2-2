@@ -18,6 +18,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
@@ -28,11 +29,14 @@ import java.util.List;
 public class ChatApp extends VBox {
     public ObservableList messages = FXCollections.observableArrayList();
     private HBox user;
+    private Label userNameLabel;
+    private Paint assistantMessageTextColor = Color.WHITE;
     private ScrollPane scroller;
     private HBox typeField;
     private TextField userInput;
     private Button sendMessageButton;
     private Image image;
+    private ImageView userIcon;
     public Color themeColor = MainScreen.themeColor;
     public List<String>userMessages;
     public List<String>assistantMessages;
@@ -40,11 +44,50 @@ public class ChatApp extends VBox {
 
     private MainScreen mainScreen;
 
+    public void changeColor(Color themeColor) throws FileNotFoundException {
+        this.themeColor = themeColor;
+        super.setBackground(new Background(new BackgroundFill(themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
+        List<MessageBubble> messageBubbles = (List<MessageBubble>) messages;
+        for (MessageBubble mb : messageBubbles) {
+            if (mb.getDirection() == 0) {
+                mb.messageLabel.setBackground(new Background(new BackgroundFill(themeColor, new CornerRadii(0, 7, 7, 7, false), Insets.EMPTY)));
+                if (themeColor.equals(Color.LIGHTGRAY)) {
+                    assistantMessageTextColor = Color.BLACK;
+                    mb.messageLabel.setTextFill(assistantMessageTextColor);}
+                else {
+                    assistantMessageTextColor = Color.WHITE;
+                    mb.messageLabel.setTextFill(assistantMessageTextColor); }
+            }
+        }
+
+        if (themeColor.equals(Color.BLACK)) {
+            changeUserIcon(new FileInputStream("src/res/userIconBlack.png"));
+            userNameLabel.setStyle("-fx-text-fill: white");
+            userInput.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, new CornerRadii(3,3,3,3,false), Insets.EMPTY)));
+            userInput.setStyle("-fx-text-fill: black; -fx-prompt-text-fill: gray");
+        }
+        else if (themeColor.equals(new Color(0.2, 0.35379, 0.65, 1))) {
+            changeUserIcon(new FileInputStream("src/res/userIconBlue.png"));
+            userNameLabel.setStyle("-fx-text-fill: white");
+            userInput.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, new CornerRadii(3,3,3,3,false), Insets.EMPTY)));
+            userInput.setStyle("-fx-text-fill: black; -fx-prompt-text-fill: gray");
+        }
+        else if (themeColor.equals(Color.LIGHTGRAY)) {
+            changeUserIcon(new FileInputStream("src/res/userIconWhite.png"));
+            userNameLabel.setStyle("-fx-text-fill: black");
+            userInput.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGRAY, new CornerRadii(3,3,3,3,false), Insets.EMPTY)));
+            userInput.setStyle("-fx-text-fill: white; -fx-prompt-text-fill: lightgray");
+        }
+    }
+
     private class MessageBubble extends HBox {
         private Background userBubbleBackground;
         private Background assistantBubbleBackground;
+        private int direction;
+        private Label messageLabel;
 
         public MessageBubble(String message, int direction) {
+            this.direction = direction;
             if (direction == 0) {
                 assistantMessages.add(message);
             } else {
@@ -56,20 +99,21 @@ public class ChatApp extends VBox {
         }
 
         private void createLabel(String message, int direction) {
-            Label messageLabel = new Label(message);
+            messageLabel = new Label(message);
             messageLabel.setPadding(new Insets(6));
-            messageLabel.setTextFill(Color.WHITE);
             messageLabel.setWrapText(true);
             messageLabel.setFont((Font.font("Cambria", 17)));
             messageLabel.maxWidthProperty().bind(widthProperty().multiply(0.75));
             messageLabel.setTranslateY(5);
 
             if (direction == 0) {
+                messageLabel.setTextFill(assistantMessageTextColor);
                 messageLabel.setBackground(assistantBubbleBackground);
                 messageLabel.setAlignment(Pos.CENTER_LEFT);
                 messageLabel.setTranslateX(10);
                 setAlignment(Pos.TOP_LEFT);
             } else {
+                messageLabel.setTextFill(Color.WHITE);
                 messageLabel.setBackground(userBubbleBackground);
                 messageLabel.setAlignment(Pos.CENTER_RIGHT);
                 messageLabel.setTranslateX(-10);
@@ -77,9 +121,11 @@ public class ChatApp extends VBox {
             }
             getChildren().setAll(messageLabel);
         }
+
+        public int getDirection() { return direction; }
     }
 
-    public ChatApp(String userName,MainScreen mainScreen) throws Exception {
+    public ChatApp(String userName, MainScreen mainScreen) throws Exception {
         super(7);
         super.setBackground(new Background(new BackgroundFill(themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
 
@@ -89,15 +135,15 @@ public class ChatApp extends VBox {
 
         assistant_answer = new Assistant(this.mainScreen, userName, assistantMessages);
 
-        Label userNameLabel = new Label(userName);
+        userNameLabel = new Label(userName);
         userNameLabel.setAlignment(Pos.CENTER);
         userNameLabel.setTranslateX(10);
         userNameLabel.setFont((Font.font("Cambria", FontWeight.EXTRA_BOLD, 20)));
         userNameLabel.setStyle("-fx-text-fill: white");
 
-        FileInputStream fis = new FileInputStream("src/res/userIcon.png");
+        FileInputStream fis = new FileInputStream("src/res/userIconBlue.png");
         image = new Image(fis,25,25,true,true);
-        ImageView userIcon = new ImageView(image);
+        userIcon = new ImageView(image);
 
         user = new HBox(20);
         user.getChildren().addAll(userIcon, userNameLabel);
@@ -108,6 +154,15 @@ public class ChatApp extends VBox {
         setMaxHeight(Double.MAX_VALUE);
         setMinHeight(Double.MIN_VALUE);
         receiveMessage("Welcome " + Data.getUsername() + "! How may I help you?"); //Assistant's first message
+    }
+
+    private void changeUserIcon(FileInputStream fis) {
+        image = new Image(fis,25,25,true,true);
+        userIcon = new ImageView(image);
+        getChildren().remove(user);
+        user.getChildren().clear();
+        user.getChildren().addAll(userIcon, userNameLabel);
+        getChildren().add(0, user);
     }
 
     private void createComponents() {
