@@ -2,18 +2,26 @@ package Interface.Display;
 
 import Interface.Display.ClockTools.AlarmVBox;
 import Interface.Screens.MainScreen;
+import Interface.Screens.StartScreen;
+import Skills.Schedule.Skill_Schedule;
 import javafx.css.PseudoClass;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.geometry.VPos;
+import javafx.geometry.*;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -24,9 +32,8 @@ import static javafx.scene.paint.Color.LIGHTGRAY;
 
 ;
 public class CalendarDisplay2 extends HBox {
-    private static final Paint WHITE = Color.LIGHTGRAY;
+    private final Duration period = Duration.ofMinutes(15);
     private final LocalTime beginningOfTheDay = LocalTime.of(00, 00);
-    private final Duration period = Duration.ofMinutes(30);
     private final LocalTime endOfTheDay = LocalTime.of(23, 59);
 
     private final List<Slot> slots = new ArrayList<>();
@@ -41,6 +48,7 @@ public class CalendarDisplay2 extends HBox {
         this.mainScreen = mainScreen;
 
         createContent();
+        addSchedule();
         getChildren().addAll(scrollPane,alarmVBox);
     }
 
@@ -60,16 +68,12 @@ public class CalendarDisplay2 extends HBox {
                  !startTime.isAfter(day.atTime(endOfTheDay));
                  startTime = startTime.plus(period)) {
 
-
                 Slot slot = new Slot(startTime, period);
                 slots.add(slot);
 
-
-                calendar.add(slot.getView(), slot.getDayOfWeek().getValue(), slotIndex);
-                slotIndex++;
+                calendar.add(slot.getView(), slot.getDayOfWeek().getValue(), slotIndex++);
             }
         }
-
 
         DateTimeFormatter dFormatter = DateTimeFormatter.ofPattern("E\nMMM d");
 
@@ -78,7 +82,7 @@ public class CalendarDisplay2 extends HBox {
             label.setPadding(new Insets(1));
             label.setTextAlignment(TextAlignment.CENTER);
 
-            label.setTextFill(WHITE);
+            label.setTextFill(Color.LIGHTGRAY);
             GridPane.setHalignment(label, HPos.CENTER);
             calendar.add(label, date.getDayOfWeek().getValue(), 0);
         }
@@ -91,86 +95,99 @@ public class CalendarDisplay2 extends HBox {
              startTime = startTime.plus(period)) {
             Label label = new Label(startTime.format(tFormatter));
             label.setPadding(new Insets(2));
-
-            label.setTextFill(WHITE);
-
+            label.setTextFill(Color.LIGHTGRAY);
 
             GridPane.setHalignment(label, HPos.RIGHT);
             calendar.add(label, 0, slotIndex);
             slotIndex++;
-
         }
-        /*
-        Pane pane1  = new Pane();
-        Pane pane2  = new Pane();
-        Pane pane3  = new Pane();
-        Pane pane4  = new Pane();
-        Pane pane5  = new Pane();
-        Pane pane6  = new Pane();
-
-        BackgroundFill backgroundFill =
-                new BackgroundFill(
-
-                        Color.valueOf("#FF590081"),
-
-                        new CornerRadii(10),
-                        new Insets(1)
-                );
-
-        Background background =
-                new Background(backgroundFill);
-        calendar.add(pane1,1,5,1,6);
-        calendar.add(pane3,2,7,1,4);
-        calendar.add(pane2,1,13,1,4);
-
-        calendar.add(pane5,4,8,1,13);
-        calendar.add(pane6,5,7,1,4);
-        pane1.setBackground(background);
-        pane2.setBackground(background);
-        pane3.setBackground(background);
-        pane4.setBackground(background);
-        pane5.setBackground(background);
-        pane6.setBackground(background);
-
-
-        // scene.setFill(Insets.Color.BLACK);
-        Text text = new Text("KEN2430/2020-400/Lecture Mo/04 - Mathematical Modelling");
-        calendar.add(text, 1, 4, 6, 6);
-        text.setTextOrigin(VPos.CENTER);
-        text.setFill(LIGHTGRAY);
-        text.setWrappingWidth(80);
-
-        Text text2 = new Text("KEN2420/2020-400/Lecture Mo/04 - Theoretical Computer Science");
-        //text2.setFill(Color.RED);
-        calendar.add(text2, 1, 13, 4, 4);
-        text2.setWrappingWidth(80);
-        text2.setFill(LIGHTGRAY);
-
-        Text text3 = new Text("KEN2420/2020-400/Lecture Tue/04 - Theoretical Computer Science");
-        calendar.add(text3, 2, 7, 4, 4);
-        text3.setWrappingWidth(80);
-        text3.setFill(LIGHTGRAY);
-
-        Text text4 = new Text("KEN2600/2020-003/Presentation First Phase/01 - Project 2-2 (The specific schedule will be announced by your supervisor)");
-        calendar.add(text4, 4, 2, 10, 18);
-        text4.setWrappingWidth(80);
-        text4.setFill(LIGHTGRAY);
-
-        Text text5 = new Text("KEN2420/2020-400/Lecture Fri/04 - Theoretical Computer Science");
-        calendar.add(text5, 5, 7, 4, 4);
-        text5.setWrappingWidth(80);
-        text5.setFill(LIGHTGRAY);
-
-         */
 
         scrollPane = new ScrollPane();
         scrollPane.setContent(calendar);
 
         alarmVBox = new AlarmVBox(this.mainScreen,true);
+
+        addReminder("this is a test","2021-03-07","00:00:00");
     }
 
-    public void addReminder(String text){
+    private void addSchedule(){
+        //TODO add every courses of the schedule that are supposed to be in the calendar
+    }
 
+    public void addReminder(String desc,String date,String hour){
+        BackgroundFill backgroundFill =
+                new BackgroundFill(
+                        Color.valueOf("#FF590081"),
+
+                        new CornerRadii(10),
+                        new Insets(1)
+                );
+        Background background = new Background(backgroundFill);
+
+        Pane pane1  = new Pane();
+        pane1.setBackground(background);
+        //TODO be able to convert the string date to a cell in the calendar
+        calendar.add(pane1,1,5,1,6);
+        pane1.setCursor(Cursor.HAND);
+        pane1.setOnMouseClicked(event -> {
+            getReminderInfo(desc,date,hour);
+        });
+
+        Text text = new Text(desc);
+        text.setDisable(true);
+        text.setTextOrigin(VPos.CENTER);
+        text.setFill(LIGHTGRAY);
+        text.setWrappingWidth(80);
+        calendar.add(text, 1, 5, 1, 6);
+    }
+
+    private void getReminderInfo(String desc,String date,String hour) {
+        VBox notification = new VBox(40);
+        notification.setAlignment(Pos.TOP_CENTER);
+        notification.setPrefSize(300, 285);
+        notification.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(7))));
+        notification.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        Stage stage = new Stage();
+        stage.setAlwaysOnTop(true);
+        stage.setOpacity(0.91);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.setScene(new Scene(notification, 320, 190));
+        stage.show();
+
+        Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
+        stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2 - 280);
+        stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 4 + 110);
+
+        Label timerLabel = new Label(date + " at " + hour);
+        timerLabel.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 13));
+        timerLabel.setTextFill(Color.WHITE);
+        timerLabel.setAlignment(Pos.TOP_LEFT);
+        timerLabel.setTranslateX(15);
+
+        Button exit = new Button("x");
+        exit.setCursor(Cursor.HAND);
+        exit.setBackground(Background.EMPTY);
+        exit.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 17));
+        exit.setTextFill(Color.DARKRED);
+        exit.setBorder(null);
+        exit.setAlignment(Pos.TOP_RIGHT);
+        exit.setOnAction(e -> stage.close());
+
+        Region region = new Region();
+        HBox.setHgrow(region, Priority.ALWAYS);
+
+        HBox topBox = new HBox(60);
+        topBox.setAlignment(Pos.CENTER);
+        topBox.setBackground(new Background(new BackgroundFill(MainScreen.themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
+        topBox.getChildren().addAll(timerLabel, region, exit);
+
+        Label label = new Label(desc);
+        label.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 26));
+        label.setTextFill(Color.WHITESMOKE);
+        label.setAlignment(Pos.CENTER);
+
+        notification.getChildren().addAll(topBox, label);
     }
 
 
@@ -206,7 +223,4 @@ public class CalendarDisplay2 extends HBox {
         }
 
     }
-
-
-
 }
