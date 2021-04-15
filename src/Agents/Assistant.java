@@ -398,9 +398,8 @@ public class Assistant {
         String final_answer = null;
         if(skill_num == 1)
         {
-            //TODO get user's city and country when creating a new account and use it here
-            String city = "Maastricht";
-            String country = "NL";
+            String city = getUserInfo("-City");
+            String country = getUserInfo("-Country");
             mainScreen.setWeatherDisplay(city,country);
             final_answer = "This is what I found for the weather in "+ city + ", " + country + ". " + mainScreen.weatherDisplay.currentDataString() + "If you want to change the location, type 'Change weather location to City,Country.' (e.g. Amsterdam,NL).";
         }
@@ -647,7 +646,7 @@ public class Assistant {
         }
         else if(skill_num == 80){
             if(!randomWords.contains(" ")){
-                if(!changeInfo("-Password",randomWords.peek())){
+                if(!changeUserInfo("-Password",randomWords.peek())){
                     mainScreen.chat.receiveMessage("Couldn't change the password for some reason.");
                 }
             }else{
@@ -658,23 +657,28 @@ public class Assistant {
             mainScreen.chat.receiveMessage("You can change your password/location/age/profession by typing \"Change my password/location/age/profession to <...>\".");
         }
         else if(skill_num==82){
-            if(!changeInfo("-Location",randomWords.peek())){
+            if(!changeUserInfo("-City",randomWords.peek())){
                 mainScreen.chat.receiveMessage("Couldn't change the location for some reason.");
             }
         }
         else if(skill_num==83){
-            String info = Files.readString(Path.of("src/DataBase/Users/" + Data.getUsername() + ".txt"), StandardCharsets.US_ASCII);
-            mainScreen.chat.receiveMessage(info);
+            if(!changeUserInfo("-Country",randomWords.peek())){
+                mainScreen.chat.receiveMessage("Couldn't change the location for some reason.");
+            }
         }
         else if(skill_num==84){
-            if(!changeInfo("-Age",randomWords.peek())){
+            if(!changeUserInfo("-Age",randomWords.peek())){
                 mainScreen.chat.receiveMessage("Couldn't change the age for some reason.");
             }
         }
         else if(skill_num==85){
-            if(!changeInfo("-Profession",randomWords.peek())){
+            if(!changeUserInfo("-Profession",randomWords.peek())){
                 mainScreen.chat.receiveMessage("Couldn't change the profession for some reason.");
             }
+        }
+        else if(skill_num==89){
+            String info = Files.readString(Path.of("src/DataBase/Users/" + Data.getUsername() + ".txt"), StandardCharsets.US_ASCII);
+            mainScreen.chat.receiveMessage(info);
         }
         else if(skill_num == 90)
         {
@@ -686,7 +690,38 @@ public class Assistant {
         return final_answer;
     }
 
-    private boolean changeInfo(String info,String edit){
+    private String getUserInfo(String info){
+        String result = "";
+        File userFile = new File("src/DataBase/Users/"+Data.getUsername()+".txt");
+
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(userFile));
+            String line = "", oldtext = "";
+            while((line = reader.readLine()) != null)
+            {
+                oldtext += line + "\r\n";
+            }
+            reader.close();
+
+            String[] lines = oldtext.split(System.getProperty("line.separator"));
+            for (int i = 0; i < lines.length; i++) {
+                if(lines[i].startsWith(info))
+                {
+                    result = lines[i+1];
+                    break;
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    private boolean changeUserInfo(String info, String edit){
         File userFile = new File("src/DataBase/Users/"+Data.getUsername()+".txt");
 
         try{

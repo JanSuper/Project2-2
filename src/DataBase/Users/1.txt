@@ -1,7 +1,9 @@
 -Password: 
 1
--Location: 
-/
+-Country:
+BE
+-City:
+Liège
 -Age: 
 /
 -Profession: 

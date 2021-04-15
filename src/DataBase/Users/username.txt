@@ -1,7 +1,9 @@
 -Password:
 password
--Location:
-Liege
+-Country:
+NE
+-City:
+Maastricht
 -Age:
 20
 -Profession:

@@ -132,7 +132,7 @@ U Change my personal info
 B 81
 
 U See my info
-B 83
+B 89
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // SKILLS WITH VARIABLES
@@ -177,8 +177,10 @@ U Set my password to <VARIABLE>
 B 80
 U Modify password to <VARIABLE>
 B 80
-U Change location to <VARIABLE>
+U Change city to <VARIABLE>
 B 82
+U Change country to <VARIABLE>
+B 83
 U Change age to <VARIABLE>
 B 84
 U Change profession to <VARIABLE>
