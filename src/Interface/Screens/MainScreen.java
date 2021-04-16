@@ -165,7 +165,7 @@ public class MainScreen {
         File selectedFile = fileChooser.showOpenDialog(stage);
         try {
             if(selectedFile.toURI().toString().endsWith(".png")||selectedFile.toURI().toString().endsWith(".jpg")){
-                File file = new File(selectedFile.toURI().toString());
+                String file = selectedFile.toURI().toString();
                 Data.setImage(file);
                 root.setBackground(Data.createBackGround());
             }else {

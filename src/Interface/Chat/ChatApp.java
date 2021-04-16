@@ -59,25 +59,58 @@ public class ChatApp extends VBox {
                     mb.messageLabel.setTextFill(assistantMessageTextColor); }
             }
         }
-
+        String userProfilePicture = getUsersPicture("profilePicture");
         if (themeColor.equals(Color.BLACK)) {
-            changeUserIcon(new FileInputStream("src/res/userIconBlack.png"));
+            if(userProfilePicture!=null){
+                changeUserIcon(new FileInputStream(userProfilePicture));
+            }else{
+                changeUserIcon(new FileInputStream("src/res/userIconBlack.png"));
+            }
             userNameLabel.setStyle("-fx-text-fill: white");
             userInput.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, new CornerRadii(3,3,3,3,false), Insets.EMPTY)));
             userInput.setStyle("-fx-text-fill: black; -fx-prompt-text-fill: gray");
         }
         else if (themeColor.equals(new Color(0.2, 0.35379, 0.65, 1))) {
-            changeUserIcon(new FileInputStream("src/res/userIconBlue.png"));
+            if(userProfilePicture!=null){
+                changeUserIcon(new FileInputStream(userProfilePicture));
+            }else{
+                changeUserIcon(new FileInputStream("src/res/userIconBlue.png"));
+            }
             userNameLabel.setStyle("-fx-text-fill: white");
             userInput.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, new CornerRadii(3,3,3,3,false), Insets.EMPTY)));
             userInput.setStyle("-fx-text-fill: black; -fx-prompt-text-fill: gray");
         }
         else if (themeColor.equals(Color.LIGHTGRAY)) {
-            changeUserIcon(new FileInputStream("src/res/userIconWhite.png"));
+            if(userProfilePicture!=null){
+                changeUserIcon(new FileInputStream(userProfilePicture));
+            }else{
+                changeUserIcon(new FileInputStream("src/res/userIconWhite.png"));
+            }
             userNameLabel.setStyle("-fx-text-fill: black");
             userInput.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGRAY, new CornerRadii(3,3,3,3,false), Insets.EMPTY)));
             userInput.setStyle("-fx-text-fill: white; -fx-prompt-text-fill: lightgray");
         }
+    }
+
+    private String getUsersPicture(String type){
+        File userPicture = new File("src/DataBase/Users/"+Data.getUsername()+"/"+type+".png");
+        if(!userPicture.exists()||!userPicture.isFile()){
+            userPicture = new File("src/DataBase/Users/"+Data.getUsername()+"/"+type+".jpg");
+            if(!userPicture.exists()||!userPicture.isFile()){
+                if(type.equals("profilePicture")){
+                    System.out.println("Something went wrong charging your " + type);
+                    System.out.println("Please add one or recheck it");
+                    return null;
+                }else{
+                    mainScreen.chat.receiveMessage("Something went wrong charging your " + type);
+                }
+            }else{
+                return "src/DataBase/Users/"+Data.getUsername()+"/"+type+".jpg";
+            }
+        }else{
+            return "src/DataBase/Users/"+Data.getUsername()+"/"+type+".png";
+        }
+        return null;
     }
 
     private class MessageBubble extends HBox {
@@ -142,6 +175,10 @@ public class ChatApp extends VBox {
         userNameLabel.setStyle("-fx-text-fill: white");
 
         FileInputStream fis = new FileInputStream("src/res/userIconBlue.png");
+        String userProfilePicture = getUsersPicture("profilePicture");
+        if(userProfilePicture!=null){
+            fis = new FileInputStream(userProfilePicture);
+        }
         image = new Image(fis,25,25,true,true);
         userIcon = new ImageView(image);
 

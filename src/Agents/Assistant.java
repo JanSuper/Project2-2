@@ -683,7 +683,7 @@ public class Assistant {
             mainScreen.displayThemeColors();
         }
         else if(skill_num==89){
-            String info = Files.readString(Path.of("src/DataBase/Users/" + Data.getUsername() + ".txt"), StandardCharsets.US_ASCII);
+            String info = Files.readString(Path.of("src/DataBase/Users/" + Data.getUsername() + "/" + Data.getUsername() + ".txt"));
             mainScreen.chat.receiveMessage(info);
         }
         else if(skill_num == 90)
@@ -698,7 +698,7 @@ public class Assistant {
 
     private String getUserInfo(String info){
         String result = "";
-        File userFile = new File("src/DataBase/Users/"+Data.getUsername()+".txt");
+        File userFile = new File("src/DataBase/Users/"+Data.getUsername()+"/"+Data.getUsername()+".txt");
 
         try{
             BufferedReader reader = new BufferedReader(new FileReader(userFile));
@@ -728,7 +728,7 @@ public class Assistant {
     }
 
     private boolean changeUserInfo(String info, String edit){
-        File userFile = new File("src/DataBase/Users/"+Data.getUsername()+".txt");
+        File userFile = new File("src/DataBase/Users/"+Data.getUsername()+"/"+Data.getUsername()+".txt");
 
         try{
             BufferedReader reader = new BufferedReader(new FileReader(userFile));

@@ -24,6 +24,7 @@ import javafx.util.Pair;
 import javafx.scene.control.TextField;
 import DataBase.Data;
 
+import java.awt.*;
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
@@ -64,7 +65,7 @@ public class StartScreen extends Application {
     );
 
     private boolean checkInfo(String info){
-        File userFile = new File("src/DataBase/Users/"+user.getText()+".txt");
+        File userFile = new File("src/DataBase/Users/"+user.getText()+"/"+user.getText()+".txt");
 
         try{
             BufferedReader data = new BufferedReader(new FileReader(userFile));
@@ -88,6 +89,22 @@ public class StartScreen extends Application {
             e.printStackTrace();
         }
         return false;
+    }
+
+    private String getUsersPicture(String type){
+        File userPicture = new File("src/DataBase/Users/"+Data.getUsername()+"/"+type+".png");
+        if(!userPicture.exists()||!userPicture.isFile()){
+            userPicture = new File("src/DataBase/Users/"+Data.getUsername()+"/"+type+".jpg");
+            if(!userPicture.exists()||!userPicture.isFile()){
+                System.out.println("Something went wrong charging your " + type);
+                System.out.println("Please add one or recheck it");
+                return null;
+            }else{
+                return "src/DataBase/Users/"+Data.getUsername()+"/"+type+".jpg";
+            }
+        }else{
+            return "src/DataBase/Users/"+Data.getUsername()+"/"+type+".png";
+        }
     }
 
     private void login() throws Exception {
@@ -143,7 +160,7 @@ public class StartScreen extends Application {
     }
 
     public boolean userAlreadyExists(){
-        File userFile = new File("src/DataBase/Users/"+user.getText()+".txt");
+        File userFile = new File("src/DataBase/Users/"+user.getText()+"/"+user.getText()+".txt");
         return userFile.exists();
     }
 
@@ -155,14 +172,27 @@ public class StartScreen extends Application {
         Data.setPassword(psw.getText());
 
         Data.setUser(new User(user.getText(), psw.getText()));
+        if(getUsersPicture("background")!=null){
+            System.out.println(getUsersPicture("background"));
+            Data.setImage(getUsersPicture("background"));
+        }
     }
 
     public void createUser(){
+        //Creating a File object
+        File file = new File("src/DataBase/Users/"+user.getText());
+        //Creating the directory
+        boolean bool = file.mkdir();
+        if(bool){
+            System.out.println("Directory created successfully");
+        }else {
+            System.out.println("Sorry couldn’t create specified directory");
+        }
         try {
             FileWriter writer;
             {
                 try {
-                    writer = new FileWriter("src/DataBase/Users/"+user.getText()+".txt");
+                    writer = new FileWriter("src/DataBase/Users/"+user.getText()+"/"+user.getText()+".txt");
                     PrintWriter out = new PrintWriter(writer);
                     out.println("-Password: "+"\n" + psw.getText());
                     out.println("-Location: "+"\n" + "/");

@@ -25,11 +25,11 @@ public class Data {
 
     private static MediaPlayer mp;
 
-    private static File image = new File(String.valueOf(Data.class.getResource("background.jpg")));
+    private static String image = "src/DataBase/defaultBackground.jpg";
 
 
     public static Background createBackGround(){
-        Image image = new Image(getImage().getPath(),Double.MAX_VALUE,Double.MAX_VALUE,false,true);
+        Image image = new Image(new File(getImage()).toURI().toString(),Double.MAX_VALUE,Double.MAX_VALUE,false,true);
 
         BackgroundSize backgroundSize = new BackgroundSize(Double.MAX_VALUE, Double.MAX_VALUE, true, true, true, true);
 
@@ -99,11 +99,11 @@ public class Data {
         Data.mp = mp;
     }
 
-    public static File getImage() {
+    public static String getImage() {
         return image;
     }
 
-    public static void setImage(File image) {
+    public static void setImage(String image) {
         Data.image = image;
     }
 }
