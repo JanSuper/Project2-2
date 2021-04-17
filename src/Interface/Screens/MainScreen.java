@@ -14,9 +14,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaException;
-import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -26,15 +23,10 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -66,6 +58,7 @@ public class MainScreen {
         chat = new ChatApp(Data.getUsername(),this);
         clockAppDisplay = new ClockAppDisplay(this);
         skillEditorDisplay = new SkillEditorDisplay(this);
+        weatherDisplay = new WeatherDisplay(this);
 
         createContent();
         alarmsTime = new ArrayList<>();
@@ -94,7 +87,6 @@ public class MainScreen {
 
         vBox = new VBox(40);
         setOptionsMenu();
-        vBox.setBackground(new Background(new BackgroundFill(new Color(themeColor.getRed(), themeColor.getGreen(), themeColor.getBlue(), 0.5), CornerRadii.EMPTY, Insets.EMPTY)));
     }
 
     public void setOptionsMenu() {
@@ -124,6 +116,7 @@ public class MainScreen {
             }
         });
 
+        setMenuBackground();
         vBox.getChildren().setAll(userNameLabel, settings, help, logOut);
         vBox.setAlignment(Pos.CENTER);
         vBox.setBorder(border);
@@ -133,6 +126,16 @@ public class MainScreen {
         vBox.setScaleY(0.8);
 
         root.setLeft(vBox);
+    }
+
+    private void setMenuBackground() {
+        if (themeColor.equals(Color.BLACK)) {
+            vBox.setBackground(new Background(new BackgroundFill(new Color(themeColor.getRed(), themeColor.getGreen(), themeColor.getBlue(), 0.4), CornerRadii.EMPTY, Insets.EMPTY)));
+        }
+        else if (themeColor.equals(Color.LIGHTGRAY)) {
+            vBox.setBackground(new Background(new BackgroundFill(new Color(themeColor.getRed(), themeColor.getGreen(), themeColor.getBlue(), 0.29), CornerRadii.EMPTY, Insets.EMPTY)));
+        }
+        else { vBox.setBackground(new Background(new BackgroundFill(new Color(0.2, 0.35379, 0.65, 0.5), CornerRadii.EMPTY, Insets.EMPTY))); }
     }
 
     public void displaySettings() {
@@ -159,6 +162,8 @@ public class MainScreen {
 
         vBox.getChildren().clear();
         vBox.getChildren().addAll(settingsLabel, editProf, themeColor,changeBackground, back);
+
+        root.setLeft(vBox);
     }
 
     public void displayBackgroundEditing(){
@@ -192,7 +197,7 @@ public class MainScreen {
         blue.setCursor(Cursor.HAND);
 
         Button black = new Button();
-        black.setStyle("-fx-border-radius: 5em; -fx-border-color:black; -fx-background-radius: 5em; -fx-min-width: 40px; -fx-min-height: 40px; -fx-max-width: 40px; -fx-max-height: 40px; -fx-background-color: black;");
+        black.setStyle("-fx-border-radius: 5em; -fx-border-color:white; -fx-background-radius: 5em; -fx-min-width: 40px; -fx-min-height: 40px; -fx-max-width: 40px; -fx-max-height: 40px; -fx-background-color: black;");
         black.setFocusTraversable(false);
         black.setCursor(Cursor.HAND);
 
@@ -209,7 +214,7 @@ public class MainScreen {
             themeColor = new Color(0.2, 0.35379, 0.65, 1);
             try {
                 chat.changeColor(themeColor);
-                vBox.setBackground(new Background(new BackgroundFill(new Color(0.2, 0.35379, 0.65, 0.5), CornerRadii.EMPTY, Insets.EMPTY)));
+                setMenuBackground();
             } catch (FileNotFoundException ex) {
                 ex.printStackTrace();
             }
@@ -218,7 +223,7 @@ public class MainScreen {
             themeColor = Color.BLACK;
             try {
                 chat.changeColor(themeColor);
-                vBox.setBackground(new Background(new BackgroundFill(new Color(themeColor.getRed(), themeColor.getGreen(), themeColor.getBlue(), 0.4), CornerRadii.EMPTY, Insets.EMPTY)));
+                setMenuBackground();
             } catch (FileNotFoundException ex) {
                 ex.printStackTrace();
             }
@@ -227,7 +232,7 @@ public class MainScreen {
             themeColor = Color.LIGHTGRAY;
             try {
                 chat.changeColor(themeColor);
-                vBox.setBackground(new Background(new BackgroundFill(new Color(themeColor.darker().getRed(), themeColor.darker().getGreen(), themeColor.darker().getBlue(), 0.4), CornerRadii.EMPTY, Insets.EMPTY)));
+                setMenuBackground();
             } catch (FileNotFoundException ex) {
                 ex.printStackTrace();
             }
@@ -236,6 +241,8 @@ public class MainScreen {
         colors.getChildren().addAll(blue, black, white);
         vBox.getChildren().clear();
         vBox.getChildren().addAll(themeColorLabel, colors, back);
+
+        root.setLeft(vBox);
     }
 
     private void designOptionButton(Button button) {
@@ -247,9 +254,8 @@ public class MainScreen {
     }
 
     public void setWeatherDisplay(String city, String country) throws Exception {
-        weatherDisplay = new WeatherDisplay(city, country,this);
+        weatherDisplay.setLocation(city, country);
         weatherDisplay.setSpacing(7);
-        weatherDisplay.setBackground(Data.createBackGround());
         weatherDisplay.setBorder(border);
         weatherDisplay.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
         weatherDisplay.prefWidthProperty().bind(root.widthProperty().subtract(chat.prefWidthProperty()).subtract(borderWidth*2));

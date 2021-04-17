@@ -39,6 +39,9 @@ public class WeatherDisplay extends VBox {
     private Map<String, Object> weatherData;
     private double imgDim;
     private HBox top;
+    private Label city;
+    private Button change;
+    private Button exit;
     private VBox current;
     private HBox hourlyDailyChoice;
     private VBox dailyVBox;
@@ -51,10 +54,13 @@ public class WeatherDisplay extends VBox {
 
     private MainScreen mainScreen;
 
-    public WeatherDisplay(String city, String country, MainScreen mainScreen) throws Exception {
+    public WeatherDisplay(MainScreen mainScreen) {
+        this.mainScreen = mainScreen;
+    }
+
+    public void setLocation(String city, String country) throws Exception {
         this.cityName = city;
         this.countryName = country;
-        this.mainScreen = mainScreen;
 
         getData();
         setTop();
@@ -63,7 +69,10 @@ public class WeatherDisplay extends VBox {
         setDaily();
         setHourly();
 
+        getChildren().clear();
         getChildren().addAll(top, current, hourlyDailyChoice, scrollPaneDaily);
+        Color bgColor = Color.WHEAT;
+        setBackground(new Background(new BackgroundFill(new Color(bgColor.getRed(),bgColor.getGreen(), bgColor.getBlue(), 0.3), CornerRadii.EMPTY, Insets.EMPTY)));
         setMaxHeight(Double.MAX_VALUE);
         setMinHeight(Double.MIN_VALUE);
     }
@@ -256,21 +265,23 @@ public class WeatherDisplay extends VBox {
         top.setPrefHeight(60);
         top.setBackground(new Background(new BackgroundFill(MainScreen.themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
 
-        Label city = new Label(addressTitle);
+        city = new Label(addressTitle);
         city.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 29));
-        city.setTextFill(Color.WHITE);
+        if (mainScreen.themeColor.equals(Color.LIGHTGRAY)) { city.setTextFill(Color.BLACK); }
+        else { city.setTextFill(Color.WHITE); }
         city.setAlignment(Pos.CENTER);
 
-        Button change = new Button("Change");
+        change = new Button("Change");
         change.setCursor(Cursor.HAND);
         change.setBackground(Background.EMPTY);
         change.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 13));
-        change.setTextFill(Color.LIGHTGRAY);
-        change.setBorder(new Border(new BorderStroke(Color.DARKGRAY.darker(), BorderStrokeStyle.SOLID, new CornerRadii(3,3,3,3,false), new BorderWidths(3))));
+        if (mainScreen.themeColor.equals(Color.LIGHTGRAY)) { change.setTextFill(Color.BLUEVIOLET); }
+        else { change.setTextFill(Color.NAVAJOWHITE); }
+        change.setBorder(new Border(new BorderStroke(Color.GRAY.darker().darker(), BorderStrokeStyle.SOLID, new CornerRadii(3,3,3,3,false), new BorderWidths(3))));
         change.setAlignment(Pos.CENTER);
         change.setOnAction(e -> setChangeLocation());
 
-        Button exit = new Button("x");
+        exit = new Button("x");
         exit.setCursor(Cursor.HAND);
         exit.setBackground(Background.EMPTY);
         exit.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 20));
@@ -307,11 +318,11 @@ public class WeatherDisplay extends VBox {
 
         Label currentConditionLabel = new Label(currentWeather.get("currentSummary"));
         currentConditionLabel.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 22));
-        currentConditionLabel.setTextFill(Color.DARKRED.darker());
+        currentConditionLabel.setTextFill(Color.DARKRED.darker().darker());
 
         Label currently = new Label("Currently: ");
-        currently.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 18));
-        currently.setTextFill(MainScreen.themeColor);
+        currently.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 17));
+        currently.setTextFill(Color.DARKRED.darker().darker());
         Label currentTemp = new Label(currentWeather.get("temp"));
         currentTemp.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 25));
         currentTemp.setTextFill(Color.BLACK);
@@ -322,13 +333,13 @@ public class WeatherDisplay extends VBox {
 
         Label h = new Label("H:");
         h.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 20));
-        h.setTextFill(MainScreen.themeColor);
+        h.setTextFill(Color.DARKBLUE.darker().darker());
         Label hTemp = new Label(currentWeather.get("high")+"°");
         hTemp.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 19));
         hTemp.setTextFill(Color.BLACK);
         Label l = new Label("L:");
         l.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 20));
-        l.setTextFill(MainScreen.themeColor);
+        l.setTextFill(Color.DARKBLUE.darker().darker());
         Label lTemp = new Label(currentWeather.get("low")+"°");
         lTemp.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 19));
         lTemp.setTextFill(Color.BLACK);
@@ -357,13 +368,13 @@ public class WeatherDisplay extends VBox {
             if(i>-1) {
                 day = new Label(dailyForecast.get(i).get("day"));
                 day.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 18));
-                day.setTextFill(Color.LIGHTSLATEGRAY.darker().darker());
+                day.setTextFill(Color.GRAY.darker().darker().darker());
                 high = new Label(dailyForecast.get(i).get("high") + " °");
                 high.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 20));
-                high.setTextFill(MainScreen.themeColor);
+                high.setTextFill(Color.DARKBLUE.darker().darker());
                 low = new Label(dailyForecast.get(i).get("low") + " °");
                 low.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 20));
-                low.setTextFill(MainScreen.themeColor);
+                low.setTextFill(Color.DARKBLUE.darker().darker());
                 summary = new Label(dailyForecast.get(i).get("summary"));
                 summary.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 14));
                 summary.setTextFill(Color.BLACK);
@@ -372,13 +383,13 @@ public class WeatherDisplay extends VBox {
             else {
                 day.setText("");
                 day.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 18));
-                day.setTextFill(MainScreen.themeColor.brighter());
+                day.setTextFill(Color.BLACK);
                 high.setText("High");
                 high.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 18));
-                high.setTextFill(Color.LIGHTSLATEGRAY.darker());
+                high.setTextFill(Color.GRAY.darker().darker());
                 low.setText("Low");
                 low.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 18));
-                low.setTextFill(Color.LIGHTSLATEGRAY.darker());
+                low.setTextFill(Color.GRAY.darker().darker());
             }
             day.prefWidthProperty().bind(dailyVBox.widthProperty().divide(3));
             high.prefWidthProperty().bind(dailyVBox.widthProperty().divide(9/2));
@@ -409,11 +420,11 @@ public class WeatherDisplay extends VBox {
             VBox hourlyBox = new VBox(35);
             hourlyBox.setBackground(Background.EMPTY);
             hourlyBox.setAlignment(Pos.CENTER);
-            //hourlyBox.setPadding(new Insets(15, 0, 30, 0));
+            hourlyBox.setPadding(new Insets(0, 0, 35, 0));
 
             Label hour = new Label(hourlyForecast.get("hours").get(i));
             hour.setFont(Font.font("Arial", FontWeight.BOLD, 19));
-            hour.setTextFill(Color.DARKRED.darker());
+            hour.setTextFill(Color.DARKRED.darker().darker());
             hour.setUnderline(true);
 
             Rectangle currentConditionImage = new Rectangle(0, 0, 60, 60);
@@ -431,7 +442,7 @@ public class WeatherDisplay extends VBox {
             hourlyHBox.getChildren().addAll(hourlyBox);
         }
         scrollPaneHourly = new ScrollPane(hourlyHBox);
-        scrollPaneHourly.setPadding(new Insets(0, 15, 0, 15));
+        scrollPaneHourly.setPadding(new Insets(15, 15, 0, 15));
         scrollPaneHourly.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
         scrollPaneHourly.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         scrollPaneHourly.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);

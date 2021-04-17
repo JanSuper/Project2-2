@@ -90,7 +90,7 @@ public class ChatApp extends VBox {
             }
             userNameLabel.setStyle("-fx-text-fill: black");
             userInput.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGRAY, new CornerRadii(3,3,3,3,false), Insets.EMPTY)));
-            userInput.setStyle("-fx-text-fill: white; -fx-prompt-text-fill: lightgray");
+            userInput.setStyle("-fx-text-fill: black; -fx-prompt-text-fill: white");
         }
     }
 
@@ -160,6 +160,12 @@ public class ChatApp extends VBox {
         String userProfilePicture = fileParser.getUsersPicture("profilePicture");
         if(userProfilePicture!=null){
             fis = new FileInputStream(userProfilePicture);
+        }
+        else if (mainScreen.themeColor.equals(Color.LIGHTGRAY)) {
+            fis = new FileInputStream("src/res/userIconWhite.png");
+        }
+        else if (mainScreen.themeColor.equals(Color.BLACK)) {
+            fis = new FileInputStream("src/res/userIconBlack.png");
         }
         image = new Image(fis,25,25,true,true);
         userIcon = new ImageView(image);
