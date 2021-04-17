@@ -60,6 +60,7 @@ public class AlarmVBox extends VBox {
         if(isReminder){
             getChildren().addAll(datePickerTxt,d,timePickerTxt,plus,timerTime,minus,descriptionTxt,description,enter);
         }else{
+            description.setPrefSize(150,100);
             getChildren().addAll(timePickerTxt,plus,timerTime,minus,descriptionTxt,description,enter);
         }
 
