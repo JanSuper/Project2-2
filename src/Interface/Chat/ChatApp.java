@@ -2,6 +2,7 @@ package Interface.Chat;
 
 import Agents.Assistant;
 import DataBase.Data;
+import FileParser.FileParser;
 import Interface.Screens.MainScreen;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -43,6 +44,7 @@ public class ChatApp extends VBox {
     public Assistant assistant_answer;
 
     private MainScreen mainScreen;
+    private FileParser fileParser;
 
     public void changeColor(Color themeColor) throws FileNotFoundException {
         this.themeColor = themeColor;
@@ -59,7 +61,7 @@ public class ChatApp extends VBox {
                     mb.messageLabel.setTextFill(assistantMessageTextColor); }
             }
         }
-        String userProfilePicture = getUsersPicture("profilePicture");
+        String userProfilePicture = fileParser.getUsersPicture("profilePicture");
         if (themeColor.equals(Color.BLACK)) {
             if(userProfilePicture!=null){
                 changeUserIcon(new FileInputStream(userProfilePicture));
@@ -90,27 +92,6 @@ public class ChatApp extends VBox {
             userInput.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGRAY, new CornerRadii(3,3,3,3,false), Insets.EMPTY)));
             userInput.setStyle("-fx-text-fill: white; -fx-prompt-text-fill: lightgray");
         }
-    }
-
-    private String getUsersPicture(String type){
-        File userPicture = new File("src/DataBase/Users/"+Data.getUsername()+"/"+type+".png");
-        if(!userPicture.exists()||!userPicture.isFile()){
-            userPicture = new File("src/DataBase/Users/"+Data.getUsername()+"/"+type+".jpg");
-            if(!userPicture.exists()||!userPicture.isFile()){
-                if(type.equals("profilePicture")){
-                    System.out.println("Something went wrong charging your " + type);
-                    System.out.println("Please add one or recheck it");
-                    return null;
-                }else{
-                    mainScreen.chat.receiveMessage("Something went wrong charging your " + type);
-                }
-            }else{
-                return "src/DataBase/Users/"+Data.getUsername()+"/"+type+".jpg";
-            }
-        }else{
-            return "src/DataBase/Users/"+Data.getUsername()+"/"+type+".png";
-        }
-        return null;
     }
 
     private class MessageBubble extends HBox {
@@ -165,6 +146,7 @@ public class ChatApp extends VBox {
         userMessages = new ArrayList<>();
         assistantMessages = new ArrayList<>();
         this.mainScreen = mainScreen;
+        fileParser = new FileParser();
 
         assistant_answer = new Assistant(this.mainScreen, userName, assistantMessages);
 
@@ -175,7 +157,7 @@ public class ChatApp extends VBox {
         userNameLabel.setStyle("-fx-text-fill: white");
 
         FileInputStream fis = new FileInputStream("src/res/userIconBlue.png");
-        String userProfilePicture = getUsersPicture("profilePicture");
+        String userProfilePicture = fileParser.getUsersPicture("profilePicture");
         if(userProfilePicture!=null){
             fis = new FileInputStream(userProfilePicture);
         }

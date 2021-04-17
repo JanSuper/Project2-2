@@ -115,6 +115,7 @@ public class MainScreen {
         designOptionButton(logOut);
         logOut.setOnMouseClicked(event -> {
             stage.close();
+            Data.setImage("src/DataBase/defaultBackground.jpg");
             StartScreen startScreen= new StartScreen();
             try {
                 startScreen.start(stage);
@@ -151,7 +152,7 @@ public class MainScreen {
         Button back = logOut;
         back.setText("Back");
 
-        editProf.setOnMouseClicked(event -> chat.receiveMessage("You can change your password/location by typing \"Change my password/location to <YourPassword/Location>\"."));
+        editProf.setOnMouseClicked(event -> chat.receiveMessage("You can change your password/location by typing \"Change my password/location/... to <YourNewPassword/YourNewLocation/...>\"."));
         themeColor.setOnMouseClicked(e-> displayThemeColors());
         changeBackground.setOnMouseClicked(event -> displayBackgroundEditing());
         back.setOnMouseClicked(event -> setOptionsMenu());
@@ -165,7 +166,7 @@ public class MainScreen {
         File selectedFile = fileChooser.showOpenDialog(stage);
         try {
             if(selectedFile.toURI().toString().endsWith(".png")||selectedFile.toURI().toString().endsWith(".jpg")){
-                String file = selectedFile.toURI().toString();
+                String file = selectedFile.toPath().toString();
                 Data.setImage(file);
                 root.setBackground(Data.createBackGround());
             }else {

@@ -1,7 +1,7 @@
 package Interface.Screens;
 
 import Agents.User;
-import Interface.Screens.StartScreenTools.MenuTitle;
+import FileParser.FileParser;
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
@@ -13,6 +13,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -24,7 +25,6 @@ import javafx.util.Pair;
 import javafx.scene.control.TextField;
 import DataBase.Data;
 
-import java.awt.*;
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
@@ -43,6 +43,8 @@ public class StartScreen extends Application {
 
     private StackPane root = new StackPane();
     private VBox menuBox;
+
+    private FileParser fileParser;
 
 
     private List<Pair<String, Runnable>> menuData = Arrays.asList(
@@ -64,56 +66,13 @@ public class StartScreen extends Application {
             new Pair<String, Runnable>("Exit to Desktop", Platform::exit)
     );
 
-    private boolean checkInfo(String info){
-        File userFile = new File("src/DataBase/Users/"+user.getText()+"/"+user.getText()+".txt");
-
-        try{
-            BufferedReader data = new BufferedReader(new FileReader(userFile));
-
-            String s;
-            while ((s = data.readLine()) != null)
-            {
-                if(s.startsWith(info))
-                {
-                    if(psw.getText().equals(data.readLine())){
-                        return true;
-                    }
-                }
-            }
-            data.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    private String getUsersPicture(String type){
-        File userPicture = new File("src/DataBase/Users/"+Data.getUsername()+"/"+type+".png");
-        if(!userPicture.exists()||!userPicture.isFile()){
-            userPicture = new File("src/DataBase/Users/"+Data.getUsername()+"/"+type+".jpg");
-            if(!userPicture.exists()||!userPicture.isFile()){
-                System.out.println("Something went wrong charging your " + type);
-                System.out.println("Please add one or recheck it");
-                return null;
-            }else{
-                return "src/DataBase/Users/"+Data.getUsername()+"/"+type+".jpg";
-            }
-        }else{
-            return "src/DataBase/Users/"+Data.getUsername()+"/"+type+".png";
-        }
-    }
-
     private void login() throws Exception {
         counter++;
         if(user.getText().isEmpty()||user.getText().isBlank() && psw.getText().isEmpty()||psw.getText().isBlank()){
             left.setText("Sorry, username or password not possible");
         }else{
             if(userAlreadyExists()){
-                if(checkInfo("-Password")){
+                if(fileParser.checkUserInfo("-Password",user.getText(),psw.getText())){
                     initializeAgents(false);
                     new MainScreen();
                     this.stage.close();
@@ -166,51 +125,20 @@ public class StartScreen extends Application {
 
     public void initializeAgents(boolean signup){
         if(signup){
-            createUser();
+            fileParser.createUser(user.getText(),psw.getText(),left);
         }
         Data.setUsername(user.getText());
         Data.setPassword(psw.getText());
 
         Data.setUser(new User(user.getText(), psw.getText()));
-        if(getUsersPicture("background")!=null){
-            System.out.println(getUsersPicture("background"));
-            Data.setImage(getUsersPicture("background"));
-        }
-    }
-
-    public void createUser(){
-        //Creating a File object
-        File file = new File("src/DataBase/Users/"+user.getText());
-        //Creating the directory
-        boolean bool = file.mkdir();
-        if(bool){
-            System.out.println("Directory created successfully");
-        }else {
-            System.out.println("Sorry couldn’t create specified directory");
-        }
-        try {
-            FileWriter writer;
-            {
-                try {
-                    writer = new FileWriter("src/DataBase/Users/"+user.getText()+"/"+user.getText()+".txt");
-                    PrintWriter out = new PrintWriter(writer);
-                    out.println("-Password: "+"\n" + psw.getText());
-                    out.println("-Location: "+"\n" + "/");
-                    out.println("-Age: "+"\n" + "/");
-                    out.println("-Profession: "+"\n" + "/");
-                    writer.close();
-                } catch (IOException e) {
-                    left.setText("Sorry, something went wrong");
-                    e.printStackTrace();
-                }
-            }
-        }catch (Exception e) {
-            e.printStackTrace();
+        if(fileParser.getUsersPicture("background")!=null){
+            Data.setImage(fileParser.getUsersPicture("background"));
         }
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        fileParser = new FileParser();
         menuBox = new VBox(20);
         menuBox.setAlignment(Pos.CENTER);
         menuBox.setBackground(new Background(new BackgroundFill(new Color(0.2,0.35379, 0.65, 0.5), CornerRadii.EMPTY, Insets.EMPTY)));
@@ -302,5 +230,31 @@ public class StartScreen extends Application {
             }
         });
         st.play();
+    }
+
+    public static class MenuTitle extends Pane {
+        private Text text;
+
+        public MenuTitle(String name) {
+            String spread = "";
+            for (char c : name.toCharArray()) {
+                spread += c + " ";
+            }
+
+
+            text = new Text(spread);
+            text.setId("title");
+            text.setFill(Color.BLACK);
+            text.setEffect(new DropShadow(30, Color.BLACK));
+            getChildren().addAll(text);
+        }
+
+        public double getTitleWidth() {
+            return text.getLayoutBounds().getWidth();
+        }
+
+        public double getTitleHeight() {
+            return text.getLayoutBounds().getHeight();
+        }
     }
 }

@@ -16,8 +16,6 @@ public class Data {
     private static String username = "defaultUsername";
     private static String password = "defaultPasseword";
 
-    private static String [][] dataSet;
-
     private static User user;
     private static Assistant assistant;
 
@@ -37,14 +35,6 @@ public class Data {
 
         Background background = new Background(backgroundImage);
         return background;
-    }
-
-    public static String[][] getDataSet() {
-        return dataSet;
-    }
-
-    public static void setDataSet(String[][] dataSet) {
-        Data.dataSet = dataSet;
     }
 
     public static String getUsername() {

@@ -1,6 +1,7 @@
 package Agents;
 
 import DataBase.Data;
+import FileParser.FileParser;
 import Interface.Display.CalendarDisplay2;
 import Interface.Display.MediaPlayerDisplay;
 import Interface.Screens.MainScreen;
@@ -25,6 +26,7 @@ public class Assistant {
     private File dataBase;
     private Random random = new Random();
     private MainScreen mainScreen;
+    private FileParser fileParser;
     private String user_name;
     private List<String> assistantMessage;
     private ArrayList SkillKeys;
@@ -61,6 +63,7 @@ public class Assistant {
 
     public Assistant(MainScreen pMainScreen, String pUser_name, List pAssistantMessage) throws IOException {
         mainScreen = pMainScreen;
+        fileParser = new FileParser();
         user_name = pUser_name;
         assistantMessage = pAssistantMessage;
         response = "";
@@ -398,8 +401,8 @@ public class Assistant {
         String final_answer = null;
         if(skill_num == 1)
         {
-            String city = getUserInfo("-City");
-            String country = getUserInfo("-Country");
+            String city = fileParser.getUserInfo("-City");
+            String country = fileParser.getUserInfo("-Country");
             mainScreen.setWeatherDisplay(city,country);
             final_answer = "This is what I found for the weather in "+ city + ", " + country + ". " + mainScreen.weatherDisplay.currentDataString() + "If you want to change the location, type 'Change weather location to City,Country.' (e.g. Amsterdam,NL).";
         }
@@ -646,7 +649,7 @@ public class Assistant {
         }
         else if(skill_num == 80){
             if(!randomWords.contains(" ")){
-                if(!changeUserInfo("-Password",randomWords.peek())){
+                if(!fileParser.changeUserInfo("-Password",randomWords.peek(),mainScreen)){
                     mainScreen.chat.receiveMessage("Couldn't change the password for some reason.");
                 }
             }else{
@@ -657,22 +660,22 @@ public class Assistant {
             mainScreen.chat.receiveMessage("You can change your password/location/age/profession by typing \"Change my password/location/age/profession to <...>\".");
         }
         else if(skill_num==82){
-            if(!changeUserInfo("-City",randomWords.peek())){
+            if(!fileParser.changeUserInfo("-City",randomWords.peek(),mainScreen)){
                 mainScreen.chat.receiveMessage("Couldn't change the location for some reason.");
             }
         }
         else if(skill_num==83){
-            if(!changeUserInfo("-Country",randomWords.peek())){
+            if(!fileParser.changeUserInfo("-Country",randomWords.peek(),mainScreen)){
                 mainScreen.chat.receiveMessage("Couldn't change the location for some reason.");
             }
         }
         else if(skill_num==84){
-            if(!changeUserInfo("-Age",randomWords.peek())){
+            if(!fileParser.changeUserInfo("-Age",randomWords.peek(),mainScreen)){
                 mainScreen.chat.receiveMessage("Couldn't change the age for some reason.");
             }
         }
         else if(skill_num==85){
-            if(!changeUserInfo("-Profession",randomWords.peek())){
+            if(!fileParser.changeUserInfo("-Profession",randomWords.peek(),mainScreen)){
                 mainScreen.chat.receiveMessage("Couldn't change the profession for some reason.");
             }
         }
@@ -694,80 +697,6 @@ public class Assistant {
             mainScreen.chat.receiveMessage("Test worked");
         }
         return final_answer;
-    }
-
-    private String getUserInfo(String info){
-        String result = "";
-        File userFile = new File("src/DataBase/Users/"+Data.getUsername()+"/"+Data.getUsername()+".txt");
-
-        try{
-            BufferedReader reader = new BufferedReader(new FileReader(userFile));
-            String line = "", oldtext = "";
-            while((line = reader.readLine()) != null)
-            {
-                oldtext += line + "\r\n";
-            }
-            reader.close();
-
-            String[] lines = oldtext.split(System.getProperty("line.separator"));
-            for (int i = 0; i < lines.length; i++) {
-                if(lines[i].startsWith(info))
-                {
-                    result = lines[i+1];
-                    break;
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    private boolean changeUserInfo(String info, String edit){
-        File userFile = new File("src/DataBase/Users/"+Data.getUsername()+"/"+Data.getUsername()+".txt");
-
-        try{
-            BufferedReader reader = new BufferedReader(new FileReader(userFile));
-            String line = "", oldtext = "";
-            while((line = reader.readLine()) != null)
-            {
-                oldtext += line + "\r\n";
-            }
-            reader.close();
-
-            String[] lines = oldtext.split(System.getProperty("line.separator"));
-            for (int i = 0; i < lines.length; i++) {
-                if(lines[i].startsWith(info))
-                {
-                    lines[i+1] = edit;
-                    break;
-                }
-            }
-            StringBuffer sb = new StringBuffer();
-            for(int i = 0; i < lines.length; i++) {
-                sb.append(lines[i] + "\n");
-            }
-            String str = sb.toString();
-
-            FileWriter writer = new FileWriter(userFile);
-            writer.write(str);
-            writer.close();
-            mainScreen.chat.receiveMessage("Your new "+info+ " is " + edit);
-            return true;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return false;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
     }
 
     /**
@@ -819,7 +748,6 @@ public class Assistant {
     }
 
     public boolean skillAlreadyIn(String[] uQuestion) throws IOException {
-        String question = "";
         String actual = Files.readString(dataBase.toPath()).toLowerCase();
         for(int j = 0; j <= uQuestion.length-1; j++)
         {
