@@ -38,6 +38,7 @@ public class MainScreen {
     public WeatherDisplay weatherDisplay;
     public SkillEditorDisplay skillEditorDisplay;
     public BorderPane root;
+    public CalendarDisplay calendarDisplay;
     public int borderWidth;
     public Border border;
     public static Color themeColor = new Color(0.2,0.35379, 0.65, 1);
@@ -324,7 +325,10 @@ public class MainScreen {
         root.setLeft(mediaPlayerDisplay);
     }
 
-    public void displaySkill(Pane pane){
+    public void displaySkill(Pane pane,String skill){
+        if(skill.equals("calendar")){
+            calendarDisplay = (CalendarDisplay) pane;
+        }
         pane.setBackground(Data.createBackGround());
         pane.setBorder(border);
         pane.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
@@ -337,7 +341,6 @@ public class MainScreen {
 
     public void prepareAlarms() throws IOException, ParseException {
         String allAlarms = getAlreadyOnFile();
-        //System.out.println(allAlarms.length());
         int counter = 0;
         String username = "";
         String day = "";
@@ -407,7 +410,7 @@ public class MainScreen {
             }
         }
         if(!alreadyIn){
-            System.out.println("Today, there will be the alarm at " + time + " with description \"" + desc + "\"");
+            chat.receiveMessage("Today, there will be the alarm at " + time + " with description \"" + desc + "\"");
             alarmsTime.add(new String[]{time,desc});
             displayReminderAtTime(time,desc);
         }

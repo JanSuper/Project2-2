@@ -2,7 +2,7 @@ package Agents;
 
 import DataBase.Data;
 import FileParser.FileParser;
-import Interface.Display.CalendarDisplay2;
+import Interface.Display.CalendarDisplay;
 import Interface.Display.MediaPlayerDisplay;
 import Interface.Screens.MainScreen;
 import Skills.Schedule.Skill_Schedule;
@@ -15,7 +15,6 @@ import javafx.stage.FileChooser;
 
 import java.io.*;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -636,10 +635,10 @@ public class Assistant {
             );
             Pane pane = new Pane();
             pane.getChildren().add(webview);
-            mainScreen.displaySkill(pane);
+            mainScreen.displaySkill(pane,"ybt watcher");
         }
         else if(skill_num == 60){
-            mainScreen.displaySkill(new CalendarDisplay2(mainScreen));
+            mainScreen.displaySkill(new CalendarDisplay(mainScreen),"calendar");
         }
         else if(skill_num == 70){
             mainScreen.setMapDisplay(cleanMessageWithNoPonct);

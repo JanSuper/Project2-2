@@ -175,10 +175,11 @@ public class AlarmVBox extends VBox {
                 e.printStackTrace();
             }
         }
-        System.out.println("Reminder at " + timerTime.getText() + " with description \"" + description.getText() + "\" has been added");
+        mainScreen.calendarDisplay.addReminder(description.getText(),da,timerTime.getText());
+        mainScreen.chat.receiveMessage("Reminder on the " + da + " at " + timerTime.getText() + " with description \"" + description.getText() + "\" has been added");
     }
     public void addAlarm(String time,String desc) throws ParseException {
-        System.out.println("Today, there will be the alarm at " + time + " with description \"" + desc + "\"");
+        mainScreen.chat.receiveMessage("Today, there will be the alarm at " + time + " with description \"" + desc + "\"");
         displayAlarmAtTime(time,desc);
     }
 

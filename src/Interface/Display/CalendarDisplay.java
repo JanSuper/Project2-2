@@ -27,14 +27,19 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 
 import static javafx.scene.paint.Color.LIGHTGRAY;
 
 ;
-public class CalendarDisplay2 extends HBox {
+public class CalendarDisplay extends HBox {
     private final Duration period = Duration.ofMinutes(15);
     private final LocalTime beginningOfTheDay = LocalTime.of(00, 00);
     private final LocalTime endOfTheDay = LocalTime.of(23, 59);
+
+    private LocalDate firstDate;
+    private LocalDate lastDate;
 
     private final List<Slot> slots = new ArrayList<>();
     private static final PseudoClass SELECTED_PSEUDO_CLASS = PseudoClass.getPseudoClass("selected");
@@ -44,7 +49,9 @@ public class CalendarDisplay2 extends HBox {
     private GridPane calendar;
     private ScrollPane scrollPane;
 
-    public CalendarDisplay2(MainScreen mainScreen){
+    private final int NBR_OF_DAYS = 7;
+
+    public CalendarDisplay(MainScreen mainScreen){
         this.mainScreen = mainScreen;
 
         createContent();
@@ -58,10 +65,10 @@ public class CalendarDisplay2 extends HBox {
         calendar.setStyle("-fx-background-color:#3d3d3d;");
 
         LocalDate today = LocalDate.now();
-        LocalDate startOfTheWeek = today.minusDays(today.getDayOfWeek().getValue() - 1);
-        LocalDate endingOfTheWeek = startOfTheWeek.plusDays(6);
+        firstDate = today.minusDays(today.getDayOfWeek().getValue() - 1);
+        lastDate = firstDate.plusDays(NBR_OF_DAYS-1);
 
-        for (LocalDate day = startOfTheWeek; !day.isAfter(endingOfTheWeek); day = day.plusDays(1)) {
+        for (LocalDate day = firstDate; !day.isAfter(lastDate); day = day.plusDays(1)) {
             int slotIndex = 1;
 
             for (LocalDateTime startTime = day.atTime(beginningOfTheDay);
@@ -77,12 +84,12 @@ public class CalendarDisplay2 extends HBox {
 
         DateTimeFormatter dFormatter = DateTimeFormatter.ofPattern("E\nMMM d");
 
-        for (LocalDate date = startOfTheWeek; !date.isAfter(endingOfTheWeek); date = date.plusDays(1)) {
+        for (LocalDate date = firstDate; !date.isAfter(lastDate); date = date.plusDays(1)) {
             Label label = new Label(date.format(dFormatter));
             label.setPadding(new Insets(1));
             label.setTextAlignment(TextAlignment.CENTER);
 
-            label.setTextFill(Color.LIGHTGRAY);
+            label.setTextFill(LIGHTGRAY);
             GridPane.setHalignment(label, HPos.CENTER);
             calendar.add(label, date.getDayOfWeek().getValue(), 0);
         }
@@ -95,7 +102,7 @@ public class CalendarDisplay2 extends HBox {
              startTime = startTime.plus(period)) {
             Label label = new Label(startTime.format(tFormatter));
             label.setPadding(new Insets(2));
-            label.setTextFill(Color.LIGHTGRAY);
+            label.setTextFill(LIGHTGRAY);
 
             GridPane.setHalignment(label, HPos.RIGHT);
             calendar.add(label, 0, slotIndex);
@@ -107,14 +114,14 @@ public class CalendarDisplay2 extends HBox {
 
         alarmVBox = new AlarmVBox(this.mainScreen,true);
 
-        addReminder("this is a test","2021-03-07","00:00:00");
+        addReminder("this is a test","2021-04-22","00:00:00");
     }
 
     private void addSchedule(){
         //TODO add every courses of the schedule that are supposed to be in the calendar
     }
 
-    public void addReminder(String desc,String date,String hour){
+    public void addReminder(String desc,String date,String time){
         BackgroundFill backgroundFill =
                 new BackgroundFill(
                         Color.valueOf("#FF590081"),
@@ -124,21 +131,49 @@ public class CalendarDisplay2 extends HBox {
                 );
         Background background = new Background(backgroundFill);
 
-        Pane pane1  = new Pane();
-        pane1.setBackground(background);
-        //TODO be able to convert the string date to a cell in the calendar
-        calendar.add(pane1,1,5,1,6);
-        pane1.setCursor(Cursor.HAND);
-        pane1.setOnMouseClicked(event -> {
-            getReminderInfo(desc,date,hour);
-        });
 
-        Text text = new Text(desc);
-        text.setDisable(true);
-        text.setTextOrigin(VPos.CENTER);
-        text.setFill(LIGHTGRAY);
-        text.setWrappingWidth(80);
-        calendar.add(text, 1, 5, 1, 6);
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate localDate = LocalDate.parse(date,dateFormatter);
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        LocalTime localTime = LocalTime.parse(time,timeFormatter);
+        int[] inTable = convertDateToTable(localDate,localTime);
+        if(inTable!=null){
+            Pane pane1  = new Pane();
+            pane1.setBackground(background);
+            pane1.setCursor(Cursor.HAND);
+            pane1.setOnMouseClicked(event -> {
+                getReminderInfo(desc,date,time);
+            });
+            calendar.add(pane1,inTable[0],inTable[1],1,inTable[2]);
+
+            Text text = new Text(desc);
+            text.setDisable(true);
+            text.setTextOrigin(VPos.CENTER);
+            text.setFill(LIGHTGRAY);
+            text.setWrappingWidth(80);
+            calendar.add(text, inTable[0], inTable[1], 1, inTable[2]);
+        }
+    }
+
+    /**
+     *
+     * @param date
+     * @param time
+     * @return [columnIndex, rowIndex, nbr of cell used in each row] in table
+     */
+    private int[] convertDateToTable(LocalDate date,LocalTime time){
+        int col = 1; int row = 1; int rowSpan = 4;
+        if(date.isAfter(firstDate.minusDays(1)) && date.isBefore(lastDate.plusDays(1))){
+            Period datePeriod = Period.between(firstDate, date);
+            col = datePeriod.getDays()+1;
+            long timePeriod = Duration.between(beginningOfTheDay, time).toMinutes();
+            row = (int) (timePeriod/period.toMinutes())+1;
+        }else{
+            mainScreen.chat.receiveMessage("The date you entered is not contained in the date interval of the calendar.");
+            return null;
+        }
+
+        return new int[]{col,row,rowSpan};
     }
 
     private void getReminderInfo(String desc,String date,String hour) {
