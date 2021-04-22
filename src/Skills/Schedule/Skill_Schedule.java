@@ -1,5 +1,6 @@
 package Skills.Schedule;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -156,6 +157,13 @@ public class Skill_Schedule {
         }
 
         return this_month;
+    }
+
+    //TODO: finish method that returns every courses that are in the period as parameter
+    public ArrayList<Course> getInInterval(Duration period){
+        ArrayList<Course> courses = new ArrayList<>();
+
+        return courses;
     }
 
     /**

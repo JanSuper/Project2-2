@@ -26,6 +26,7 @@ import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
@@ -175,7 +176,11 @@ public class AlarmVBox extends VBox {
                 e.printStackTrace();
             }
         }
-        mainScreen.calendarDisplay.addReminder(description.getText(),da,timerTime.getText());
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate localDate = LocalDate.parse(da,dateFormatter);
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        LocalTime localTime = LocalTime.parse(timerTime.getText(),timeFormatter);
+        mainScreen.calendarDisplay.addReminder(description.getText(),localDate,localTime);
         mainScreen.chat.receiveMessage("Reminder on the " + da + " at " + timerTime.getText() + " with description \"" + description.getText() + "\" has been added");
     }
     public void addAlarm(String time,String desc) throws ParseException {

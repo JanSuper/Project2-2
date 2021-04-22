@@ -3,6 +3,7 @@ package Interface.Display;
 import Interface.Display.ClockTools.AlarmVBox;
 import Interface.Screens.MainScreen;
 import Interface.Screens.StartScreen;
+import Skills.Schedule.Course;
 import Skills.Schedule.Skill_Schedule;
 import javafx.css.PseudoClass;
 import javafx.geometry.*;
@@ -23,6 +24,8 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -51,11 +54,14 @@ public class CalendarDisplay extends HBox {
 
     private final int NBR_OF_DAYS = 7;
 
-    public CalendarDisplay(MainScreen mainScreen){
+    private Skill_Schedule skill_schedule;
+
+    public CalendarDisplay(MainScreen mainScreen) throws ParseException {
         this.mainScreen = mainScreen;
+        this.skill_schedule = new Skill_Schedule();
 
         createContent();
-        addSchedule();
+        //addSchedule();
         getChildren().addAll(scrollPane,alarmVBox);
     }
 
@@ -113,15 +119,20 @@ public class CalendarDisplay extends HBox {
         scrollPane.setContent(calendar);
 
         alarmVBox = new AlarmVBox(this.mainScreen,true);
-
-        addReminder("this is a test","2021-04-22","00:00:00");
     }
 
-    private void addSchedule(){
-        //TODO add every courses of the schedule that are supposed to be in the calendar
+    private void addSchedule() throws ParseException {
+        Duration period = Duration.between(firstDate, lastDate);
+        ArrayList<Course> courses = skill_schedule.getInInterval(period);
+        for (Course course:courses) {
+            String desc = course.getSummary();
+            LocalDate date =new SimpleDateFormat("yyyymmdd").parse(course.getDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalTime time =new SimpleDateFormat("HHmmss").parse(course.getStart_Time()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+            addReminder(desc,date,time);
+        }
     }
 
-    public void addReminder(String desc,String date,String time){
+    public void addReminder(String desc,LocalDate date,LocalTime time){
         BackgroundFill backgroundFill =
                 new BackgroundFill(
                         Color.valueOf("#FF590081"),
@@ -131,18 +142,13 @@ public class CalendarDisplay extends HBox {
                 );
         Background background = new Background(backgroundFill);
 
-
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate localDate = LocalDate.parse(date,dateFormatter);
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-        LocalTime localTime = LocalTime.parse(time,timeFormatter);
-        int[] inTable = convertDateToTable(localDate,localTime);
+        int[] inTable = convertDateToTable(date,time);
         if(inTable!=null){
             Pane pane1  = new Pane();
             pane1.setBackground(background);
             pane1.setCursor(Cursor.HAND);
             pane1.setOnMouseClicked(event -> {
-                getReminderInfo(desc,date,time);
+                getReminderInfo(desc,date.toString(),time.toString());
             });
             calendar.add(pane1,inTable[0],inTable[1],1,inTable[2]);
 
