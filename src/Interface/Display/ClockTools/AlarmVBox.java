@@ -199,8 +199,12 @@ public class AlarmVBox extends VBox {
                 writer = new FileWriter(Data.getRemindersFile());
                 PrintWriter out = new PrintWriter(writer);
                 out.print(res);
-
-                out.print(Data.getUsername() + ";" + da + ";"+ timerTime.getText() + ";" +timerTime1.getText() + ";" + description.getText() + "\n");
+                System.out.println(description.getText());
+                if(description.getText().isEmpty()){
+                    out.print(Data.getUsername() + ";" + da + ";"+ timerTime.getText() + ";" +timerTime1.getText() + ";" + "\"no description\"" + "\n");
+                }else{
+                    out.print(Data.getUsername() + ";" + da + ";"+ timerTime.getText() + ";" +timerTime1.getText() + ";" + description.getText() + "\n");
+                }
 
                 writer.close();
             } catch (IOException e) {

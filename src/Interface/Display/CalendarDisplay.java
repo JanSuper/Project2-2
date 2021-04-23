@@ -179,7 +179,7 @@ public class CalendarDisplay extends HBox {
             long timePeriod = Duration.between(beginningOfTheDay, fromTime).toMinutes();
             row = (int) (timePeriod/period.toMinutes())+1;
 
-            long duration = Duration.between(fromTime, toTime).toMinutes();
+            long duration = Math.abs(Duration.between(fromTime, toTime).toMinutes());
             if(duration<=period.toMinutes()){
                 rowSpan = 1;
             }else{

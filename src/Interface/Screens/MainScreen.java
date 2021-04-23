@@ -405,6 +405,7 @@ public class MainScreen {
                 username = "";
                 day = "";
                 time = "";
+                time1 = "";
                 desc = "";
             }
         }
