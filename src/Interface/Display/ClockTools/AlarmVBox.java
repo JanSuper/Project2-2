@@ -34,10 +34,17 @@ public class AlarmVBox extends VBox {
     private Label datePickerTxt;
     private DatePicker d;
 
+    //FROM TIME
     private Label timePickerTxt;
     private int hoursTimer = 0; int minutesTimer = 0; int secondsTimer = 0;
     private Label timerTime;
     private HBox plus; HBox minus;
+
+    //TO TIME
+    private Label timePickerTxt1;
+    private int hoursTimer1 = 0; int minutesTimer1 = 0; int secondsTimer1 = 0;
+    private Label timerTime1;
+    private HBox plus1; HBox minus1;
 
     private Label descriptionTxt;
     private TextField description;
@@ -53,22 +60,18 @@ public class AlarmVBox extends VBox {
         this.mainScreen = mainScreen;
         this.isReminder = isReminder;
         this.timeline = new Timeline();
-        setSpacing(20);
+        setSpacing(10);
         setAlignment(Pos.CENTER);
         setPadding(new Insets(40,0,0,0));
 
         createContent();
         if(isReminder){
-            getChildren().addAll(datePickerTxt,d,timePickerTxt,plus,timerTime,minus,descriptionTxt,description,enter);
+            getChildren().addAll(datePickerTxt,d,timePickerTxt,plus,timerTime,minus,timePickerTxt1,plus1,timerTime1,minus1,descriptionTxt,description,enter);
         }else{
             description.setPrefSize(150,100);
             getChildren().addAll(timePickerTxt,plus,timerTime,minus,descriptionTxt,description,enter);
         }
-
     }
-
-
-
 
     private void createContent(){
         datePickerTxt = new Label("Date:");
@@ -79,7 +82,12 @@ public class AlarmVBox extends VBox {
         // create a date picker
         d = new DatePicker();
 
-        timePickerTxt = new Label("Time:");
+        timePickerTxt = new Label();
+        if(isReminder){
+            timePickerTxt.setText("From:");
+        }else{
+            timePickerTxt.setText("Time:");
+        }
         timePickerTxt.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
         timePickerTxt.setTextFill(MainScreen.themeColor.darker());
         timePickerTxt.setAlignment(Pos.CENTER);
@@ -88,13 +96,30 @@ public class AlarmVBox extends VBox {
         timerTime.setFont(Font.font("Tahoma", FontWeight.EXTRA_BOLD, 58));
         timerTime.setTextFill(MainScreen.themeColor.darker().darker());
         timerTime.setAlignment(Pos.CENTER);
-        setTimerTime();
 
         plus = new HBox(70);
-        setPlusButtons(plus);
+        setPlusButtons(plus,true);
         minus = new HBox(80);
-        setMinusButtons(minus);
+        setMinusButtons(minus,true);
         disablePlusMinus(false, plus, minus);
+
+        timePickerTxt1 = new Label("To:");
+        timePickerTxt1.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
+        timePickerTxt1.setTextFill(MainScreen.themeColor.darker());
+        timePickerTxt1.setAlignment(Pos.CENTER);
+
+        timerTime1 = new Label();
+        timerTime1.setFont(Font.font("Tahoma", FontWeight.EXTRA_BOLD, 58));
+        timerTime1.setTextFill(MainScreen.themeColor.darker().darker());
+        timerTime1.setAlignment(Pos.CENTER);
+
+        plus1 = new HBox(70);
+        setPlusButtons(plus1,false);
+        minus1 = new HBox(80);
+        setMinusButtons(minus1,false);
+        disablePlusMinus(false, plus1, minus1);
+
+        setTimerTime();
 
         descriptionTxt = new Label("Description:");
         descriptionTxt.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
@@ -123,6 +148,12 @@ public class AlarmVBox extends VBox {
             minutesTimer = 0;
             secondsTimer = 0;
             timerTime.setText(twoDigitString(hoursTimer)+":"+twoDigitString(minutesTimer)+":"+twoDigitString(secondsTimer));
+            if(isReminder){
+                hoursTimer1 = 0;
+                minutesTimer1 = 0;
+                secondsTimer1 = 0;
+                timerTime1.setText(twoDigitString(hoursTimer1)+":"+twoDigitString(minutesTimer1)+":"+twoDigitString(secondsTimer1));
+            }
             description.setText("");
         });
     }
@@ -169,7 +200,7 @@ public class AlarmVBox extends VBox {
                 PrintWriter out = new PrintWriter(writer);
                 out.print(res);
 
-                out.print(Data.getUsername() + ";" + da + ";"+ timerTime.getText() + ";" + description.getText() + "\n");
+                out.print(Data.getUsername() + ";" + da + ";"+ timerTime.getText() + ";" +timerTime1.getText() + ";" + description.getText() + "\n");
 
                 writer.close();
             } catch (IOException e) {
@@ -180,9 +211,11 @@ public class AlarmVBox extends VBox {
         LocalDate localDate = LocalDate.parse(da,dateFormatter);
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         LocalTime localTime = LocalTime.parse(timerTime.getText(),timeFormatter);
-        mainScreen.calendarDisplay.addReminder(description.getText(),localDate,localTime);
-        mainScreen.chat.receiveMessage("Reminder on the " + da + " at " + timerTime.getText() + " with description \"" + description.getText() + "\" has been added");
+        LocalTime localTime1 = LocalTime.parse(timerTime1.getText(),timeFormatter);
+        mainScreen.calendarDisplay.addReminder(description.getText(),localDate,localTime,localTime1,Color.ORANGE);
+        mainScreen.chat.receiveMessage("Reminder on the " + da + " from " + timerTime.getText() + " to " + timerTime1.getText() + " with description \"" + description.getText() + "\" has been added");
     }
+
     public void addAlarm(String time,String desc) throws ParseException {
         mainScreen.chat.receiveMessage("Today, there will be the alarm at " + time + " with description \"" + desc + "\"");
         displayAlarmAtTime(time,desc);
@@ -262,40 +295,130 @@ public class AlarmVBox extends VBox {
         }
     }
 
-    private void setPlusButtons(HBox plus) {
-        Button plusH = new Button("+");
-        designPlusMinusButton(plusH);
-        plusH.setOnAction(e -> {if (hoursTimer==23) {hoursTimer=0;} else {hoursTimer++;} setTimerTime();});
+    private void setPlusButtons(HBox plus,boolean isFrom) {
+        if(isReminder){
+            if(isFrom){
+                Button plusH = new Button("+");
+                designPlusMinusButton(plusH);
+                plusH.setOnAction(e -> {
+                    if (hoursTimer==23) {hoursTimer=0;} else {hoursTimer++;} setTimerTime();
+                });
 
-        Button plusM = new Button("+");
-        designPlusMinusButton(plusM);
-        plusM.setOnAction(e -> {if (minutesTimer==59) {minutesTimer=0;} else {minutesTimer++;} setTimerTime();});
+                Button plusM = new Button("+");
+                designPlusMinusButton(plusM);
+                plusM.setOnAction(e -> {
+                    if (minutesTimer==59) {minutesTimer=0;} else {minutesTimer++;} setTimerTime();
+                });
 
-        Button plusS = new Button("+");
-        designPlusMinusButton(plusS);
-        plusS.setOnAction(e -> {if (secondsTimer==59) {secondsTimer=0;} else {secondsTimer++;} setTimerTime();});
+                Button plusS = new Button("+");
+                designPlusMinusButton(plusS);
+                plusS.setOnAction(e -> {
+                    if (secondsTimer==59) {secondsTimer=0;} else {secondsTimer++;} setTimerTime();
+                });
 
-        plus.setAlignment(Pos.CENTER);
-        plus.setTranslateY(28);
-        plus.getChildren().addAll(plusH, plusM, plusS);
+                plus.setAlignment(Pos.CENTER);
+                plus.setTranslateY(28);
+                plus.getChildren().addAll(plusH, plusM, plusS);
+            }else{
+                Button plusH1 = new Button("+");
+                designPlusMinusButton(plusH1);
+                plusH1.setOnAction(e -> {
+                    if (hoursTimer1==23) {hoursTimer1=0;} else {hoursTimer1++;} setTimerTime();
+                });
+
+                Button plusM1 = new Button("+");
+                designPlusMinusButton(plusM1);
+                plusM1.setOnAction(e -> {
+                    if (minutesTimer1==59) {minutesTimer1=0;} else {minutesTimer1++;} setTimerTime();
+                });
+
+                Button plusS1 = new Button("+");
+                designPlusMinusButton(plusS1);
+                plusS1.setOnAction(e -> {
+                    if (secondsTimer1==59) {secondsTimer1=0;} else {secondsTimer1++;} setTimerTime();
+                });
+
+                plus.setAlignment(Pos.CENTER);
+                plus.setTranslateY(28);
+                plus.getChildren().addAll(plusH1, plusM1, plusS1);
+            }
+        }else{
+            Button plusH = new Button("+");
+            designPlusMinusButton(plusH);
+            plusH.setOnAction(e -> {
+                if (hoursTimer==23) {hoursTimer=0;} else {hoursTimer++;} setTimerTime();
+            });
+
+            Button plusM = new Button("+");
+            designPlusMinusButton(plusM);
+            plusM.setOnAction(e -> {
+                if (minutesTimer==59) {minutesTimer=0;} else {minutesTimer++;} setTimerTime();
+            });
+
+            Button plusS = new Button("+");
+            designPlusMinusButton(plusS);
+            plusS.setOnAction(e -> {
+                if (secondsTimer==59) {secondsTimer=0;} else {secondsTimer++;} setTimerTime();
+            });
+
+            plus.setAlignment(Pos.CENTER);
+            plus.setTranslateY(28);
+            plus.getChildren().addAll(plusH, plusM, plusS);
+        }
     }
 
-    private void setMinusButtons(HBox minus) {
-        Button minusH = new Button("_");
-        designPlusMinusButton(minusH);
-        minusH.setOnAction(e -> {if(hoursTimer>0){hoursTimer--; setTimerTime();}});
+    private void setMinusButtons(HBox minus,boolean isFrom) {
+        if(isReminder){
+            if(isFrom){
+                Button minusH = new Button("_");
+                designPlusMinusButton(minusH);
+                minusH.setOnAction(e -> {if(hoursTimer>0){hoursTimer--; setTimerTime();}});
 
-        Button minusM = new Button("_");
-        designPlusMinusButton(minusM);
-        minusM.setOnAction(e -> {if (minutesTimer==0) {minutesTimer=59;} else {minutesTimer--;} setTimerTime();});
+                Button minusM = new Button("_");
+                designPlusMinusButton(minusM);
+                minusM.setOnAction(e -> {if (minutesTimer==0) {minutesTimer=59;} else {minutesTimer--;} setTimerTime();});
 
-        Button minusS = new Button("_");
-        designPlusMinusButton(minusS);
-        minusS.setOnAction(e -> {if (secondsTimer==0) {secondsTimer=59;} else {secondsTimer--;} setTimerTime();});
+                Button minusS = new Button("_");
+                designPlusMinusButton(minusS);
+                minusS.setOnAction(e -> {if (secondsTimer==0) {secondsTimer=59;} else {secondsTimer--;} setTimerTime();});
 
-        minus.setAlignment(Pos.CENTER);
-        minus.setTranslateY(-31);
-        minus.getChildren().addAll(minusH, minusM, minusS);
+                minus.setAlignment(Pos.CENTER);
+                minus.setTranslateY(-31);
+                minus.getChildren().addAll(minusH, minusM, minusS);
+            }else{
+                Button minusH1 = new Button("_");
+                designPlusMinusButton(minusH1);
+                minusH1.setOnAction(e -> {if(hoursTimer1>0){hoursTimer1--; setTimerTime();}});
+
+                Button minusM1 = new Button("_");
+                designPlusMinusButton(minusM1);
+                minusM1.setOnAction(e -> {if (minutesTimer1==0) {minutesTimer1=59;} else {minutesTimer1--;} setTimerTime();});
+
+                Button minusS1 = new Button("_");
+                designPlusMinusButton(minusS1);
+                minusS1.setOnAction(e -> {if (secondsTimer1==0) {secondsTimer1=59;} else {secondsTimer1--;} setTimerTime();});
+
+                minus.setAlignment(Pos.CENTER);
+                minus.setTranslateY(-31);
+                minus.getChildren().addAll(minusH1, minusM1, minusS1);
+            }
+        }else{
+            Button minusH = new Button("_");
+            designPlusMinusButton(minusH);
+            minusH.setOnAction(e -> {if(hoursTimer>0){hoursTimer--; setTimerTime();}});
+
+            Button minusM = new Button("_");
+            designPlusMinusButton(minusM);
+            minusM.setOnAction(e -> {if (minutesTimer==0) {minutesTimer=59;} else {minutesTimer--;} setTimerTime();});
+
+            Button minusS = new Button("_");
+            designPlusMinusButton(minusS);
+            minusS.setOnAction(e -> {if (secondsTimer==0) {secondsTimer=59;} else {secondsTimer--;} setTimerTime();});
+
+            minus.setAlignment(Pos.CENTER);
+            minus.setTranslateY(-31);
+            minus.getChildren().addAll(minusH, minusM, minusS);
+        }
     }
 
     private void designPlusMinusButton(Button button) {
@@ -309,6 +432,9 @@ public class AlarmVBox extends VBox {
 
     private void setTimerTime() {
         timerTime.setText(twoDigitString(hoursTimer)+":"+twoDigitString(minutesTimer)+":"+twoDigitString(secondsTimer));
+        if(isReminder){
+            timerTime1.setText(twoDigitString(hoursTimer1)+":"+twoDigitString(minutesTimer1)+":"+twoDigitString(secondsTimer1));
+        }
     }
 
     private String twoDigitString(long number) {

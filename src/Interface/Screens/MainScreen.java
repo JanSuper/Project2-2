@@ -29,6 +29,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -60,6 +63,7 @@ public class MainScreen {
         clockAppDisplay = new ClockAppDisplay(this);
         skillEditorDisplay = new SkillEditorDisplay(this);
         weatherDisplay = new WeatherDisplay(this);
+        calendarDisplay = new CalendarDisplay(this);
 
         createContent();
         alarmsTime = new ArrayList<>();
@@ -326,9 +330,6 @@ public class MainScreen {
     }
 
     public void displaySkill(Pane pane,String skill){
-        if(skill.equals("calendar")){
-            calendarDisplay = (CalendarDisplay) pane;
-        }
         pane.setBackground(Data.createBackGround());
         pane.setBorder(border);
         pane.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
@@ -340,48 +341,65 @@ public class MainScreen {
     }
 
     public void prepareAlarms() throws IOException, ParseException {
-        String allAlarms = getAlreadyOnFile();
+        String allReminders = getAlreadyOnFile();
+        int nbrOfInfo = 4;
         int counter = 0;
         String username = "";
         String day = "";
         String time = "";
+        String time1 = "";
         String desc = "";
         int linesNbrChar = 0;
-        for (int i = 0; i < allAlarms.length(); i++) {
-            if(allAlarms.charAt(i)==';'&&counter<3){
+        for (int i = 0; i < allReminders.length(); i++) {
+            if(allReminders.charAt(i)==';'&&counter<nbrOfInfo){
                 if(counter==0){
                     int counter1 = linesNbrChar;
                     while(counter1<i){
-                        username+=allAlarms.charAt(counter1++);
+                        username+=allReminders.charAt(counter1++);
                     }
                     //System.out.println("username = " + username);
                 }else if(counter==1){
                     int counter1 = linesNbrChar+username.length()+1;
                     while(counter1<i){
-                        day+=allAlarms.charAt(counter1++);
+                        day+=allReminders.charAt(counter1++);
                     }
                     //System.out.println("day = " + day);
                 }else if(counter==2){
                     int counter1 = linesNbrChar+username.length() + day.length() +2;
                     while(counter1<i){
-                        time+=allAlarms.charAt(counter1++);
+                        time+=allReminders.charAt(counter1++);
                     }
                     //System.out.println("time = " + time);
+                }else if(counter==3){
+                    int counter1 = linesNbrChar+username.length() + day.length()+time.length() +3;
+                    while(counter1<i){
+                        time1+=allReminders.charAt(counter1++);
+                    }
+                    //System.out.println("time1 = " + time);
                 }
                 counter++;
             }
-            if(allAlarms.charAt(i)=='\n'&&counter==3){
-                int counter1 = linesNbrChar+username.length()+day.length()+time.length()+3;
-                while(allAlarms.charAt(counter1)!='\n'){
-                    desc+=allAlarms.charAt(counter1);
+            if(allReminders.charAt(i)=='\n'&&counter==nbrOfInfo){
+                int counter1 = linesNbrChar+username.length()+day.length()+time.length()+time1.length()+4;
+                while(allReminders.charAt(counter1)!='\n'){
+                    desc+=allReminders.charAt(counter1);
                     counter1++;
                 }
-                //System.out.println("desc = " + desc);
 
+                //notify user if a reminder is for today
                 String today = java.time.LocalDate.now().toString();
                 if(username.equals(Data.getUsername())&&day.equals(today)){
-                    manageReminders(time,desc);
+                    chat.receiveMessage("Today, there will be the alarm from " + time + " to " + time1 + " with description \"" + desc + "\"");
+                    alarmsTime.add(new String[]{time,desc});
+                    displayReminderAtTime(time,desc);
                 }
+                DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                LocalDate localDate = LocalDate.parse(day,dateFormatter);
+                DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+                LocalTime localTime = LocalTime.parse(time,timeFormatter);
+                LocalTime localTime1 = LocalTime.parse(time1,timeFormatter);
+                //add any reminder in the calendar
+                calendarDisplay.addReminder(desc,localDate,localTime,localTime1,Color.ORANGE);
                 linesNbrChar=i+1;
                 counter = 0;
                 username = "";
@@ -400,20 +418,6 @@ public class MainScreen {
             res += ((char)i);
         fr.close();
         return res;
-    }
-
-    private void manageReminders(String time, String desc) throws ParseException {
-        boolean alreadyIn = false;
-        for (int i = 0; i < alarmsTime.size(); i++) {
-            if(alarmsTime.get(i)[0].equals(time)&&alarmsTime.get(i)[1].equals(desc)){
-                alreadyIn = true;
-            }
-        }
-        if(!alreadyIn){
-            chat.receiveMessage("Today, there will be the alarm at " + time + " with description \"" + desc + "\"");
-            alarmsTime.add(new String[]{time,desc});
-            displayReminderAtTime(time,desc);
-        }
     }
 
     public void displayReminderAtTime(String time, String desc) throws ParseException {

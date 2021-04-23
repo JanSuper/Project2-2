@@ -635,10 +635,10 @@ public class Assistant {
             );
             Pane pane = new Pane();
             pane.getChildren().add(webview);
-            mainScreen.displaySkill(pane,"ybt watcher");
+            mainScreen.displaySkill(pane,"ytb watcher");
         }
         else if(skill_num == 60){
-            mainScreen.displaySkill(new CalendarDisplay(mainScreen),"calendar");
+            mainScreen.displaySkill(mainScreen.calendarDisplay,"calendar");
         }
         else if(skill_num == 70){
             mainScreen.setMapDisplay(cleanMessageWithNoPonct);

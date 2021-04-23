@@ -24,11 +24,13 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -52,7 +54,7 @@ public class CalendarDisplay extends HBox {
     private GridPane calendar;
     private ScrollPane scrollPane;
 
-    private final int NBR_OF_DAYS = 7;
+    private final int NBR_OF_DAYS = 14;
 
     private Skill_Schedule skill_schedule;
 
@@ -62,7 +64,6 @@ public class CalendarDisplay extends HBox {
 
         createContent();
         //addSchedule();
-        getChildren().addAll(scrollPane,alarmVBox);
     }
 
     private void createContent(){
@@ -71,8 +72,8 @@ public class CalendarDisplay extends HBox {
         calendar.setStyle("-fx-background-color:#3d3d3d;");
 
         LocalDate today = LocalDate.now();
-        firstDate = today.minusDays(today.getDayOfWeek().getValue() - 1);
-        lastDate = firstDate.plusDays(NBR_OF_DAYS-1);
+        firstDate = today.minusDays(NBR_OF_DAYS/2);
+        lastDate = firstDate.plusDays(NBR_OF_DAYS);
 
         for (LocalDate day = firstDate; !day.isAfter(lastDate); day = day.plusDays(1)) {
             int slotIndex = 1;
@@ -84,7 +85,7 @@ public class CalendarDisplay extends HBox {
                 Slot slot = new Slot(startTime, period);
                 slots.add(slot);
 
-                calendar.add(slot.getView(), slot.getDayOfWeek().getValue(), slotIndex++);
+                calendar.add(slot.getView(), slot.getBeginning().getDayOfMonth(), slotIndex++);
             }
         }
 
@@ -97,7 +98,7 @@ public class CalendarDisplay extends HBox {
 
             label.setTextFill(LIGHTGRAY);
             GridPane.setHalignment(label, HPos.CENTER);
-            calendar.add(label, date.getDayOfWeek().getValue(), 0);
+            calendar.add(label, date.getDayOfMonth(), 0);
         }
 
         int slotIndex = 1;
@@ -115,10 +116,11 @@ public class CalendarDisplay extends HBox {
             slotIndex++;
         }
 
-        scrollPane = new ScrollPane();
-        scrollPane.setContent(calendar);
+        scrollPane = new ScrollPane(calendar);
+        getChildren().add(scrollPane);
 
         alarmVBox = new AlarmVBox(this.mainScreen,true);
+        getChildren().add(alarmVBox);
     }
 
     private void addSchedule() throws ParseException {
@@ -128,27 +130,27 @@ public class CalendarDisplay extends HBox {
             String desc = course.getSummary();
             LocalDate date =new SimpleDateFormat("yyyymmdd").parse(course.getDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             LocalTime time =new SimpleDateFormat("HHmmss").parse(course.getStart_Time()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
-            addReminder(desc,date,time);
+            LocalTime time1 =new SimpleDateFormat("HHmmss").parse(course.getEnd_Time()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+            addReminder(desc,date,time,time1,Color.BLUEVIOLET);
         }
     }
 
-    public void addReminder(String desc,LocalDate date,LocalTime time){
+    public void addReminder(String desc,LocalDate date,LocalTime fromTime,LocalTime toTime,Color color){
         BackgroundFill backgroundFill =
                 new BackgroundFill(
-                        Color.valueOf("#FF590081"),
-
+                        color,
                         new CornerRadii(10),
                         new Insets(1)
                 );
         Background background = new Background(backgroundFill);
 
-        int[] inTable = convertDateToTable(date,time);
+        int[] inTable = convertDateToTable(date,fromTime,toTime);
         if(inTable!=null){
             Pane pane1  = new Pane();
             pane1.setBackground(background);
             pane1.setCursor(Cursor.HAND);
             pane1.setOnMouseClicked(event -> {
-                getReminderInfo(desc,date.toString(),time.toString());
+                getReminderInfo(desc,date.toString(),fromTime.toString());
             });
             calendar.add(pane1,inTable[0],inTable[1],1,inTable[2]);
 
@@ -164,16 +166,25 @@ public class CalendarDisplay extends HBox {
     /**
      *
      * @param date
-     * @param time
+     * @param fromTime
+     * @param toTime
      * @return [columnIndex, rowIndex, nbr of cell used in each row] in table
      */
-    private int[] convertDateToTable(LocalDate date,LocalTime time){
-        int col = 1; int row = 1; int rowSpan = 4;
+    private int[] convertDateToTable(LocalDate date,LocalTime fromTime,LocalTime toTime){
+        int col = 1; int row = 1; int rowSpan = 1;
         if(date.isAfter(firstDate.minusDays(1)) && date.isBefore(lastDate.plusDays(1))){
             Period datePeriod = Period.between(firstDate, date);
-            col = datePeriod.getDays()+1;
-            long timePeriod = Duration.between(beginningOfTheDay, time).toMinutes();
+            col = datePeriod.getDays()+firstDate.getDayOfMonth();
+
+            long timePeriod = Duration.between(beginningOfTheDay, fromTime).toMinutes();
             row = (int) (timePeriod/period.toMinutes())+1;
+
+            long duration = Duration.between(fromTime, toTime).toMinutes();
+            if(duration<=period.toMinutes()){
+                rowSpan = 1;
+            }else{
+                rowSpan = (int) (duration/period.toMinutes());
+            }
         }else{
             mainScreen.chat.receiveMessage("The date you entered is not contained in the date interval of the calendar.");
             return null;
@@ -253,6 +264,10 @@ public class CalendarDisplay extends HBox {
             return beginning.toLocalTime();
         }
 
+
+        public LocalDateTime getBeginning() {
+            return beginning;
+        }
 
         public DayOfWeek getDayOfWeek() {
             return beginning.getDayOfWeek();
