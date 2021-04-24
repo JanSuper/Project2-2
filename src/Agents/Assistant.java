@@ -24,10 +24,10 @@ import java.util.regex.Pattern;
 public class Assistant {
     private File dataBase;
     private Random random = new Random();
-    private MainScreen mainScreen;
-    private FileParser fileParser;
+    public MainScreen mainScreen;
+    public FileParser fileParser;
     private String user_name;
-    private List<String> assistantMessage;
+    public List<String> assistantMessage;
     private ArrayList SkillKeys;
     private Properties keySet;
     private Stack<String> randomWords;
@@ -39,6 +39,8 @@ public class Assistant {
     private int[] step;
     private int nbrOfTrail;
     private final int MAX_NBR_OF_TRAILS = 5000;
+
+    public BFSTextRecognition bfsTextRecognition;
 
     public void loadKeys() throws IOException {
         Properties keys = new Properties();
@@ -75,17 +77,18 @@ public class Assistant {
         {
             dataBase = new File("src\\DataBase\\textData.txt");
         }
+
+        bfsTextRecognition = new BFSTextRecognition(this);
     }
 
-    public String getResponse(String uMessage) throws Exception
+    public String getResponseWithRandom(String uMessage) throws Exception
     {
-        this.originalMessage = uMessage;
-        this.actual_lastWord = uMessage.substring(uMessage.lastIndexOf(" ")+1);
-        if(actual_lastWord.endsWith("?")) {actual_lastWord = actual_lastWord.replaceAll("[?]", ""); }
-        else if((actual_lastWord.endsWith("."))) { actual_lastWord = actual_lastWord.substring(0,actual_lastWord.length()-1);}
+        originalMessage = uMessage;
 
         String cleanMessage = removePunctuation(uMessage);
         cleanMessageWithNoPonct = cleanMessage;
+        actual_lastWord = uMessage.substring(cleanMessageWithNoPonct.lastIndexOf(" ")+1);
+
         max_Distance = Math.max(2, (int)(cleanMessage.length()*0.15));
 
         randomWords.clear();
@@ -853,7 +856,7 @@ public class Assistant {
         return score;
     }
 
-    public class Answers{
+    public static class Answers{
         private String answer;
         private int score = -1;
 

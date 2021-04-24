@@ -253,7 +253,8 @@ public class ChatApp extends VBox {
     public void sendMessage(String message) throws Exception {
         messages.add(new MessageBubble(message, 1));
         assistant_answer.setAssistantMessage(assistantMessages);
-        receiveMessage(assistant_answer.getResponse(message));
+        //receiveMessage(assistant_answer.getResponseWithRandom(message));
+        receiveMessage(assistant_answer.bfsTextRecognition.getReponse(message));
     }
 
     public void receiveMessage(String message) {    //adds assistant's response
