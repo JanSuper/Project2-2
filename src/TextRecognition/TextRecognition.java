@@ -1,5 +1,6 @@
-package Agents;
+package TextRecognition;
 
+import Agents.Assistant;
 import DataBase.Data;
 import Interface.Display.MediaPlayerDisplay;
 import Skills.Schedule.Skill_Schedule;
@@ -15,11 +16,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
-public class BFSTextRecognition {
+public class TextRecognition {
     private Assistant assistant;
 
     private int max_Distance = 2;
-    private String originalMessage;
     private String originalCleanM;
     private String actual_lastWord;
     private String response;
@@ -32,13 +32,12 @@ public class BFSTextRecognition {
 
     private final File dataBase = new File("src/DataBase/textData.txt");
 
-    public BFSTextRecognition(Assistant assistant){
+    public TextRecognition(Assistant assistant){
         this.assistant = assistant;
     }
 
-    public String getReponse(String uMessage) throws Exception
+    public String getResponse(String uMessage) throws Exception
     {
-        originalMessage = uMessage;
         originalCleanM = assistant.removePunctuation(uMessage);
         actual_lastWord = uMessage.substring(originalCleanM.lastIndexOf(" ")+1);
         max_Distance = Math.max(2, (int)(originalCleanM.length()*0.15));
@@ -159,8 +158,8 @@ public class BFSTextRecognition {
      * @param node the user message node without punctuation
      */
     public boolean getInfo_withLevenshtein(BFSNode node) throws Exception{
-        ArrayList<Assistant.Answers> res = new ArrayList<>();
-        ArrayList<Assistant.Answers> best_score_res = new ArrayList<>();
+        ArrayList<Answers> res = new ArrayList<>();
+        ArrayList<Answers> best_score_res = new ArrayList<>();
         int score = -1;
         int best_score = Integer.MAX_VALUE;
         try{
@@ -170,7 +169,7 @@ public class BFSTextRecognition {
             while ((s = data.readLine()) != null) {
                 if (s.startsWith("U")) {
                     if (firstPhase) {
-                        score = assistant.LevenshteinDistance(node.getSentence().toLowerCase(), s.substring(2).toLowerCase(), max_Distance);
+                        score = LevenshteinDistance(node.getSentence().toLowerCase(), s.substring(2).toLowerCase(), max_Distance);
                         if (score != -1) {
                             if (score < best_score) {
                                 best_score = score;
@@ -178,14 +177,14 @@ public class BFSTextRecognition {
 
                             String r;
                             while ((r = data.readLine()) != null && (r.startsWith("B"))) {
-                                res.add(new Assistant.Answers(score, r.substring(2)));
+                                res.add(new Answers(score, r.substring(2)));
                             }
                         }
                     }else if(secondPhase){
                         //WITH ONLY VARIABLES (WITH DELETING RANDOM WORDS)
                         if (s.contains("<VARIABLE>") && containsSameNbrOfVariables(s,node)) {
                             String sWithVar = assistant.removeVariables(s);
-                            score = assistant.LevenshteinDistance(node.getSentence().toLowerCase(), sWithVar.substring(2).toLowerCase(), max_Distance);
+                            score = LevenshteinDistance(node.getSentence().toLowerCase(), sWithVar.substring(2).toLowerCase(), max_Distance);
                             if (score != -1) {
                                 if (score < best_score) {
                                     best_score = score;
@@ -193,14 +192,14 @@ public class BFSTextRecognition {
 
                                 String r;
                                 while ((r = data.readLine()) != null && (r.startsWith("B"))) {
-                                    res.add(new Assistant.Answers(score, r.substring(2)));
+                                    res.add(new Answers(score, r.substring(2)));
                                 }
                             }
                         }
                     }else if(thirdPhase){
                         //WITH AND WITHOUT VARIABLES(WITH DELETING RANDOM WORDS)
                         String allS = s;
-                        score = assistant.LevenshteinDistance(node.getSentence().toLowerCase(), allS.substring(2).toLowerCase(), max_Distance);
+                        score = LevenshteinDistance(node.getSentence().toLowerCase(), allS.substring(2).toLowerCase(), max_Distance);
                         if (score != -1) {
                             if (score < best_score) {
                                 best_score = score;
@@ -208,7 +207,7 @@ public class BFSTextRecognition {
 
                             String r;
                             while ((r = data.readLine()) != null && (r.startsWith("B"))) {
-                                res.add(new Assistant.Answers(score, r.substring(2)));
+                                res.add(new Answers(score, r.substring(2)));
                             }
                         }
                     }
@@ -272,7 +271,11 @@ public class BFSTextRecognition {
         return true;
     }
 
-
+    /**
+     * @param s message from the skill database
+     * @param node current node being investifated
+     * @return true if s contains the same nbr of variables than the message stored in the current node
+     */
     public boolean containsSameNbrOfVariables(String s,BFSNode node){
         int nbrOfRandomWords = 0;
         for (int i = 0; i < s.length(); i++) {
@@ -310,10 +313,10 @@ public class BFSTextRecognition {
                 String city;
                 String country = "";
                 String[] split;
-                if(originalMessage.contains("in")) {
-                    split = originalMessage.split("in");
+                if(originalCleanM.contains("in")) {
+                    split = originalCleanM.split("in");
                 }
-                else { split = originalMessage.split("to"); }
+                else { split = originalCleanM.split("to"); }
 
                 String temp = split[1];
                 if (temp.contains(",")) {
@@ -442,7 +445,7 @@ public class BFSTextRecognition {
             else { final_answer = err; }
         }
         else if(skill_num == 24) {
-            if(originalMessage.toLowerCase().contains("what time is it in")) {
+            if(originalCleanM.toLowerCase().contains("what time is it in")) {
                 if(assistant.mainScreen.clockAppDisplay.clockVBox.tempTimeZoneIDs.contains(actual_lastWord)) {
                     final_answer = assistant.mainScreen.clockAppDisplay.clockVBox.getTimeFromZoneID(actual_lastWord) + " If you want to add a new clock use the options on the left screen or type 'Add a new clock for Continent/City'.";
                 }
@@ -541,10 +544,14 @@ public class BFSTextRecognition {
             assistant.mainScreen.displaySkill(assistant.mainScreen.calendarDisplay,"calendar");
         }
         else if(skill_num == 70){
-            assistant.mainScreen.setMapDisplay(originalCleanM);
+            assistant.mainScreen.chat.receiveMessage("Route from " + nodeInvestigated.getWordsRemoved().get(0) + " to "+nodeInvestigated.getWordsRemoved().get(1) + " being computed");
+            assistant.mainScreen.setMapDisplay("route",nodeInvestigated.getWordsRemoved().get(0),nodeInvestigated.getWordsRemoved().get(1));
         }
         else if(skill_num == 71){
-            assistant.mainScreen.setMapDisplay("");
+            assistant.mainScreen.setMapDisplay("google",null,null);
+        }
+        else if(skill_num == 72){
+            assistant.mainScreen.setMapDisplay("map",nodeInvestigated.getWordsRemoved().get(0),null);
         }
         else if(skill_num == 80){
             if(!nodeInvestigated.getWordsRemoved().get(0).contains(" ")){
@@ -596,5 +603,116 @@ public class BFSTextRecognition {
             assistant.mainScreen.chat.receiveMessage("Test the text recognition : " + nodeInvestigated.getWordsRemoved().get(0) + " , " + nodeInvestigated.getWordsRemoved().get(1) + " , " + nodeInvestigated.getWordsRemoved().get(2));
         }
         return final_answer;
+    }
+
+    /**
+     * Compares the difference between two Strings using the Levenshtein algorithm.
+     * @param uMessage the user message without punctuation
+     * @param dataBase_message the message in the database
+     * @param threshold the maximum accepted distance between the Strings
+     * @return the score between -1 and threshold
+     */
+    public int LevenshteinDistance(String uMessage, String dataBase_message, int threshold)
+    {
+        int uM = uMessage.length();
+        int dB = dataBase_message.length();
+        int[] cost_previous = new int[uM + 1];
+        int[] cost_distance = new int[uM + 1];
+        int[] cost_memory;
+        int limit = Math.min(uM,threshold);
+        int score = -1;
+
+        if(uM == 0 || dB == 0)
+        {
+            return score;
+        }
+
+        if(uM > dB)
+        {
+            String temp = uMessage;
+            uMessage = dataBase_message;
+            dataBase_message = temp;
+            int temp2 = uM;
+            uM = dB;
+            dB = temp2;
+        }
+
+        for(int i = 0; i <= limit; i++)
+        {
+            cost_previous[i] = i;
+        }
+        Arrays.fill(cost_previous, limit, cost_previous.length, Integer.MAX_VALUE);
+        Arrays.fill(cost_distance, Integer.MAX_VALUE);
+
+        for(int i = 1; i <= dB; i++)
+        {
+            char database_char = dataBase_message.charAt(i-1);
+            cost_distance[0] = i;
+
+            int min = Math.max(1, i-threshold);
+            int max = i > Integer.MAX_VALUE - threshold ? uM : Math.min(uM,threshold+i); //TODO Noo kucken
+
+            if(min > max)
+            {
+                return -1;
+            }
+
+            if(min > 1)
+            {
+                cost_distance[min-1] = Integer.MAX_VALUE;
+            }
+
+            for(int j = min; j <= max; j++)
+            {
+                if(uMessage.charAt(j-1) == database_char)
+                {
+                    cost_distance[j] = cost_previous[j-1];
+                }
+                else
+                {
+                    cost_distance[j] = 1 + Math.min(Math.min(cost_distance[j-1], cost_previous[j]), cost_previous[j-1]);
+                }
+            }
+
+            cost_memory = cost_previous;
+            cost_previous = cost_distance;
+            cost_distance = cost_memory;
+        }
+
+        if(cost_previous[uM] <= threshold)
+        {
+            score = cost_previous[uM];
+        }
+        return score;
+    }
+
+    /**
+     * class used to store answers and their score
+     */
+    public class Answers{
+        private String answer;
+        private int score = -1;
+
+        /**
+         * Used by the Levenshtein distance to rank the possible answers with their
+         * corresponding score in an ArrayList
+         * @param pScore the LevenshteinDistance
+         * @param pAnswer the answer from the database
+         */
+        public Answers(int pScore, String pAnswer)
+        {
+            this.answer = pAnswer;
+            this.score = pScore;
+        }
+
+        public int getScore()
+        {
+            return score;
+        }
+
+        public String getAnswer()
+        {
+            return answer;
+        }
     }
 }

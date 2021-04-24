@@ -1,6 +1,5 @@
-package Agents;
+package TextRecognition;
 
-import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.util.ArrayList;
 
 public class BFSNode {

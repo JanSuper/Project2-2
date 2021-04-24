@@ -301,8 +301,8 @@ public class MainScreen {
         root.setLeft(skillEditorDisplay);
     }
 
-    public void setMapDisplay(String googlewebview) throws Exception {
-        MapDisplay mapDisplay = new MapDisplay(googlewebview);
+    public void setMapDisplay(String type,String loc1,String loc2) throws Exception {
+        MapDisplay mapDisplay = new MapDisplay(type,loc1,loc2);
         mapDisplay.setSpacing(7);
         mapDisplay.setBackground(Data.createBackGround());
         mapDisplay.setBorder(border);

@@ -17,9 +17,9 @@ public class MapDisplay extends VBox {
     private VBox current;
 
 
-    public MapDisplay(String googlewebview) throws Exception {
+    public MapDisplay(String type,String loc1,String loc2) throws Exception {
         //just open the webview engine to google something
-        if (googlewebview == "")
+        if (type == "google")
         {
             // create webview for google search
             WebView myWebView = new WebView();
@@ -35,7 +35,7 @@ public class MapDisplay extends VBox {
         // DISPLAY GOOGLE MAPS:
         // show a interactive google map without routes
         // read description below
-        else if (googlewebview.contains("Map")) {
+        else if (type.equals("map")) {
             // Create a webview
             WebView myWebView = new WebView();
             WebEngine engine = myWebView.getEngine();
@@ -46,10 +46,8 @@ public class MapDisplay extends VBox {
             // "googlewebview" to the url - the response will be json data format (xml is also possible):
 
             // 1. Filter the location words from the string and replace " " through "+" (to add it to the url)
-            googlewebview = googlewebview.split(" ",2)[1];
-            googlewebview = googlewebview.replace("-", "+");
             // 2. Send a request to google servers:
-            String adress = "https://maps.googleapis.com/maps/api/geocode/json?address=" + googlewebview + "&key=AIzaSyDxxcJvhBUP-fFzH2i4oIIPAEVHPfkxDw8";
+            String adress = "https://maps.googleapis.com/maps/api/geocode/json?address=" + loc1 + "&key=AIzaSyDxxcJvhBUP-fFzH2i4oIIPAEVHPfkxDw8";
             URL url = new URL(adress);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
@@ -115,14 +113,13 @@ public class MapDisplay extends VBox {
         // GOOGLE MAPS WITH ROUTES:
         // show a interactive google map with routes
         // almost same procedure - read description above starting from "DISPLAY GOOGLE MAPS"
-        else if (googlewebview.contains("Route"))
+        else if (type.equals("route"))
         {
             WebView myWebView = new WebView();
             WebEngine engine = myWebView.getEngine();
 
-            googlewebview = googlewebview.split(" ",2)[1];
-            String source = googlewebview.split("-",2)[0];
-            String goal = googlewebview.split("-",2)[1]; //yes where ?
+            String source = loc1;
+            String goal = loc2;
 
             //request the starting map view coordinates
             //the route source and goal will transformed into coordinates in the googlemapsRoute.html file
