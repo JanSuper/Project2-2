@@ -41,7 +41,7 @@ public class MapDisplay extends VBox {
             WebEngine engine = myWebView.getEngine();
 
             // First I need to transform the google maps location names into coordinates
-            // which I do by using another google maps api called: google maps directions.
+            // which I do by using another google maps api called: google maps geocoding.
             // For that I send a request to the google maps directions api servers by adding the locations
             // "googlewebview" to the url - the response will be json data format (xml is also possible):
 
@@ -118,8 +118,8 @@ public class MapDisplay extends VBox {
             WebView myWebView = new WebView();
             WebEngine engine = myWebView.getEngine();
 
-            String source = loc1;
-            String goal = loc2;
+            String source = loc1.trim();
+            String goal = loc2.trim();
 
             //request the starting map view coordinates
             //the route source and goal will transformed into coordinates in the googlemapsRoute.html file
