@@ -1,6 +1,7 @@
 package Interface.Screens;
 
 import DataBase.Data;
+import FileParser.FileParser;
 import Interface.Chat.ChatApp;
 import Interface.Display.*;
 import javafx.animation.KeyFrame;
@@ -47,11 +48,11 @@ public class MainScreen {
     public static Color themeColor = new Color(0.2,0.35379, 0.65, 1);
     public Stage stage;
 
-    private Label userNameLabel;
-    private Button settings;
-    private Button help;
-    private Button logOut;
-    private VBox vBox;
+    private VBox shortcutsMenu;
+    private VBox mainMenu;
+    private VBox settingsMenu;
+    private VBox themeColorsMenu;
+    private HBox mainMenu_shortcuts_Option;
 
     private ArrayList<String[]> alarmsTime;
     private Timeline timeline;
@@ -59,6 +60,7 @@ public class MainScreen {
     public MainScreen() throws Exception {
         borderWidth = 10;
         border = new Border(new BorderStroke(Color.DARKGRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(borderWidth)));
+
         chat = new ChatApp(Data.getUsername(),this);
         clockAppDisplay = new ClockAppDisplay(this);
         skillEditorDisplay = new SkillEditorDisplay(this);
@@ -66,6 +68,7 @@ public class MainScreen {
         calendarDisplay = new CalendarDisplay(this);
 
         createContent();
+
         alarmsTime = new ArrayList<>();
         timeline = new Timeline();
         prepareAlarms();
@@ -80,95 +83,41 @@ public class MainScreen {
         primaryStage.show();
     }
 
-    public void createContent() {
+    public void createContent() throws Exception {
         root = new BorderPane();
         root.setBorder(border);
         root.setBackground(Data.createBackGround());
 
         chat.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
         chat.prefWidthProperty().bind(root.widthProperty().divide(2.8));
-
         root.setRight(chat);
 
-        vBox = new VBox(40);
-        setOptionsMenu();
+        setMainMenu();
+        setSettingsMenu();
+        setThemeColorsMenu();
+        setShortcutsMenu();
+
+        displayMainMenu();
     }
 
-    public void setOptionsMenu() {
-        userNameLabel = new Label(Data.getUsername());
-        settings = new Button("Settings");
-        help = new Button("Help");
-        logOut = new Button("Log out");
-
-        userNameLabel.setFont((Font.font("Cambria", FontWeight.EXTRA_BOLD, 45)));
-        userNameLabel.setStyle("-fx-text-fill: white");
-
-        designOptionButton(settings);
-        settings.setOnMouseClicked(event -> displaySettings());
-
-        designOptionButton(help);
-        help.setOnMouseClicked(event -> chat.receiveMessage("Tell me what to do for you. For example you can check the weather by typing \"How is the weather?\" or your UM schedule by typing \"Next Lecture\", \"This week Lecture\"."));
-
-        designOptionButton(logOut);
-        logOut.setOnMouseClicked(event -> {
-            stage.close();
-            Data.setImage("src/DataBase/defaultBackground.jpg");
-            StartScreen startScreen= new StartScreen();
-            try {
-                startScreen.start(stage);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-
-        setMenuBackground();
-        vBox.getChildren().setAll(userNameLabel, settings, help, logOut);
-        vBox.setAlignment(Pos.CENTER);
-        vBox.setBorder(border);
-        vBox.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
-        vBox.prefWidthProperty().bind(root.widthProperty().subtract(chat.prefWidthProperty()).subtract(borderWidth*2));
-        vBox.setScaleX(0.8);
-        vBox.setScaleY(0.8);
-
-        root.setLeft(vBox);
+    public void displayMainMenu() {
+        setMenuBackground(mainMenu);
+        root.setLeft(mainMenu);
     }
 
-    private void setMenuBackground() {
-        if (themeColor.equals(Color.BLACK)) {
-            vBox.setBackground(new Background(new BackgroundFill(new Color(themeColor.getRed(), themeColor.getGreen(), themeColor.getBlue(), 0.4), CornerRadii.EMPTY, Insets.EMPTY)));
-        }
-        else if (themeColor.equals(Color.LIGHTGRAY)) {
-            vBox.setBackground(new Background(new BackgroundFill(new Color(themeColor.getRed(), themeColor.getGreen(), themeColor.getBlue(), 0.29), CornerRadii.EMPTY, Insets.EMPTY)));
-        }
-        else { vBox.setBackground(new Background(new BackgroundFill(new Color(0.2, 0.35379, 0.65, 0.5), CornerRadii.EMPTY, Insets.EMPTY))); }
+    private void displaySettingsMenu() {
+        setMenuBackground(settingsMenu);
+        root.setLeft(settingsMenu);
     }
 
-    public void displaySettings() {
-        Label settingsLabel = userNameLabel;
-        settingsLabel.setText("Settings");
+    public void displayThemeColorsMenu() {
+        setMenuBackground(themeColorsMenu);
+        root.setLeft(themeColorsMenu);
+    }
 
-        Button editProf = settings;
-        editProf.setText("Edit profile");
-
-        Button themeColor = help;
-        themeColor.setText("Theme Color");
-        designOptionButton(themeColor);
-
-        Button changeBackground = new Button("Background");
-        designOptionButton(changeBackground);
-
-        Button back = logOut;
-        back.setText("Back");
-
-        editProf.setOnMouseClicked(event -> chat.receiveMessage("You can change your password/location by typing \"Change my password/location/... to <YourNewPassword/YourNewLocation/...>\"."));
-        themeColor.setOnMouseClicked(e-> displayThemeColors());
-        changeBackground.setOnMouseClicked(event -> displayBackgroundEditing());
-        back.setOnMouseClicked(event -> setOptionsMenu());
-
-        vBox.getChildren().clear();
-        vBox.getChildren().addAll(settingsLabel, editProf, themeColor,changeBackground, back);
-
-        root.setLeft(vBox);
+    private void displayShortcutsMenu() {
+        setMenuBackground(shortcutsMenu);
+        root.setLeft(shortcutsMenu);
     }
 
     public void displayBackgroundEditing(){
@@ -187,9 +136,124 @@ public class MainScreen {
         }
     }
 
-    public void displayThemeColors() {
-        Label themeColorLabel = userNameLabel;
-        themeColorLabel.setText("Theme Color");
+    private HBox getMainMenu_shortcuts_Option(Boolean isShortcutsMenuDisplayed) {
+        mainMenu_shortcuts_Option = new HBox();
+        mainMenu_shortcuts_Option.setPadding(new Insets(90,0,60,0));
+        mainMenu_shortcuts_Option.setAlignment(Pos.TOP_CENTER);
+        mainMenu_shortcuts_Option.setFillHeight(true);
+
+        Button menuBtn = new Button("Menu");
+        menuBtn.setCursor(Cursor.HAND);
+        menuBtn.setFont(Font.font("Cambria", FontWeight.EXTRA_BOLD, 18));
+        menuBtn.setTextFill(Color.WHITE);
+        menuBtn.setPrefWidth(120);
+        menuBtn.setBorder(new Border(new BorderStroke(Color.LIGHTGRAY, BorderStrokeStyle.SOLID, new CornerRadii(10,0,0,10,false), new BorderWidths(0.5))));
+
+        Button shortcutsBtn = new Button("Shortcuts");
+        shortcutsBtn.setCursor(Cursor.HAND);
+        shortcutsBtn.setFont(Font.font("Cambria", FontWeight.EXTRA_BOLD, 18));
+        shortcutsBtn.setTextFill(Color.WHITE);
+        shortcutsBtn.setPrefWidth(120);
+        shortcutsBtn.setBorder(new Border(new BorderStroke(Color.LIGHTGRAY, BorderStrokeStyle.SOLID, new CornerRadii(0,10,10,0,false), new BorderWidths(0.5))));
+
+        if (isShortcutsMenuDisplayed.equals(true)) {
+            menuBtn.setBackground(new Background(new BackgroundFill(Color.BLACK, new CornerRadii(10, 0, 0, 10, false), Insets.EMPTY)));
+            shortcutsBtn.setBackground(new Background(new BackgroundFill(Color.DARKBLUE.darker(), new CornerRadii(0,10,10,0,false), Insets.EMPTY)));
+        }
+        else {
+            menuBtn.setBackground(new Background(new BackgroundFill(Color.DARKBLUE.darker(), new CornerRadii(10, 0, 0, 10, false), Insets.EMPTY)));
+            shortcutsBtn.setBackground(new Background(new BackgroundFill(Color.BLACK, new CornerRadii(0,10,10,0,false), Insets.EMPTY)));
+        }
+
+        menuBtn.setOnMouseClicked(e-> displayMainMenu());
+        shortcutsBtn.setOnMouseClicked(e-> displayShortcutsMenu());
+
+        mainMenu_shortcuts_Option.getChildren().setAll(menuBtn, shortcutsBtn);
+        return mainMenu_shortcuts_Option;
+    }
+
+    private void setMainMenu() {
+        mainMenu = new VBox(40);
+        mainMenu.setAlignment(Pos.TOP_CENTER);
+        mainMenu.setBorder(border);
+        mainMenu.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
+        mainMenu.prefWidthProperty().bind(root.widthProperty().subtract(chat.prefWidthProperty()).subtract(borderWidth*2));
+        mainMenu.setScaleX(0.8);
+        mainMenu.setScaleY(0.8);
+
+        Label userNameLabel = new Label(Data.getUsername());
+        userNameLabel.setFont((Font.font("Cambria", FontWeight.EXTRA_BOLD, 45)));
+        userNameLabel.setStyle("-fx-text-fill: white");
+
+        Button settings = new Button("Settings");
+        Button help = new Button("Help");
+        Button logOut = new Button("Log out");
+
+        designOptionButton(settings);
+        settings.setOnMouseClicked(event -> displaySettingsMenu());
+
+        designOptionButton(help);
+        help.setOnMouseClicked(event -> chat.receiveMessage("Tell me what to do for you. For example you can check the weather by typing \"How is the weather?\" or your UM schedule by typing \"Next Lecture\", \"This week Lecture\"."));
+
+        designOptionButton(logOut);
+        logOut.setOnMouseClicked(event -> {
+            stage.close();
+            Data.setImage("src/DataBase/defaultBackground.jpg");
+            StartScreen startScreen= new StartScreen();
+            try {
+                startScreen.start(stage);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        mainMenu.getChildren().addAll(getMainMenu_shortcuts_Option(false), userNameLabel, settings, help, logOut);
+    }
+
+    private void setSettingsMenu() {
+        settingsMenu = new VBox(40);
+        settingsMenu.setAlignment(Pos.TOP_CENTER);
+        settingsMenu.setBorder(border);
+        settingsMenu.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
+        settingsMenu.prefWidthProperty().bind(root.widthProperty().subtract(chat.prefWidthProperty()).subtract(borderWidth*2));
+        settingsMenu.setScaleX(0.8);
+        settingsMenu.setScaleY(0.8);
+
+        Label settingsLabel = new Label("Settings");
+        settingsLabel.setFont((Font.font("Cambria", FontWeight.EXTRA_BOLD, 45)));
+        settingsLabel.setStyle("-fx-text-fill: white");
+
+        Button editProf = new Button("Edit profile");
+        Button themeColor = new Button("Theme Color");
+        Button changeBackground = new Button("Background");
+        Button back = new Button("Back");
+
+        designOptionButton(editProf);
+        editProf.setOnMouseClicked(event -> chat.receiveMessage("You can change your password/location by typing \"Change my password/location/... to <YourNewPassword/YourNewLocation/...>\"."));
+
+        designOptionButton(themeColor);
+        themeColor.setOnMouseClicked(e-> displayThemeColorsMenu());
+
+        designOptionButton(changeBackground);
+        changeBackground.setOnMouseClicked(event -> displayBackgroundEditing());
+
+        designOptionButton(back);
+        back.setOnMouseClicked(event -> displayMainMenu());
+
+        settingsMenu.getChildren().addAll(getMainMenu_shortcuts_Option(false), settingsLabel, editProf, themeColor,changeBackground, back);
+    }
+
+    public void setThemeColorsMenu() {
+        themeColorsMenu = new VBox(40);
+        themeColorsMenu.setAlignment(Pos.TOP_CENTER);
+        themeColorsMenu.setBorder(border);
+        themeColorsMenu.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
+        themeColorsMenu.prefWidthProperty().bind(root.widthProperty().subtract(chat.prefWidthProperty()).subtract(borderWidth*2));
+        themeColorsMenu.setScaleX(0.8);
+        themeColorsMenu.setScaleY(0.8);
+
+        Label themeColorLabel = new Label("Theme Color");
+        themeColorLabel.setFont((Font.font("Cambria", FontWeight.EXTRA_BOLD, 45)));
+        themeColorLabel.setStyle("-fx-text-fill: white");
 
         HBox colors = new HBox(40);
         colors.setAlignment(Pos.CENTER);
@@ -211,15 +275,15 @@ public class MainScreen {
         white.setFocusTraversable(false);
         white.setCursor(Cursor.HAND);
 
-        Button back = logOut;
-        back.setText("Back");
+        Button back = new Button("Back");
+        designOptionButton(back);
+        back.setOnMouseClicked(e -> displaySettingsMenu());
 
-        back.setOnMouseClicked(e -> displaySettings());
         blue.setOnMouseClicked(e -> {
             themeColor = new Color(0.2, 0.35379, 0.65, 1);
             try {
                 chat.changeColor(themeColor);
-                setMenuBackground();
+                setMenuBackground(themeColorsMenu);
             } catch (FileNotFoundException ex) {
                 ex.printStackTrace();
             }
@@ -228,7 +292,7 @@ public class MainScreen {
             themeColor = Color.BLACK;
             try {
                 chat.changeColor(themeColor);
-                setMenuBackground();
+                setMenuBackground(themeColorsMenu);
             } catch (FileNotFoundException ex) {
                 ex.printStackTrace();
             }
@@ -237,17 +301,84 @@ public class MainScreen {
             themeColor = Color.LIGHTGRAY;
             try {
                 chat.changeColor(themeColor);
-                setMenuBackground();
+                setMenuBackground(themeColorsMenu);
             } catch (FileNotFoundException ex) {
                 ex.printStackTrace();
             }
         });
 
         colors.getChildren().addAll(blue, black, white);
-        vBox.getChildren().clear();
-        vBox.getChildren().addAll(themeColorLabel, colors, back);
+        themeColorsMenu.getChildren().addAll(getMainMenu_shortcuts_Option(false), themeColorLabel, colors, back);
+    }
 
-        root.setLeft(vBox);
+    private void setShortcutsMenu() throws Exception {
+        shortcutsMenu = new VBox(40);
+        shortcutsMenu.setAlignment(Pos.TOP_CENTER);
+        shortcutsMenu.setBorder(border);
+        shortcutsMenu.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
+        shortcutsMenu.prefWidthProperty().bind(root.widthProperty().subtract(chat.prefWidthProperty()).subtract(borderWidth*2));
+        shortcutsMenu.setScaleX(0.8);
+        shortcutsMenu.setScaleY(0.8);
+
+        String city = FileParser.getUserInfo("-City");
+        String country = FileParser.getUserInfo("-Country");
+        weatherDisplay.setLocation(city, country);
+        VBox weatherShortcut = weatherDisplay.getWeatherShortcut();
+        designShortcut(weatherShortcut, Color.LIGHTBLUE);
+        weatherShortcut.setOnMouseClicked(e-> {
+            try {
+                setWeatherDisplay(city,country);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        VBox clockShortcut = clockAppDisplay.clockVBox.getClockShortcut();
+        designShortcut(clockShortcut, Color.SLATEGREY.darker());
+        clockShortcut.setOnMouseClicked(e-> setClockAppDisplay("Clock"));
+
+        VBox calendarShortcut = new VBox(17);  //TODO
+        designShortcut(calendarShortcut, Color.LIGHTGRAY);
+        calendarShortcut.setOnMouseClicked(e-> displaySkill(calendarDisplay,"calendar"));
+
+        VBox mapShortcut = new VBox(17);  //TODO
+        designShortcut(mapShortcut, Color.LIGHTGRAY);
+        mapShortcut.setOnMouseClicked(e-> {
+            try {
+                //setMapDisplay("");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        HBox hBox1 = new HBox(50);
+        hBox1.setAlignment(Pos.CENTER);
+        hBox1.getChildren().addAll(weatherShortcut, clockShortcut);
+
+        HBox hBox2 = new HBox(50);
+        hBox2.setAlignment(Pos.CENTER);
+        hBox2.getChildren().addAll(calendarShortcut, mapShortcut);
+
+        shortcutsMenu.getChildren().addAll(getMainMenu_shortcuts_Option(true), hBox1, hBox2);
+    }
+
+    private void designShortcut(VBox vBox, Color backgroundColor) {
+        vBox.setPrefSize(200,200);
+        vBox.setMaxSize(200,200);
+        vBox.setMinSize(200, 200);
+        vBox.setCursor(Cursor.HAND);
+        vBox.setBackground(new Background(new BackgroundFill(backgroundColor, new CornerRadii(20), Insets.EMPTY)));
+        vBox.setAlignment(Pos.CENTER);
+        vBox.setPadding(new Insets(10));
+        vBox.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, new CornerRadii(20), new BorderWidths(5))));
+    }
+
+    private void setMenuBackground(VBox vBox) {
+        if (themeColor.equals(Color.BLACK)) {
+            vBox.setBackground(new Background(new BackgroundFill(new Color(themeColor.getRed(), themeColor.getGreen(), themeColor.getBlue(), 0.4), CornerRadii.EMPTY, Insets.EMPTY))); }
+        else if (themeColor.equals(Color.LIGHTGRAY)) {
+            vBox.setBackground(new Background(new BackgroundFill(new Color(themeColor.getRed(), themeColor.getGreen(), themeColor.getBlue(), 0.29), CornerRadii.EMPTY, Insets.EMPTY))); }
+        else { vBox.setBackground(new Background(new BackgroundFill(new Color(0.2, 0.35379, 0.65, 0.5), CornerRadii.EMPTY, Insets.EMPTY))); }
     }
 
     private void designOptionButton(Button button) {
@@ -313,7 +444,6 @@ public class MainScreen {
 
         root.setLeft(mapDisplay);
     }
-
 
     public void displayUrlMediaPlayer(MediaPlayerDisplay mediaPlayerDisplay){
         mediaPlayerDisplay.setBackground(Data.createBackGround());

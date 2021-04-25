@@ -589,7 +589,7 @@ public class TextRecognition {
             assistant.mainScreen.displayBackgroundEditing();
         }
         else if(skill_num==87){
-            assistant.mainScreen.displayThemeColors();
+            assistant.mainScreen.displayThemeColorsMenu();
         }
         else if(skill_num==89){
             String info = Files.readString(Path.of("src/DataBase/Users/" + Data.getUsername() + "/" + Data.getUsername() + ".txt"));

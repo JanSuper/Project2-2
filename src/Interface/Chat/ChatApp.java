@@ -179,6 +179,7 @@ public class ChatApp extends VBox {
         setMaxHeight(Double.MAX_VALUE);
         setMinHeight(Double.MIN_VALUE);
         receiveMessage("Welcome " + Data.getUsername() + "! How may I help you?"); //Assistant's first message
+        changeColor(mainScreen.themeColor);
     }
 
     private void changeUserIcon(FileInputStream fis) {

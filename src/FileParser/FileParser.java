@@ -61,7 +61,7 @@ public class FileParser {
         }
     }
 
-    public String getUserInfo(String info){
+    public static String getUserInfo(String info){
         String result = "";
         File userFile = new File("src/DataBase/Users/"+Data.getUsername()+"/"+Data.getUsername()+".txt");
 

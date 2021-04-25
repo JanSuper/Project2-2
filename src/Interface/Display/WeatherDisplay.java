@@ -43,6 +43,8 @@ public class WeatherDisplay extends VBox {
     private Button change;
     private Button exit;
     private VBox current;
+    private ImagePattern pattern;
+    private HBox hLBox;
     private HBox hourlyDailyChoice;
     private VBox dailyVBox;
     private HBox hourlyHBox;
@@ -71,8 +73,8 @@ public class WeatherDisplay extends VBox {
 
         getChildren().clear();
         getChildren().addAll(top, current, hourlyDailyChoice, scrollPaneDaily);
-        Color bgColor = Color.WHEAT;
-        setBackground(new Background(new BackgroundFill(new Color(bgColor.getRed(),bgColor.getGreen(), bgColor.getBlue(), 0.3), CornerRadii.EMPTY, Insets.EMPTY)));
+        Color bgColor = Color.WHITE;
+        setBackground(new Background(new BackgroundFill(new Color(bgColor.getRed(),bgColor.getGreen(), bgColor.getBlue(), 0.38), CornerRadii.EMPTY, Insets.EMPTY)));
         setMaxHeight(Double.MAX_VALUE);
         setMinHeight(Double.MIN_VALUE);
     }
@@ -87,7 +89,7 @@ public class WeatherDisplay extends VBox {
         hourly.setPrefWidth(70);
         hourly.setTextFill(Color.WHITESMOKE);
         hourly.setCursor(Cursor.HAND);
-        hourly.setBackground(new Background(new BackgroundFill(Color.GRAY.darker(), new CornerRadii(10,0,0,10,false), Insets.EMPTY)));
+        hourly.setBackground(new Background(new BackgroundFill(Color.GRAY.darker().darker(), new CornerRadii(10,0,0,10,false), Insets.EMPTY)));
 
         daily.setFont((Font.font("Cambria", FontWeight.EXTRA_BOLD, 15)));
         daily.setPrefWidth(70);
@@ -100,12 +102,12 @@ public class WeatherDisplay extends VBox {
                 getChildren().remove(scrollPaneDaily);
                 getChildren().add(scrollPaneHourly);
                 hourly.setBackground(new Background(new BackgroundFill(Color.DARKBLUE.darker(), new CornerRadii(10,0,0,10,false), Insets.EMPTY)));
-                daily.setBackground(new Background(new BackgroundFill(Color.GRAY.darker(), new CornerRadii(0,10,10,0,false), Insets.EMPTY)));
+                daily.setBackground(new Background(new BackgroundFill(Color.GRAY.darker().darker(), new CornerRadii(0,10,10,0,false), Insets.EMPTY)));
             }
             else {
                 getChildren().remove(scrollPaneHourly);
                 getChildren().add(scrollPaneDaily);
-                hourly.setBackground(new Background(new BackgroundFill(Color.GRAY.darker(), new CornerRadii(10,0,0,10,false), Insets.EMPTY)));
+                hourly.setBackground(new Background(new BackgroundFill(Color.GRAY.darker().darker(), new CornerRadii(10,0,0,10,false), Insets.EMPTY)));
                 daily.setBackground(new Background(new BackgroundFill(Color.DARKBLUE.darker(), new CornerRadii(0,10,10,0,false), Insets.EMPTY)));
             }
         });
@@ -115,12 +117,12 @@ public class WeatherDisplay extends VBox {
                 getChildren().remove(scrollPaneDaily);
                 getChildren().add(scrollPaneHourly);
                 hourly.setBackground(new Background(new BackgroundFill(Color.DARKBLUE.darker(), new CornerRadii(10,0,0,10,false), Insets.EMPTY)));
-                daily.setBackground(new Background(new BackgroundFill(Color.GRAY.darker(), new CornerRadii(0,10,10,0,false), Insets.EMPTY)));
+                daily.setBackground(new Background(new BackgroundFill(Color.GRAY.darker().darker(), new CornerRadii(0,10,10,0,false), Insets.EMPTY)));
             }
             else {
                 getChildren().remove(scrollPaneHourly);
                 getChildren().add(scrollPaneDaily);
-                hourly.setBackground(new Background(new BackgroundFill(Color.GRAY.darker(), new CornerRadii(10,0,0,10,false), Insets.EMPTY)));
+                hourly.setBackground(new Background(new BackgroundFill(Color.GRAY.darker().darker(), new CornerRadii(10,0,0,10,false), Insets.EMPTY)));
                 daily.setBackground(new Background(new BackgroundFill(Color.DARKBLUE.darker(), new CornerRadii(0,10,10,0,false), Insets.EMPTY)));
             }
         });
@@ -263,6 +265,7 @@ public class WeatherDisplay extends VBox {
         top = new HBox(60);
         top.setAlignment(Pos.CENTER);
         top.setPrefHeight(60);
+        top.setMinHeight(60);
         top.setBackground(new Background(new BackgroundFill(MainScreen.themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
 
         city = new Label(addressTitle);
@@ -289,7 +292,7 @@ public class WeatherDisplay extends VBox {
         exit.setBorder(null);
         exit.setAlignment(Pos.CENTER_RIGHT);
         exit.setTranslateY(-7);
-        exit.setOnAction(e -> mainScreen.setOptionsMenu());
+        exit.setOnAction(e -> mainScreen.displayMainMenu());
 
         Region region1 = new Region();
         HBox.setHgrow(region1, Priority.ALWAYS);
@@ -312,7 +315,7 @@ public class WeatherDisplay extends VBox {
         Rectangle currentConditionImage = new Rectangle(0, 0, imgDim, imgDim);
         currentConditionImage.setArcWidth(50.0);
         currentConditionImage.setArcHeight(50.0);
-        ImagePattern pattern = new ImagePattern(getImage(currentWeather.get("icon")));
+        pattern = new ImagePattern(getImage(currentWeather.get("icon")));
         currentConditionImage.setFill(pattern);
         currentConditionImage.setEffect(new DropShadow(20, Color.BLACK));
 
@@ -344,7 +347,7 @@ public class WeatherDisplay extends VBox {
         lTemp.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 19));
         lTemp.setTextFill(Color.BLACK);
 
-        HBox hLBox = new HBox(12);
+        hLBox = new HBox(12);
         hLBox.setAlignment(Pos.CENTER);
         hLBox.getChildren().addAll(h, hTemp, l, lTemp);
 
@@ -355,7 +358,7 @@ public class WeatherDisplay extends VBox {
         dailyVBox = new VBox(23);
         dailyVBox.setBackground(Background.EMPTY);
         dailyVBox.setAlignment(Pos.BOTTOM_CENTER);
-        dailyVBox.setPadding(new Insets(20, 68, 10, 110));
+        dailyVBox.setPadding(new Insets(0, 68, 0, 110));
 
         ArrayList<Map<String, String>> dailyForecast = (ArrayList<Map<String, String>>) weatherData.get("daily");
         for(int i = -1; i < dailyForecast.size(); i++) {
@@ -401,6 +404,7 @@ public class WeatherDisplay extends VBox {
             dailyVBox.getChildren().add(daily);
         }
         scrollPaneDaily = new ScrollPane(dailyVBox);
+        scrollPaneDaily.setPadding(new Insets(40, 0, 40, 0));
         scrollPaneDaily.setFitToWidth(true);
         scrollPaneDaily.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
         scrollPaneDaily.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -485,7 +489,12 @@ public class WeatherDisplay extends VBox {
 
         HBox topBox = new HBox(60);
         topBox.setAlignment(Pos.CENTER);
-        topBox.setBackground(new Background(new BackgroundFill(MainScreen.themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
+        if (MainScreen.themeColor.equals(Color.LIGHTGRAY)) {
+            topBox.setBackground(new Background(new BackgroundFill(Color.GRAY.darker(), CornerRadii.EMPTY, Insets.EMPTY)));
+        }
+        else {
+            topBox.setBackground(new Background(new BackgroundFill(MainScreen.themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
+        }
         topBox.getChildren().addAll(changeLocation, region, exit);
 
         Label cityLabel = new Label("City: ");
@@ -548,6 +557,52 @@ public class WeatherDisplay extends VBox {
         });
 
         vBox.getChildren().addAll(topBox, textFieldBox, warning, change);
+    }
+
+    public VBox getWeatherShortcut() {
+        imgDim = 67;
+        VBox weatherShortcut = new VBox(17);
+
+        Label address = new Label(addressTitle);
+        address.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 15));
+        address.setTextFill(Color.BLACK);
+        address.setWrapText(true);
+        address.setAlignment(Pos.CENTER_LEFT);
+
+        Rectangle currentCondImage = new Rectangle(0, 0, imgDim, imgDim);
+        currentCondImage.setArcWidth(50.0);
+        currentCondImage.setArcHeight(50.0);
+        currentCondImage.setFill(pattern);
+        currentCondImage.setEffect(new DropShadow(20, Color.BLACK));
+
+        VBox vBox = new VBox(10);
+        vBox.setAlignment(Pos.CENTER_LEFT);
+
+        HBox temp = new HBox();
+        temp.setAlignment(Pos.CENTER_LEFT);
+        Label currentTempLabel = new Label(currentTemp);
+        currentTempLabel.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 25));
+        currentTempLabel.setTextFill(Color.BLACK);
+        Label celsius = new Label("  °C");
+        celsius.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 15));
+        celsius.setTextFill(Color.BLACK);
+        temp.getChildren().addAll(currentTempLabel, celsius);
+
+        Label currentCondLabel = new Label(currentSummary);
+        currentCondLabel.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 14));
+        currentCondLabel.setTextFill(Color.BLACK);
+        currentCondLabel.setWrapText(true);
+        vBox.getChildren().addAll(temp, currentCondLabel);
+
+        HBox hBox = new HBox(15);
+        hBox.setAlignment(Pos.CENTER);
+        hBox.getChildren().addAll(currentCondImage, vBox);
+        hLBox.setScaleX(0.85);
+        hLBox.setScaleY(0.85);
+        hLBox.setAlignment(Pos.CENTER_LEFT);
+        weatherShortcut.getChildren().addAll(address, hBox, hLBox);
+
+        return weatherShortcut;
     }
 
     private Image getImage(String status) throws FileNotFoundException {
