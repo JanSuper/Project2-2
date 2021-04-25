@@ -2,12 +2,12 @@ package TextRecognition;
 
 import java.util.ArrayList;
 
-public class BFSNode {
+public class Node {
     private String sentence;//with deleted word
-    private ArrayList<BFSNode> children;
+    private ArrayList<Node> children;
     private ArrayList<String> wordsRemoved;
 
-    public BFSNode(String sentence){
+    public Node(String sentence){
         this.sentence = sentence;
         this.children = new ArrayList<>();
         this.wordsRemoved = new ArrayList<>();
@@ -17,7 +17,7 @@ public class BFSNode {
         return sentence;
     }
 
-    public ArrayList<BFSNode> getChildren() {
+    public ArrayList<Node> getChildren() {
         return children;
     }
 

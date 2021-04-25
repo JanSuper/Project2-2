@@ -322,12 +322,19 @@ public class MainScreen {
 
         String city = FileParser.getUserInfo("-City");
         String country = FileParser.getUserInfo("-Country");
+        if(city.isEmpty()||country.isEmpty()){
+            System.out.println("It seems like you don't have completed your location yet");
+            city = "Maastricht";
+            country = "NL";
+        }
         weatherDisplay.setLocation(city, country);
         VBox weatherShortcut = weatherDisplay.getWeatherShortcut();
         designShortcut(weatherShortcut, Color.LIGHTBLUE);
+        String finalCity = city;
+        String finalCountry = country;
         weatherShortcut.setOnMouseClicked(e-> {
             try {
-                setWeatherDisplay(city,country);
+                setWeatherDisplay(finalCity, finalCountry);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

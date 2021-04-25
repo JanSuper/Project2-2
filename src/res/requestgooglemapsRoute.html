@@ -89,8 +89,8 @@
         const directionsRenderer = new google.maps.DirectionsRenderer();
         const directionsService = new google.maps.DirectionsService();
         const map = new google.maps.Map(document.getElementById("map"), {
-          zoom: 7,
-          center: { lat: 50.8513682, lng: 5.6909725 },
+          zoom: 10,
+          center: { lat: 50.6325574, lng: 5.5796662 },
         });
         directionsRenderer.setMap(map);
         directionsRenderer.setPanel(document.getElementById("right-panel"));
@@ -134,13 +134,13 @@
     <strong>Start:</strong>
     <select id="start">
         <option value="">SHOW ROUTE</option>
-        <option value="Maastricht">Maastricht</option>
+        <option value="Liege">Liege</option>
     </select>
     <br />
     <strong>End:</strong>
     <select id="end">
         <option value="">SHOW ROUTE</option>
-        <option value="Amsterdam">Amsterdam</option>
+        <option value="Maastricht">Maastricht</option>
     </select>
 </div>
 <div id="right-panel"></div>

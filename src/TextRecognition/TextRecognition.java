@@ -27,8 +27,9 @@ public class TextRecognition {
     private boolean firstPhase;
     private boolean secondPhase;
     private boolean thirdPhase;
+    private boolean fourthPhase;
     private int BFSdepth;
-    private BFSNode nodeInvestigated;
+    private Node nodeInvestigated;
 
     private final File dataBase = new File("src/DataBase/textData.txt");
 
@@ -44,22 +45,24 @@ public class TextRecognition {
 
         secondPhase = false;
         thirdPhase = false;
+        fourthPhase = false;
         firstPhase = true;
         //first test without variables
-        if(getInfo_withLevenshtein(new BFSNode(originalCleanM))) {
+        if(getInfo_withLevenshtein(new Node(originalCleanM))) {
             System.out.println("SOLUTION FOUND");
             System.out.println("SEARCH DONE in first phase");
         }else{
             firstPhase = false;
             //START BFS
             BFSdepth = 0;
-            BFSNode root = new BFSNode(originalCleanM);
+            Node root = new Node(originalCleanM);
             //First create tree
             if(createTree(root)){
                 System.out.println("TREE CREATION DONE");
             }else{
                 System.out.println("smth went wrong creating the tree");
             }
+            System.out.println("START SEARCHING IN TREE");
             //Then search in the tree
             secondPhase = true;
             if(search(root)){
@@ -69,8 +72,13 @@ public class TextRecognition {
                 thirdPhase = true;
                 if(search(root)){
                     System.out.println("SEARCH DONE in third phase");
+                }else{
+                    thirdPhase = false;
+                    fourthPhase = true;
+                    if(search(root)){
+                        System.out.println("SEARCH DONE in fourth phase");
+                    }
                 }
-                thirdPhase = false;
             }
         }
 
@@ -81,8 +89,8 @@ public class TextRecognition {
      * Create tree in recursive DFS
      * @param currentNode
      */
-    public boolean createTree(BFSNode currentNode){
-        BFSNode startNode = currentNode;
+    public boolean createTree(Node currentNode){
+        Node startNode = currentNode;
         String message = startNode.getSentence();
         String [] arr = startNode.getSentence().split(" ");
         if(arr.length==1){
@@ -91,7 +99,7 @@ public class TextRecognition {
         int newIndexToRemove = BFSdepth;
         while(newIndexToRemove<arr.length){
             String[] newMessage = removeWord(message,newIndexToRemove);
-            BFSNode newNode = new BFSNode(newMessage[0]);
+            Node newNode = new Node(newMessage[0]);
             newNode.getWordsRemoved().addAll(startNode.getWordsRemoved());newNode.getWordsRemoved().add(newMessage[1]);
             currentNode.getChildren().add(newNode);
             createTree(newNode);
@@ -107,10 +115,10 @@ public class TextRecognition {
      * @param root
      * @throws Exception
      */
-    public boolean search(BFSNode root) throws Exception {
-        Queue<BFSNode> queue = new ArrayDeque<>();
+    public boolean search(Node root) throws Exception {
+        Queue<Node> queue = new ArrayDeque<>();
         queue.add(root);
-        BFSNode currentNode;
+        Node currentNode;
         while(!queue.isEmpty()){
             currentNode = queue.remove();
             //VISIT current node
@@ -157,7 +165,7 @@ public class TextRecognition {
      * Tries to find the nearest possible answer in a given range of errors max_Distance
      * @param node the user message node without punctuation
      */
-    public boolean getInfo_withLevenshtein(BFSNode node) throws Exception{
+    public boolean getInfo_withLevenshtein(Node node) throws Exception{
         ArrayList<Answers> res = new ArrayList<>();
         ArrayList<Answers> best_score_res = new ArrayList<>();
         int score = -1;
@@ -168,23 +176,28 @@ public class TextRecognition {
             String s;
             while ((s = data.readLine()) != null) {
                 if (s.startsWith("U")) {
+                    //CHECKS SKILLS WITH NO VARIABLES (WITHOUT DELETING WORDS)
                     if (firstPhase) {
-                        score = LevenshteinDistance(node.getSentence().toLowerCase(), s.substring(2).toLowerCase(), max_Distance);
-                        if (score != -1) {
-                            if (score < best_score) {
-                                best_score = score;
-                            }
+                        if(!s.contains("<VARIABLES>")){
+                            String sWithNoVar = s;
+                            score = LevenshteinDistance(node.getSentence().toLowerCase(), sWithNoVar.substring(2).toLowerCase(), max_Distance);
+                            if (score != -1) {
+                                if (score < best_score) {
+                                    best_score = score;
+                                }
 
-                            String r;
-                            while ((r = data.readLine()) != null && (r.startsWith("B"))) {
-                                res.add(new Answers(score, r.substring(2)));
+                                String r;
+                                while ((r = data.readLine()) != null && (r.startsWith("B"))) {
+                                    res.add(new Answers(score, r.substring(2)));
+                                }
                             }
                         }
+
                     }else if(secondPhase){
-                        //WITH ONLY VARIABLES (WITH DELETING RANDOM WORDS)
+                        //CHECKS SKILLS WITH ONLY THE SAME NBR OF VARIABLES AS WORDS DELETED IN THE MESSAGE (WITH DELETING WORDS)
                         if (s.contains("<VARIABLE>") && containsSameNbrOfVariables(s,node)) {
-                            String sWithVar = assistant.removeVariables(s);
-                            score = LevenshteinDistance(node.getSentence().toLowerCase(), sWithVar.substring(2).toLowerCase(), max_Distance);
+                            String sWithSameNbrOfVar = assistant.removeVariables(s);
+                            score = LevenshteinDistance(node.getSentence().toLowerCase(), sWithSameNbrOfVar.substring(2).toLowerCase(), max_Distance);
                             if (score != -1) {
                                 if (score < best_score) {
                                     best_score = score;
@@ -197,8 +210,25 @@ public class TextRecognition {
                             }
                         }
                     }else if(thirdPhase){
-                        //WITH AND WITHOUT VARIABLES(WITH DELETING RANDOM WORDS)
+                        //CHECKS SKILL ONLY VARIABLES (WITH DELETE WORDS WHICH ALLOWS FOR "TOO MUCH" WORDS)
+                        if (s.contains("<VARIABLE>")){
+                            String sWithVar = s;
+                            score = LevenshteinDistance(node.getSentence().toLowerCase(), sWithVar.substring(2).toLowerCase(), max_Distance);
+                            if (score != -1) {
+                                if (score < best_score) {
+                                    best_score = score;
+                                }
+
+                                String r;
+                                while ((r = data.readLine()) != null && (r.startsWith("B"))) {
+                                    res.add(new Answers(score, r.substring(2)));
+                                }
+                            }
+                        }
+
+                    }else if(fourthPhase){
                         String allS = s;
+                        //CHECKS SKILL WITH AND WITHOUT VARIABLES (WITH DELETE WORDS WHICH ALLOWS FOR "TOO MUCH" WORDS)
                         score = LevenshteinDistance(node.getSentence().toLowerCase(), allS.substring(2).toLowerCase(), max_Distance);
                         if (score != -1) {
                             if (score < best_score) {
@@ -276,7 +306,7 @@ public class TextRecognition {
      * @param node current node being investifated
      * @return true if s contains the same nbr of variables than the message stored in the current node
      */
-    public boolean containsSameNbrOfVariables(String s,BFSNode node){
+    public boolean containsSameNbrOfVariables(String s, Node node){
         int nbrOfRandomWords = 0;
         for (int i = 0; i < s.length(); i++) {
             if(s.charAt(i)=='<'){
@@ -305,6 +335,11 @@ public class TextRecognition {
         {
             String city = assistant.fileParser.getUserInfo("-City");
             String country = assistant.fileParser.getUserInfo("-Country");
+            if(city.isEmpty()||country.isEmpty()){
+                System.out.println("It seems like you don't have completed your location yet");
+                city = "Maastricht";
+                country = "NL";
+            }
             assistant.mainScreen.setWeatherDisplay(city,country);
             final_answer = "This is what I found for the weather in "+ city + ", " + country + ". " + assistant.mainScreen.weatherDisplay.currentDataString() + "If you want to change the location, type 'Change weather location to City,Country.' (e.g. Amsterdam,NL).";
         }
