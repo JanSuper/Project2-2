@@ -1,5 +1,6 @@
 package Interface.Display.ClockTools;
 
+import Interface.Display.ClockAppDisplay;
 import Interface.Screens.MainScreen;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -71,7 +72,7 @@ public class ClockVBox extends VBox {
 
         Label digitalClock = new Label();
         digitalClock.setFont(Font.font("Tahoma", FontWeight.EXTRA_BOLD, 58));
-        digitalClock.setTextFill(MainScreen.themeColor.darker().darker());
+        digitalClock.setTextFill(ClockAppDisplay.color.darker().darker());
         digitalClock.setAlignment(Pos.CENTER);
         bindClockLabelToTime(digitalClock);
 
@@ -82,7 +83,7 @@ public class ClockVBox extends VBox {
 
         Label dateLabel = new Label(dayOfWeek.toString()+", "+dayOfMonth+" "+month);
         dateLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
-        dateLabel.setTextFill(MainScreen.themeColor.darker());
+        dateLabel.setTextFill(ClockAppDisplay.color.darker());
         dateLabel.setAlignment(Pos.CENTER);
 
         Button addNew = new Button("+ Add");
@@ -106,6 +107,7 @@ public class ClockVBox extends VBox {
 
         Stage stage = new Stage();
         stage.setAlwaysOnTop(true);
+        stage.setOpacity(0.91);
         stage.initStyle(StageStyle.UNDECORATED);
         stage.setScene(new Scene(vBox, 400, 230));
         stage.show();
@@ -134,7 +136,15 @@ public class ClockVBox extends VBox {
 
         HBox topBox = new HBox(60);
         topBox.setAlignment(Pos.CENTER);
-        topBox.setBackground(new Background(new BackgroundFill(MainScreen.themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
+        if (MainScreen.themeColor.equals(Color.BLACK)) {
+            topBox.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
+        }
+        else if (MainScreen.themeColor.equals(Color.LIGHTGRAY)) {
+            topBox.setBackground(new Background(new BackgroundFill(Color.GRAY.darker(), CornerRadii.EMPTY, Insets.EMPTY)));
+        }
+        else {
+            topBox.setBackground(new Background(new BackgroundFill(ClockAppDisplay.color, CornerRadii.EMPTY, Insets.EMPTY)));
+        }
         topBox.getChildren().addAll(chooseACity, region, exit);
 
         ComboBox<String> cmb = new ComboBox<>();
@@ -169,12 +179,12 @@ public class ClockVBox extends VBox {
 
         Label zoneIDLabel = new Label(zoneString);
         zoneIDLabel.setFont(Font.font("Tahoma", FontWeight.EXTRA_BOLD, 20));
-        zoneIDLabel.setTextFill(MainScreen.themeColor.darker());
+        zoneIDLabel.setTextFill(ClockAppDisplay.color.darker());
         zoneIDLabel.setAlignment(Pos.CENTER);
 
         Label newClock = new Label();
         newClock.setFont(Font.font("Tahoma", FontWeight.EXTRA_BOLD, 26));
-        newClock.setTextFill(MainScreen.themeColor.darker().darker());
+        newClock.setTextFill(ClockAppDisplay.color.darker().darker());
         newClock.setAlignment(Pos.CENTER);
 
         ZoneId zoneId = ZoneId.of(zoneString);
@@ -187,7 +197,7 @@ public class ClockVBox extends VBox {
 
         Label zoneOffsetLabel = new Label("(UTC" + zoneOffset.getId() + ")");
         zoneOffsetLabel.setFont(Font.font("Tahoma", FontWeight.EXTRA_BOLD, 20));
-        zoneOffsetLabel.setTextFill(MainScreen.themeColor.darker());
+        zoneOffsetLabel.setTextFill(ClockAppDisplay.color.darker());
         zoneOffsetLabel.setAlignment(Pos.CENTER);
 
         zoneIDLabel.prefWidthProperty().bind(addedClocks.widthProperty().divide(2.7));  //fixing position
@@ -236,6 +246,30 @@ public class ClockVBox extends VBox {
     //returns padded string from specified width
     public static String pad(int fieldWidth, char padChar, String s) {
         return String.valueOf(padChar).repeat(Math.max(0, fieldWidth - s.length())) + s;
+    }
+
+    public VBox getClockShortcut() {
+        VBox clockShortcut = new VBox(17);
+
+        Label digitalClock = new Label();
+        digitalClock.setFont(Font.font("Tahoma", FontWeight.EXTRA_BOLD, 20));
+        digitalClock.setTextFill(Color.WHITE);
+        digitalClock.setAlignment(Pos.CENTER);
+        bindClockLabelToTime(digitalClock);
+
+        LocalDate currentDate = LocalDate.now();
+        DayOfWeek dayOfWeek = currentDate.getDayOfWeek();
+        int dayOfMonth = currentDate.getDayOfMonth();
+        Month month = currentDate.getMonth();
+
+        Label dateLabel = new Label(dayOfWeek.toString()+", "+dayOfMonth+" "+month);
+        dateLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 15));
+        dateLabel.setTextFill(Color.LIGHTGRAY);
+        dateLabel.setAlignment(Pos.CENTER);
+
+        clockShortcut.getChildren().addAll(digitalClock, dateLabel);
+
+        return clockShortcut;
     }
 }
 

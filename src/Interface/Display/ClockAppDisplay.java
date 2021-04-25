@@ -25,6 +25,7 @@ public class ClockAppDisplay extends VBox {
     public ClockVBox clockVBox;
     public TimerVBox timerVBox;
     public StopwatchVBox stopwatchVBox;
+    public static Color color = new Color(0.2,0.35379, 0.65, 1);
 
     private MainScreen mainScreen;
 
@@ -34,7 +35,8 @@ public class ClockAppDisplay extends VBox {
         stopwatchVBox = new StopwatchVBox();
         clockVBox = new ClockVBox();
 
-        setBackground(new Background(new BackgroundFill(new Color(0.08,0.12, 0.15, 0.3), CornerRadii.EMPTY, Insets.EMPTY)));
+        Color bgColor = Color.LIGHTGRAY.brighter().brighter();
+        setBackground(new Background(new BackgroundFill(new Color(bgColor.getRed(),bgColor.getGreen(), bgColor.getBlue(), 0.4), CornerRadii.EMPTY, Insets.EMPTY)));
 
         setTabs();
         getChildren().add(tabs);
@@ -44,7 +46,8 @@ public class ClockAppDisplay extends VBox {
         tabs = new HBox(10);
         tabs.setAlignment(Pos.CENTER);
         tabs.setPrefHeight(80);
-        tabs.setBackground(new Background(new BackgroundFill(MainScreen.themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
+        tabs.setMinHeight(80);
+        tabs.setBackground(new Background(new BackgroundFill(new Color(0.2, 0.35379, 0.65, 1), CornerRadii.EMPTY, Insets.EMPTY)));
 
         alarm = new Button("Alarm");
         designTab(alarm);
@@ -67,7 +70,7 @@ public class ClockAppDisplay extends VBox {
         exit.setAlignment(Pos.CENTER);
         exit.setTranslateY(-17);
         exit.setTranslateX(-2);
-        exit.setOnAction(e -> mainScreen.setOptionsMenu());
+        exit.setOnAction(e -> mainScreen.displayMainMenu());
 
         Region region = new Region();
         HBox.setHgrow(region, Priority.ALWAYS);

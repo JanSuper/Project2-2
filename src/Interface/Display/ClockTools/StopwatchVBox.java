@@ -1,6 +1,6 @@
 package Interface.Display.ClockTools;
 
-import Interface.Screens.MainScreen;
+import Interface.Display.ClockAppDisplay;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Insets;
@@ -38,7 +38,7 @@ public class StopwatchVBox extends VBox {
     private void createContent() {
         stopwatchTime = new Label("00:00:000");
         stopwatchTime.setFont(Font.font("Tahoma", FontWeight.BOLD, 58));
-        stopwatchTime.setTextFill(MainScreen.themeColor.darker().darker());
+        stopwatchTime.setTextFill(ClockAppDisplay.color.darker().darker());
         stopwatchTime.setAlignment(Pos.CENTER);
         bindStopwatchLabelToTime(stopwatchTime);
 
@@ -48,7 +48,6 @@ public class StopwatchVBox extends VBox {
 
         lapsList = new ScrollPane(laps);
         lapsList.setFitToWidth(true);
-        lapsList.setMaxHeight(400);
         lapsList.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
         lapsList.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         lapsList.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
@@ -87,7 +86,7 @@ public class StopwatchVBox extends VBox {
     public void lapStopwatch() {
         lap = new Label("Lap " + (laps.getChildren().size()+1) + "     " + stopwatchTime.getText());
         lap.setFont(Font.font("Tahoma", FontWeight.EXTRA_BOLD, 18));
-        lap.setTextFill(Color.LIGHTSLATEGRAY.brighter());
+        lap.setTextFill(Color.LIGHTSLATEGRAY.brighter().brighter());
         laps.getChildren().add(lap);
     }
 
@@ -124,6 +123,7 @@ public class StopwatchVBox extends VBox {
     private void designStopwatchButton(Button button) {
         button.setCursor(Cursor.HAND);
         button.setPrefSize(100, 60);
+        button.setMinSize(100,60);
         button.setFont(Font.font("Tahoma", FontWeight.BOLD, 20));
         button.setTextFill(Color.LIGHTGRAY);
         button.setBorder(new Border(new BorderStroke(Color.LIGHTGRAY, BorderStrokeStyle.SOLID, new CornerRadii(90,true), new BorderWidths(2))));

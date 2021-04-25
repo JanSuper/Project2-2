@@ -1,5 +1,6 @@
 package Interface.Display.ClockTools;
 
+import Interface.Display.ClockAppDisplay;
 import Interface.Screens.MainScreen;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -42,7 +43,7 @@ public class TimerVBox extends VBox {
     private void createContent() {
         timerTime = new Label();
         timerTime.setFont(Font.font("Tahoma", FontWeight.EXTRA_BOLD, 58));
-        timerTime.setTextFill(MainScreen.themeColor.darker().darker());
+        timerTime.setTextFill(ClockAppDisplay.color.darker().darker());
         timerTime.setAlignment(Pos.CENTER);
         setTimerTime();
         bindTimerLabelToTime();
@@ -236,7 +237,12 @@ public class TimerVBox extends VBox {
 
         HBox topBox = new HBox(60);
         topBox.setAlignment(Pos.CENTER);
-        topBox.setBackground(new Background(new BackgroundFill(MainScreen.themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
+        if (MainScreen.themeColor.equals(Color.LIGHTGRAY)) {
+            topBox.setBackground(new Background(new BackgroundFill(Color.GRAY.darker(), CornerRadii.EMPTY, Insets.EMPTY)));
+        }
+        else {
+            topBox.setBackground(new Background(new BackgroundFill(MainScreen.themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
+        }
         topBox.getChildren().addAll(timerLabel, region, exit);
 
         Label label = new Label("Time's up!");
