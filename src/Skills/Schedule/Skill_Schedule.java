@@ -1,6 +1,7 @@
 package Skills.Schedule;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -159,11 +160,27 @@ public class Skill_Schedule {
         return this_month;
     }
 
-    //TODO: finish method that returns every courses that are in the period as parameter
-    public ArrayList<Course> getInInterval(Duration period){
-        ArrayList<Course> courses = new ArrayList<>();
+    /**
+     * Gets a list of courses in an interval of time between start_date and end_date
+     * @param start_date
+     * @param end_date
+     * @return List containing Course class
+     */
+    public ArrayList<Course> getInInterval(LocalDate start_date, LocalDate end_date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
 
-        return courses;
+        ArrayList<Course> courses_inInterval = new ArrayList<>();
+
+        for(int i = 0; i < courses.size(); i++)
+        {
+            String course_date = courses.get(i).getDate();
+            LocalDate course_Date = LocalDate.parse(course_date, formatter);
+            if(course_Date.compareTo(start_date) >= 0 && course_Date.compareTo(end_date) <= 0)
+            {
+                courses_inInterval.add(courses.get(i));
+            }
+        }
+        return courses_inInterval;
     }
 
     /**
@@ -194,5 +211,17 @@ public class Skill_Schedule {
         String minus_FormattedDateTime = plus_dateTime.format(formatter);
         String[] split_plus_DateTime = minus_FormattedDateTime.split("T");
         return split_plus_DateTime[0].replaceAll("-", "");
+    }
+
+    /**
+     * Transforms LocalDate variable to a standard String containing only the date, without time T
+     * @param date_format
+     * @return String format of the given date
+     */
+    public String fromDateToString(LocalDate date_format)
+    {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
+        String formatted_String = date_format.format(formatter);
+        return formatted_String;
     }
 }

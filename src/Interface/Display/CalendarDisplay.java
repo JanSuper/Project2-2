@@ -124,8 +124,7 @@ public class CalendarDisplay extends HBox {
     }
 
     private void addSchedule() throws ParseException {
-        Duration period = Duration.between(firstDate, lastDate);
-        ArrayList<Course> courses = skill_schedule.getInInterval(period);
+        ArrayList<Course> courses = skill_schedule.getInInterval(firstDate,lastDate);
         for (Course course:courses) {
             String desc = course.getSummary();
             LocalDate date =new SimpleDateFormat("yyyymmdd").parse(course.getDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
