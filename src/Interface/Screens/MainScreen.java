@@ -53,7 +53,12 @@ public class MainScreen {
     private VBox settingsMenu;
     private VBox themeColorsMenu;
     private HBox mainMenu_shortcuts_Option;
+    private HBox shortcutsHBox1;
+    private HBox shortcutsHBox2;
+    private VBox weatherShortcut;
+    private Boolean update = false;
 
+    public ArrayList<String> todaysRemindersShortcut = new ArrayList<>();
     private ArrayList<String[]> alarmsTime;
     private Timeline timeline;
 
@@ -67,11 +72,11 @@ public class MainScreen {
         weatherDisplay = new WeatherDisplay(this);
         calendarDisplay = new CalendarDisplay(this);
 
-        createContent();
-
         alarmsTime = new ArrayList<>();
         timeline = new Timeline();
         prepareAlarms();
+        createContent();
+
         start(new Stage());
     }
 
@@ -115,7 +120,8 @@ public class MainScreen {
         root.setLeft(themeColorsMenu);
     }
 
-    private void displayShortcutsMenu() {
+    private void displayShortcutsMenu() throws Exception {
+        updateWeatherShortcut();
         setMenuBackground(shortcutsMenu);
         root.setLeft(shortcutsMenu);
     }
@@ -166,7 +172,13 @@ public class MainScreen {
         }
 
         menuBtn.setOnMouseClicked(e-> displayMainMenu());
-        shortcutsBtn.setOnMouseClicked(e-> displayShortcutsMenu());
+        shortcutsBtn.setOnMouseClicked(e-> {
+            try {
+                displayShortcutsMenu();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
 
         mainMenu_shortcuts_Option.getChildren().setAll(menuBtn, shortcutsBtn);
         return mainMenu_shortcuts_Option;
@@ -323,13 +335,13 @@ public class MainScreen {
         String city = FileParser.getUserInfo("-City");
         String country = FileParser.getUserInfo("-Country");
         if(city.isEmpty()||country.isEmpty()){
-            System.out.println("It seems like you don't have completed your location yet");
+            System.out.println("It seems like you haven't completed your location yet.");
             city = "Maastricht";
             country = "NL";
         }
         weatherDisplay.setLocation(city, country);
-        VBox weatherShortcut = weatherDisplay.getWeatherShortcut();
-        designShortcut(weatherShortcut, Color.LIGHTBLUE);
+        weatherShortcut = weatherDisplay.getWeatherShortcut();
+        designShortcut(weatherShortcut, Color.LIGHTBLUE, Pos.CENTER);
         String finalCity = city;
         String finalCountry = country;
         weatherShortcut.setOnMouseClicked(e-> {
@@ -341,15 +353,15 @@ public class MainScreen {
         });
 
         VBox clockShortcut = clockAppDisplay.clockVBox.getClockShortcut();
-        designShortcut(clockShortcut, Color.SLATEGREY.darker());
+        designShortcut(clockShortcut, Color.SLATEGREY.darker(), Pos.CENTER);
         clockShortcut.setOnMouseClicked(e-> setClockAppDisplay("Clock"));
 
-        VBox calendarShortcut = new VBox(17);  //TODO
-        designShortcut(calendarShortcut, Color.LIGHTGRAY);
+        VBox calendarShortcut = calendarDisplay.getCalendarShortcut(todaysRemindersShortcut);
+        designShortcut(calendarShortcut, Color.DARKORANGE.brighter(), Pos.TOP_CENTER);
         calendarShortcut.setOnMouseClicked(e-> displaySkill(calendarDisplay,"calendar"));
 
         VBox mapShortcut = new VBox(17);  //TODO
-        designShortcut(mapShortcut, Color.LIGHTGRAY);
+        designShortcut(mapShortcut, Color.LIGHTGRAY, Pos.CENTER);
         mapShortcut.setOnMouseClicked(e-> {
             try {
                 //setMapDisplay("");
@@ -358,26 +370,53 @@ public class MainScreen {
             }
         });
 
-        HBox hBox1 = new HBox(50);
-        hBox1.setAlignment(Pos.CENTER);
-        hBox1.getChildren().addAll(weatherShortcut, clockShortcut);
+        shortcutsHBox1 = new HBox(50);
+        shortcutsHBox1.setAlignment(Pos.CENTER);
+        shortcutsHBox1.getChildren().addAll(weatherShortcut, clockShortcut);
 
-        HBox hBox2 = new HBox(50);
-        hBox2.setAlignment(Pos.CENTER);
-        hBox2.getChildren().addAll(calendarShortcut, mapShortcut);
+        shortcutsHBox2 = new HBox(50);
+        shortcutsHBox2.setAlignment(Pos.CENTER);
+        shortcutsHBox2.getChildren().addAll(calendarShortcut, mapShortcut);
 
-        shortcutsMenu.getChildren().addAll(getMainMenu_shortcuts_Option(true), hBox1, hBox2);
+        shortcutsMenu.getChildren().addAll(getMainMenu_shortcuts_Option(true), shortcutsHBox1, shortcutsHBox2);
     }
 
-    private void designShortcut(VBox vBox, Color backgroundColor) {
+    private void designShortcut(VBox vBox, Color backgroundColor, Pos position) {
         vBox.setPrefSize(200,200);
         vBox.setMaxSize(200,200);
         vBox.setMinSize(200, 200);
         vBox.setCursor(Cursor.HAND);
         vBox.setBackground(new Background(new BackgroundFill(backgroundColor, new CornerRadii(20), Insets.EMPTY)));
-        vBox.setAlignment(Pos.CENTER);
+        vBox.setAlignment(position);
         vBox.setPadding(new Insets(10));
         vBox.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, new CornerRadii(20), new BorderWidths(5))));
+    }
+
+    private void updateWeatherShortcut() throws Exception {
+        if (update.equals(true)) {
+            String city = FileParser.getUserInfo("-City");
+            String country = FileParser.getUserInfo("-Country");
+            if (city.isEmpty() || country.isEmpty()) {
+                System.out.println("It seems like you haven't completed your location yet.");
+                city = "Maastricht";
+                country = "NL";
+            }
+            weatherDisplay.setLocation(city, country);
+            weatherShortcut = weatherDisplay.getWeatherShortcut();
+            designShortcut(weatherShortcut, Color.LIGHTBLUE, Pos.CENTER);
+            String finalCity = city;
+            String finalCountry = country;
+            weatherShortcut.setOnMouseClicked(e -> {
+                try {
+                    setWeatherDisplay(finalCity, finalCountry);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            });
+            shortcutsHBox1.getChildren().remove(0);
+            shortcutsHBox1.getChildren().add(0, weatherShortcut);
+        }
+        else { update = true; }
     }
 
     private void setMenuBackground(VBox vBox) {
@@ -459,9 +498,7 @@ public class MainScreen {
         mediaPlayerDisplay.prefWidthProperty().bind(root.widthProperty().subtract(chat.prefWidthProperty()).subtract(borderWidth*2));
         mediaPlayerDisplay.setScaleX(0.8);
         mediaPlayerDisplay.setScaleY(0.8);
-
         mediaPlayerDisplay.getMediaView().setPreserveRatio(true);
-
 
         root.setLeft(mediaPlayerDisplay);
     }
@@ -527,6 +564,7 @@ public class MainScreen {
                 String today = java.time.LocalDate.now().toString();
                 if(username.equals(Data.getUsername())&&day.equals(today)){
                     chat.receiveMessage("Today, there will be the alarm from " + time + " to " + time1 + " with description \"" + desc + "\"");
+                    todaysRemindersShortcut.add(time.substring(0,5) +";"+ time1.substring(0,5) +";"+ desc);
                     alarmsTime.add(new String[]{time,desc});
                     displayReminderAtTime(time,desc);
                 }

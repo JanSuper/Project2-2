@@ -2,7 +2,6 @@ package Interface.Display;
 
 import Interface.Display.ClockTools.AlarmVBox;
 import Interface.Screens.MainScreen;
-import Interface.Screens.StartScreen;
 import Skills.Schedule.Course;
 import Skills.Schedule.Skill_Schedule;
 import javafx.css.PseudoClass;
@@ -15,7 +14,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -24,20 +22,16 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 
 import static javafx.scene.paint.Color.LIGHTGRAY;
 
-;
+
 public class CalendarDisplay extends HBox {
     private final Duration period = Duration.ofMinutes(15);
     private final LocalTime beginningOfTheDay = LocalTime.of(00, 00);
@@ -239,6 +233,71 @@ public class CalendarDisplay extends HBox {
         label.setAlignment(Pos.CENTER);
 
         notification.getChildren().addAll(topBox, label);
+    }
+
+    public VBox getCalendarShortcut(ArrayList<String> info) {
+        VBox calendarShortcut = new VBox(20);
+
+        Label fromCalendar = new Label("From Calendar:");
+        fromCalendar.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 20));
+        calendarShortcut.getChildren().add(fromCalendar);
+
+        if (info.isEmpty()) {
+            Label none = new Label("Nothing planned today!");
+            none.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 16));
+            none.setWrapText(true);
+            none.setTextFill(Color.DARKRED.darker());
+            none.setTranslateY(20);
+            none.setAlignment(Pos.CENTER);
+            none.setTextAlignment(TextAlignment.CENTER);
+            calendarShortcut.getChildren().add(none);
+        }
+        else {
+            int numOfEvents = info.size();
+            int count = 0;
+            int remaining = info.size();
+            for (int i = 0; i<numOfEvents; i++) {
+                count=count+1;
+                if (count<=2) {
+                    Label time = new Label(info.get(i).substring(0,5) + "- " + info.get(i).substring(6,11));
+                    time.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 14));
+                    time.setTextFill(Color.WHITESMOKE);
+                    time.setWrapText(true);
+                    time.setMaxWidth(46);
+                    time.setMaxWidth(46);
+
+                    String desc = info.get(i).substring(12);
+                    if (desc.length()>16) {
+                        desc = desc.substring(0, 15) + "...";
+                    }
+                    Label description = new Label(desc);
+                    description.setAlignment(Pos.CENTER);
+                    description.setTextAlignment(TextAlignment.LEFT);
+                    description.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 14));
+                    description.setTextFill(Color.WHITESMOKE);
+                    description.setWrapText(true);
+                    description.setMaxWidth(115);
+                    description.setMaxWidth(115);
+
+                    HBox event = new HBox(20);
+                    event.setAlignment(Pos.CENTER_LEFT);
+                    event.setStyle("-fx-background-color:#3d3d3d; -fx-background-insets: -7; -fx-background-radius: 10;");
+                    event.getChildren().addAll(time, description);
+
+                    calendarShortcut.getChildren().add(event);
+                    remaining--;
+                }
+            }
+            if (remaining>0) {
+                Label l = new Label("+ " + remaining + " more today");
+                l.setWrapText(true);
+                l.setAlignment(Pos.CENTER);
+                l.setTextAlignment(TextAlignment.CENTER);
+                l.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 14));
+                calendarShortcut.getChildren().add(l);
+            }
+        }
+        return calendarShortcut;
     }
 
 
