@@ -57,6 +57,8 @@ public class WeatherDisplay extends VBox {
     private MainScreen mainScreen;
 
     public WeatherDisplay(MainScreen mainScreen) {
+        cityName = "Maastricht";
+        countryName = "NL";
         this.mainScreen = mainScreen;
     }
 

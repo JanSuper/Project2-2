@@ -20,6 +20,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -173,39 +174,65 @@ public class ClockVBox extends VBox {
         return("The time in " + zoneString + " is " + localTime.format(formatter) + ".");
     }
 
+    private ArrayList<String> addedZoneStrings = new ArrayList<>();
     public void addClock(String zoneString) {
-        HBox hBox = new HBox(20);
-        hBox.setAlignment(Pos.CENTER);
+        Boolean add = true;
+        if (!addedZoneStrings.isEmpty()) {
+            for (int i = 0; i<addedZoneStrings.size(); i++) {
+                if (addedZoneStrings.get(i).equals(zoneString)) {
+                    add = false;    //already exists
+                }
+            }
+        }
+        if (add) {
+            addedZoneStrings.add(zoneString);
 
-        Label zoneIDLabel = new Label(zoneString);
-        zoneIDLabel.setFont(Font.font("Tahoma", FontWeight.EXTRA_BOLD, 20));
-        zoneIDLabel.setTextFill(ClockAppDisplay.color.darker());
-        zoneIDLabel.setAlignment(Pos.CENTER);
+            HBox hBox = new HBox(20);
+            hBox.setAlignment(Pos.CENTER);
 
-        Label newClock = new Label();
-        newClock.setFont(Font.font("Tahoma", FontWeight.EXTRA_BOLD, 26));
-        newClock.setTextFill(ClockAppDisplay.color.darker().darker());
-        newClock.setAlignment(Pos.CENTER);
+            Label zoneIDLabel = new Label(zoneString);
+            zoneIDLabel.setFont(Font.font("Tahoma", FontWeight.EXTRA_BOLD, 18));
+            zoneIDLabel.setTextFill(ClockAppDisplay.color.darker());
+            zoneIDLabel.setTextAlignment(TextAlignment.CENTER);
+            zoneIDLabel.setWrapText(true);
+            zoneIDLabel.setAlignment(Pos.CENTER);
 
-        ZoneId zoneId = ZoneId.of(zoneString);
-        bindClockLabelToTime(newClock, zoneId);
+            Label newClock = new Label();
+            newClock.setFont(Font.font("Tahoma", FontWeight.EXTRA_BOLD, 29));
+            newClock.setTextFill(ClockAppDisplay.color.darker().darker());
+            newClock.setAlignment(Pos.CENTER);
 
-        //getting timezone offset
-        LocalDateTime localDateTime = LocalDateTime.now();
-        ZonedDateTime zonedDateTime = localDateTime.atZone(zoneId);
-        ZoneOffset zoneOffset = zonedDateTime.getOffset();
+            ZoneId zoneId = ZoneId.of(zoneString);
+            bindClockLabelToTime(newClock, zoneId);
 
-        Label zoneOffsetLabel = new Label("(UTC" + zoneOffset.getId() + ")");
-        zoneOffsetLabel.setFont(Font.font("Tahoma", FontWeight.EXTRA_BOLD, 20));
-        zoneOffsetLabel.setTextFill(ClockAppDisplay.color.darker());
-        zoneOffsetLabel.setAlignment(Pos.CENTER);
+            //getting timezone offset
+            LocalDateTime localDateTime = LocalDateTime.now();
+            ZonedDateTime zonedDateTime = localDateTime.atZone(zoneId);
+            ZoneOffset zoneOffset = zonedDateTime.getOffset();
 
-        zoneIDLabel.prefWidthProperty().bind(addedClocks.widthProperty().divide(2.7));  //fixing position
-        newClock.prefWidthProperty().bind(addedClocks.widthProperty().divide(6));
-        zoneOffsetLabel.prefWidthProperty().bind(addedClocks.widthProperty().divide(6));
+            Label zoneOffsetLabel = new Label("(UTC" + zoneOffset.getId() + ")");
+            zoneOffsetLabel.setFont(Font.font("Tahoma", FontWeight.EXTRA_BOLD, 17));
+            zoneOffsetLabel.setTextFill(ClockAppDisplay.color.darker());
+            zoneOffsetLabel.setAlignment(Pos.CENTER);
 
-        hBox.getChildren().addAll(zoneIDLabel, newClock, zoneOffsetLabel);
-        addedClocks.getChildren().add(hBox);
+            zoneIDLabel.prefWidthProperty().bind(addedClocks.widthProperty().divide(4.8));  //fixing position
+            newClock.prefWidthProperty().bind(addedClocks.widthProperty().divide(6));
+            zoneOffsetLabel.prefWidthProperty().bind(addedClocks.widthProperty().divide(6));
+
+            Label deleteClock = new Label("x");
+            deleteClock.setFont(Font.font("Tahoma", FontWeight.EXTRA_BOLD, 18));
+            deleteClock.setTextFill(Color.DARKRED);
+            deleteClock.setCursor(Cursor.HAND);
+            deleteClock.setBackground(Background.EMPTY);
+            deleteClock.setBorder(Border.EMPTY);
+            deleteClock.setOnMouseClicked(e -> {
+                addedClocks.getChildren().remove(hBox);
+                addedZoneStrings.remove(zoneString);
+            });
+
+            hBox.getChildren().addAll(zoneIDLabel, newClock, zoneOffsetLabel, deleteClock);
+            addedClocks.getChildren().add(hBox);
+        }
     }
 
     private void bindClockLabelToTime(Label digitalClock) {
@@ -265,7 +292,9 @@ public class ClockVBox extends VBox {
         Label dateLabel = new Label(dayOfWeek.toString()+", "+dayOfMonth+" "+month);
         dateLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 15));
         dateLabel.setTextFill(Color.LIGHTGRAY);
+        dateLabel.setTextAlignment(TextAlignment.CENTER);
         dateLabel.setAlignment(Pos.CENTER);
+        dateLabel.setWrapText(true);
 
         clockShortcut.getChildren().addAll(digitalClock, dateLabel);
 
