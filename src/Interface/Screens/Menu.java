@@ -16,7 +16,7 @@ import javafx.stage.FileChooser;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-public class Menu extends VBox {
+public class Menu {
     private VBox shortcutsMenu;
     private VBox mainMenu;
     private VBox settingsMenu;
