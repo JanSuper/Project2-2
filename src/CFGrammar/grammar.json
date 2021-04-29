@@ -1,0 +1,69 @@
+{
+  "S":"_Add other s (sentence) structure",
+  "S":"_Add missing PP VP... also Sk for skill",
+
+  "S":"NP VP",
+  "S":"Interj NP VP",
+  "NP":"Det N",
+  "NP":"Det N that VP",
+  "NP":"Det Adj N",
+  "NP":"Det N PP",
+  "PP":"Prep NP",
+  "VP":"Vtrans NP",
+  "VP":"Vintr",
+
+  "Det":[
+    "a",
+    "an",
+    "the",
+    "this",
+    "that",
+    "these",
+    "those"
+  ],
+  "N":[
+    "car",
+    "restaurant",
+    "home",
+    "house",
+    "phone"
+  ],
+  "Sk_N":[
+    "clock",
+    "weather",
+    "schedule",
+    "lecture"
+  ],
+  "Sk_V":[
+    "search",
+    "look up"
+  ],
+  "Adj":[
+    "big",
+    "samll",
+    "bad",
+    "good"
+  ],
+  "Vtrans":[
+    "bring",
+    "cost",
+    "sing"
+  ],
+  "Vintr":[
+    "agree",
+    "go",
+    "live",
+    "sit",
+    "look"
+  ],
+  "Prep":[
+    "on",
+    "over",
+    "at",
+    "in"
+  ],
+  "Interj":[
+  "oh",
+  "wow"
+  ]
+}
