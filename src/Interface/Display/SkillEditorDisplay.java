@@ -55,7 +55,13 @@ public class SkillEditorDisplay extends VBox {
         exit.setAlignment(Pos.CENTER);
         exit.setTranslateY(-17);
         exit.setTranslateX(-2);
-        exit.setOnAction(e -> mainScreen.displayMainMenu());
+        exit.setOnAction(e -> {
+            try {
+                mainScreen.setMenu("MainMenu");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
 
         Region region = new Region();
         HBox.setHgrow(region, Priority.ALWAYS);

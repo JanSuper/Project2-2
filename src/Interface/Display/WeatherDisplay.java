@@ -294,7 +294,13 @@ public class WeatherDisplay extends VBox {
         exit.setBorder(null);
         exit.setAlignment(Pos.CENTER_RIGHT);
         exit.setTranslateY(-7);
-        exit.setOnAction(e -> mainScreen.displayMainMenu());
+        exit.setOnAction(e -> {
+            try {
+                mainScreen.setMenu("MainMenu");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
 
         Region region1 = new Region();
         HBox.setHgrow(region1, Priority.ALWAYS);

@@ -621,10 +621,10 @@ public class TextRecognition {
             }
         }
         else if(skill_num==86){
-            assistant.mainScreen.displayBackgroundEditing();
+            assistant.mainScreen.setMenu("Background");
         }
         else if(skill_num==87){
-            assistant.mainScreen.displayThemeColorsMenu();
+            assistant.mainScreen.setMenu("ThemeColors");
         }
         else if(skill_num==89){
             String info = Files.readString(Path.of("src/DataBase/Users/" + Data.getUsername() + "/" + Data.getUsername() + ".txt"));
