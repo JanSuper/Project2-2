@@ -179,12 +179,13 @@ public class MainScreen {
 
     public void prepareAlarms() throws IOException, ParseException {
         String allReminders = getAlreadyOnFile();
-        int nbrOfInfo = 4;
+        int nbrOfInfo = 5;
         int counter = 0;
         String username = "";
         String day = "";
         String time = "";
         String time1 = "";
+        String color = "";
         String desc = "";
         int linesNbrChar = 0;
         for (int i = 0; i < allReminders.length(); i++) {
@@ -213,11 +214,17 @@ public class MainScreen {
                         time1+=allReminders.charAt(counter1++);
                     }
                     //System.out.println("time1 = " + time);
+                }else if(counter==4){
+                    int counter1 = linesNbrChar+username.length() + day.length()+time.length()+time1.length() +4;
+                    while(counter1<i){
+                        color+=allReminders.charAt(counter1++);
+                    }
+                    //System.out.println("color  = " + color);
                 }
                 counter++;
             }
             if(allReminders.charAt(i)=='\n'&&counter==nbrOfInfo){
-                int counter1 = linesNbrChar+username.length()+day.length()+time.length()+time1.length()+4;
+                int counter1 = linesNbrChar+username.length()+day.length()+time.length()+time1.length()+nbrOfInfo;
                 while(allReminders.charAt(counter1)!='\n'){
                     desc+=allReminders.charAt(counter1);
                     counter1++;
@@ -237,13 +244,14 @@ public class MainScreen {
                 LocalTime localTime = LocalTime.parse(time,timeFormatter);
                 LocalTime localTime1 = LocalTime.parse(time1,timeFormatter);
                 //add any reminder in the calendar
-                calendarDisplay.addReminder(desc,localDate,localTime,localTime1,Color.ORANGE);
+                calendarDisplay.addReminder(desc,localDate,localTime,localTime1,Color.valueOf(color));
                 linesNbrChar=i+1;
                 counter = 0;
                 username = "";
                 day = "";
                 time = "";
                 time1 = "";
+                color = "";
                 desc = "";
             }
         }

@@ -4,19 +4,19 @@ import DataBase.Data;
 import Interface.Screens.MainScreen;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -49,6 +49,8 @@ public class AlarmVBox extends VBox {
     private Label descriptionTxt;
     private TextField description;
 
+    public ColorPicker colorPicker;
+
     private Button enter;
 
     private MainScreen mainScreen;
@@ -60,13 +62,17 @@ public class AlarmVBox extends VBox {
         this.mainScreen = mainScreen;
         this.isReminder = isReminder;
         this.timeline = new Timeline();
-        setSpacing(10);
+        if(isReminder){
+            setSpacing(8);
+        }else{
+            setSpacing(15);
+        }
         setAlignment(Pos.CENTER);
         setPadding(new Insets(40,0,0,0));
 
         createContent();
         if(isReminder){
-            getChildren().addAll(datePickerTxt,d,timePickerTxt,plus,timerTime,minus,timePickerTxt1,plus1,timerTime1,minus1,descriptionTxt,description,enter);
+            getChildren().addAll(datePickerTxt,d,timePickerTxt,plus,timerTime,minus,timePickerTxt1,plus1,timerTime1,minus1,descriptionTxt,description,colorPicker,enter);
         }else{
             description.setPrefSize(150,100);
             getChildren().addAll(timePickerTxt,plus,timerTime,minus,descriptionTxt,description,enter);
@@ -130,10 +136,14 @@ public class AlarmVBox extends VBox {
         description.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
         description.setPrefSize(150,400);
 
+        colorPicker = new ColorPicker();
+        colorPicker.setValue(Color.ORANGE);
+        colorPicker.setOnAction((EventHandler) t -> enter.setBackground(new Background(new BackgroundFill(colorPicker.getValue(), new CornerRadii(90,true), Insets.EMPTY))));
+
         enter = new Button("Enter");
         enter.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(90,true), Insets.EMPTY)));
         designAlarmButton(enter);
-        enter.setOnAction(e-> {
+        enter.setOnMouseClicked(e-> {
             try {
                 if(isReminder){
                     createAlert();
@@ -171,7 +181,7 @@ public class AlarmVBox extends VBox {
     private void createAlert() throws IOException, ParseException {
         String res = getAlreadyOnFile();
         addReminder(res);
-        mainScreen.prepareAlarms();
+        //mainScreen.prepareAlarms();
     }
     private String getAlreadyOnFile() throws IOException {
         String res = "";
@@ -200,12 +210,11 @@ public class AlarmVBox extends VBox {
                 PrintWriter out = new PrintWriter(writer);
                 out.print(res);
                 System.out.println(description.getText());
-                if(description.getText().isEmpty()){
-                    out.print(Data.getUsername() + ";" + da + ";"+ timerTime.getText() + ";" +timerTime1.getText() + ";" + "\"no description\"" + "\n");
+                if(description.getText().isEmpty()||description.getText().isBlank()){
+                    out.print(Data.getUsername() + ";" + da + ";"+ timerTime.getText() + ";" +timerTime1.getText() + ";" + colorPicker.getValue() +  ";" + "\"no description\"" + "\n");
                 }else{
-                    out.print(Data.getUsername() + ";" + da + ";"+ timerTime.getText() + ";" +timerTime1.getText() + ";" + description.getText() + "\n");
+                    out.print(Data.getUsername() + ";" + da + ";"+ timerTime.getText() + ";" +timerTime1.getText() + ";" + colorPicker.getValue() +  ";" + description.getText() + "\n");
                 }
-
                 writer.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -216,7 +225,7 @@ public class AlarmVBox extends VBox {
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         LocalTime localTime = LocalTime.parse(timerTime.getText(),timeFormatter);
         LocalTime localTime1 = LocalTime.parse(timerTime1.getText(),timeFormatter);
-        mainScreen.calendarDisplay.addReminder(description.getText(),localDate,localTime,localTime1,Color.ORANGE);
+        mainScreen.calendarDisplay.addReminder(description.getText(),localDate,localTime,localTime1,colorPicker.getValue());
         mainScreen.chat.receiveMessage("Reminder on the " + da + " from " + timerTime.getText() + " to " + timerTime1.getText() + " with description \"" + description.getText() + "\" has been added");
     }
 
