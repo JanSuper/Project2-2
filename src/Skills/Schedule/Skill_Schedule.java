@@ -167,7 +167,7 @@ public class Skill_Schedule {
      * @return List containing Course class
      */
     public ArrayList<Course> getInInterval(LocalDate start_date, LocalDate end_date){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
         ArrayList<Course> courses_inInterval = new ArrayList<>();
 
@@ -175,7 +175,7 @@ public class Skill_Schedule {
         {
             String course_date = courses.get(i).getDate();
             LocalDate course_Date = LocalDate.parse(course_date, formatter);
-            if(course_Date.compareTo(start_date) >= 0 && course_Date.compareTo(end_date) <= 0)
+            if(course_Date.isAfter(start_date.minusDays(1)) && course_Date.isBefore(end_date.plusDays(1)))
             {
                 courses_inInterval.add(courses.get(i));
             }

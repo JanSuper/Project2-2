@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static javafx.scene.paint.Color.LIGHTGRAY;
@@ -48,7 +49,7 @@ public class CalendarDisplay extends HBox {
     private GridPane calendar;
     private ScrollPane scrollPane;
 
-    private final int NBR_OF_DAYS = 14;
+    private final int NBR_OF_DAYS = 10;
 
     private Skill_Schedule skill_schedule;
 
@@ -57,7 +58,7 @@ public class CalendarDisplay extends HBox {
         this.skill_schedule = new Skill_Schedule();
 
         createContent();
-        //addSchedule();
+        addSchedule();
     }
 
     private void createContent(){
@@ -79,7 +80,7 @@ public class CalendarDisplay extends HBox {
                 Slot slot = new Slot(startTime, period);
                 slots.add(slot);
 
-                calendar.add(slot.getView(), slot.getBeginning().getDayOfMonth(), slotIndex++);
+                calendar.add(slot.getView(), slot.getBeginning().getDayOfYear(), slotIndex++);
             }
         }
 
@@ -92,7 +93,7 @@ public class CalendarDisplay extends HBox {
 
             label.setTextFill(LIGHTGRAY);
             GridPane.setHalignment(label, HPos.CENTER);
-            calendar.add(label, date.getDayOfMonth(), 0);
+            calendar.add(label, date.getDayOfYear(), 0);
         }
 
         int slotIndex = 1;
@@ -121,7 +122,7 @@ public class CalendarDisplay extends HBox {
         ArrayList<Course> courses = skill_schedule.getInInterval(firstDate,lastDate);
         for (Course course:courses) {
             String desc = course.getSummary();
-            LocalDate date =new SimpleDateFormat("yyyymmdd").parse(course.getDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalDate date =new SimpleDateFormat("yyyyMMdd").parse(course.getDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             LocalTime time =new SimpleDateFormat("HHmmss").parse(course.getStart_Time()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
             LocalTime time1 =new SimpleDateFormat("HHmmss").parse(course.getEnd_Time()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
             addReminder(desc,date,time,time1,Color.BLUEVIOLET);
@@ -167,7 +168,7 @@ public class CalendarDisplay extends HBox {
         int col = 1; int row = 1; int rowSpan = 1;
         if(date.isAfter(firstDate.minusDays(1)) && date.isBefore(lastDate.plusDays(1))){
             Period datePeriod = Period.between(firstDate, date);
-            col = datePeriod.getDays()+firstDate.getDayOfMonth();
+            col = datePeriod.getDays()+firstDate.getDayOfYear();
 
             long timePeriod = Duration.between(beginningOfTheDay, fromTime).toMinutes();
             row = (int) (timePeriod/period.toMinutes())+1;
