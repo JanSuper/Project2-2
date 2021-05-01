@@ -61,7 +61,7 @@ public class MainScreen {
 
         alarmsTime = new ArrayList<>();
         timeline = new Timeline();
-        prepareAlarms();
+        prepareAlarms(calendarDisplay.firstDate,calendarDisplay.lastDate);
         createContent();
 
         start(new Stage());
@@ -177,7 +177,7 @@ public class MainScreen {
         root.setLeft(pane);
     }
 
-    public void prepareAlarms() throws IOException, ParseException {
+    public void prepareAlarms(LocalDate firstDate,LocalDate lastDate) throws IOException, ParseException {
         String allReminders = getAlreadyOnFile();
         int nbrOfInfo = 5;
         int counter = 0;
@@ -224,7 +224,7 @@ public class MainScreen {
                 counter++;
             }
             if(allReminders.charAt(i)=='\n'&&counter==nbrOfInfo){
-                int counter1 = linesNbrChar+username.length()+day.length()+time.length()+time1.length()+nbrOfInfo;
+                int counter1 = linesNbrChar+username.length()+day.length()+time.length()+time1.length()+color.length()+nbrOfInfo;
                 while(allReminders.charAt(counter1)!='\n'){
                     desc+=allReminders.charAt(counter1);
                     counter1++;
@@ -244,7 +244,9 @@ public class MainScreen {
                 LocalTime localTime = LocalTime.parse(time,timeFormatter);
                 LocalTime localTime1 = LocalTime.parse(time1,timeFormatter);
                 //add any reminder in the calendar
-                calendarDisplay.addReminder(desc,localDate,localTime,localTime1,Color.valueOf(color));
+                if(localDate.isAfter(firstDate.minusDays(1)) && localDate.isBefore(lastDate.plusDays(1))) {
+                    calendarDisplay.addReminder(desc, localDate, localTime, localTime1, Color.valueOf(color));
+                }
                 linesNbrChar=i+1;
                 counter = 0;
                 username = "";
