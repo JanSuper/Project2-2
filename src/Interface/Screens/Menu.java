@@ -7,13 +7,18 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 public class Menu {
@@ -253,7 +258,7 @@ public class Menu {
         }
         mainScreen.weatherDisplay.setLocation(city, country);
         weatherShortcut = mainScreen.weatherDisplay.getWeatherShortcut();
-        designShortcut(weatherShortcut, Color.LIGHTBLUE, Pos.CENTER);
+        designShortcut(weatherShortcut, Color.LIGHTBLUE, Pos.CENTER, 200);
         String finalCity = city;
         String finalCountry = country;
         weatherShortcut.setOnMouseClicked(e-> {
@@ -265,22 +270,33 @@ public class Menu {
         });
 
         VBox clockShortcut = mainScreen.clockAppDisplay.clockVBox.getClockShortcut();
-        designShortcut(clockShortcut, Color.SLATEGREY.darker(), Pos.CENTER);
+        designShortcut(clockShortcut, Color.SLATEGREY.darker(), Pos.CENTER, 200);
         clockShortcut.setOnMouseClicked(e-> mainScreen.setClockAppDisplay("Clock"));
 
         VBox calendarShortcut = mainScreen.calendarDisplay.getCalendarShortcut(mainScreen.todaysRemindersShortcut);
-        designShortcut(calendarShortcut, Color.DARKORANGE.brighter(), Pos.TOP_CENTER);
+        designShortcut(calendarShortcut, Color.DARKORANGE.brighter(), Pos.TOP_CENTER, 200);
         calendarShortcut.setOnMouseClicked(e-> mainScreen.displaySkill(mainScreen.calendarDisplay,"calendar"));
 
-        VBox mapShortcut = new VBox(17);  //TODO
-        designShortcut(mapShortcut, Color.LIGHTGRAY, Pos.CENTER);
-        mapShortcut.setOnMouseClicked(e-> {
-            try {
-                //setMapDisplay("");
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        });
+        VBox mapShortcut = getIconShortcut("src/res/shortcutIcons/mapIcon.png", 80);
+        mapShortcut.setOnMouseClicked(e-> {});   //TODO
+
+        VBox mediaPlayerShortcut = getIconShortcut("src/res/shortcutIcons/mediaPlayerIcon.png", 80);
+        mediaPlayerShortcut.setOnMouseClicked(e-> {});  //TODO
+
+        VBox googleShortcut = getIconShortcut("src/res/shortcutIcons/googleIcon.png", 80);
+        googleShortcut.setOnMouseClicked(e-> {});   //TODO
+
+        HBox smallShortcuts1 = new HBox(30);
+        smallShortcuts1.setAlignment(Pos.TOP_LEFT);
+        smallShortcuts1.getChildren().addAll(mapShortcut, mediaPlayerShortcut);
+
+        HBox smallShortcuts2 = new HBox(30);
+        smallShortcuts2.setAlignment(Pos.TOP_LEFT);
+        smallShortcuts2.getChildren().addAll(googleShortcut);
+
+        VBox smallShortcuts = new VBox(30);
+        smallShortcuts.getChildren().addAll(smallShortcuts1, smallShortcuts2);
+        smallShortcuts1.setAlignment(Pos.TOP_CENTER);
 
         shortcutsHBox1 = new HBox(50);
         shortcutsHBox1.setAlignment(Pos.CENTER);
@@ -288,20 +304,43 @@ public class Menu {
 
         shortcutsHBox2 = new HBox(50);
         shortcutsHBox2.setAlignment(Pos.CENTER);
-        shortcutsHBox2.getChildren().addAll(calendarShortcut, mapShortcut);
+        shortcutsHBox2.getChildren().addAll(calendarShortcut, smallShortcuts);
 
         shortcutsMenu.getChildren().addAll(getMainMenu_shortcuts_Option(true), shortcutsHBox1, shortcutsHBox2);
     }
 
-    private void designShortcut(VBox vBox, Color backgroundColor, Pos position) {
-        vBox.setPrefSize(200,200);
-        vBox.setMaxSize(200,200);
-        vBox.setMinSize(200, 200);
+    private VBox getIconShortcut(String icon, int dim) throws FileNotFoundException {
+        VBox shortcut = new VBox();
+
+        Rectangle r = new Rectangle(0, 0, dim, dim);
+        r.setArcWidth(20.0);
+        r.setArcHeight(20.0);
+        r.setCursor(Cursor.HAND);
+        r.setEffect(new DropShadow(15, Color.BLACK));
+        r.setFill(Color.LIGHTGRAY);
+        if (!icon.equals("")) {
+            ImagePattern mapIcon = new ImagePattern(new Image(new FileInputStream(icon), dim, dim, false, true));
+            r.setFill(mapIcon);
+        }
+
+        shortcut.getChildren().add(r);
+        shortcut.setAlignment(Pos.CENTER_LEFT);
+        shortcut.setPrefSize(dim,dim);
+        shortcut.setMaxSize(dim,dim);
+        shortcut.setMinSize(dim, dim);
+        return shortcut;
+    }
+
+    private void designShortcut(VBox vBox, Color backgroundColor, Pos position, int dim) {
+        vBox.setPrefSize(dim,dim);
+        vBox.setMaxSize(dim,dim);
+        vBox.setMinSize(dim, dim);
         vBox.setCursor(Cursor.HAND);
         vBox.setBackground(new Background(new BackgroundFill(backgroundColor, new CornerRadii(20), Insets.EMPTY)));
         vBox.setAlignment(position);
         vBox.setPadding(new Insets(10));
         vBox.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, new CornerRadii(20), new BorderWidths(5))));
+        vBox.setEffect(new DropShadow(10, Color.BLACK));
     }
 
     private void updateWeatherShortcut() throws Exception {
@@ -315,7 +354,7 @@ public class Menu {
             }
             mainScreen.weatherDisplay.setLocation(city, country);
             weatherShortcut = mainScreen.weatherDisplay.getWeatherShortcut();
-            designShortcut(weatherShortcut, Color.LIGHTBLUE, Pos.CENTER);
+            designShortcut(weatherShortcut, Color.LIGHTBLUE, Pos.CENTER, 200);
             String finalCity = city;
             String finalCountry = country;
             weatherShortcut.setOnMouseClicked(e -> {

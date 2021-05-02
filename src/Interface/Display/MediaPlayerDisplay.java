@@ -20,7 +20,7 @@ import javafx.util.Duration;
 
 public class MediaPlayerDisplay extends BorderPane {
     private MediaPlayer mp;
-    private MediaView mediaView;
+    public MediaView mediaView;
     private final boolean repeat = false;
     private boolean stopRequested = false;
     private boolean atEndOfMedia = false;

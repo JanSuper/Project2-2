@@ -10,6 +10,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -155,18 +156,25 @@ public class MainScreen {
     }
 
     public void displayUrlMediaPlayer(MediaPlayerDisplay mediaPlayerDisplay){
-        mediaPlayerDisplay.setBackground(Data.createBackGround());
-        mediaPlayerDisplay.setBorder(border);
-        mediaPlayerDisplay.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
-        mediaPlayerDisplay.prefWidthProperty().bind(root.widthProperty().subtract(chat.prefWidthProperty()).subtract(borderWidth*2));
-        mediaPlayerDisplay.setScaleX(0.8);
-        mediaPlayerDisplay.setScaleY(0.8);
-        mediaPlayerDisplay.getMediaView().setPreserveRatio(true);
+        VBox mp = (VBox) addEscTo(mediaPlayerDisplay);
+        mp.setBackground(Data.createBackGround());
+        mp.setBorder(border);
+        mp.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
+        mp.prefWidthProperty().bind(root.widthProperty().subtract(chat.prefWidthProperty()).subtract(borderWidth*2));
+        mp.setScaleX(0.8);
+        mp.setScaleY(0.8);
 
-        root.setLeft(mediaPlayerDisplay);
+        mediaPlayerDisplay.mediaView.setFitWidth(mp.getPrefWidth()-borderWidth*2);
+        mediaPlayerDisplay.mediaView.setFitHeight(mp.getPrefHeight()-borderWidth*2);
+        mediaPlayerDisplay.prefWidthProperty().bind(mp.widthProperty().subtract(borderWidth*2));
+        mediaPlayerDisplay.prefHeightProperty().bind(mp.heightProperty().subtract(borderWidth*2));
+        mediaPlayerDisplay.mediaView.setPreserveRatio(true);
+
+        root.setLeft(mp);
     }
 
-    public void displaySkill(Pane pane,String skill){
+    public void displaySkill(Pane pane,String skill) {
+        pane = (Pane) addEscTo(pane);
         pane.setBackground(Data.createBackGround());
         pane.setBorder(border);
         pane.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
@@ -175,6 +183,37 @@ public class MainScreen {
         pane.setScaleY(0.8);
 
         root.setLeft(pane);
+    }
+
+    private Node addEscTo(Node node) {
+        VBox newPane = new VBox(0);
+
+        HBox topBox = new HBox(0);
+        topBox.setAlignment(Pos.TOP_CENTER);
+        topBox.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        Button exit = new Button("x");
+        exit.setCursor(Cursor.HAND);
+        exit.setBackground(Background.EMPTY);
+        exit.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 17));
+        exit.setTextFill(Color.WHITE);
+        exit.setBorder(null);
+        exit.setAlignment(Pos.TOP_RIGHT);
+        exit.setOnAction(e -> {
+            try {
+                setMenu("MainMenu");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        Region region = new Region();
+        HBox.setHgrow(region, Priority.ALWAYS);
+
+        topBox.getChildren().addAll(region, exit);
+        newPane.getChildren().addAll(topBox, node);
+
+        return newPane;
     }
 
     public void prepareAlarms(LocalDate firstDate,LocalDate lastDate) throws IOException, ParseException {
