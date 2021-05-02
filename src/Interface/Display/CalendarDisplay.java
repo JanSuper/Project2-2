@@ -5,7 +5,9 @@ import Interface.Screens.MainScreen;
 import Skills.Schedule.Course;
 import Skills.Schedule.Skill_Schedule;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
+import javafx.event.EventHandler;
 import javafx.geometry.*;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -13,6 +15,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -22,6 +26,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.converter.LocalTimeStringConverter;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -30,6 +35,7 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import static javafx.scene.paint.Color.LIGHTGRAY;
@@ -40,6 +46,7 @@ public class CalendarDisplay extends HBox {
     private final LocalTime beginningOfTheDay = LocalTime.of(00, 00);
     private final LocalTime endOfTheDay = LocalTime.of(23, 59);
 
+    private LocalDate today;
     public LocalDate firstDate;
     public LocalDate lastDate;
 
@@ -58,9 +65,18 @@ public class CalendarDisplay extends HBox {
     public CalendarDisplay(MainScreen mainScreen) throws ParseException {
         this.mainScreen = mainScreen;
         this.skill_schedule = new Skill_Schedule();
+        today = LocalDate.now();
 
         createContent();
         addSchedule(firstDate,lastDate);
+
+        //TODO crate a datepicker for to center the calendar to a specific date using the following method "centerTo"
+        centerTo(today,LocalTime.parse("12:00"));
+    }
+    private void centerTo(LocalDate date,LocalTime time){
+        int[] inTable = convertToTable(date,time,time);
+        Node node = getNodeByRowColumnIndex(inTable[1],inTable[0]);
+        centerNodeInScrollPane(scrollPane,node);
     }
 
     private void createContent(){
@@ -68,18 +84,19 @@ public class CalendarDisplay extends HBox {
         calendar.setGridLinesVisible(true);
         calendar.setStyle("-fx-background-color:#3d3d3d;");
 
-        LocalDate today = LocalDate.now();
         firstDate = today.minusDays(NBR_OF_DAYS/2);
         lastDate = firstDate.plusDays(NBR_OF_DAYS-1);
 
         addToCalendar(firstDate,lastDate);
         //TODO being able to make the hours fix on the calendar
         scrollPane = new ScrollPane(calendar);
+        scrollPane.setOnKeyPressed(event -> {
+            centerTo(today,LocalTime.parse("12:00"));
+        });
         scrollPane.hvalueProperty().addListener(
                 (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
                     if(newValue.doubleValue() == scrollPane.getHmax()){
                         //IF the scroll reached max to the right, add new calendar values to the right
-                        System.out.println("scroll to right");
                         addToCalendar(lastDate,lastDate.plusDays(NBR_OF_DAYS));
                         lastDate = lastDate.plusDays(NBR_OF_DAYS);
                         try {
@@ -91,7 +108,6 @@ public class CalendarDisplay extends HBox {
                         }
                     }else if(newValue.doubleValue() == 0){
                         //IF the scroll reached max to the left, add new calendar values to the left
-                        System.out.println("scroll to left");
                         addToCalendar(firstDate.minusDays(NBR_OF_DAYS),firstDate);
                         firstDate = firstDate.minusDays(NBR_OF_DAYS);
                         try {
@@ -107,8 +123,30 @@ public class CalendarDisplay extends HBox {
         alarmVBox = new AlarmVBox(this.mainScreen,true);
         getChildren().add(alarmVBox);
     }
+    private Node getNodeByRowColumnIndex (int row, int column) {
+        for (Node node : calendar.getChildren()) {
+            if((calendar.getRowIndex(node)!=null && calendar.getColumnIndex(node) !=null) && (calendar.getRowIndex(node) == row && calendar.getColumnIndex(node) == column)){
+                return node;
+            }
+        }
+        return null;
+    }
+
+    public void centerNodeInScrollPane(ScrollPane scrollPane, Node node) {
+        double totalH = scrollPane.getContent().getBoundsInLocal().getHeight();
+        double totalW = scrollPane.getContent().getBoundsInLocal().getWidth();
+        double x = (node.getBoundsInParent().getMaxX() +
+                node.getBoundsInParent().getMinX()) / 2.0;
+        double y = (node.getBoundsInParent().getMaxY() +
+                node.getBoundsInParent().getMinY()) / 2.0;
+        double viewportHeight = scrollPane.getViewportBounds().getHeight();
+        double viewportWidth = scrollPane.getViewportBounds().getWidth();
+        scrollPane.setVvalue(scrollPane.getVmax() * ((y - 0.5 * viewportHeight) / (totalH - viewportHeight)));
+        scrollPane.setHvalue(scrollPane.getHmax() * ((x - 0.5 * viewportWidth) / (totalW- viewportWidth)));
+    }
 
     private void addToCalendar(LocalDate firstDate,LocalDate lastDate){
+        //ADD EACH CELLS
         for (LocalDate day = firstDate; !day.isAfter(lastDate); day = day.plusDays(1)) {
             int slotIndex = 1;
 
@@ -125,6 +163,7 @@ public class CalendarDisplay extends HBox {
 
         DateTimeFormatter dFormatter = DateTimeFormatter.ofPattern("E\nMMM d");
 
+        //ADD DAY IN EACH CELL
         for (LocalDate date = firstDate; !date.isAfter(lastDate); date = date.plusDays(1)) {
             Label label = new Label(date.format(dFormatter));
             label.setPadding(new Insets(1));
@@ -138,6 +177,7 @@ public class CalendarDisplay extends HBox {
         int slotIndex = 1;
         DateTimeFormatter tFormatter = DateTimeFormatter.ofPattern("H:mm");
 
+        //ADD EACH HOURS
         LocalDate today = LocalDate.now();
         for (LocalDateTime startTime = today.atTime(beginningOfTheDay);
              !startTime.isAfter(today.atTime(endOfTheDay));
@@ -145,7 +185,6 @@ public class CalendarDisplay extends HBox {
             Label label = new Label(startTime.format(tFormatter));
             label.setPadding(new Insets(2));
             label.setTextFill(LIGHTGRAY);
-
             GridPane.setHalignment(label, HPos.RIGHT);
             calendar.add(label, 0, slotIndex);
             slotIndex++;
@@ -202,14 +241,7 @@ public class CalendarDisplay extends HBox {
     private int[] convertToTable(LocalDate date, LocalTime fromTime, LocalTime toTime){
         int col = 1; int row = 1; int rowSpan = 1;
         if(date.isAfter(firstDate.minusDays(1)) && date.isBefore(lastDate.plusDays(1))){
-            Period datePeriod = Period.between(firstDate, date);
-            // Get the number of days in that month
-            YearMonth yearMonthObject = YearMonth.of(firstDate.getYear(), firstDate.getMonth());
-            if(firstDate.getMonth().equals(date.getMonth())){
-                col = datePeriod.getDays()+firstDate.getDayOfYear();
-            }else{
-                col = (yearMonthObject.lengthOfMonth() + datePeriod.getDays())+firstDate.getDayOfYear();
-            }
+            col = date.getDayOfYear();
 
             long timePeriod = Duration.between(beginningOfTheDay, fromTime).toMinutes();
             row = (int) (timePeriod/period.toMinutes())+1;

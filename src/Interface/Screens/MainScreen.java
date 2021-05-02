@@ -272,7 +272,6 @@ public class MainScreen {
                 //notify user if a reminder is for today
                 String today = java.time.LocalDate.now().toString();
                 if(username.equals(Data.getUsername())&&day.equals(today)){
-                    chat.receiveMessage("Today, there will be the alarm from " + time + " to " + time1 + " with description \"" + desc + "\"");
                     todaysRemindersShortcut.add(time.substring(0,5) +";"+ time1.substring(0,5) +";"+ desc);
                     alarmsTime.add(new String[]{time,desc});
                     displayReminderAtTime(time,desc);
