@@ -156,7 +156,7 @@ public class MainScreen {
     }
 
     public void displayUrlMediaPlayer(MediaPlayerDisplay mediaPlayerDisplay){
-        VBox mp = (VBox) addEscTo(mediaPlayerDisplay);
+        VBox mp = (VBox) addEscTo(mediaPlayerDisplay, true);
         mp.setBackground(Data.createBackGround());
         mp.setBorder(border);
         mp.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
@@ -174,7 +174,7 @@ public class MainScreen {
     }
 
     public void displaySkill(Pane pane,String skill) {
-        pane = (Pane) addEscTo(pane);
+        pane = (Pane) addEscTo(pane, false);
         pane.setBackground(Data.createBackGround());
         pane.setBorder(border);
         pane.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
@@ -185,7 +185,7 @@ public class MainScreen {
         root.setLeft(pane);
     }
 
-    private Node addEscTo(Node node) {
+    private Node addEscTo(Node node, Boolean isMediaPlayer) {
         VBox newPane = new VBox(0);
 
         HBox topBox = new HBox(0);
@@ -201,6 +201,7 @@ public class MainScreen {
         exit.setAlignment(Pos.TOP_RIGHT);
         exit.setOnAction(e -> {
             try {
+                if (isMediaPlayer){Data.getMp().pause();}
                 setMenu("MainMenu");
             } catch (Exception ex) {
                 ex.printStackTrace();

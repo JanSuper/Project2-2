@@ -2,6 +2,7 @@ package Interface.Screens;
 
 import DataBase.Data;
 import FileParser.FileParser;
+import Interface.Display.MediaPlayerDisplay;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -10,6 +11,9 @@ import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaException;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
@@ -281,7 +285,28 @@ public class Menu {
         mapShortcut.setOnMouseClicked(e-> {});   //TODO
 
         VBox mediaPlayerShortcut = getIconShortcut("src/res/shortcutIcons/mediaPlayerIcon.png", 80);
-        mediaPlayerShortcut.setOnMouseClicked(e-> {});  //TODO
+        mediaPlayerShortcut.setOnMouseClicked(e-> {
+            if(Data.getMp()!=null){
+                Data.getMp().play();
+                MediaPlayerDisplay mediaControl = new MediaPlayerDisplay(Data.getMp());
+                mainScreen.displayUrlMediaPlayer(mediaControl);
+            }else{
+                FileChooser fileChooser = new FileChooser();
+                File selectedFile = fileChooser.showOpenDialog(mainScreen.stage);
+                try {
+                    Media media = new Media (selectedFile.toURI().toString());
+                    MediaPlayer mediaPlayer = new MediaPlayer(media);
+                    Data.setMp(mediaPlayer);
+                    mediaPlayer.setAutoPlay(true);
+                    MediaPlayerDisplay mediaControl = new MediaPlayerDisplay(mediaPlayer);
+                    mainScreen.displayUrlMediaPlayer(mediaControl);
+                } catch(NullPointerException ex){
+                    mainScreen.chat.receiveMessage("No file chosen");
+                } catch(MediaException ex){
+                    mainScreen.chat.receiveMessage("Filetype not supported");
+                }
+            }
+        });
 
         VBox googleShortcut = getIconShortcut("src/res/shortcutIcons/googleIcon.png", 80);
         googleShortcut.setOnMouseClicked(e-> {});   //TODO
