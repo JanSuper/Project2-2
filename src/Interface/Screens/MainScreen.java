@@ -143,14 +143,14 @@ public class MainScreen {
     }
 
     public void setMapDisplay(String type,String loc1,String loc2) throws Exception {
-        MapDisplay mapDisplay = new MapDisplay(type,loc1,loc2);
-        mapDisplay.setSpacing(7);
+        MapDisplay mapDisplay = new MapDisplay(this, type,loc1,loc2);
         mapDisplay.setBackground(Data.createBackGround());
         mapDisplay.setBorder(border);
         mapDisplay.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));
         mapDisplay.prefWidthProperty().bind(root.widthProperty().subtract(chat.prefWidthProperty()).subtract(borderWidth*2));
         mapDisplay.setScaleX(0.8);
         mapDisplay.setScaleY(0.8);
+        mapDisplay.myWebView.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2).subtract(45));
 
         root.setLeft(mapDisplay);
     }

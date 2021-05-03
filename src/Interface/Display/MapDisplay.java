@@ -1,43 +1,77 @@
 package Interface.Display;
 
+import Interface.Screens.MainScreen;
 import javafx.geometry.Insets;
-import javafx.scene.layout.VBox;
+import javafx.geometry.Pos;
+import javafx.scene.Cursor;
+import javafx.scene.control.Button;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 public class MapDisplay extends VBox {
     private VBox current;
+    private HBox topBox;
+    public WebView myWebView;
+    private MainScreen mainScreen;
 
 
-    public MapDisplay(String type,String loc1,String loc2) throws Exception {
+    public MapDisplay(MainScreen mainScreen, String type,String loc1,String loc2) throws Exception {
+        this.mainScreen = mainScreen;
+
+        topBox = new HBox(0);   //esc bar
+        topBox.setAlignment(Pos.TOP_CENTER);
+        topBox.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        Button exit = new Button("x");
+        exit.setCursor(Cursor.HAND);
+        exit.setBackground(Background.EMPTY);
+        exit.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 17));
+        exit.setTextFill(Color.WHITE);
+        exit.setBorder(null);
+        exit.setAlignment(Pos.TOP_RIGHT);
+        exit.setOnAction(e -> {
+            try {
+                mainScreen.setMenu("MainMenu");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+        Region region = new Region();
+        HBox.setHgrow(region, Priority.ALWAYS);
+
+        topBox.getChildren().addAll(region, exit);
+
         //just open the webview engine to google something
         if (type == "google")
         {
             // create webview for google search
-            WebView myWebView = new WebView();
+            myWebView = new WebView();
             // get standard browser
             WebEngine engine = myWebView.getEngine();
             engine.load("https://www.google.de");
-            current = new VBox(30);
-            current.setScaleY(1.19);
-            current.setPadding(new Insets(52, 0, 0, 0));
+            current = new VBox(0);
+            topBox.setMaxHeight(45);
             current.getChildren().addAll(myWebView);
-            getChildren().addAll(current);
         }
         // DISPLAY GOOGLE MAPS:
         // show a interactive google map without routes
         // read description below
         else if (type.equals("map")) {
             // Create a webview
-            WebView myWebView = new WebView();
+            myWebView = new WebView();
             WebEngine engine = myWebView.getEngine();
 
             // First I need to transform the google maps location names into coordinates
@@ -94,11 +128,9 @@ public class MapDisplay extends VBox {
             // (see /res/googlemaps.html or once created /res/googlemapsrequest.html)
 
             engine.load(f_new.toURI().toString());
-            current = new VBox(35);
-            current.setScaleY(1.19);
-            current.setPadding(new Insets(52, 0, 0, 0));
+            current = new VBox(0);
+            topBox.setMaxHeight(45);
             current.getChildren().addAll(myWebView);
-            getChildren().addAll(current);
 
             // Some comments :) :
             // Google Maps provides multiple api's for different services: Google Maps Javascript for the interactive
@@ -115,7 +147,7 @@ public class MapDisplay extends VBox {
         // almost same procedure - read description above starting from "DISPLAY GOOGLE MAPS"
         else if (type.equals("route"))
         {
-            WebView myWebView = new WebView();
+            myWebView = new WebView();
             WebEngine engine = myWebView.getEngine();
 
             String source = loc1.trim();
@@ -164,11 +196,15 @@ public class MapDisplay extends VBox {
             // Next I call the google maps javascript api by loading my new requestgooglemapsRoute.html file
             // (see /res/googlemaps.html or once created /res/requestgooglemapsRoute.html)
             engine.load(f_new.toURI().toString());
-            current = new VBox(35);
-            current.setScaleY(1.19);
-            current.setPadding(new Insets(52, 0, 0, 0));
+            current = new VBox(0);
+            topBox.setMaxHeight(45);
             current.getChildren().addAll(myWebView);
-            getChildren().addAll(current);
         }
+        current.setAlignment(Pos.TOP_CENTER);
+
+        VBox.setVgrow(topBox, Priority.ALWAYS);
+        VBox.setVgrow(current, Priority.ALWAYS);
+
+        getChildren().addAll(topBox, current);
     }
 }

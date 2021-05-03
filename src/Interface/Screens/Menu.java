@@ -282,7 +282,18 @@ public class Menu {
         calendarShortcut.setOnMouseClicked(e-> mainScreen.displaySkill(mainScreen.calendarDisplay,"calendar"));
 
         VBox mapShortcut = getIconShortcut("src/res/shortcutIcons/mapIcon.png", 80);
-        mapShortcut.setOnMouseClicked(e-> {});   //TODO
+        mapShortcut.setOnMouseClicked(e-> {
+            String c = FileParser.getUserInfo("-City");
+            if(c.isEmpty()){
+                System.out.println("It seems like you haven't completed your location yet.");
+                c = "Maastricht";
+            }
+            try {
+                mainScreen.setMapDisplay("map", c, null);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
 
         VBox mediaPlayerShortcut = getIconShortcut("src/res/shortcutIcons/mediaPlayerIcon.png", 80);
         mediaPlayerShortcut.setOnMouseClicked(e-> {
@@ -309,7 +320,13 @@ public class Menu {
         });
 
         VBox googleShortcut = getIconShortcut("src/res/shortcutIcons/googleIcon.png", 80);
-        googleShortcut.setOnMouseClicked(e-> {});   //TODO
+        googleShortcut.setOnMouseClicked(e-> {
+            try {
+                mainScreen.setMapDisplay("google",null,null);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
 
         HBox smallShortcuts1 = new HBox(30);
         smallShortcuts1.setAlignment(Pos.TOP_LEFT);
