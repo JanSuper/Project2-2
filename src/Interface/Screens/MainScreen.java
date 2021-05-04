@@ -62,7 +62,7 @@ public class MainScreen {
 
         alarmsTime = new ArrayList<>();
         timeline = new Timeline();
-        prepareAlarms(calendarDisplay.firstDate,calendarDisplay.lastDate);
+        prepareReminders(calendarDisplay.firstDate,calendarDisplay.lastDate);
         createContent();
 
         start(new Stage());
@@ -217,7 +217,7 @@ public class MainScreen {
         return newPane;
     }
 
-    public void prepareAlarms(LocalDate firstDate,LocalDate lastDate) throws IOException, ParseException {
+    public void prepareReminders(LocalDate firstDate, LocalDate lastDate) throws IOException, ParseException {
         String allReminders = getAlreadyOnFile();
         int nbrOfInfo = 5;
         int counter = 0;

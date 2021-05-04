@@ -5,9 +5,7 @@ import Interface.Screens.MainScreen;
 import Skills.Schedule.Course;
 import Skills.Schedule.Skill_Schedule;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
-import javafx.event.EventHandler;
 import javafx.geometry.*;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -15,8 +13,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -26,7 +22,6 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.util.converter.LocalTimeStringConverter;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -35,7 +30,6 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 
 import static javafx.scene.paint.Color.LIGHTGRAY;
@@ -58,7 +52,7 @@ public class CalendarDisplay extends HBox {
     private GridPane calendar;
     private ScrollPane scrollPane;
 
-    private final int NBR_OF_DAYS = 7;
+    private final int NBR_OF_DAYS = 10;
 
     private Skill_Schedule skill_schedule;
 
@@ -70,11 +64,21 @@ public class CalendarDisplay extends HBox {
         createContent();
         addSchedule(firstDate,lastDate);
 
-        //TODO crate a datepicker for to center the calendar to a specific date using the following method "centerTo"
-        centerTo(today,LocalTime.parse("12:00"));
+        centerTo(today,LocalTime.parse("00:00"));
     }
-    private void centerTo(LocalDate date,LocalTime time){
+    public void centerTo(LocalDate date,LocalTime time){
+        if(date.isBefore(firstDate.plusDays(1))){
+            mainScreen.chat.receiveMessage("before");
+            int diff = firstDate.getDayOfYear()-date.getDayOfYear()-NBR_OF_DAYS;
+            addPreviousCalendar(firstDate.minusDays(diff));
+        }else if(date.isAfter(lastDate.minusDays(1))){
+            mainScreen.chat.receiveMessage("after");
+            int diff = date.getDayOfYear()-lastDate.getDayOfYear()+NBR_OF_DAYS;
+            addAfterCalendar(lastDate.plusDays(diff));
+        }
+
         int[] inTable = convertToTable(date,time,time);
+        mainScreen.chat.receiveMessage(Arrays.toString(inTable));
         Node node = getNodeByRowColumnIndex(inTable[1],inTable[0]);
         centerNodeInScrollPane(scrollPane,node);
     }
@@ -90,32 +94,14 @@ public class CalendarDisplay extends HBox {
         addToCalendar(firstDate,lastDate);
         //TODO being able to make the hours fix on the calendar
         scrollPane = new ScrollPane(calendar);
-        scrollPane.setOnKeyPressed(event -> {
-            centerTo(today,LocalTime.parse("12:00"));
-        });
         scrollPane.hvalueProperty().addListener(
                 (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
                     if(newValue.doubleValue() == scrollPane.getHmax()){
                         //IF the scroll reached max to the right, add new calendar values to the right
-                        addToCalendar(lastDate,lastDate.plusDays(NBR_OF_DAYS));
-                        lastDate = lastDate.plusDays(NBR_OF_DAYS);
-                        try {
-                            //TODO fix problem of schedule courses having no start date
-                            //addSchedule(lastDate.minusDays(NBR_OF_DAYS),lastDate);
-                            mainScreen.prepareAlarms(lastDate.minusDays(NBR_OF_DAYS),lastDate);
-                        } catch (ParseException | IOException e) {
-                            e.printStackTrace();
-                        }
+                        addAfterCalendar(lastDate.plusDays(NBR_OF_DAYS));
                     }else if(newValue.doubleValue() == 0){
                         //IF the scroll reached max to the left, add new calendar values to the left
-                        addToCalendar(firstDate.minusDays(NBR_OF_DAYS),firstDate);
-                        firstDate = firstDate.minusDays(NBR_OF_DAYS);
-                        try {
-                            addSchedule(firstDate,firstDate.plusDays(NBR_OF_DAYS));
-                            mainScreen.prepareAlarms(firstDate,firstDate.plusDays(NBR_OF_DAYS));
-                        } catch (ParseException | IOException e) {
-                            e.printStackTrace();
-                        }
+                        addPreviousCalendar(firstDate.minusDays(NBR_OF_DAYS));
                     }
                 });
         getChildren().add(scrollPane);
@@ -123,6 +109,37 @@ public class CalendarDisplay extends HBox {
         alarmVBox = new AlarmVBox(this.mainScreen,true);
         getChildren().add(alarmVBox);
     }
+
+    private void addPreviousCalendar(LocalDate new1stDate){
+        LocalDate old1stDate = firstDate;
+        //add new dates to calendar
+        addToCalendar(new1stDate,firstDate);
+        //update first date
+        firstDate = new1stDate;
+        try {
+            //add schedule and stored reminders
+            addSchedule(firstDate,old1stDate);
+            mainScreen.prepareReminders(firstDate,old1stDate);
+        } catch (ParseException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addAfterCalendar(LocalDate newLastDate){
+        LocalDate oldLastDate = lastDate;
+        //add new dates to calendar
+        addToCalendar(lastDate,newLastDate);
+        //update last date
+        lastDate = newLastDate;
+        try {
+            //add schedule and stored reminders
+            addSchedule(oldLastDate,lastDate);
+            mainScreen.prepareReminders(oldLastDate,lastDate);
+        } catch (ParseException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private Node getNodeByRowColumnIndex (int row, int column) {
         for (Node node : calendar.getChildren()) {
             if((calendar.getRowIndex(node)!=null && calendar.getColumnIndex(node) !=null) && (calendar.getRowIndex(node) == row && calendar.getColumnIndex(node) == column)){
@@ -194,12 +211,28 @@ public class CalendarDisplay extends HBox {
 
     private void addSchedule(LocalDate firstDate,LocalDate lastDate) throws ParseException {
         ArrayList<Course> courses = skill_schedule.getInInterval(firstDate,lastDate);
+        Color color = null;
+        String desc = "";
+        LocalDate date = null;
+        LocalTime time = null;
+        LocalTime time1 = null;
         for (Course course:courses) {
-            String desc = course.getSummary();
-            LocalDate date =new SimpleDateFormat("yyyyMMdd").parse(course.getDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            LocalTime time =new SimpleDateFormat("HHmmss").parse(course.getStart_Time()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
-            LocalTime time1 =new SimpleDateFormat("HHmmss").parse(course.getEnd_Time()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
-            addReminder(desc,date,time,time1,Color.BLUEVIOLET);
+            color = Color.BLUEVIOLET;
+            desc = course.getSummary();
+            if(course.getStart_Time()==null){
+                time = LocalTime.of(0,0);
+                color = Color.RED;
+            }else{
+                time =new SimpleDateFormat("HHmmss").parse(course.getStart_Time()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+            }
+            if(course.getEnd_Time()==null){
+                time1 = LocalTime.of(2,0);
+                color = Color.RED;
+            }else{
+                time1 =new SimpleDateFormat("HHmmss").parse(course.getEnd_Time()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+            }
+            date =new SimpleDateFormat("yyyyMMdd").parse(course.getDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            addReminder(desc,date,time,time1,color);
         }
     }
 

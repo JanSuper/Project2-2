@@ -32,7 +32,7 @@ import java.util.Date;
 
 public class AlarmVBox extends VBox {
     private Label datePickerTxt;
-    private DatePicker d;
+    public DatePicker d;
 
     //FROM TIME
     private Label timePickerTxt;
@@ -87,6 +87,10 @@ public class AlarmVBox extends VBox {
 
         // create a date picker
         d = new DatePicker();
+        d.setValue(LocalDate.now());
+        d.setOnAction(event -> {
+            mainScreen.calendarDisplay.centerTo(d.getValue(),LocalTime.parse("00:00"));
+        });
 
         timePickerTxt = new Label();
         if(isReminder){
