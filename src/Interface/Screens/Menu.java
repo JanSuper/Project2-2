@@ -253,26 +253,6 @@ public class Menu {
         shortcutsMenu = new VBox(40);
         editMenu(shortcutsMenu);
 
-        String city = FileParser.getUserInfo("-City");
-        String country = FileParser.getUserInfo("-Country");
-        if(city.isEmpty()||country.isEmpty()){
-            System.out.println("It seems like you haven't completed your location yet.");
-            city = "Maastricht";
-            country = "NL";
-        }
-        mainScreen.weatherDisplay.setLocation(city, country);
-        weatherShortcut = mainScreen.weatherDisplay.getWeatherShortcut();
-        designShortcut(weatherShortcut, Color.LIGHTBLUE, Pos.CENTER, 200);
-        String finalCity = city;
-        String finalCountry = country;
-        weatherShortcut.setOnMouseClicked(e-> {
-            try {
-                mainScreen.setWeatherDisplay(finalCity, finalCountry);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        });
-
         VBox clockShortcut = mainScreen.clockAppDisplay.clockVBox.getClockShortcut();
         designShortcut(clockShortcut, Color.SLATEGREY.darker(), Pos.CENTER, 200);
         clockShortcut.setOnMouseClicked(e-> mainScreen.setClockAppDisplay("Clock"));
@@ -295,6 +275,15 @@ public class Menu {
             }
         });
 
+        VBox googleShortcut = getIconShortcut("src/res/shortcutIcons/googleIcon.png", 80);
+        googleShortcut.setOnMouseClicked(e-> {
+            try {
+                mainScreen.setMapDisplay("google",null,null);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+
         VBox mediaPlayerShortcut = getIconShortcut("src/res/shortcutIcons/mediaPlayerIcon.png", 80);
         mediaPlayerShortcut.setOnMouseClicked(e-> {
             if(Data.getMp()!=null){
@@ -302,6 +291,7 @@ public class Menu {
                 MediaPlayerDisplay mediaControl = new MediaPlayerDisplay(Data.getMp());
                 mainScreen.displayUrlMediaPlayer(mediaControl);
             }else{
+                mainScreen.chat.receiveMessage("Choose a file.");
                 FileChooser fileChooser = new FileChooser();
                 File selectedFile = fileChooser.showOpenDialog(mainScreen.stage);
                 try {
@@ -319,18 +309,9 @@ public class Menu {
             }
         });
 
-        VBox googleShortcut = getIconShortcut("src/res/shortcutIcons/googleIcon.png", 80);
-        googleShortcut.setOnMouseClicked(e-> {
-            try {
-                mainScreen.setMapDisplay("google",null,null);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        });
-
         HBox smallShortcuts1 = new HBox(30);
         smallShortcuts1.setAlignment(Pos.TOP_LEFT);
-        smallShortcuts1.getChildren().addAll(mapShortcut, mediaPlayerShortcut);
+        smallShortcuts1.getChildren().addAll(mediaPlayerShortcut, mapShortcut);
 
         HBox smallShortcuts2 = new HBox(30);
         smallShortcuts2.setAlignment(Pos.TOP_LEFT);
@@ -342,7 +323,8 @@ public class Menu {
 
         shortcutsHBox1 = new HBox(50);
         shortcutsHBox1.setAlignment(Pos.CENTER);
-        shortcutsHBox1.getChildren().addAll(weatherShortcut, clockShortcut);
+        shortcutsHBox1.getChildren().add(clockShortcut);
+        updateWeatherShortcut();    //adding weather shortcut before the clock shortcut
 
         shortcutsHBox2 = new HBox(50);
         shortcutsHBox2.setAlignment(Pos.CENTER);
@@ -386,30 +368,28 @@ public class Menu {
     }
 
     private void updateWeatherShortcut() throws Exception {
-        if (update.equals(true)) {
-            String city = FileParser.getUserInfo("-City");
-            String country = FileParser.getUserInfo("-Country");
-            if (city.isEmpty() || country.isEmpty()) {
-                System.out.println("It seems like you haven't completed your location yet.");
-                city = "Maastricht";
-                country = "NL";
-            }
-            mainScreen.weatherDisplay.setLocation(city, country);
-            weatherShortcut = mainScreen.weatherDisplay.getWeatherShortcut();
-            designShortcut(weatherShortcut, Color.LIGHTBLUE, Pos.CENTER, 200);
-            String finalCity = city;
-            String finalCountry = country;
-            weatherShortcut.setOnMouseClicked(e -> {
-                try {
-                    mainScreen.setWeatherDisplay(finalCity, finalCountry);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            });
-            shortcutsHBox1.getChildren().remove(0);
-            shortcutsHBox1.getChildren().add(0, weatherShortcut);
+        String city = FileParser.getUserInfo("-City");
+        String country = FileParser.getUserInfo("-Country");
+        if (city.isEmpty() || country.isEmpty()) {
+            System.out.println("It seems like you haven't completed your location yet.");
+            city = "Maastricht";
+            country = "NL";
         }
-        else { update = true; }
+        mainScreen.weatherDisplay.setLocation(city, country);
+        weatherShortcut = mainScreen.weatherDisplay.getWeatherShortcut();
+        designShortcut(weatherShortcut, Color.LIGHTBLUE, Pos.CENTER, 200);
+        String finalCity = city;
+        String finalCountry = country;
+        weatherShortcut.setOnMouseClicked(e -> {
+            try {
+                mainScreen.setWeatherDisplay(finalCity, finalCountry);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+        if (update) { shortcutsHBox1.getChildren().remove(0); }
+        shortcutsHBox1.getChildren().add(0, weatherShortcut);
+        update = true;
     }
 
     private void editMenu(VBox menu) {

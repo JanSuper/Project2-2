@@ -4,6 +4,7 @@ import Interface.Display.ClockTools.AlarmVBox;
 import Interface.Screens.MainScreen;
 import Skills.Schedule.Course;
 import Skills.Schedule.Skill_Schedule;
+import javafx.beans.InvalidationListener;
 import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.geometry.*;
@@ -51,6 +52,8 @@ public class CalendarDisplay extends HBox {
     private AlarmVBox alarmVBox;
     private GridPane calendar;
     private ScrollPane scrollPane;
+    private ArrayList<Node> fix_days = new ArrayList<>();
+    private ArrayList<Node> fix_hours = new ArrayList<>();
 
     private final int NBR_OF_DAYS = 10;
 
@@ -104,6 +107,29 @@ public class CalendarDisplay extends HBox {
                         addPreviousCalendar(firstDate.minusDays(NBR_OF_DAYS));
                     }
                 });
+
+        //updating V header - dates
+        InvalidationListener vUpdater = o -> {
+            final double ty = (calendar.getHeight() - scrollPane.getViewportBounds().getHeight()) * scrollPane.getVvalue();
+            for (Node header : fix_days) {
+                header.setTranslateY(ty);
+            }
+        };
+        calendar.heightProperty().addListener(vUpdater);
+        scrollPane.viewportBoundsProperty().addListener(vUpdater);
+        scrollPane.vvalueProperty().addListener(vUpdater);
+
+        //updating H header - hours
+        InvalidationListener hUpdater = o -> {
+            final double tx = (calendar.getWidth() - scrollPane.getViewportBounds().getWidth()) * scrollPane.getHvalue();
+            for (Node header : fix_hours) {
+                header.setTranslateX(tx);
+            }
+        };
+        calendar.widthProperty().addListener(hUpdater);
+        scrollPane.viewportBoundsProperty().addListener(hUpdater);
+        scrollPane.hvalueProperty().addListener(hUpdater);
+
         getChildren().add(scrollPane);
 
         alarmVBox = new AlarmVBox(this.mainScreen,true);
@@ -189,6 +215,11 @@ public class CalendarDisplay extends HBox {
             label.setTextFill(LIGHTGRAY);
             GridPane.setHalignment(label, HPos.CENTER);
             calendar.add(label, date.getDayOfYear(), 0);
+
+            Node node = calendar.getChildren().get(calendar.getChildren().size()-1);
+            node.setStyle("-fx-background-color:#3d3d3d; -fx-border-color: darkgrey; -fx-pref-height: 40; -fx-pref-width: 100; -fx-alignment: center");
+            node.toFront();
+            fix_days.add(node);
         }
 
         int slotIndex = 1;
@@ -205,6 +236,14 @@ public class CalendarDisplay extends HBox {
             GridPane.setHalignment(label, HPos.RIGHT);
             calendar.add(label, 0, slotIndex);
             slotIndex++;
+
+            Node node = calendar.getChildren().get(calendar.getChildren().size()-1);
+            node.setStyle("-fx-background-color:#3d3d3d; -fx-border-color: darkgrey; -fx-pref-height: 10; -fx-pref-width: 50; -fx-alignment: right");
+            node.toFront();
+            fix_hours.add(node);
+        }
+        for (Node node : fix_days) {    //keeping dates above hours
+            node.toFront();
         }
     }
 
@@ -250,6 +289,13 @@ public class CalendarDisplay extends HBox {
             Pane pane1  = new Pane();
             pane1.setBackground(background);
             pane1.setCursor(Cursor.HAND);
+            pane1.toBack();
+            for (Node node : fix_hours) {
+                node.toFront();
+            }
+            for (Node node : fix_days) {
+                node.toFront();
+            }
             pane1.setOnMouseClicked(event -> {
                 getReminderInfo(desc,date.toString(),fromTime.toString());
             });
