@@ -1,4 +1,4 @@
-/*
+
 package Webcam;
 
 import com.github.sarxos.webcam.Webcam;
@@ -19,4 +19,4 @@ public class WebcamTest {
         }
     }
 }
-*/
+
