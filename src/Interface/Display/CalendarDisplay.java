@@ -238,7 +238,7 @@ public class CalendarDisplay extends HBox {
             slotIndex++;
 
             Node node = calendar.getChildren().get(calendar.getChildren().size()-1);
-            node.setStyle("-fx-background-color:#3d3d3d; -fx-border-color: darkgrey; -fx-pref-height: 10; -fx-pref-width: 50; -fx-alignment: right");
+            node.setStyle("-fx-background-color:#3d3d3d; -fx-border-color: darkgrey; -fx-pref-height: 10; -fx-pref-width: 50;");
             node.toFront();
             fix_hours.add(node);
         }
