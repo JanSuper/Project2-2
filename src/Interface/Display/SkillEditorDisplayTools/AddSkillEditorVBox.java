@@ -59,7 +59,7 @@ public class AddSkillEditorVBox extends VBox {
         qLabel.setTextFill(MainScreen.themeColor.darker());
         qLabel.setAlignment(Pos.CENTER);
 
-        question = new TextField();
+        question = new TextField("If you wish to include a variable, please replace it by <VARIABLE>");
         question.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
         question.setPrefSize(10,50);
 
@@ -91,43 +91,39 @@ public class AddSkillEditorVBox extends VBox {
         enter.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(90,true), Insets.EMPTY)));
         enter.setOnAction(e-> {
             //TODO add all the questions and answers when the possibility to add questions and answers is implemented
-            questions.add(question.getText());
-            if(!answer.getText().equals("Either write an answer for a talk/discussion or select a skill to display")){
-                answers.add(answer.getText());
-            }
-            int result = 0;
-            try {
-                result = handleAddSkill();
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-            }
-            String response = "";
-            if(result == 1)
-            {
-                response =  "The new skill was successfully added to the database.";
-                question.setText("");
-                if(!answer.getText().equals("Either write an answer for a talk/discussion or select a skill to display")){
-                    answer.setText("");
+            if(question.getText().equals("If you wish to include a variable, please replace it by <VARIABLE>")){
+                mainScreen.chat.receiveMessage("Please write a correct question");
+            }else {
+                questions.add(question.getText());
+                if (!answer.getText().equals("Either write an answer for a talk/discussion or select a skill to display")) {
+                    answers.add(answer.getText());
                 }
-                skillDisplay.setValue(Data.getSkills().get(0));
-                questions.clear();
-                answers.clear();
-            }
-            else if(result==-2){
-                response = "Task already implemented.";
-                question.setText("");
-                if(!answer.getText().equals("Either write an answer for a talk/discussion or select a skill to display")){
-                    answer.setText("");
+                int result = 0;
+                try {
+                    result = handleAddSkill();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
                 }
-                skillDisplay.setValue(Data.getSkills().get(0));
-                questions.clear();
-                answers.clear();
+                String response = "";
+                if (result == 1) {
+                    response = "The new skill was successfully added to the database.";
+                    question.setText("If you wish to include a variable, please replace it by <VARIABLE>");
+                    answer.setText("Either write an answer for a talk/discussion or select a skill to display");
+                    skillDisplay.setValue(Data.getSkills().get(0));
+                    questions.clear();
+                    answers.clear();
+                } else if (result == -2) {
+                    response = "Task already implemented.";
+                    question.setText("If you wish to include a variable, please replace it by <VARIABLE>");
+                    answer.setText("Either write an answer for a talk/discussion or select a skill to display");
+                    skillDisplay.setValue(Data.getSkills().get(0));
+                    questions.clear();
+                    answers.clear();
+                } else {
+                    response = "Sorry something went wrong, the new skill could not be added to the database";
+                }
+                mainScreen.chat.receiveMessage(response);
             }
-            else
-            {
-                response =  "Sorry something went wrong, the new skill could not be added to the database";
-            }
-            mainScreen.chat.receiveMessage(response);
         });
     }
 

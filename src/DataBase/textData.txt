@@ -203,9 +203,3 @@ U Hi how are you
 B Hi Im fine thanks
 U this is a test to display weather
 B 1
-U How do I get to <VARIABLE>
-B 50
-U How are you today hu ?
-B I'm fine thanks
-U How are you in <VARIABLE>
-B I'm very well there, thank you
