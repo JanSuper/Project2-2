@@ -89,7 +89,7 @@ public class AlarmVBox extends VBox {
         d = new DatePicker();
         d.setValue(LocalDate.now());
         d.setOnAction(event -> {
-            mainScreen.calendarDisplay.centerTo(d.getValue(),LocalTime.parse("00:00"));
+            mainScreen.calendarDisplay.centerTo(d.getValue(),LocalTime.parse("12:00"));
         });
 
         timePickerTxt = new Label();

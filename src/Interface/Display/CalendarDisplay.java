@@ -40,6 +40,7 @@ public class CalendarDisplay extends HBox {
     private final Duration period = Duration.ofMinutes(15);
     private final LocalTime beginningOfTheDay = LocalTime.of(00, 00);
     private final LocalTime endOfTheDay = LocalTime.of(23, 59);
+    private final int NBR_OF_DAYS = 100;
 
     private LocalDate today;
     public LocalDate firstDate;
@@ -55,8 +56,6 @@ public class CalendarDisplay extends HBox {
     private ArrayList<Node> fix_days = new ArrayList<>();
     private ArrayList<Node> fix_hours = new ArrayList<>();
 
-    private final int NBR_OF_DAYS = 10;
-
     private Skill_Schedule skill_schedule;
 
     public CalendarDisplay(MainScreen mainScreen) throws ParseException {
@@ -67,21 +66,19 @@ public class CalendarDisplay extends HBox {
         createContent();
         addSchedule(firstDate,lastDate);
 
-        centerTo(today,LocalTime.parse("00:00"));
+        centerTo(today,LocalTime.parse("12:00"));
     }
     public void centerTo(LocalDate date,LocalTime time){
+        //TODO fix method, sometimes it works sometimes it doesn't
         if(date.isBefore(firstDate.plusDays(1))){
-            mainScreen.chat.receiveMessage("before");
             int diff = firstDate.getDayOfYear()-date.getDayOfYear()-NBR_OF_DAYS;
             addPreviousCalendar(firstDate.minusDays(diff));
         }else if(date.isAfter(lastDate.minusDays(1))){
-            mainScreen.chat.receiveMessage("after");
             int diff = date.getDayOfYear()-lastDate.getDayOfYear()+NBR_OF_DAYS;
             addAfterCalendar(lastDate.plusDays(diff));
         }
 
         int[] inTable = convertToTable(date,time,time);
-        mainScreen.chat.receiveMessage(Arrays.toString(inTable));
         Node node = getNodeByRowColumnIndex(inTable[1],inTable[0]);
         centerNodeInScrollPane(scrollPane,node);
     }
@@ -95,7 +92,6 @@ public class CalendarDisplay extends HBox {
         lastDate = firstDate.plusDays(NBR_OF_DAYS-1);
 
         addToCalendar(firstDate,lastDate);
-        //TODO being able to make the hours fix on the calendar
         scrollPane = new ScrollPane(calendar);
         scrollPane.hvalueProperty().addListener(
                 (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
