@@ -509,7 +509,7 @@ public class TextRecognition {
                     "4. Send everything into one message." +System.lineSeparator() +
                     "If you don't want to add a skill write: Cancel";
         }else if(skill_num == 31){
-            assistant.mainScreen.setSkillEditorAppDisplay("Edit skill");
+            assistant.mainScreen.setSkillEditorAppDisplay("Add rule");
         }
         else if(skill_num == 40){
             String searchURL = "https://www.google.com/search" + "?q=" + assistant.messageToUrl(nodeInvestigated.getWordsRemoved().get(0));

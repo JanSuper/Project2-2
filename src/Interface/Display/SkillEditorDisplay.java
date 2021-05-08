@@ -1,7 +1,7 @@
 package Interface.Display;
 
 import Interface.Display.SkillEditorDisplayTools.AddSkillEditorVBox;
-import Interface.Display.SkillEditorDisplayTools.EditSkillEditorVBox;
+import Interface.Display.SkillEditorDisplayTools.EditRuleEditorVBox;
 import Interface.Screens.MainScreen;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -16,19 +16,19 @@ public class SkillEditorDisplay extends VBox {
     private MainScreen mainScreen;
 
     public Button addSkill;
-    public Button editSkill;
+    public Button addRule;
 
     private HBox tabs;
     public Button prevTab;
 
     private AddSkillEditorVBox addSkillEditorVBox;
-    private EditSkillEditorVBox editSkillEditorVBox;
+    private EditRuleEditorVBox editSkillEditorVBox;
 
 
     public SkillEditorDisplay(MainScreen mainScreen){
         this.mainScreen = mainScreen;
         addSkillEditorVBox = new AddSkillEditorVBox(this.mainScreen);
-        editSkillEditorVBox = new EditSkillEditorVBox(this.mainScreen);
+        editSkillEditorVBox = new EditRuleEditorVBox(this.mainScreen);
         setBackground(new Background(new BackgroundFill(new Color(0.08,0.12, 0.15, 0.3), CornerRadii.EMPTY, Insets.EMPTY)));
         createContent();
         getChildren().add(tabs);
@@ -43,8 +43,8 @@ public class SkillEditorDisplay extends VBox {
         addSkill = new Button("Add Skill");
         designTab(addSkill);
 
-        editSkill = new Button("Edit Skill");
-        designTab(editSkill);
+        addRule = new Button("Add Rule");
+        designTab(addRule);
 
         Button exit = new Button("x");
         exit.setCursor(Cursor.HAND);
@@ -66,7 +66,7 @@ public class SkillEditorDisplay extends VBox {
         Region region = new Region();
         HBox.setHgrow(region, Priority.ALWAYS);
 
-        tabs.getChildren().addAll(addSkill, editSkill, region, exit);
+        tabs.getChildren().addAll(addSkill, addRule, region, exit);
     }
 
     private void designTab(Button tab) {
@@ -87,7 +87,7 @@ public class SkillEditorDisplay extends VBox {
 
         switch(selectedTab.getText()) {
             case "Add Skill": setAddSkillView(); break;
-            case "Edit Skill": setEditSkillView(); break;
+            case "Add Rule": setEditSkillView(); break;
         }
     }
 
@@ -98,7 +98,7 @@ public class SkillEditorDisplay extends VBox {
 
         switch(prevTab.getText()) {
             case "Add Skill": getChildren().remove(addSkillEditorVBox); break;
-            case "Edit Skill": getChildren().remove(editSkillEditorVBox); break;
+            case "Add Rule": getChildren().remove(editSkillEditorVBox); break;
         }
     }
 

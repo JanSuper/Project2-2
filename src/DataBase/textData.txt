@@ -89,14 +89,14 @@ B 21
 U What areas can I add to the clock
 B 21
 
-U Create skill
-B 30
-U New skill
-B 30
 U Edit skill
+B 30
+U Skill editor
+B 30
+U New rule
 B 31
-U Modify skill
-B 32
+U Add Rule
+B 31
 
 U Look up
 B 40
@@ -198,8 +198,7 @@ B 100
 /////////////////////////////////////////////////////////////////////////////////////////
 // NEW SKILLS ADDED (WITH AND WITHOUT VARIABLES)
 /////////////////////////////////////////////////////////////////////////////////////////
-
-U Hi how are you
-B Hi Im fine thanks
-U this is a test to display weather
-B 1
+U test1
+B Hi my man
+U test2
+B 

@@ -130,7 +130,7 @@ public class MainScreen {
 
     public void setSkillEditorAppDisplay(String firstTab) {
         if (skillEditorDisplay.prevTab != null) { skillEditorDisplay.deselectTab(skillEditorDisplay.prevTab); }
-        if (firstTab.equals("Edit skill")) { skillEditorDisplay.selectTab(skillEditorDisplay.editSkill); }
+        if (firstTab.equals("Add rule")) { skillEditorDisplay.selectTab(skillEditorDisplay.addRule); }
         else { skillEditorDisplay.selectTab(skillEditorDisplay.addSkill); }
 
         skillEditorDisplay.setBorder(border);

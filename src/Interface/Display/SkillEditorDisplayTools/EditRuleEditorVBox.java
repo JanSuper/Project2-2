@@ -19,7 +19,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
 
-public class EditSkillEditorVBox extends VBox {
+public class EditRuleEditorVBox extends VBox {
     private MainScreen mainScreen;
     private VBox principal;
 
@@ -28,7 +28,7 @@ public class EditSkillEditorVBox extends VBox {
     private ArrayList<String> questions;
     private ArrayList<String> answers;
 
-    public EditSkillEditorVBox(MainScreen mainScreen){
+    public EditRuleEditorVBox(MainScreen mainScreen){
         this.mainScreen = mainScreen;
         questions = new ArrayList();
         answers = new ArrayList();

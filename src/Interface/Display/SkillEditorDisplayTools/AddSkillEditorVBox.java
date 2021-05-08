@@ -6,15 +6,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-
+import javafx.scene.control.TextField;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -25,17 +23,18 @@ public class AddSkillEditorVBox extends VBox {
     private File dataBase = new File("src\\DataBase\\textData.txt");
 
     private ArrayList<String> questions;
-    private ArrayList<String> answers;
 
+    private VBox allQuestions;
+    private ScrollPane qScroll;
+
+    private HBox howManyQ;
+    private Spinner<Integer> spinner;
+    private int oldValue;
     private Label qLabel;
-    private TextField question;
     private Label aLabel;
     private TextField answer;
     private Label skillDisplayLabel;
-    private HBox qPlus;
-    private HBox aPlus;
     private Button enter;
-
     ObservableList<String> options =
             FXCollections.observableArrayList(
                     Data.getSkills()
@@ -45,23 +44,49 @@ public class AddSkillEditorVBox extends VBox {
     public AddSkillEditorVBox(MainScreen mainScreen){
         this.mainScreen = mainScreen;
         questions = new ArrayList();
-        answers = new ArrayList();
         setSpacing(20);
         setAlignment(Pos.CENTER);
         setPadding(new Insets(40,0,0,0));
         createContent();
-        getChildren().addAll(qLabel,question,qPlus,aLabel,answer,aPlus,skillDisplayLabel,skillDisplay,enter);    }
+        getChildren().addAll(howManyQ,qScroll,aLabel,answer,skillDisplayLabel,skillDisplay,enter);
+    }
 
     public void createContent(){
+
+        spinner = new Spinner<Integer>();
+        int initialValue = 0;
+        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10, initialValue);
+        spinner.setValueFactory(valueFactory);
+        oldValue = initialValue;
+        spinner.setOnMouseClicked(event -> {
+            int newVal = spinner.getValue();
+            if(newVal>oldValue){
+                addQuestion();
+            }else if(newVal<oldValue){
+                allQuestions.getChildren().remove(allQuestions.getChildren().size()-1);
+            }
+            if(oldValue==5){
+                qScroll.setMaxHeight(qScroll.getHeight());
+            }
+            oldValue = newVal;
+        });
 
         qLabel = new Label("Question:");
         qLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
         qLabel.setTextFill(MainScreen.themeColor.darker());
         qLabel.setAlignment(Pos.CENTER);
 
-        question = new TextField("If you wish to include a variable, please replace it by <VARIABLE>");
-        question.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
-        question.setPrefSize(10,50);
+        howManyQ = new HBox();
+        howManyQ.setSpacing(20);
+        howManyQ.setPadding(new Insets(0,100,0,300));
+        howManyQ.getChildren().addAll(qLabel,spinner);
+
+        allQuestions = new VBox();
+        allQuestions.setSpacing(10);
+        allQuestions.setAlignment(Pos.CENTER);
+
+        qScroll = new ScrollPane(allQuestions);
+        qScroll.setBackground(getBackground());
 
         aLabel = new Label("Answer:");
         aLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
@@ -79,94 +104,66 @@ public class AddSkillEditorVBox extends VBox {
 
         skillDisplay.setValue(Data.getSkills().get(0));
 
-
-        qPlus = new HBox(70);
-        setQPlusButton(qPlus);
-        aPlus = new HBox(80);
-        setAPlusButton(aPlus);
-
         enter = new Button("Enter");
         enter.setScaleX(2);enter.setScaleY(2);
         enter.setTranslateY(50);
         enter.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(90,true), Insets.EMPTY)));
         enter.setOnAction(e-> {
-            //TODO add all the questions and answers when the possibility to add questions and answers is implemented
-            if(question.getText().equals("If you wish to include a variable, please replace it by <VARIABLE>")){
-                mainScreen.chat.receiveMessage("Please write a correct question");
-            }else {
-                questions.add(question.getText());
-                if (!answer.getText().equals("Either write an answer for a talk/discussion or select a skill to display")) {
-                    answers.add(answer.getText());
-                }
-                int result = 0;
-                try {
-                    result = handleAddSkill();
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
-                }
-                String response = "";
-                if (result == 1) {
-                    response = "The new skill was successfully added to the database.";
-                    question.setText("If you wish to include a variable, please replace it by <VARIABLE>");
-                    answer.setText("Either write an answer for a talk/discussion or select a skill to display");
-                    skillDisplay.setValue(Data.getSkills().get(0));
-                    questions.clear();
-                    answers.clear();
-                } else if (result == -2) {
-                    response = "Task already implemented.";
-                    question.setText("If you wish to include a variable, please replace it by <VARIABLE>");
-                    answer.setText("Either write an answer for a talk/discussion or select a skill to display");
-                    skillDisplay.setValue(Data.getSkills().get(0));
-                    questions.clear();
-                    answers.clear();
+            for (Node node:allQuestions.getChildren()) {
+                TextField question = (TextField) node;
+                if (question.getText().equals("If you wish to include a variable, please replace it by <VARIABLE>")) {
+                    mainScreen.chat.receiveMessage("Please write a correct question");
                 } else {
-                    response = "Sorry something went wrong, the new skill could not be added to the database";
+                    questions.add(question.getText());
+                    int result = 0;
+                    try {
+                        result = handleAddSkill(question.getText());
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+                    String response = "";
+                    if (result == 1) {
+                        response = "The new skill was successfully added to the database.";
+                        question.setText("If you wish to include a variable, please replace it by <VARIABLE>");
+                        answer.setText("Either write an answer for a talk/discussion or select a skill to display");
+                        skillDisplay.setValue(Data.getSkills().get(0));
+                        questions.clear();
+                    } else {
+                        response = "Sorry something went wrong, the new skill could not be added to the database";
+                    }
+                    mainScreen.chat.receiveMessage(response);
                 }
-                mainScreen.chat.receiveMessage(response);
             }
         });
     }
 
-    public void setQPlusButton(HBox box){
-        //TODO add the possibility to add more questions for the same task
+    private void addQuestion(){
+        TextField question = new TextField("If you wish to include a variable, please replace it by <VARIABLE>");
+        question.setPrefSize(qScroll.getWidth()-20,20);
+        question.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
+        allQuestions.getChildren().add(question);
     }
 
-    public void setAPlusButton(HBox box){
-        //TODO add the possibility to add more responses for the same task
-    }
-
-    public int handleAddSkill() throws IOException {
+    public int handleAddSkill(String question) throws IOException {
         int success = -1;
-        if(skillAlreadyIn(questions)){
-            success = -2;
-        }
-        else
-        {
-
-            try{
-                BufferedWriter newData = new BufferedWriter(new FileWriter(dataBase, true));
-                for(int j = 0; j <= questions.size()-1; j++)
-                {
-                    newData.append("U " + questions.get(j) + System.lineSeparator());
-                }
-                if(answers.size()>0){
-                    for(int y = 0; y <= answers.size()-1; y++)
-                    {
-                        newData.append("B " + answers.get(y) + System.lineSeparator());
-                    }
-                }else{
-                    newData.write("B " + skillToDisplay() + System.lineSeparator());
-                }
-                success = 1;
-                newData.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
+        try{
+            BufferedWriter newData = new BufferedWriter(new FileWriter(dataBase, true));
+            newData.append("U " + question + System.lineSeparator());
+            if(answer.getText().equals("Either write an answer for a talk/discussion or select a skill to display")){
+                newData.append("B " + skillToDisplay() + System.lineSeparator());
+            }else{
+                newData.append("B " + answer.getText() + System.lineSeparator());
             }
+            success = 1;
+            newData.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
         return success;
     }
     //"Talk/Discussion","Weather","Clock","Calendar","Media Player","Skill Editor"
@@ -184,17 +181,6 @@ public class AddSkillEditorVBox extends VBox {
             displayNbr = "30";
         }
         return displayNbr;
-    }
-
-    public boolean skillAlreadyIn(ArrayList uQuestion) throws IOException {
-        String actual = Files.readString(dataBase.toPath()).toLowerCase();
-        for(int j = 0; j <= uQuestion.size()-1; j++)
-        {
-            if(actual.contains((String) uQuestion.get(j))){
-                return true;
-            }
-        }
-        return false;
     }
 }
 
