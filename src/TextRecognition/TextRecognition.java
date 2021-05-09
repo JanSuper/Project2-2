@@ -390,69 +390,98 @@ public class TextRecognition {
                 final_answer = final_answer + System.lineSeparator() + System.lineSeparator() + this_month.get(i);
             }
         }
-        else if(skill_num == 20)
-        {
-            if (message.toLowerCase().contains("timer")) {
-                if (message.toLowerCase().contains("start") && !assistant.mainScreen.clockAppDisplay.timerVBox.timerTime.getText().equals("00 : 00 : 00") && assistant.mainScreen.clockAppDisplay.timerVBox.startPauseResume.getText().equals("Start")) {
-                    assistant.mainScreen.clockAppDisplay.timerVBox.startTimer();
-                    final_answer = "The timer started. Type 'Pause/Cancel timer' or use the options on the left screen.";
-                }
-                else if (message.toLowerCase().contains("pause") &&  assistant.mainScreen.clockAppDisplay.timerVBox.startPauseResume.getText().equals("Pause")) {
-                    assistant.mainScreen.clockAppDisplay.timerVBox.pauseTimer();
-                    final_answer = "The timer is paused. Type 'Resume/Cancel timer' or use the options on the left screen.";
-                }
-                else if (message.toLowerCase().contains("resume") &&  assistant.mainScreen.clockAppDisplay.timerVBox.startPauseResume.getText().equals("Resume")) {
-                    assistant.mainScreen.clockAppDisplay.timerVBox.resumeTimer();
-                    final_answer = "The timer is resumed. Type 'Pause/Cancel timer' or use the options on the left screen.";
-                }
-                else if (message.toLowerCase().contains("cancel") &&  !assistant.mainScreen.clockAppDisplay.timerVBox.cancel.isDisabled()) {
-                    assistant.mainScreen.clockAppDisplay.timerVBox.cancelTimer();
-                    final_answer = "The timer is canceled. To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
-                }
-                else {
-                    final_answer = "Here's the timer! To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
-                }
-                assistant.mainScreen.setClockAppDisplay("Timer");
-            }
-            else if (message.toLowerCase().contains("clock") || message.toLowerCase().contains("time")) {
-                assistant.mainScreen.setClockAppDisplay("Clock");
-                final_answer = "Here's the clock! To add a new clock use the options on the left screen or type 'Add a new clock for Continent/City'. If you want the available areas you can add, type 'What areas can I add to the clock'.";
-            }
-            else if (message.toLowerCase().contains("stopwatch")) {
-                if (message.toLowerCase().contains("pause") && assistant.mainScreen.clockAppDisplay.stopwatchVBox.startPause.getText().equals("Pause")) {
-                    assistant.mainScreen.clockAppDisplay.stopwatchVBox.pauseStopwatch();
-                    final_answer = "The stopwatch is paused! Type 'reset/start stopwatch' or use the buttons on the left screen.";
-                }
-                else if (message.toLowerCase().contains("lap") && assistant.mainScreen.clockAppDisplay.stopwatchVBox.lapReset.getText().equals("Lap") && !assistant.mainScreen.clockAppDisplay.stopwatchVBox.lapReset.isDisabled()) {
-                    assistant.mainScreen.clockAppDisplay.stopwatchVBox.lapStopwatch();
-                    final_answer = assistant.mainScreen.clockAppDisplay.stopwatchVBox.lap.getText();
-                }
-                else if (message.toLowerCase().contains("reset") && assistant.mainScreen.clockAppDisplay.stopwatchVBox.lapReset.getText().equals("Reset")) {
-                    assistant.mainScreen.clockAppDisplay.stopwatchVBox.resetStopwatch();
-                }
-                else if ((message.toLowerCase().contains("set") && !message.toLowerCase().contains("reset")) || message.toLowerCase().contains("start")) {
-                    assistant.mainScreen.clockAppDisplay.stopwatchVBox.startStopwatch();
-                    final_answer = "The stopwatch has been started! Type 'lap/pause stopwatch' or use the buttons on the left screen.";
-                }
-                assistant.mainScreen.setClockAppDisplay("Stopwatch");
-            }
-            else {
-                assistant.mainScreen.setClockAppDisplay("Alarm");
-            }
+        else if(skill_num == 14) {
+            assistant.mainScreen.setClockAppDisplay("Alarm");
         }
-        else if(skill_num == 21)
-        {
+        else if(skill_num == 15) {
+            assistant.mainScreen.setClockAppDisplay("Clock");
+            final_answer = "Here's the clock! To add a new clock use the options on the left screen or type 'Add a new clock for Continent/City'. If you want the available areas you can add, type 'What areas can I add to the clock'.";
+        }
+        else if(skill_num == 16) {
             String messageT = "";
             for (String string : assistant.mainScreen.clockAppDisplay.clockVBox.listOfZoneIDs) {
                 messageT += string + ", ";
             }
             final_answer = "The available timezones you can add to the clock are:  " + messageT;
         }
-        else if(skill_num == 22){
+        else if(skill_num == 17) {
+            final_answer = "Here's the timer! To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
+            assistant.mainScreen.setClockAppDisplay("Timer");
+        }
+        else if(skill_num == 18) {
+            if (message.toLowerCase().contains("start") && !assistant.mainScreen.clockAppDisplay.timerVBox.timerTime.getText().equals("00 : 00 : 00") && assistant.mainScreen.clockAppDisplay.timerVBox.startPauseResume.getText().equals("Start")) {
+                assistant.mainScreen.clockAppDisplay.timerVBox.startTimer();
+                final_answer = "The timer started. Type 'Pause/Cancel timer' or use the options on the left screen.";
+            }
+            else {
+                final_answer = "To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
+            }
+            assistant.mainScreen.setClockAppDisplay("Timer");
+        }
+        else if(skill_num == 19) {
+            if (message.toLowerCase().contains("pause") &&  assistant.mainScreen.clockAppDisplay.timerVBox.startPauseResume.getText().equals("Pause")) {
+                assistant.mainScreen.clockAppDisplay.timerVBox.pauseTimer();
+                final_answer = "The timer is paused. Type 'Resume/Cancel timer' or use the options on the left screen.";
+            }
+            assistant.mainScreen.setClockAppDisplay("Timer");
+        }
+        else if(skill_num == 20) {
+            if (message.toLowerCase().contains("resume") &&  assistant.mainScreen.clockAppDisplay.timerVBox.startPauseResume.getText().equals("Resume")) {
+                assistant.mainScreen.clockAppDisplay.timerVBox.resumeTimer();
+                final_answer = "The timer is resumed. Type 'Pause/Cancel timer' or use the options on the left screen.";
+            }
+            else {
+                final_answer = "To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
+            }
+            assistant.mainScreen.setClockAppDisplay("Timer");
+        }
+        else if(skill_num == 21) {
+            if (message.toLowerCase().contains("cancel") &&  !assistant.mainScreen.clockAppDisplay.timerVBox.cancel.isDisabled()) {
+                assistant.mainScreen.clockAppDisplay.timerVBox.cancelTimer();
+                final_answer = "The timer is canceled. To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
+            }
+            else {
+                final_answer = "To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
+            }
+            assistant.mainScreen.setClockAppDisplay("Timer");
+        }
+        else if(skill_num == 22) {
+            assistant.mainScreen.setClockAppDisplay("Stopwatch");
+            final_answer = "Here's the stopwatch! Type 'Start the stopwatch' or use the buttons on the left screen.";
+        }
+        else if(skill_num == 23) {
+            if (assistant.mainScreen.clockAppDisplay.stopwatchVBox.startPause.getText().equals("Start")) {
+                assistant.mainScreen.clockAppDisplay.stopwatchVBox.startStopwatch();
+                final_answer = "The stopwatch has been started! Type 'lap/pause stopwatch' or use the buttons on the left screen.";
+            }
+            assistant.mainScreen.setClockAppDisplay("Stopwatch");
+        }
+        else if(skill_num == 24) {
+            if (assistant.mainScreen.clockAppDisplay.stopwatchVBox.startPause.getText().equals("Pause")) {
+                assistant.mainScreen.clockAppDisplay.stopwatchVBox.pauseStopwatch();
+                final_answer = "The stopwatch is paused! Type 'reset/start stopwatch' or use the buttons on the left screen.";
+            }
+            assistant.mainScreen.setClockAppDisplay("Stopwatch");
+        }
+        else if(skill_num == 25) {
+            if (assistant.mainScreen.clockAppDisplay.stopwatchVBox.lapReset.getText().equals("Lap") && !assistant.mainScreen.clockAppDisplay.stopwatchVBox.lapReset.isDisabled()) {
+                assistant.mainScreen.clockAppDisplay.stopwatchVBox.lapStopwatch();
+                final_answer = assistant.mainScreen.clockAppDisplay.stopwatchVBox.lap.getText();
+            }
+            assistant.mainScreen.setClockAppDisplay("Stopwatch");
+        }
+        else if(skill_num == 26) {
+            if (assistant.mainScreen.clockAppDisplay.stopwatchVBox.lapReset.getText().equals("Reset")) {
+                assistant.mainScreen.clockAppDisplay.stopwatchVBox.resetStopwatch();
+                final_answer = "The stopwatch was reset. Type 'Start the stopwatch' or use the buttons on the left screen.";
+            }
+            assistant.mainScreen.setClockAppDisplay("Stopwatch");
+        }
+        else if(skill_num == 27) {
             assistant.mainScreen.setClockAppDisplay("Alarm");
             assistant.mainScreen.clockAppDisplay.alarmVBox.addAlarm(nodeInvestigated.getWordsRemoved().get(0),"no desc");
         }
-        else if(skill_num == 23){
+        else if(skill_num == 28) {
             String err = "Something went wrong! To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
             assistant.mainScreen.setClockAppDisplay("Timer");
             if (actual_lastWord.length() == 8) {
@@ -479,27 +508,25 @@ public class TextRecognition {
             }
             else { final_answer = err; }
         }
-        else if(skill_num == 24) {
-            if(originalCleanM.toLowerCase().contains("what time is it in")) {
-                if(assistant.mainScreen.clockAppDisplay.clockVBox.tempTimeZoneIDs.contains(actual_lastWord)) {
-                    final_answer = assistant.mainScreen.clockAppDisplay.clockVBox.getTimeFromZoneID(actual_lastWord) + " If you want to add a new clock use the options on the left screen or type 'Add a new clock for Continent/City'.";
-                }
-                else {
-                    final_answer = "The area you requested the time for couldn't be found. If you want the available areas, type 'What are the time-zone IDs'.";
-                }
+        else if(skill_num == 29) {
+            if(assistant.mainScreen.clockAppDisplay.clockVBox.tempTimeZoneIDs.contains(actual_lastWord.replace("?", "").replace(".", ""))) {
+                final_answer = assistant.mainScreen.clockAppDisplay.clockVBox.getTimeFromZoneID(actual_lastWord.replace("?", "").replace(".", "")) + " If you want to add a new clock type 'Add a new clock for Continent/City'.";
             }
             else {
-                if(assistant.mainScreen.clockAppDisplay.clockVBox.tempTimeZoneIDs.contains(actual_lastWord)) {
-                    assistant.mainScreen.clockAppDisplay.clockVBox.addClock(actual_lastWord);
-                    final_answer = "The clock was successfully added!";
-                }
-                else {
-                    final_answer = "The area you requested couldn't be found. If you want the available areas, type 'What areas can I add to the clock' or use the options on the left screen.";
-                }
-                assistant.mainScreen.setClockAppDisplay("Clock");
+                final_answer = "The area you requested the time for couldn't be found. If you want the available areas, type 'What are the time-zone IDs'.";
             }
         }
-        else if(skill_num == 30)
+        else if(skill_num == 30) {
+            if(assistant.mainScreen.clockAppDisplay.clockVBox.tempTimeZoneIDs.contains(actual_lastWord.replace("?", "").replace(".", ""))) {
+                assistant.mainScreen.clockAppDisplay.clockVBox.addClock(actual_lastWord.replace("?", "").replace(".", ""));
+                final_answer = "The clock was successfully added!";
+            }
+            else {
+                final_answer = "The area you requested couldn't be found. If you want the available areas, type 'What areas can I add to the clock' or use the options on the left screen.";
+            }
+            assistant.mainScreen.setClockAppDisplay("Clock");
+        }
+        else if(skill_num == 31)
         {
             assistant.mainScreen.setSkillEditorAppDisplay("Add skill");
             final_answer = "To add a new skill to the assistant you have to follow these rules:" + System.lineSeparator() +
@@ -508,7 +535,7 @@ public class TextRecognition {
                     "3. Write down the answer(s) you want from the assistant. If there is more than one answer (for the same question) make sure to separate them with a comma , " + System.lineSeparator() +
                     "4. Send everything into one message." +System.lineSeparator() +
                     "If you don't want to add a skill write: Cancel";
-        }else if(skill_num == 31){
+        }else if(skill_num == 32){
             assistant.mainScreen.setSkillEditorAppDisplay("Add rule");
         }
         else if(skill_num == 40){
