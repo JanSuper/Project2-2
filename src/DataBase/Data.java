@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Data {
-    private static ArrayList<String> skills = new ArrayList<>(Arrays.asList("Talk/Discussion","Weather","Clock","Calendar","Media Player","Skill Editor"));
-
     private static String username = "defaultUsername";
     private static String password = "defaultPasseword";
 
@@ -75,10 +73,6 @@ public class Data {
 
     public static void setRemindersFile(File remindersFile) {
         Data.remindersFile = remindersFile;
-    }
-
-    public static ArrayList<String> getSkills() {
-        return skills;
     }
 
     public static MediaPlayer getMp() {

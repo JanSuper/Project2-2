@@ -69,10 +69,10 @@ public class EditRuleEditorVBox extends VBox {
 
         ObservableList<String> options =
                 FXCollections.observableArrayList(
-                        Data.getSkills()
+                        "later"
                 );
         final ComboBox skillDisplay = new ComboBox(options);
-        skillDisplay.setValue(Data.getSkills().get(0));
+        skillDisplay.setValue(options.get(0));
 
 
         HBox qPlus = new HBox(70);
@@ -100,7 +100,7 @@ public class EditRuleEditorVBox extends VBox {
                 response =  "The new skill was successfully added to the database.";
                 question.setText("");
                 answer.setText("");
-                skillDisplay.setValue(Data.getSkills().get(0));
+                skillDisplay.setValue(options.get(0));
                 questions.clear();
                 answers.clear();
             }
@@ -108,7 +108,7 @@ public class EditRuleEditorVBox extends VBox {
                 response = "Task already implemented.";
                 question.setText("");
                 answer.setText("");
-                skillDisplay.setValue(Data.getSkills().get(0));
+                skillDisplay.setValue(options.get(0));
                 questions.clear();
                 answers.clear();
             }

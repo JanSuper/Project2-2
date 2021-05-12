@@ -5,6 +5,10 @@ import Interface.Screens.MainScreen;
 import javafx.scene.text.Text;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
 
 public class FileParser {
 
@@ -160,5 +164,32 @@ public class FileParser {
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     *
+     * @return a matrix so that each row is [mainSkill, task nbr, task description,nbr of variables required]
+     * EXAMPLE: [Weather,1,How is the weather here,0]
+     */
+    public List<List<String>> getAllSkills(){
+        // this gives you a 2-dimensional array of strings
+        List<List<String>> lines = new ArrayList<>();
+        Scanner inputStream;
+
+        try{
+            inputStream = new Scanner(new File("src/DataBase/tasks.csv"));
+
+            while(inputStream.hasNext()){
+                String line= inputStream.nextLine();
+                String[] values = line.split(",");
+                // this adds the currently parsed line to the 2-dimensional string array
+                lines.add(Arrays.asList(values));
+            }
+
+            inputStream.close();
+        }catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return lines;
     }
 }

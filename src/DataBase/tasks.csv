@@ -1,0 +1,43 @@
+Weather,1,How is the weather here,0
+Weather,2,Weather in <VARIABLE>,1
+Schedule,10,What is my next lecture,0
+Schedule,11,What are my lectures this week,0
+Schedule,12,What are my lectures this month,0
+Clock App,14,Display the alarm skill,0
+Clock App,15,Display the clock skill,0
+Clock App,16,What are the time-zones I can add to the clock,0
+Clock App,17,Display the timer skill,0
+Clock App,18,Start the timer,0
+Clock App,19,Pause the timer,0
+Clock App,20,Resume the timer,0
+Clock App,21,Cancel the timer,0
+Clock App,22,Display the stop watch skill,0
+Clock App,23,Start the stopwatch,0
+Clock App,24,Pause the stopwatch,0
+Clock App,25,Lap the stopwatch,0
+Clock App,26,Reset the stopwatch,0
+Clock App,27,Set an alarm at <VARIABLE>,1
+Clock App,28,Set a timer for <VARIABLE>,1
+Clock App,29,What time is it in <VARIABLE>,1
+Clock App,30,Add a clock for <VARIABLE>,1
+Skill Editor,31,Edit a skill,0
+Skill Editor,32,Create a new rule,0
+Music Player,50,Listen to music/video,0
+Music Player,51,Change music/video,0
+Music Player,52,Pause music/video,0
+Music Player,53,Stop music/video,0
+Music Player,59,Watch from url <VARIABLE>,1
+Calendar,60,Display the calendar skill,0
+Google,71,Make a research on google,0
+Map,70,Route from <VARIABLE> to <VARIABLE>,2
+Map,72,Map of <VARIABLE>,1
+Profile Edit,80,Change my password to <VARIABLE>,1
+Profile Edit,81,Change my profile info,0
+Profile Edit,82,Change my city to <VARIABLE>,1
+Profile Edit,83,Change my country to <VARIABLE>,1
+Profile Edit,84,Change my age to <VARIABLE>,1
+Profile Edit,85,Change my profession to <VARIABLE>,1
+Profile Edit,86,Edit the background,0
+Profile Edit,87,Edit the theme color,0
+Profile Edit,89,See my personal info,0
+Close,90,Bye/Leave,0

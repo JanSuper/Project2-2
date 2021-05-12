@@ -1,6 +1,6 @@
 package Interface.Display.SkillEditorDisplayTools;
 
-import DataBase.Data;
+import FileParser.FileParser;
 import Interface.Screens.MainScreen;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,15 +14,17 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.control.TextField;
 import java.io.*;
-import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.List;
 
 public class AddSkillEditorVBox extends VBox {
     private MainScreen mainScreen;
+    private FileParser fileParser;
 
     private File dataBase = new File("src\\DataBase\\textData.txt");
 
     private ArrayList<String> questions;
+    private List<List<String>> allSkills;
 
     private VBox allQuestions;
     private ScrollPane qScroll;
@@ -35,20 +37,42 @@ public class AddSkillEditorVBox extends VBox {
     private TextField answer;
     private Label skillDisplayLabel;
     private Button enter;
-    ObservableList<String> options =
-            FXCollections.observableArrayList(
-                    Data.getSkills()
-            );
-    final ComboBox skillDisplay = new ComboBox(options);
+    private ObservableList<String> options1;
+    private ComboBox skillDisplay;
+    private ObservableList<String> options2;
+    private ComboBox tasksDisplay;
+    private HBox propositions;
 
     public AddSkillEditorVBox(MainScreen mainScreen){
         this.mainScreen = mainScreen;
+        fileParser = new FileParser();
         questions = new ArrayList();
+        allSkills = fileParser.getAllSkills();
+
         setSpacing(20);
         setAlignment(Pos.CENTER);
         setPadding(new Insets(40,0,0,0));
         createContent();
-        getChildren().addAll(howManyQ,qScroll,aLabel,answer,skillDisplayLabel,skillDisplay,enter);
+        getChildren().addAll(howManyQ,qScroll,aLabel,answer,skillDisplayLabel,propositions,enter);
+    }
+
+    private List<String> getMainSkills(List<List<String>> allSkills){
+        List<String> mainSkills = new ArrayList<>();
+        for (List<String> row:allSkills) {
+            if(!mainSkills.contains(row.get(0))){
+                mainSkills.add(row.get(0));
+            }
+        }
+        return mainSkills;
+    }
+    private List<String> getTasks(List<List<String>> allSkills){
+        List<String> allTasks = new ArrayList<>();
+        for (List<String> row:allSkills) {
+            if(row.get(0).equals(skillDisplay.getValue())){
+                allTasks.add(row.get(2));
+            }
+        }
+        return allTasks;
     }
 
     public void createContent(){
@@ -102,7 +126,31 @@ public class AddSkillEditorVBox extends VBox {
         skillDisplayLabel.setTextFill(MainScreen.themeColor.darker());
         skillDisplayLabel.setAlignment(Pos.CENTER);
 
-        skillDisplay.setValue(Data.getSkills().get(0));
+        options1 =
+                FXCollections.observableArrayList(
+                        getMainSkills(allSkills)
+                );
+        skillDisplay = new ComboBox(options1);
+        skillDisplay.setValue(options1.get(0));
+        skillDisplay.setOnAction(event -> {
+            options2.setAll(FXCollections.observableArrayList(
+                    getTasks(allSkills)
+            ));
+            tasksDisplay.setValue(options2.get(0));
+        });
+
+        options2 =
+                FXCollections.observableArrayList(
+                        getTasks(allSkills)
+                );
+        tasksDisplay = new ComboBox(options2);
+        tasksDisplay.setValue(options2.get(0));
+
+        propositions = new HBox();
+        propositions.setSpacing(20);
+        propositions.setAlignment(Pos.CENTER);
+        propositions.setPadding(new Insets(40,0,0,0));
+        propositions.getChildren().addAll(skillDisplay,tasksDisplay);
 
         enter = new Button("Enter");
         enter.setScaleX(2);enter.setScaleY(2);
@@ -123,13 +171,13 @@ public class AddSkillEditorVBox extends VBox {
                     }
                     String response = "";
                     if (result == 1) {
-                        response = "The new skill was successfully added to the database.";
+                        response = "Question : \"" + question.getText() + "\" was successfully added to the database.";
                         question.setText("If you wish to include a variable, please replace it by <VARIABLE>");
                         answer.setText("Either write an answer for a talk/discussion or select a skill to display");
-                        skillDisplay.setValue(Data.getSkills().get(0));
+                        skillDisplay.setValue(options1.get(0));
                         questions.clear();
                     } else {
-                        response = "Sorry something went wrong, the new skill could not be added to the database";
+                        response = "Question : \"" + question.getText() + "\" could not be added to the database";
                     }
                     mainScreen.chat.receiveMessage(response);
                 }
@@ -150,7 +198,12 @@ public class AddSkillEditorVBox extends VBox {
             BufferedWriter newData = new BufferedWriter(new FileWriter(dataBase, true));
             newData.append("U " + question + System.lineSeparator());
             if(answer.getText().equals("Either write an answer for a talk/discussion or select a skill to display")){
-                newData.append("B " + skillToDisplay() + System.lineSeparator());
+                String skill = skillToDisplay(question);
+                if(!skill.equals("-1")){
+                    newData.append("B " + skillToDisplay(question) + System.lineSeparator());
+                }else{
+                    mainScreen.chat.receiveMessage("Question : \"" + question + "\" does not contain the required number of variables");
+                }
             }else{
                 newData.append("B " + answer.getText() + System.lineSeparator());
             }
@@ -167,20 +220,33 @@ public class AddSkillEditorVBox extends VBox {
         return success;
     }
     //"Talk/Discussion","Weather","Clock","Calendar","Media Player","Skill Editor"
-    public String skillToDisplay(){
-        String displayNbr = "";
-        if(skillDisplay.getValue().equals("Weather")){
-            displayNbr = "1";
-        }else if(skillDisplay.getValue().equals("Clock")){
-            displayNbr = "20";
-        }else if(skillDisplay.getValue().equals("Calendar")){
-            displayNbr = "10";
-        }else if(skillDisplay.getValue().equals("Media Player")){
-            displayNbr = "50";
-        }else if(skillDisplay.getValue().equals("Skill Editor")){
-            displayNbr = "30";
+    public String skillToDisplay(String question){
+        String displayNbr = "-1";
+        for (List<String>row:allSkills) {
+            if(row.get(0).equals(skillDisplay.getValue())&&row.get(2).equals(tasksDisplay.getValue())){
+                if(containsSameNbrOfVariables(question,Integer.valueOf(row.get(3)))){
+                    displayNbr = row.get(1);
+                }
+            }
         }
         return displayNbr;
+    }
+
+    /**
+     * @param s message from the skill database
+     * @return true if s contains the same nbr of variables than the message stored in the current node
+     */
+    public boolean containsSameNbrOfVariables(String s, int nbrOfVar){
+        int nbrOfRandomWords = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if(s.charAt(i)=='<'){
+                nbrOfRandomWords++;
+            }
+        }
+        if(nbrOfRandomWords==nbrOfVar){
+            return true;
+        }
+        return false;
     }
 }
 
