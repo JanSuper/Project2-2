@@ -174,14 +174,17 @@ public class AddSkillEditorVBox extends VBox {
                         response = "Question : \"" + question.getText() + "\" was successfully added to the database.";
                         question.setText("If you wish to include a variable, please replace it by <VARIABLE>");
                         answer.setText("Either write an answer for a talk/discussion or select a skill to display");
-                        skillDisplay.setValue(options1.get(0));
-                        questions.clear();
-                    } else {
+                    } else if(result == -1) {
                         response = "Question : \"" + question.getText() + "\" could not be added to the database";
+                    }else if(result==-2){
+                        response = "Question : \"" + question.getText() + "\" does not contain the required number of variables";
                     }
                     mainScreen.chat.receiveMessage(response);
                 }
             }
+            skillDisplay.setValue(options1.get(0));
+            tasksDisplay.setValue(options2.get(0));
+            questions.clear();
         });
     }
 
@@ -196,18 +199,20 @@ public class AddSkillEditorVBox extends VBox {
         int success = -1;
         try{
             BufferedWriter newData = new BufferedWriter(new FileWriter(dataBase, true));
-            newData.append("U " + question + System.lineSeparator());
             if(answer.getText().equals("Either write an answer for a talk/discussion or select a skill to display")){
                 String skill = skillToDisplay(question);
                 if(!skill.equals("-1")){
-                    newData.append("B " + skillToDisplay(question) + System.lineSeparator());
+                    success = 1;
+                    newData.append("U " + question + System.lineSeparator());
+                    newData.append("B " + skill + System.lineSeparator());
                 }else{
-                    mainScreen.chat.receiveMessage("Question : \"" + question + "\" does not contain the required number of variables");
+                    success = -2;
                 }
             }else{
+                success = 1;
+                newData.append("U " + question + System.lineSeparator());
                 newData.append("B " + answer.getText() + System.lineSeparator());
             }
-            success = 1;
             newData.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
