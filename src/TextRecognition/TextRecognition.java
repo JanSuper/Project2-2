@@ -336,7 +336,7 @@ public class TextRecognition {
             String city = assistant.fileParser.getUserInfo("-City");
             String country = assistant.fileParser.getUserInfo("-Country");
             if(city.isEmpty()||country.isEmpty()){
-                System.out.println("It seems like you don't have completed your location yet");
+                System.out.println("It seems like you haven't completed your location yet.");
                 city = "Maastricht";
                 country = "NL";
             }
@@ -347,13 +347,7 @@ public class TextRecognition {
             try {
                 String city;
                 String country = "";
-                String[] split;
-                if(originalCleanM.contains("in")) {
-                    split = originalCleanM.split("in");
-                }
-                else { split = originalCleanM.split("to"); }
-
-                String temp = split[1];
+                String temp = nodeInvestigated.getWordsRemoved().get(0);
                 if (temp.contains(",")) {
                     String[] split2 = temp.split(",");
                     city = split2[0].replace(" ", "");
@@ -362,7 +356,6 @@ public class TextRecognition {
                 else {
                     city = temp.replace(" ", "");
                 }
-
                 assistant.mainScreen.setWeatherDisplay(city, country);
                 final_answer = "This is what I found for the weather in "+ city + ". " + assistant.mainScreen.weatherDisplay.currentDataString() + "If you want to change the location, type 'Change weather location to City,Country.' (e.g. Amsterdam,NL).";
             }

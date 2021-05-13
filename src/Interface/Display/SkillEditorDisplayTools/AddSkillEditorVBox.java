@@ -49,7 +49,7 @@ public class AddSkillEditorVBox extends VBox {
         questions = new ArrayList();
         allSkills = fileParser.getAllSkills();
 
-        setSpacing(20);
+        setSpacing(16);
         setAlignment(Pos.CENTER);
         setPadding(new Insets(40,0,0,0));
         createContent();
@@ -78,6 +78,7 @@ public class AddSkillEditorVBox extends VBox {
     public void createContent(){
 
         spinner = new Spinner<Integer>();
+        spinner.setMaxWidth(60);
         int initialValue = 0;
         SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10, initialValue);
         spinner.setValueFactory(valueFactory);
@@ -89,7 +90,7 @@ public class AddSkillEditorVBox extends VBox {
             }else if(newVal<oldValue){
                 allQuestions.getChildren().remove(allQuestions.getChildren().size()-1);
             }
-            if(oldValue==5){
+            if(oldValue==4){
                 qScroll.setMaxHeight(qScroll.getHeight());
             }
             oldValue = newVal;
@@ -102,7 +103,7 @@ public class AddSkillEditorVBox extends VBox {
 
         howManyQ = new HBox();
         howManyQ.setSpacing(20);
-        howManyQ.setPadding(new Insets(0,100,0,300));
+        howManyQ.setAlignment(Pos.CENTER);
         howManyQ.getChildren().addAll(qLabel,spinner);
 
         allQuestions = new VBox();
@@ -110,21 +111,27 @@ public class AddSkillEditorVBox extends VBox {
         allQuestions.setAlignment(Pos.CENTER);
 
         qScroll = new ScrollPane(allQuestions);
+        qScroll.setMaxWidth(710);
         qScroll.setBackground(getBackground());
+        qScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
 
         aLabel = new Label("Answer:");
         aLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
         aLabel.setTextFill(MainScreen.themeColor.darker());
         aLabel.setAlignment(Pos.CENTER);
+        aLabel.setPadding(new Insets(35,0,0,0));
 
-        answer = new TextField("Either write an answer for a talk/discussion or select a skill to display");
+        answer = new TextField();
+        answer.setPromptText("Either write an answer for a talk/discussion or select a skill to display");
         answer.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
-        answer.setPrefSize(10,50);
+        answer.setPrefSize(10,36);
+        answer.setMaxWidth(710);
 
         skillDisplayLabel = new Label("Which skill displays:");
         skillDisplayLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
         skillDisplayLabel.setTextFill(MainScreen.themeColor.darker());
         skillDisplayLabel.setAlignment(Pos.CENTER);
+        skillDisplayLabel.setPadding(new Insets(35,0,10,0));
 
         options1 =
                 FXCollections.observableArrayList(
@@ -149,7 +156,6 @@ public class AddSkillEditorVBox extends VBox {
         propositions = new HBox();
         propositions.setSpacing(20);
         propositions.setAlignment(Pos.CENTER);
-        propositions.setPadding(new Insets(40,0,0,0));
         propositions.getChildren().addAll(skillDisplay,tasksDisplay);
 
         enter = new Button("Enter");
@@ -159,7 +165,7 @@ public class AddSkillEditorVBox extends VBox {
         enter.setOnAction(e-> {
             for (Node node:allQuestions.getChildren()) {
                 TextField question = (TextField) node;
-                if (question.getText().equals("If you wish to include a variable, please replace it by <VARIABLE>")) {
+                if (question.getText().isEmpty()) {
                     mainScreen.chat.receiveMessage("Please write a correct question");
                 } else {
                     questions.add(question.getText());
@@ -172,8 +178,8 @@ public class AddSkillEditorVBox extends VBox {
                     String response = "";
                     if (result == 1) {
                         response = "Question : \"" + question.getText() + "\" was successfully added to the database.";
-                        question.setText("If you wish to include a variable, please replace it by <VARIABLE>");
-                        answer.setText("Either write an answer for a talk/discussion or select a skill to display");
+                        question.setText("");
+                        answer.setText("");
                     } else if(result == -1) {
                         response = "Question : \"" + question.getText() + "\" could not be added to the database";
                     }else if(result==-2){
@@ -189,8 +195,9 @@ public class AddSkillEditorVBox extends VBox {
     }
 
     private void addQuestion(){
-        TextField question = new TextField("If you wish to include a variable, please replace it by <VARIABLE>");
-        question.setPrefSize(qScroll.getWidth()-20,20);
+        TextField question = new TextField();
+        question.setPromptText("If you wish to include a variable, please replace it by <VARIABLE>");
+        question.setPrefSize(qScroll.getWidth()-20,25);
         question.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
         allQuestions.getChildren().add(question);
     }
@@ -199,7 +206,7 @@ public class AddSkillEditorVBox extends VBox {
         int success = -1;
         try{
             BufferedWriter newData = new BufferedWriter(new FileWriter(dataBase, true));
-            if(answer.getText().equals("Either write an answer for a talk/discussion or select a skill to display")){
+            if(answer.getText().isEmpty()){
                 String skill = skillToDisplay(question);
                 if(!skill.equals("-1")){
                     success = 1;
