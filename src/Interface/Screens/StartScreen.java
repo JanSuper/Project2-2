@@ -2,6 +2,7 @@ package Interface.Screens;
 
 import Agents.User;
 import FileParser.FileParser;
+import OpenCV.FaceDetection;
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
@@ -13,6 +14,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -25,6 +27,7 @@ import javafx.util.Pair;
 import javafx.scene.control.TextField;
 import DataBase.Data;
 
+import javax.swing.text.StyledEditorKit;
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
@@ -35,64 +38,64 @@ public class StartScreen extends Application {
 
     private Stage stage;
 
+    private VBox menuBox;
     private TextField user;
     private PasswordField psw;
-    private Text left;
+    private Text errorInfo;
 
     private int counter = 0;
 
     private StackPane root = new StackPane();
-    private VBox menuBox;
 
     private FileParser fileParser;
+    private FaceDetection faceDetection;
 
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        fileParser = new FileParser();
+        faceDetection = new FaceDetection();
 
-    private List<Pair<String, Runnable>> menuData = Arrays.asList(
-            new Pair<String, Runnable>("Log in", () -> {
-                try {
-                    login();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }),
-            new Pair<String, Runnable>("Sign up", () -> {
-                try {
-                    signup();
+        root.setBackground(Data.createBackGround());
+        Scene scene = new Scene(root, 800, 800);
+        addContent();
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }),
-            new Pair<String, Runnable>("Exit to Desktop", Platform::exit)
-    );
+        primaryStage = new Stage();
+        primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
+        primaryStage.show();
+        primaryStage.setOnCloseRequest(event -> {
+            System.exit(0);
+        });
+        this.stage = primaryStage;
+    }
 
     private void login() throws Exception {
         counter++;
         if(user.getText().isEmpty()||user.getText().isBlank() && psw.getText().isEmpty()||psw.getText().isBlank()){
-            left.setText("Sorry, username or password not possible");
+            errorInfo.setText("Sorry, username or password not possible");
         }else{
             if(userAlreadyExists()){
                 if(fileParser.checkUserInfo("-Password",user.getText(),psw.getText())){
                     initializeAgents(false);
                     new MainScreen();
-                    this.stage.close();
+                    stage.close();
                 }else{
                     if(counter ==1 ) {
-                        left.setText("Username or password is wrong, 2 attempts left");
+                        errorInfo.setText("Username or password is wrong, 2 attempts left");
                     }else if(counter ==2 ) {
-                        left.setText("Username or password is wrong, 1 attempts left");
+                        errorInfo.setText("Username or password is wrong, 1 attempts left");
                     }else if(counter >=3 ) {
-                        left.setText("Username or password is wrong, you have used your 3 attempts");
+                        errorInfo.setText("Username or password is wrong, you have used your 3 attempts");
                         System.out.println("Sorry, you have used your 3 attempts");
                         System.exit(0);
                     }
                 }
             }else if(counter ==1 ) {
-                left.setText("Try again, 2 attempts left");
+                errorInfo.setText("Try again, 2 attempts left");
             }else if(counter ==2 ) {
-                left.setText("Try again, 1 attempts left");
+                errorInfo.setText("Try again, 1 attempts left");
             }else if(counter >=3 ) {
-                left.setText("Sorry, you have used your 3 attempts");
+                errorInfo.setText("Sorry, you have used your 3 attempts");
                 System.out.println("Sorry, you have used your 3 attempts");
                 System.exit(0);
             }
@@ -101,18 +104,18 @@ public class StartScreen extends Application {
 
     private void signup() throws Exception {
         if(user.getText().isEmpty()||user.getText().isBlank() && psw.getText().isEmpty()||psw.getText().isBlank()){
-            left.setText("Sorry, username or password not possible");
+            errorInfo.setText("Sorry, username or password not possible");
         }else{
             if(!userAlreadyExists()){
                 //out.println(user.getText() + " "+psw.getText());
                 initializeAgents(true);
                 new MainScreen();
-                this.stage.close();
+                stage.close();
             }else{
                 if(user.getText().isEmpty()){
-                    left.setText("Sorry, username not possible");
+                    errorInfo.setText("Sorry, username not possible");
                 }else{
-                    left.setText("Sorry, username already used");
+                    errorInfo.setText("Sorry, username already used");
                 }
             }
         }
@@ -125,7 +128,7 @@ public class StartScreen extends Application {
 
     public void initializeAgents(boolean signup){
         if(signup){
-            fileParser.createUser(user.getText(),psw.getText(),left);
+            fileParser.createUser(user.getText(),psw.getText(), errorInfo);
         }
         Data.setUsername(user.getText());
         Data.setPassword(psw.getText());
@@ -136,69 +139,86 @@ public class StartScreen extends Application {
         }
     }
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        fileParser = new FileParser();
+    private void addContent() {
+        addMenu();
+
+        faceDetection.setVisible(false);
+        menuBox.getChildren().add(faceDetection);
+
+        Button seeCamera = new Button("See Face Recognition");
+        seeCamera.setAlignment(Pos.CENTER);
+        seeCamera.setOnAction(event -> {
+            if(faceDetection.isVisible()){
+                seeCamera.setText("See Face Recognition");
+                faceDetection.setVisible(false);
+            }else{
+                seeCamera.setText("Hide Face Recognition");
+                faceDetection.setVisible(true);
+            }
+        });
+        menuBox.getChildren().add(seeCamera);
+
+        root.getChildren().add(menuBox);
+    }
+
+    private void addMenu() {
         menuBox = new VBox(20);
         menuBox.setAlignment(Pos.CENTER);
         menuBox.setBackground(new Background(new BackgroundFill(new Color(0.2,0.35379, 0.65, 0.5), CornerRadii.EMPTY, Insets.EMPTY)));
         menuBox.setBorder(new Border(new BorderStroke(Color.DARKGRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(10))));
         menuBox.setMaxSize(520, 600);
 
-        primaryStage = new Stage();
-        root.setId("start-screen-pane");
-        Background background = Data.createBackGround();
-        root.setBackground(background);
-        Scene scene = new Scene(root, 800, 800);
-        addContent();
-        primaryStage.setScene(scene);
-        primaryStage.setResizable(false);
-        primaryStage.show();
-        this.stage = primaryStage;
-
-        left = new Text("");
-        left.setFont(Font.font("Verdana", FontWeight.BOLD, 10));
-        left.setFill(Color.RED);
-        left.setTranslateY(-10);
-        root.getChildren().add(left);
-    }
-
-    private void addContent() {
-        addTitle();
-        addMenu();
-        startAnimation();
-    }
-
-    private void addTitle() {
         MenuTitle title = new MenuTitle("Project 2-2 Assistant");
-        title.setTranslateX(WIDTH / 2. -14);
-        title.setTranslateY(HEIGHT / 3. - 25);
-        root.getChildren().add(title);
+        title.setTranslateX(150);
+        menuBox.getChildren().add(title);
 
+        HBox userN = new HBox(10);
+        userN.setAlignment(Pos.CENTER);
+        userN.setPadding(new Insets(0,105,0,0));
         MenuTitle username = new MenuTitle("Username :");
-        username.setTranslateX(WIDTH / 2. - 140);
-        username.setTranslateY(HEIGHT / 3. + 37);
-        root.getChildren().add(username);
-
-        MenuTitle password = new MenuTitle("Password :");
-        password.setTranslateX(WIDTH / 2. - 140);
-        password.setTranslateY(HEIGHT / 3. + 87);
-        root.getChildren().add(password);
-    }
-
-    private void addMenu() {
+        username.setTranslateY(15);
         user = new TextField();
         user.setFont(Font.font("Verdana", FontWeight.BOLD,15));
         user.setStyle("-fx-text-fill: dimgray;");
         user.setMaxWidth(200);
+        userN.getChildren().addAll(username,user);
+        menuBox.getChildren().add(userN);
 
+        HBox passW = new HBox(10);
+        passW.setAlignment(Pos.CENTER);
+        passW.setPadding(new Insets(0,100,0,0));
+        MenuTitle password = new MenuTitle("Password :");
+        password.setTranslateY(15);
         psw = new PasswordField();
         psw.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
         psw.setStyle("-fx-text-fill: dimgray;");
         psw.setMaxWidth(200);
+        passW.getChildren().addAll(password,psw);
+        menuBox.getChildren().add(passW);
 
-        menuBox.getChildren().addAll(user, psw);
+        errorInfo = new Text("");
+        errorInfo.setFont(Font.font("Verdana", FontWeight.BOLD, 10));
+        errorInfo.setFill(Color.RED);
+        menuBox.getChildren().add(errorInfo);
 
+        List<Pair<String, Runnable>> menuData = Arrays.asList(
+                new Pair<String, Runnable>("Log in", () -> {
+                    try {
+                        login();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }),
+                new Pair<String, Runnable>("Sign up", () -> {
+                    try {
+                        signup();
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }),
+                new Pair<String, Runnable>("Exit to Desktop", Platform::exit)
+        );
         menuData.forEach(data -> {
             Button button = new Button(data.getKey());
             button.setBackground(new Background(new BackgroundFill(Color.SLATEGREY.darker(), new CornerRadii(3,3,3,3,false), Insets.EMPTY)));
@@ -206,30 +226,10 @@ public class StartScreen extends Application {
             button.setPrefSize(200, 30);
             button.setTextFill(Color.LIGHTGRAY);
             button.setCursor(Cursor.HAND);
-            button.setTranslateY(30);
             button.setOnMouseClicked(e -> data.getValue().run());
 
             menuBox.getChildren().add(button);
         });
-
-        root.getChildren().add(menuBox);
-    }
-
-    private void startAnimation() {
-        ScaleTransition st = new ScaleTransition(Duration.seconds(1));
-        st.setToY(1);
-        st.setOnFinished(e -> {
-
-            for (int i = 0; i < menuBox.getChildren().size(); i++) {
-                Node n = menuBox.getChildren().get(i);
-
-                TranslateTransition tt = new TranslateTransition(Duration.seconds(1 + i * 0.15), n);
-                tt.setToX(0);
-                tt.setOnFinished(e2 -> n.setClip(null));
-                tt.play();
-            }
-        });
-        st.play();
     }
 
     public static class MenuTitle extends Pane {

@@ -85,7 +85,7 @@ public class FD_Controller {
                                 // show the original frames
                                 originalFrame.setImage(CamStream);
                                 // set fixed width
-                                originalFrame.setFitWidth(600);
+                                originalFrame.setFitWidth(250);
                                 // preserve image ratio
                                 originalFrame.setPreserveRatio(true);
 
