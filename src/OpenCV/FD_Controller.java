@@ -22,7 +22,7 @@ public class FD_Controller {
     private Button cameraButton;
     // the FXML area for showing the current frame
     @FXML
-    private ImageView originalFrame;
+    public ImageView originalFrame;
     // checkbox for selecting the Haar Classifier
     @FXML
     private CheckBox haarClassifier;
@@ -33,7 +33,7 @@ public class FD_Controller {
     // a timer for acquiring the video stream
     private Timer timer;
     // the OpenCV object that performs the video capture
-    private VideoCapture capture;
+    public VideoCapture capture;
     // a flag to change the button behavior
     private boolean cameraActive;
     // the face cascade classifier object
@@ -46,18 +46,22 @@ public class FD_Controller {
     /**
      * Init the controller variables
      */
-    protected void init()
+    public void init()
     {
         this.capture = new VideoCapture();
         this.faceCascade = new CascadeClassifier();
         this.absoluteFaceSize = 0;
+
+        this.haarClassifier.setSelected(true);
+        this.haarSelected();
+        startCamera();
     }
 
     /**
      * The action triggered by pushing the button on the GUI
      */
     @FXML
-    protected void startCamera()
+    public void startCamera()
     {
         if (!this.cameraActive)
         {

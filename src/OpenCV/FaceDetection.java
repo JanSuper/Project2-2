@@ -10,6 +10,7 @@ import javafx.stage.Stage;
 import org.opencv.core.*;
 
 public class FaceDetection extends VBox {
+    public  FD_Controller controller;
 
     public FaceDetection(){
         // load the native OpenCV library
@@ -27,8 +28,7 @@ public class FaceDetection extends VBox {
             setStyle("-fx-background-color: whitesmoke;");
 
             // init the controller
-            FD_Controller controller = loader.getController();
-            controller.init();
+            controller = loader.getController();
         }
         catch (Exception e)
         {

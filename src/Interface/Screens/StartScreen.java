@@ -67,6 +67,8 @@ public class StartScreen extends Application {
             System.exit(0);
         });
         this.stage = primaryStage;
+
+        faceDetection.controller.init();
     }
 
     private void login() throws Exception {
@@ -143,17 +145,20 @@ public class StartScreen extends Application {
         addMenu();
 
         faceDetection.setVisible(false);
+        faceDetection.setManaged(false);
         menuBox.getChildren().add(faceDetection);
 
-        Button seeCamera = new Button("See Face Recognition");
+        Button seeCamera = new Button("Hide Face Recognition");
         seeCamera.setAlignment(Pos.CENTER);
         seeCamera.setOnAction(event -> {
             if(faceDetection.isVisible()){
                 seeCamera.setText("See Face Recognition");
                 faceDetection.setVisible(false);
+                faceDetection.setManaged(false);
             }else{
                 seeCamera.setText("Hide Face Recognition");
                 faceDetection.setVisible(true);
+                faceDetection.setManaged(true);
             }
         });
         menuBox.getChildren().add(seeCamera);
