@@ -74,6 +74,9 @@ public class MainScreen {
         primaryStage.setMaximized(true);
         stage = primaryStage;
         primaryStage.show();
+        primaryStage.setOnCloseRequest(event -> {
+            System.exit(0);
+        });
     }
 
     public void createContent() throws Exception {

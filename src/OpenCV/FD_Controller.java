@@ -22,7 +22,7 @@ public class FD_Controller {
     private Button cameraButton;
     // the FXML area for showing the current frame
     @FXML
-    public ImageView originalFrame;
+    private ImageView originalFrame;
     // checkbox for selecting the Haar Classifier
     @FXML
     private CheckBox haarClassifier;
@@ -35,13 +35,16 @@ public class FD_Controller {
     // the OpenCV object that performs the video capture
     public VideoCapture capture;
     // a flag to change the button behavior
-    private boolean cameraActive;
+    public boolean cameraActive;
     // the face cascade classifier object
     private CascadeClassifier faceCascade;
     // minimum face size
-    private int absoluteFaceSize;
+    public int absoluteFaceSize;
     private Image CamStream;
     private Imgcodecs Highgui;
+    // each rectangle in faces is a face
+    public Rect[] currentFacesArray;
+    public Rect[] previousFacesArray;
 
     /**
      * Init the controller variables
@@ -61,7 +64,7 @@ public class FD_Controller {
      * The action triggered by pushing the button on the GUI
      */
     @FXML
-    public void startCamera()
+    protected void startCamera()
     {
         if (!this.cameraActive)
         {
@@ -179,7 +182,7 @@ public class FD_Controller {
      * @param frame
      *            the current frame
      */
-    private void detectAndDisplay(Mat frame)
+    public void detectAndDisplay(Mat frame)
     {
         // init
         MatOfRect faces = new MatOfRect();
@@ -205,9 +208,10 @@ public class FD_Controller {
                 this.absoluteFaceSize, this.absoluteFaceSize), new Size());
 
         // each rectangle in faces is a face
-        Rect[] facesArray = faces.toArray();
-        for (int i = 0; i < facesArray.length; i++)
-            Imgproc.rectangle(frame, facesArray[i].tl(), facesArray[i].br(), new Scalar(0, 255, 0, 255), 3);
+        previousFacesArray = currentFacesArray;
+        currentFacesArray = faces.toArray();
+        for (int i = 0; i < currentFacesArray.length; i++)
+            Imgproc.rectangle(frame, currentFacesArray[i].tl(), currentFacesArray[i].br(), new Scalar(0, 255, 0, 255), 3);
 
     }
 
