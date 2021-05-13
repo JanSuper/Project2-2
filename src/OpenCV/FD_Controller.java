@@ -82,7 +82,6 @@ public class FD_Controller {
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
-
                                 // show the original frames
                                 originalFrame.setImage(CamStream);
                                 // set fixed width
@@ -220,7 +219,7 @@ public class FD_Controller {
         if (this.lbpClassifier.isSelected())
             this.lbpClassifier.setSelected(false);
 
-        this.checkboxSelection("F:/Downloads/opencv/sources/data/haarcascades/haarcascade_frontalface_default.xml");
+        this.checkboxSelection("C:/java/opencv/sources/data/haarcascades/haarcascade_frontalface_default.xml");
     }
 
     /**
@@ -235,7 +234,7 @@ public class FD_Controller {
         if (this.haarClassifier.isSelected())
             this.haarClassifier.setSelected(false);
 
-        this.checkboxSelection("F:/Downloads/opencv/sources/data/lbpcascades/lbpcascade_frontalface.xml");
+        this.checkboxSelection("C:/java/opencv/sources/data/lbpcascades/lbpcascade_frontalface.xml");
     }
 
     /**
