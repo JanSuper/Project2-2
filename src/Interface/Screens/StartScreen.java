@@ -30,6 +30,7 @@ import java.util.List;
 public class StartScreen extends Application {
 
     private Stage stage;
+    private MainScreen mainScreen;
 
     private VBox menuBox;
     private TextField user;
@@ -46,7 +47,7 @@ public class StartScreen extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         fileParser = new FileParser();
-        faceDetection = new FaceDetection();
+        faceDetection = new FaceDetection(mainScreen);
 
         root.setBackground(Data.createBackGround());
         Scene scene = new Scene(root, 800, 800);
@@ -65,88 +66,125 @@ public class StartScreen extends Application {
     }
 
     private void login() throws Exception {
-        if(faceDetection.controller.cameraActive){
-            if(faceDetected()){
-                counter++;
-                if(user.getText().isEmpty()||user.getText().isBlank() && psw.getText().isEmpty()||psw.getText().isBlank()){
-                    errorInfo.setText("Sorry, username or password not possible");
-                }else{
-                    if(userAlreadyExists()){
-                        if(fileParser.checkUserInfo("-Password",user.getText(),psw.getText())){
-                            initializeAgents(false);
-                            new MainScreen();
-                            stage.close();
-                        }else{
-                            if(counter ==1 ) {
-                                errorInfo.setText("Username or password is wrong, 2 attempts left");
-                            }else if(counter ==2 ) {
-                                errorInfo.setText("Username or password is wrong, 1 attempts left");
-                            }else if(counter >=3 ) {
-                                errorInfo.setText("Username or password is wrong, you have used your 3 attempts");
-                                System.out.println("Sorry, you have used your 3 attempts");
-                                System.exit(0);
+        if(faceDetection.isVisible()){
+            if(faceDetection.controller.cameraActive){
+                if(faceDetection.faceDetected()){
+                    counter++;
+                    if(user.getText().isEmpty()||user.getText().isBlank() && psw.getText().isEmpty()||psw.getText().isBlank()){
+                        errorInfo.setText("Sorry, username or password not possible");
+                    }else{
+                        if(userAlreadyExists()){
+                            if(fileParser.checkUserInfo("-Password",user.getText(),psw.getText())){
+                                initializeAgents(false);
+                                mainScreen = new MainScreen(faceDetection);
+                                stage.close();
+                            }else{
+                                if(counter ==1 ) {
+                                    errorInfo.setText("Username or password is wrong, 2 attempts left");
+                                }else if(counter ==2 ) {
+                                    errorInfo.setText("Username or password is wrong, 1 attempts left");
+                                }else if(counter >=3 ) {
+                                    errorInfo.setText("Username or password is wrong, you have used your 3 attempts");
+                                    System.out.println("Sorry, you have used your 3 attempts");
+                                    System.exit(0);
+                                }
                             }
+                        }else if(counter ==1 ) {
+                            errorInfo.setText("Try again, 2 attempts left");
+                        }else if(counter ==2 ) {
+                            errorInfo.setText("Try again, 1 attempts left");
+                        }else if(counter >=3 ) {
+                            errorInfo.setText("Sorry, you have used your 3 attempts");
+                            System.out.println("Sorry, you have used your 3 attempts");
+                            System.exit(0);
                         }
-                    }else if(counter ==1 ) {
-                        errorInfo.setText("Try again, 2 attempts left");
-                    }else if(counter ==2 ) {
-                        errorInfo.setText("Try again, 1 attempts left");
-                    }else if(counter >=3 ) {
-                        errorInfo.setText("Sorry, you have used your 3 attempts");
-                        System.out.println("Sorry, you have used your 3 attempts");
-                        System.exit(0);
                     }
+                }else{
+                    errorInfo.setText("No face detected, please retry");
                 }
             }else{
-                errorInfo.setText("No face detected, please retry");
+                errorInfo.setText("Camera is not activated, please turn it on");
             }
         }else{
-            errorInfo.setText("Camera is not activated, please turn it on");
+            counter++;
+            if(user.getText().isEmpty()||user.getText().isBlank() && psw.getText().isEmpty()||psw.getText().isBlank()){
+                errorInfo.setText("Sorry, username or password not possible");
+            }else{
+                if(userAlreadyExists()){
+                    if(fileParser.checkUserInfo("-Password",user.getText(),psw.getText())){
+                        initializeAgents(false);
+                        mainScreen = new MainScreen(faceDetection);
+                        stage.close();
+                    }else{
+                        if(counter ==1 ) {
+                            errorInfo.setText("Username or password is wrong, 2 attempts left");
+                        }else if(counter ==2 ) {
+                            errorInfo.setText("Username or password is wrong, 1 attempts left");
+                        }else if(counter >=3 ) {
+                            errorInfo.setText("Username or password is wrong, you have used your 3 attempts");
+                            System.out.println("Sorry, you have used your 3 attempts");
+                            System.exit(0);
+                        }
+                    }
+                }else if(counter ==1 ) {
+                    errorInfo.setText("Try again, 2 attempts left");
+                }else if(counter ==2 ) {
+                    errorInfo.setText("Try again, 1 attempts left");
+                }else if(counter >=3 ) {
+                    errorInfo.setText("Sorry, you have used your 3 attempts");
+                    System.out.println("Sorry, you have used your 3 attempts");
+                    System.exit(0);
+                }
+            }
         }
 
     }
 
     private void signup() throws Exception {
-        if (faceDetection.controller.cameraActive) {
-            if (faceDetected()) {
-                if (user.getText().isEmpty() || user.getText().isBlank() && psw.getText().isEmpty() || psw.getText().isBlank()) {
-                    errorInfo.setText("Sorry, username or password not possible");
-                } else {
-                    if (!userAlreadyExists()) {
-                        //out.println(user.getText() + " "+psw.getText());
-                        initializeAgents(true);
-                        new MainScreen();
-                        stage.close();
+        if(faceDetection.isVisible()){
+            if (faceDetection.controller.cameraActive) {
+                if (faceDetection.faceDetected()) {
+                    if (user.getText().isEmpty() || user.getText().isBlank() && psw.getText().isEmpty() || psw.getText().isBlank()) {
+                        errorInfo.setText("Sorry, username or password not possible");
                     } else {
-                        if (user.getText().isEmpty()) {
-                            errorInfo.setText("Sorry, username not possible");
+                        if (!userAlreadyExists()) {
+                            //out.println(user.getText() + " "+psw.getText());
+                            initializeAgents(true);
+                            mainScreen = new MainScreen(faceDetection);
+                            stage.close();
                         } else {
-                            errorInfo.setText("Sorry, username already used");
+                            if (user.getText().isEmpty()) {
+                                errorInfo.setText("Sorry, username not possible");
+                            } else {
+                                errorInfo.setText("Sorry, username already used");
+                            }
                         }
                     }
+                } else {
+                    errorInfo.setText("No face detected, please retry");
                 }
-            } else {
-                errorInfo.setText("No face detected, please retry");
+            }else{
+                errorInfo.setText("Camera is not activated, please turn it on");
             }
         }else{
-            errorInfo.setText("Camera is not activated, please turn it on");
-        }
-    }
-
-    public boolean faceDetected(){
-        // current frame
-        Mat frame = new Mat();
-        // read the current frame
-        faceDetection.controller.capture.read(frame);
-        faceDetection.controller.detectAndDisplay(frame);
-        //Check if there is a face
-        if(faceDetection.controller.currentFacesArray.length>0){
-            //Check if the face is moving
-            if(faceDetection.controller.previousFacesArray.length>0){
-                return true;
+            if (user.getText().isEmpty() || user.getText().isBlank() && psw.getText().isEmpty() || psw.getText().isBlank()) {
+                errorInfo.setText("Sorry, username or password not possible");
+            } else {
+                if (!userAlreadyExists()) {
+                    //out.println(user.getText() + " "+psw.getText());
+                    initializeAgents(true);
+                    mainScreen = new MainScreen(faceDetection);
+                    stage.close();
+                } else {
+                    if (user.getText().isEmpty()) {
+                        errorInfo.setText("Sorry, username not possible");
+                    } else {
+                        errorInfo.setText("Sorry, username already used");
+                    }
+                }
             }
         }
-        return false;
+
     }
 
     public boolean userAlreadyExists(){
@@ -170,19 +208,19 @@ public class StartScreen extends Application {
     private void addContent() {
         addMenu();
 
-        faceDetection.setVisible(false);
-        faceDetection.setManaged(false);
+        faceDetection.setVisible(true);
+        faceDetection.setManaged(true);
         menuBox.getChildren().add(faceDetection);
 
-        Button seeCamera = new Button("See Face Recognition");
+        Button seeCamera = new Button("Do not require Face Recognition");
         seeCamera.setAlignment(Pos.CENTER);
         seeCamera.setOnAction(event -> {
             if(faceDetection.isVisible()){
-                seeCamera.setText("See Face Recognition");
+                seeCamera.setText("Require Face Recognition");
                 faceDetection.setVisible(false);
                 faceDetection.setManaged(false);
             }else{
-                seeCamera.setText("Hide Face Recognition");
+                seeCamera.setText("Do not require Face Recognition");
                 faceDetection.setVisible(true);
                 faceDetection.setManaged(true);
             }

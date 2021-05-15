@@ -3,6 +3,7 @@ package Interface.Screens;
 import DataBase.Data;
 import Interface.Chat.ChatApp;
 import Interface.Display.*;
+import OpenCV.FaceDetection;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -34,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class MainScreen {
+    public FaceDetection faceDetection;
+
     public ChatApp chat;
     public ClockAppDisplay clockAppDisplay;
     public WeatherDisplay weatherDisplay;
@@ -50,7 +53,11 @@ public class MainScreen {
     private ArrayList<String[]> alarmsTime;
     private Timeline timeline;
 
-    public MainScreen() throws Exception {
+    private boolean firstFaceViewed;
+
+    public MainScreen(FaceDetection faceDetection) throws Exception {
+        this.faceDetection = faceDetection;
+
         borderWidth = 10;
         border = new Border(new BorderStroke(Color.DARKGRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(borderWidth)));
 
@@ -63,7 +70,12 @@ public class MainScreen {
         alarmsTime = new ArrayList<>();
         timeline = new Timeline();
         prepareReminders(calendarDisplay.firstDate,calendarDisplay.lastDate);
+
         createContent();
+
+        //TODO Handle the fact that a face is not detected while running the GUI
+        firstFaceViewed = false;
+        //manageFaceDetection();
 
         start(new Stage());
     }
@@ -90,6 +102,27 @@ public class MainScreen {
 
         menu = new Menu(this);
         setMenu("MainMenu");
+    }
+
+    public void manageFaceDetection(){
+        for(int i = 1; i <= 10; i++)
+        {
+            try
+            {
+                String status = "Processing " + i + " of " + 10;
+                System.out.println(status);
+                if(!firstFaceViewed&&faceDetection.faceDetected()){
+                    chat.receiveMessage("Welcome " + Data.getUsername() + "! How may I help you?"); //Assistant's first message
+                    firstFaceViewed = true;
+                }
+                faceDetection.manageFaceLeaving();
+                Thread.sleep(1000);
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void setMenu(String menuString) throws Exception {

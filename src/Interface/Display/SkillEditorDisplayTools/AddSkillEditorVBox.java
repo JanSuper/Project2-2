@@ -23,7 +23,6 @@ public class AddSkillEditorVBox extends VBox {
 
     private File dataBase = new File("src\\DataBase\\textData.txt");
 
-    private ArrayList<String> questions;
     private List<List<String>> allSkills;
 
     private VBox allQuestions;
@@ -46,7 +45,6 @@ public class AddSkillEditorVBox extends VBox {
     public AddSkillEditorVBox(MainScreen mainScreen){
         this.mainScreen = mainScreen;
         fileParser = new FileParser();
-        questions = new ArrayList();
         allSkills = fileParser.getAllSkills();
 
         setSpacing(16);
@@ -165,10 +163,9 @@ public class AddSkillEditorVBox extends VBox {
         enter.setOnAction(e-> {
             for (Node node:allQuestions.getChildren()) {
                 TextField question = (TextField) node;
-                if (question.getText().isEmpty()) {
-                    mainScreen.chat.receiveMessage("Please write a correct question");
+                if (question.getText().isEmpty()||question.getText().isBlank()) {
+                    mainScreen.chat.receiveMessage("Question : \"" + question.getText() + "\" is not under the correct form.");
                 } else {
-                    questions.add(question.getText());
                     int result = 0;
                     try {
                         result = handleAddSkill(question.getText());
@@ -179,7 +176,6 @@ public class AddSkillEditorVBox extends VBox {
                     if (result == 1) {
                         response = "Question : \"" + question.getText() + "\" was successfully added to the database.";
                         question.setText("");
-                        answer.setText("");
                     } else if(result == -1) {
                         response = "Question : \"" + question.getText() + "\" could not be added to the database";
                     }else if(result==-2){
@@ -188,9 +184,9 @@ public class AddSkillEditorVBox extends VBox {
                     mainScreen.chat.receiveMessage(response);
                 }
             }
+            answer.setText("");
             skillDisplay.setValue(options1.get(0));
             tasksDisplay.setValue(options2.get(0));
-            questions.clear();
         });
     }
 
@@ -206,7 +202,7 @@ public class AddSkillEditorVBox extends VBox {
         int success = -1;
         try{
             BufferedWriter newData = new BufferedWriter(new FileWriter(dataBase, true));
-            if(answer.getText().isEmpty()){
+            if(answer.getText().isEmpty()||answer.getText().isBlank()){
                 String skill = skillToDisplay(question);
                 if(!skill.equals("-1")){
                     success = 1;

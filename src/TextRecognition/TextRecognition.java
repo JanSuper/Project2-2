@@ -47,6 +47,7 @@ public class TextRecognition {
         thirdPhase = false;
         fourthPhase = false;
         firstPhase = true;
+        System.out.println("FIRST PHASE");
         //first test without variables
         if(getInfo_withLevenshtein(new Node(originalCleanM))) {
             System.out.println("SOLUTION FOUND");
@@ -192,7 +193,6 @@ public class TextRecognition {
                                 }
                             }
                         }
-
                     }else if(secondPhase){
                         //CHECKS SKILLS WITH ONLY THE SAME NBR OF VARIABLES AS WORDS DELETED IN THE MESSAGE (WITH DELETING WORDS)
                         if (s.contains("<VARIABLE>") && containsSameNbrOfVariables(s,node)) {
