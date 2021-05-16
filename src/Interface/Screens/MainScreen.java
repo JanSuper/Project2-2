@@ -7,6 +7,7 @@ import OpenCV.FaceDetection;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -15,6 +16,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -36,6 +38,7 @@ import java.util.Date;
 
 public class MainScreen {
     public FaceDetection faceDetection;
+    public StartScreen startScreen;
 
     public ChatApp chat;
     public ClockAppDisplay clockAppDisplay;
@@ -55,8 +58,10 @@ public class MainScreen {
 
     private boolean firstFaceViewed;
 
-    public MainScreen(FaceDetection faceDetection) throws Exception {
+    public MainScreen(StartScreen startScreen,FaceDetection faceDetection,Stage stage) throws Exception {
+        this.startScreen = startScreen;
         this.faceDetection = faceDetection;
+        faceDetection.mainScreen = this;
 
         borderWidth = 10;
         border = new Border(new BorderStroke(Color.DARKGRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(borderWidth)));
@@ -73,18 +78,17 @@ public class MainScreen {
 
         createContent();
 
-        //TODO Handle the fact that a face is not detected while running the GUI
-        firstFaceViewed = false;
-        //manageFaceDetection();
+        this.stage = stage;
+        start(this.stage);
 
-        start(new Stage());
+        firstFaceViewed = false;
+        manageFaceDetection();
     }
 
     public void start(Stage primaryStage) {
         primaryStage.setScene(new Scene(root));
         primaryStage.setResizable(true);
         primaryStage.setMaximized(true);
-        stage = primaryStage;
         primaryStage.show();
         primaryStage.setOnCloseRequest(event -> {
             System.exit(0);
@@ -105,24 +109,32 @@ public class MainScreen {
     }
 
     public void manageFaceDetection(){
-        for(int i = 1; i <= 10; i++)
-        {
-            try
-            {
-                String status = "Processing " + i + " of " + 10;
-                System.out.println(status);
-                if(!firstFaceViewed&&faceDetection.faceDetected()){
-                    chat.receiveMessage("Welcome " + Data.getUsername() + "! How may I help you?"); //Assistant's first message
-                    firstFaceViewed = true;
+        final boolean[] faceDetected = {true};
+        Task task = new Task<Void>() {
+            @Override public Void call() throws InterruptedException {
+                while (faceDetected[0]){
+                    if(!firstFaceViewed&&faceDetection.faceDetected()){
+                        //Assistant's first message when sees user for first time
+                        Platform.runLater(new Runnable(){
+                            @Override
+                            public void run() {
+                                chat.receiveMessage("Welcome " + Data.getUsername() + "! How may I help you?");
+                            }
+                        });
+                        firstFaceViewed = true;
+                    }
+                    //refresh every 1sec
+                    Thread.sleep(1000);
+                    if(!faceDetection.faceDetected()){
+                        //Manage face not detected
+                        faceDetection.manageFaceLeaving();
+                        faceDetected[0] = false;
+                    }
                 }
-                faceDetection.manageFaceLeaving();
-                Thread.sleep(1000);
+                return null;
             }
-            catch (InterruptedException e)
-            {
-                e.printStackTrace();
-            }
-        }
+        };
+        new Thread(task).start();
     }
 
     public void setMenu(String menuString) throws Exception {

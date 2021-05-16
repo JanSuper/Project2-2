@@ -47,11 +47,11 @@ public class TextRecognition {
         thirdPhase = false;
         fourthPhase = false;
         firstPhase = true;
-        System.out.println("FIRST PHASE");
+        //System.out.println("FIRST PHASE");
         //first test without variables
         if(getInfo_withLevenshtein(new Node(originalCleanM))) {
-            System.out.println("SOLUTION FOUND");
-            System.out.println("SEARCH DONE in first phase");
+            //System.out.println("SOLUTION FOUND");
+            //System.out.println("SEARCH DONE in first phase");
         }else{
             firstPhase = false;
             //START BFS
@@ -59,25 +59,25 @@ public class TextRecognition {
             Node root = new Node(originalCleanM);
             //First create tree
             if(createTree(root)){
-                System.out.println("TREE CREATION DONE");
+                //System.out.println("TREE CREATION DONE");
             }else{
-                System.out.println("smth went wrong creating the tree");
+                //System.out.println("smth went wrong creating the tree");
             }
-            System.out.println("START SEARCHING IN TREE");
+            //System.out.println("START SEARCHING IN TREE");
             //Then search in the tree
             secondPhase = true;
             if(search(root)){
-                System.out.println("SEARCH DONE in second phase");
+                //System.out.println("SEARCH DONE in second phase");
             }else{
                 secondPhase = false;
                 thirdPhase = true;
                 if(search(root)){
-                    System.out.println("SEARCH DONE in third phase");
+                    //System.out.println("SEARCH DONE in third phase");
                 }else{
                     thirdPhase = false;
                     fourthPhase = true;
                     if(search(root)){
-                        System.out.println("SEARCH DONE in fourth phase");
+                       //System.out.println("SEARCH DONE in fourth phase");
                     }
                 }
             }

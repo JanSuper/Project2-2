@@ -1,7 +1,10 @@
 package OpenCV;
+import DataBase.Data;
 import Interface.Screens.MainScreen;
+import Interface.Screens.StartScreen;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -10,14 +13,14 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.opencv.core.*;
 
+import java.time.LocalTime;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class FaceDetection extends VBox {
-    private MainScreen mainScreen;
+    public MainScreen mainScreen;
     public  FD_Controller controller;
     private final int DELAY = 30;
-    private boolean firstView;
 
     public FaceDetection(MainScreen mainScreen){
         this.mainScreen = mainScreen;
@@ -60,26 +63,54 @@ public class FaceDetection extends VBox {
     }
 
     public void manageFaceLeaving(){
-        if(!faceDetected()){
-            System.out.println("timer started");
-            Timer timer = new Timer();
-            long start = System.currentTimeMillis();
-            final long[] end = {System.currentTimeMillis()};
-            final long[] elapsedTime = {end[0] - start};
-            TimerTask task = new TimerTask(){
-                public void run(){
+        //start a timer
+        long start = System.currentTimeMillis();
+        Task task = new Task<Void>() {
+            @Override public Void call() throws InterruptedException {
+                final int max = 1000000;
+                for (int i = 1; i <= max; i++) {
+                    //refresh every 1sec
+                    Thread.sleep(1000);
+                    long now = System.currentTimeMillis();
+                    long elapsedTime = Math.abs(now - start);
+                    if(elapsedTime/1000>DELAY){
+                        //LOG OUT if face not detected after delay
+                        Platform.runLater(new Runnable(){
+                            @Override
+                            public void run() {
+                                Data.setImage("src/DataBase/defaultBackground.jpg");
+                                mainScreen.stage.close();
+                                mainScreen.faceDetection.controller.capture.release();
+                                try {
+                                    StartScreen startScreen = new StartScreen();
+                                    startScreen.start(mainScreen.stage);
+                                    startScreen.errorInfo.setText("You have been logged out because of inactive");
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
                     if(faceDetected()){
-                        timer.cancel();
-                        end[0] = System.currentTimeMillis();
-                        elapsedTime[0] = end[0] - start;
-                        System.out.println("face detected after " + elapsedTime[0]);
-                        if(elapsedTime[0]>DELAY/5){
-                            mainScreen.chat.receiveMessage("Hey you are back !");
+                        //face detected
+                        //System.out.println("face detected after " + elapsedTime/1000+  " seconds.");
+                        if(elapsedTime/1000>DELAY/5){
+                            //if face is detected after a certain time
+                            //System.out.println("hey you are back");
+                            Platform.runLater(new Runnable(){
+                                @Override
+                                public void run() {
+                                    mainScreen.chat.receiveMessage("Hey you are back !");
+                                    mainScreen.manageFaceDetection();
+                                }
+                            });
+                            break;
                         }
                     }
                 }
-            };
-            timer.schedule(task,DELAY*1000);
-        }
+                return null;
+            }
+        };
+        new Thread(task).start();
     }
 }

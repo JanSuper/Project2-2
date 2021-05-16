@@ -20,6 +20,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -145,10 +146,11 @@ public class Menu {
 
         designOptionButton(logOut);
         logOut.setOnMouseClicked(event -> {
-            mainScreen.stage.close();
             Data.setImage("src/DataBase/defaultBackground.jpg");
-            StartScreen startScreen= new StartScreen();
+            mainScreen.stage.close();
+            mainScreen.faceDetection.controller.capture.release();
             try {
+                StartScreen startScreen = new StartScreen();
                 startScreen.start(mainScreen.stage);
             } catch (Exception e) {
                 e.printStackTrace();

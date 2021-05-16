@@ -35,7 +35,7 @@ public class StartScreen extends Application {
     private VBox menuBox;
     private TextField user;
     private PasswordField psw;
-    private Text errorInfo;
+    public Text errorInfo;
 
     private int counter = 0;
 
@@ -76,8 +76,7 @@ public class StartScreen extends Application {
                         if(userAlreadyExists()){
                             if(fileParser.checkUserInfo("-Password",user.getText(),psw.getText())){
                                 initializeAgents(false);
-                                mainScreen = new MainScreen(faceDetection);
-                                stage.close();
+                                mainScreen = new MainScreen(this,faceDetection,stage);
                             }else{
                                 if(counter ==1 ) {
                                     errorInfo.setText("Username or password is wrong, 2 attempts left");
@@ -113,8 +112,7 @@ public class StartScreen extends Application {
                 if(userAlreadyExists()){
                     if(fileParser.checkUserInfo("-Password",user.getText(),psw.getText())){
                         initializeAgents(false);
-                        mainScreen = new MainScreen(faceDetection);
-                        stage.close();
+                        mainScreen = new MainScreen(this,faceDetection,stage);
                     }else{
                         if(counter ==1 ) {
                             errorInfo.setText("Username or password is wrong, 2 attempts left");
@@ -150,8 +148,7 @@ public class StartScreen extends Application {
                         if (!userAlreadyExists()) {
                             //out.println(user.getText() + " "+psw.getText());
                             initializeAgents(true);
-                            mainScreen = new MainScreen(faceDetection);
-                            stage.close();
+                            mainScreen = new MainScreen(this,faceDetection,stage);
                         } else {
                             if (user.getText().isEmpty()) {
                                 errorInfo.setText("Sorry, username not possible");
@@ -173,8 +170,7 @@ public class StartScreen extends Application {
                 if (!userAlreadyExists()) {
                     //out.println(user.getText() + " "+psw.getText());
                     initializeAgents(true);
-                    mainScreen = new MainScreen(faceDetection);
-                    stage.close();
+                    mainScreen = new MainScreen(this,faceDetection,stage);
                 } else {
                     if (user.getText().isEmpty()) {
                         errorInfo.setText("Sorry, username not possible");
