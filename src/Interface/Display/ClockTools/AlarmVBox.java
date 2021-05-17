@@ -193,7 +193,7 @@ public class AlarmVBox extends VBox {
         fr.close();
         return res;
     }
-    private void addReminder(String res){
+    private void addReminder(String res) throws ParseException {
         String da = "";
         //convert date to string
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -228,8 +228,9 @@ public class AlarmVBox extends VBox {
         LocalTime localTime1 = LocalTime.parse(timerTime1.getText(),timeFormatter);
         mainScreen.calendarDisplay.addReminder(description.getText(),localDate,localTime,localTime1,colorPicker.getValue());
         String today = java.time.LocalDate.now().toString();
-        if (da.equals(today)) { //updating calendar shortcut
+        if (da.equals(today)) { //updating calendar shortcut and reminders
             mainScreen.todaysRemindersShortcut.add(localTime +";"+ localTime1 +";"+ description.getText());
+            mainScreen.displayReminderAtTime(timerTime.getText(), description.getText());
         }
         mainScreen.chat.receiveMessage("Reminder on the " + da + " from " + timerTime.getText() + " to " + timerTime1.getText() + " with description \"" + description.getText() + "\" has been added");
     }
