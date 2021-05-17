@@ -33,7 +33,6 @@ public class Menu {
     private HBox mainMenu_shortcuts_Option;
     private HBox shortcutsHBox1;
     private HBox shortcutsHBox2;
-    private VBox weatherShortcut;
     private Boolean update = false;
 
     private MainScreen mainScreen;
@@ -62,7 +61,7 @@ public class Menu {
     }
 
     public void displayShortcutsMenu() throws Exception {
-        updateWeatherShortcut();
+        updateWeatherAndCalendarShortcut();
         setMenuBackground(shortcutsMenu);
         mainScreen.root.setLeft(shortcutsMenu);
     }
@@ -257,10 +256,6 @@ public class Menu {
         designShortcut(clockShortcut, Color.SLATEGREY.darker(), Pos.CENTER, 200);
         clockShortcut.setOnMouseClicked(e-> mainScreen.setClockAppDisplay("Clock"));
 
-        VBox calendarShortcut = mainScreen.calendarDisplay.getCalendarShortcut(mainScreen.todaysRemindersShortcut);
-        designShortcut(calendarShortcut, Color.DARKORANGE.brighter(), Pos.TOP_CENTER, 200);
-        calendarShortcut.setOnMouseClicked(e-> mainScreen.displaySkill(mainScreen.calendarDisplay,"calendar"));
-
         VBox mapShortcut = getIconShortcut("src/res/shortcutIcons/mapIcon.png", 80);
         mapShortcut.setOnMouseClicked(e-> {
             String c = FileParser.getUserInfo("-City");
@@ -324,11 +319,11 @@ public class Menu {
         shortcutsHBox1 = new HBox(50);
         shortcutsHBox1.setAlignment(Pos.CENTER);
         shortcutsHBox1.getChildren().add(clockShortcut);
-        updateWeatherShortcut();    //adding weather shortcut before the clock shortcut
 
         shortcutsHBox2 = new HBox(50);
         shortcutsHBox2.setAlignment(Pos.CENTER);
-        shortcutsHBox2.getChildren().addAll(calendarShortcut, smallShortcuts);
+        shortcutsHBox2.getChildren().add(smallShortcuts);
+        updateWeatherAndCalendarShortcut();    //adding weather shortcut before the clock shortcut and calendar last
 
         shortcutsMenu.getChildren().addAll(getMainMenu_shortcuts_Option(true), shortcutsHBox1, shortcutsHBox2);
     }
@@ -367,7 +362,7 @@ public class Menu {
         vBox.setEffect(new DropShadow(10, Color.BLACK));
     }
 
-    private void updateWeatherShortcut() throws Exception {
+    private void updateWeatherAndCalendarShortcut() throws Exception {
         String city = FileParser.getUserInfo("-City");
         String country = FileParser.getUserInfo("-Country");
         if (city.isEmpty() || country.isEmpty()) {
@@ -376,7 +371,7 @@ public class Menu {
             country = "NL";
         }
         mainScreen.weatherDisplay.setLocation(city, country);
-        weatherShortcut = mainScreen.weatherDisplay.getWeatherShortcut();
+        VBox weatherShortcut = mainScreen.weatherDisplay.getWeatherShortcut();
         designShortcut(weatherShortcut, Color.LIGHTBLUE, Pos.CENTER, 200);
         String finalCity = city;
         String finalCountry = country;
@@ -387,8 +382,17 @@ public class Menu {
                 ex.printStackTrace();
             }
         });
-        if (update) { shortcutsHBox1.getChildren().remove(0); }
+
+        VBox calendarShortcut = mainScreen.calendarDisplay.getCalendarShortcut(mainScreen.todaysRemindersShortcut);
+        designShortcut(calendarShortcut, Color.DARKORANGE.brighter(), Pos.TOP_CENTER, 200);
+        calendarShortcut.setOnMouseClicked(e-> mainScreen.displaySkill(mainScreen.calendarDisplay,"calendar"));
+
+        if (update) {
+            shortcutsHBox1.getChildren().remove(0);
+            shortcutsHBox2.getChildren().remove(0);
+        }
         shortcutsHBox1.getChildren().add(0, weatherShortcut);
+        shortcutsHBox2.getChildren().add(0, calendarShortcut);
         update = true;
     }
 
