@@ -2,6 +2,7 @@ package Interface.Display.SkillEditorDisplayTools;
 
 import FileParser.FileParser;
 import Interface.Screens.MainScreen;
+import SkillEditor.SkillEditorHandler;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -20,6 +21,7 @@ import java.util.List;
 public class AddSkillEditorVBox extends VBox {
     private MainScreen mainScreen;
     private FileParser fileParser;
+    private SkillEditorHandler skillEditor;
 
     private File dataBase = new File("src\\DataBase\\textData.txt");
 
@@ -45,6 +47,7 @@ public class AddSkillEditorVBox extends VBox {
     public AddSkillEditorVBox(MainScreen mainScreen){
         this.mainScreen = mainScreen;
         fileParser = new FileParser();
+        skillEditor = new SkillEditorHandler();
         allSkills = fileParser.getAllSkills();
 
         setSpacing(16);
@@ -52,25 +55,6 @@ public class AddSkillEditorVBox extends VBox {
         setPadding(new Insets(40,0,0,0));
         createContent();
         getChildren().addAll(howManyQ,qScroll,aLabel,answer,skillDisplayLabel,propositions,enter);
-    }
-
-    private List<String> getMainSkills(List<List<String>> allSkills){
-        List<String> mainSkills = new ArrayList<>();
-        for (List<String> row:allSkills) {
-            if(!mainSkills.contains(row.get(0))){
-                mainSkills.add(row.get(0));
-            }
-        }
-        return mainSkills;
-    }
-    private List<String> getTasks(List<List<String>> allSkills){
-        List<String> allTasks = new ArrayList<>();
-        for (List<String> row:allSkills) {
-            if(row.get(0).equals(skillDisplay.getValue())){
-                allTasks.add(row.get(2));
-            }
-        }
-        return allTasks;
     }
 
     public void createContent(){
@@ -133,20 +117,20 @@ public class AddSkillEditorVBox extends VBox {
 
         options1 =
                 FXCollections.observableArrayList(
-                        getMainSkills(allSkills)
+                        skillEditor.getMainSkills()
                 );
         skillDisplay = new ComboBox(options1);
         skillDisplay.setValue(options1.get(0));
         skillDisplay.setOnAction(event -> {
             options2.setAll(FXCollections.observableArrayList(
-                    getTasks(allSkills)
+                    skillEditor.getTasks((String) skillDisplay.getValue())
             ));
             tasksDisplay.setValue(options2.get(0));
         });
 
         options2 =
                 FXCollections.observableArrayList(
-                        getTasks(allSkills)
+                        skillEditor.getTasks((String) skillDisplay.getValue())
                 );
         tasksDisplay = new ComboBox(options2);
         tasksDisplay.setValue(options2.get(0));
@@ -227,7 +211,7 @@ public class AddSkillEditorVBox extends VBox {
 
         return success;
     }
-    //"Talk/Discussion","Weather","Clock","Calendar","Media Player","Skill Editor"
+
     public String skillToDisplay(String question){
         String displayNbr = "-1";
         for (List<String>row:allSkills) {

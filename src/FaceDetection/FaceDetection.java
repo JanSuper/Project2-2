@@ -84,7 +84,7 @@ public class FaceDetection extends VBox {
                                 try {
                                     StartScreen startScreen = new StartScreen();
                                     startScreen.start(mainScreen.stage);
-                                    startScreen.errorInfo.setText("You have been logged out because of inactive");
+                                    startScreen.errorInfo.setText("You have been logged out because of inactivity");
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -100,7 +100,7 @@ public class FaceDetection extends VBox {
                             Platform.runLater(new Runnable(){
                                 @Override
                                 public void run() {
-                                    mainScreen.chat.receiveMessage("Hey you are back !");
+                                    mainScreen.chat.receiveMessage("Hey you are back !(after " + elapsedTime/1000 + "sec)");
                                     mainScreen.manageFaceDetection();
                                 }
                             });

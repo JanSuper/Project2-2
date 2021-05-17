@@ -3,7 +3,7 @@ package Interface.Screens;
 import DataBase.Data;
 import Interface.Chat.ChatApp;
 import Interface.Display.*;
-import OpenCV.FaceDetection;
+import FaceDetection.FaceDetection;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -16,7 +16,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -124,7 +123,7 @@ public class MainScreen {
                         firstFaceViewed = true;
                     }
                     //refresh every 1sec
-                    Thread.sleep(1000);
+                    //Thread.sleep(1000);
                     if(!faceDetection.faceDetected()){
                         //Manage face not detected
                         faceDetection.manageFaceLeaving();

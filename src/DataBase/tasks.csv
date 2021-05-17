@@ -40,4 +40,5 @@ Profile Edit,85,Change my profession to <VARIABLE>,1
 Profile Edit,86,Edit the background,0
 Profile Edit,87,Edit the theme color,0
 Profile Edit,89,See my personal info,0
-Close,90,Bye/Leave,0
+System,90,Bye/Leave,0
+System,91,See all possible operations,0

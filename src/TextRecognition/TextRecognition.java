@@ -2,7 +2,9 @@ package TextRecognition;
 
 import Agents.Assistant;
 import DataBase.Data;
+import FileParser.FileParser;
 import Interface.Display.MediaPlayerDisplay;
+import SkillEditor.SkillEditorHandler;
 import Skills.Schedule.Skill_Schedule;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
@@ -18,6 +20,7 @@ import java.util.*;
 
 public class TextRecognition {
     private Assistant assistant;
+    private SkillEditorHandler skillEditor;
 
     private int max_Distance = 2;
     private String originalCleanM;
@@ -31,10 +34,13 @@ public class TextRecognition {
     private int BFSdepth;
     private Node nodeInvestigated;
 
+    private boolean skillEdit = false;
+
     private final File dataBase = new File("src/DataBase/textData.txt");
 
     public TextRecognition(Assistant assistant){
         this.assistant = assistant;
+        skillEditor = assistant.skillEditor;
     }
 
     public String getResponse(String uMessage) throws Exception
@@ -252,14 +258,19 @@ public class TextRecognition {
             e.printStackTrace();
         }
 
-        if(assistant.assistantMessage.get(assistant.assistantMessage.size()-1).startsWith("To add a new skill to the assistant you have to follow these rules:"))
+        if(skillEdit)
         {
-            if(node.getSentence().toLowerCase().equals("cancel") || node.getSentence().toLowerCase().equals("cancel skill editor"))
+            if(node.getSentence().equals("cancel") || node.getSentence().equals("cancel skill editor"))
             {
+                skillEdit = false;
                 response = "Canceled the skill editor, you can now type in your request.";
+            }
+            else if(node.getSentence().equals("See all possible operations")){
+                response = skillEditor.allOperations();
             }
             else
             {
+                skillEdit = false;
                 response = assistant.handleNewSkill(node.getSentence());
             }
         }
@@ -521,11 +532,12 @@ public class TextRecognition {
         }
         else if(skill_num == 31)
         {
+            skillEdit = true;
             assistant.mainScreen.setSkillEditorAppDisplay("Add skill");
             final_answer = "To add a new skill to the assistant you have to follow these rules:" + System.lineSeparator() +
                     "1. Write down the question(s) you will ask to the assistant. If there is more than one question (for the same answer) make sure to separate them with a comma , " + System.lineSeparator() +
                     "2. After the question(s) add a semicolon ; " + System.lineSeparator() +
-                    "3. Write down the answer(s) you want from the assistant. If there is more than one answer (for the same question) make sure to separate them with a comma , " + System.lineSeparator() +
+                    "3. Write down the answer you want from the assistant, either write a sentence for a chat/talk or the number of an operation (if you which to see all the possible operations, please write \"See all possible operations\")." + System.lineSeparator() +
                     "4. Send everything into one message." +System.lineSeparator() +
                     "If you don't want to add a skill write: Cancel";
         }else if(skill_num == 32){
@@ -653,6 +665,9 @@ public class TextRecognition {
         else if(skill_num == 90)
         {
             assistant.mainScreen.exitWindow();
+        }
+        else if(skill_num == 91){
+            assistant.mainScreen.chat.receiveMessage(skillEditor.allOperations());
         }
         else if(skill_num == 100){
             assistant.mainScreen.chat.receiveMessage("Test the text recognition : " + nodeInvestigated.getWordsRemoved().get(0) + " , " + nodeInvestigated.getWordsRemoved().get(1) + " , " + nodeInvestigated.getWordsRemoved().get(2));

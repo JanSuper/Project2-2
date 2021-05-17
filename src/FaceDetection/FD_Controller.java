@@ -1,4 +1,4 @@
-package OpenCV;
+package FaceDetection;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;

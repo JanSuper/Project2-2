@@ -2,7 +2,7 @@ package Interface.Screens;
 
 import Agents.User;
 import FileParser.FileParser;
-import OpenCV.FaceDetection;
+import FaceDetection.FaceDetection;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -21,7 +21,6 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 import javafx.scene.control.TextField;
 import DataBase.Data;
-import org.opencv.core.Mat;
 
 import java.io.*;
 import java.util.Arrays;

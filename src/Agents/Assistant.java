@@ -2,6 +2,7 @@ package Agents;
 
 import FileParser.FileParser;
 import Interface.Screens.MainScreen;
+import SkillEditor.SkillEditorHandler;
 import TextRecognition.TextRecognition;
 
 import java.io.*;
@@ -12,6 +13,7 @@ public class Assistant {
     private File dataBase;
     public MainScreen mainScreen;
     public FileParser fileParser;
+    public SkillEditorHandler skillEditor;
     private String user_name;
     public List<String> assistantMessage;
     private ArrayList SkillKeys;
@@ -44,6 +46,7 @@ public class Assistant {
     public Assistant(MainScreen pMainScreen, String pUser_name, List pAssistantMessage) throws IOException {
         mainScreen = pMainScreen;
         fileParser = new FileParser();
+        skillEditor = new SkillEditorHandler();
         user_name = pUser_name;
         assistantMessage = pAssistantMessage;
         response = "";
@@ -81,9 +84,6 @@ public class Assistant {
         if(result == 1)
         {
             response =  "The new skill was successfully added to the database.";
-        }
-        else if(result==-2){
-            response = "Task already implemented.";
         }
         else
         {
@@ -126,52 +126,19 @@ public class Assistant {
 
         //Ajouter des if pour les commas
         String[] uQuestions = split_uMessage[0].split(",");
-        String[] bAnswers = split_uMessage[1].split(",");
+        String bAnswer = split_uMessage[1];
         if(split_uMessage.length > 2 || split_uMessage.length < 2)
         {
             success = 0;
-        }else if(skillAlreadyIn(uQuestions)){
-            success = -2;
         }
         else
         {
-
-            try{BufferedWriter newData = new BufferedWriter(new FileWriter(dataBase, true));
-                String all_question = "U ";
-                for(int j = 0; j <= uQuestions.length-1; j++)
-                {
-                    uQuestions[j] = removePunctuation(uQuestions[j]);
-                    all_question = all_question + uQuestions[j] + ", ";
-                }
-                newData.append(all_question + System.lineSeparator());
-                for(int y = 0; y <= bAnswers.length-1; y++)
-                {
-                    bAnswers[y] = removePunctuation(bAnswers[y]);
-                    newData.append("B " + bAnswers[y] + System.lineSeparator());
-                    System.out.println("Written from here (ASSISTANT)");
-                }
-                success = 1;
-                newData.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
+            for (int i = 0; i < uQuestions.length; i++) {
+                skillEditor.handleAddSkill(uQuestions[i],bAnswer);
             }
+            success = 1;
         }
         return success;
-    }
-
-    public boolean skillAlreadyIn(String[] uQuestion) throws IOException {
-        String actual = Files.readString(dataBase.toPath()).toLowerCase();
-        for(int j = 0; j <= uQuestion.length-1; j++)
-        {
-            if(actual.contains(uQuestion[j])){
-                return true;
-            }
-        }
-        return false;
     }
 
     public String removePunctuation(String uMessage)
