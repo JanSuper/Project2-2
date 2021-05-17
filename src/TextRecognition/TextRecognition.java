@@ -477,11 +477,12 @@ public class TextRecognition {
         else if(skill_num == 28) {
             String err = "Something went wrong! To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
             assistant.mainScreen.setClockAppDisplay("Timer");
-            if (actual_lastWord.length() == 8) {
-                String[] arr = new String[actual_lastWord.length()];
-                for(int i = 0; i < actual_lastWord.length(); i++)
+            String time = nodeInvestigated.getWordsRemoved().get(0).replace(" ", "");
+            if (time.length() == 8) {
+                String[] arr = new String[time.length()];
+                for(int i = 0; i < time.length(); i++)
                 {
-                    arr[i] = String.valueOf(actual_lastWord.charAt(i));
+                    arr[i] = String.valueOf(time.charAt(i));
                 }
                 if ((arr[2].equals(":") || arr[2].equals(".")) && (arr[5].equals(":")|| arr[5].equals("."))) {
                     try {
@@ -502,16 +503,16 @@ public class TextRecognition {
             else { final_answer = err; }
         }
         else if(skill_num == 29) {
-            if(assistant.mainScreen.clockAppDisplay.clockVBox.tempTimeZoneIDs.contains(actual_lastWord.replace("?", "").replace(".", ""))) {
-                final_answer = assistant.mainScreen.clockAppDisplay.clockVBox.getTimeFromZoneID(actual_lastWord.replace("?", "").replace(".", "")) + " If you want to add a new clock type 'Add a new clock for Continent/City'.";
+            if(assistant.mainScreen.clockAppDisplay.clockVBox.tempTimeZoneIDs.contains(nodeInvestigated.getWordsRemoved().get(0).replace(" ", ""))) {
+                final_answer = assistant.mainScreen.clockAppDisplay.clockVBox.getTimeFromZoneID(nodeInvestigated.getWordsRemoved().get(0).replace(" ", "")) + " If you want to add a new clock type 'Add a new clock for Continent/City'.";
             }
             else {
                 final_answer = "The area you requested the time for couldn't be found. If you want the available areas, type 'What are the time-zone IDs'.";
             }
         }
         else if(skill_num == 30) {
-            if(assistant.mainScreen.clockAppDisplay.clockVBox.tempTimeZoneIDs.contains(actual_lastWord.replace("?", "").replace(".", ""))) {
-                assistant.mainScreen.clockAppDisplay.clockVBox.addClock(actual_lastWord.replace("?", "").replace(".", ""));
+            if(assistant.mainScreen.clockAppDisplay.clockVBox.tempTimeZoneIDs.contains(nodeInvestigated.getWordsRemoved().get(0).replace(" ", ""))) {
+                assistant.mainScreen.clockAppDisplay.clockVBox.addClock(nodeInvestigated.getWordsRemoved().get(0).replace(" ", ""));
                 final_answer = "The clock was successfully added!";
             }
             else {

@@ -1,28 +1,25 @@
 package Interface.Display.ClockTools;
 
 import DataBase.Data;
+import Interface.Display.ClockAppDisplay;
 import Interface.Screens.MainScreen;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
-import java.io.*;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -239,58 +236,9 @@ public class AlarmVBox extends VBox {
     }
 
     public void displayAlarmAtTime(String time,String desc) throws ParseException {
-        KeyFrame keyFrame = new KeyFrame(Duration.seconds(getTimeDiffInSec(time)), event -> notifyUser(time,desc));
+        KeyFrame keyFrame = new KeyFrame(Duration.seconds(getTimeDiffInSec(time)), event -> ClockAppDisplay.notifyUser("alarm",time,desc));
         timeline.getKeyFrames().add(keyFrame);
         timeline.play();
-    }
-
-    private void notifyUser(String time,String desc) { //TODO add sound
-        VBox notification = new VBox(40);
-        notification.setAlignment(Pos.TOP_CENTER);
-        notification.setPrefSize(300, 285);
-        notification.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(7))));
-        notification.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
-
-        Stage stage = new Stage();
-        stage.setAlwaysOnTop(true);
-        stage.setOpacity(0.91);
-        stage.initStyle(StageStyle.UNDECORATED);
-        stage.setScene(new Scene(notification, 320, 190));
-        stage.show();
-
-        Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
-        stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2 - 280);
-        stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 4 + 110);
-
-        Label timerLabel = new Label("Alarm of " + time);
-        timerLabel.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 17));
-        timerLabel.setTextFill(Color.WHITE);
-        timerLabel.setAlignment(Pos.TOP_LEFT);
-        timerLabel.setTranslateX(15);
-
-        Button exit = new Button("x");
-        exit.setCursor(Cursor.HAND);
-        exit.setBackground(Background.EMPTY);
-        exit.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 17));
-        exit.setTextFill(Color.DARKRED);
-        exit.setBorder(null);
-        exit.setAlignment(Pos.TOP_RIGHT);
-        exit.setOnAction(e -> stage.close());
-
-        Region region = new Region();
-        HBox.setHgrow(region, Priority.ALWAYS);
-
-        HBox topBox = new HBox(60);
-        topBox.setAlignment(Pos.CENTER);
-        topBox.setBackground(new Background(new BackgroundFill(MainScreen.themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
-        topBox.getChildren().addAll(timerLabel, region, exit);
-
-        Label label = new Label(desc);
-        label.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 26));
-        label.setTextFill(Color.WHITESMOKE);
-        label.setAlignment(Pos.CENTER);
-
-        notification.getChildren().addAll(topBox, label);
     }
 
     public int getTimeDiffInSec(String time) throws ParseException {
@@ -303,7 +251,6 @@ public class AlarmVBox extends VBox {
         }
         return difference/1000;
     }
-
 
     private void disablePlusMinus(boolean b, HBox plus, HBox minus) {
         for(int i = 0; i<3; i++) {

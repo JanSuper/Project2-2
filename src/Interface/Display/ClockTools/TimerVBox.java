@@ -1,23 +1,17 @@
 package Interface.Display.ClockTools;
 
 import Interface.Display.ClockAppDisplay;
-import Interface.Screens.MainScreen;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 public class TimerVBox extends VBox {
@@ -178,7 +172,7 @@ public class TimerVBox extends VBox {
             if (timerTime.getText().equals("00 : 00 : 00")) {
                 resetTimerButtons();
                 timerTimeline.stop();
-                notifyUser();
+                ClockAppDisplay.notifyUser("timer", null, null);
             }
             else {
                 if(minutesTimer == 0 & secondsTimer == 0 & hoursTimer > 0) {
@@ -197,60 +191,6 @@ public class TimerVBox extends VBox {
             }}
         ));
         timerTimeline.setCycleCount(Timeline.INDEFINITE);
-    }
-
-    private void notifyUser() { //TODO add sound
-        VBox notification = new VBox(40);
-        notification.setAlignment(Pos.TOP_CENTER);
-        notification.setPrefSize(300, 285);
-        notification.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(7))));
-        notification.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
-
-        Stage stage = new Stage();
-        stage.setAlwaysOnTop(true);
-        stage.setOpacity(0.91);
-        stage.initStyle(StageStyle.UNDECORATED);
-        stage.setScene(new Scene(notification, 320, 190));
-        stage.show();
-
-        Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
-        stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2 - 280);
-        stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 4 + 110);
-
-        Label timerLabel = new Label("Timer");
-        timerLabel.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 17));
-        timerLabel.setTextFill(Color.WHITE);
-        timerLabel.setAlignment(Pos.TOP_LEFT);
-        timerLabel.setTranslateX(15);
-
-        Button exit = new Button("x");
-        exit.setCursor(Cursor.HAND);
-        exit.setBackground(Background.EMPTY);
-        exit.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 17));
-        exit.setTextFill(Color.DARKRED);
-        exit.setBorder(null);
-        exit.setAlignment(Pos.TOP_RIGHT);
-        exit.setOnAction(e -> stage.close());
-
-        Region region = new Region();
-        HBox.setHgrow(region, Priority.ALWAYS);
-
-        HBox topBox = new HBox(60);
-        topBox.setAlignment(Pos.CENTER);
-        if (MainScreen.themeColor.equals(Color.LIGHTGRAY)) {
-            topBox.setBackground(new Background(new BackgroundFill(Color.GRAY.darker(), CornerRadii.EMPTY, Insets.EMPTY)));
-        }
-        else {
-            topBox.setBackground(new Background(new BackgroundFill(MainScreen.themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
-        }
-        topBox.getChildren().addAll(timerLabel, region, exit);
-
-        Label label = new Label("Time's up!");
-        label.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 26));
-        label.setTextFill(Color.WHITESMOKE);
-        label.setAlignment(Pos.CENTER);
-
-        notification.getChildren().addAll(topBox, label);
     }
 
     private void resetTimerButtons() {
