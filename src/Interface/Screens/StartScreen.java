@@ -43,15 +43,10 @@ public class StartScreen extends Application {
     private FileParser fileParser;
     public FaceDetection faceDetection;
 
-    private boolean first;
-
     @Override
     public void start(Stage primaryStage) throws Exception {
         fileParser = new FileParser();
-        if(faceDetection==null){
-            first = true;
-            faceDetection = new FaceDetection(mainScreen);
-        }
+        faceDetection = new FaceDetection(mainScreen);
 
         root.setBackground(Data.createBackGround());
         Scene scene = new Scene(root, 800, 800);
@@ -65,11 +60,7 @@ public class StartScreen extends Application {
             System.exit(0);
         });
         this.stage = primaryStage;
-
-        if(first){
-            faceDetection.controller.init();
-        }
-
+        faceDetection.controller.init();
     }
 
     private void login() throws Exception {

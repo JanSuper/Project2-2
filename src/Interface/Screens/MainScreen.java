@@ -89,7 +89,6 @@ public class MainScreen {
         stage.close();
         try {
             StartScreen startScreen = new StartScreen();
-            startScreen.faceDetection = faceDetection;
             startScreen.start(stage);
             if(inactive){
                 startScreen.errorInfo.setText("You have been logged out because of inactivity");
