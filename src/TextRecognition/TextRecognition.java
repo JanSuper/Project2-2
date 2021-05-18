@@ -6,6 +6,7 @@ import FileParser.FileParser;
 import Interface.Display.MediaPlayerDisplay;
 import SkillEditor.SkillEditorHandler;
 import Skills.Schedule.Skill_Schedule;
+import javafx.application.Platform;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaException;
@@ -664,7 +665,8 @@ public class TextRecognition {
         }
         else if(skill_num == 90)
         {
-            assistant.mainScreen.exitWindow();
+            Platform.exit();
+            System.exit(0);
         }
         else if(skill_num == 91){
             assistant.mainScreen.chat.receiveMessage(skillEditor.allOperations());

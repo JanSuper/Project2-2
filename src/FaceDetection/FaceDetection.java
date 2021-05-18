@@ -17,6 +17,7 @@ public class FaceDetection extends VBox {
         this.mainScreen = mainScreen;
         // load the native OpenCV library
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        //add content of the pane
         addContent();
     }
     public void addContent()
@@ -37,11 +38,17 @@ public class FaceDetection extends VBox {
             e.printStackTrace();
         }
     }
+
+    /**
+     * handles the fact that a face has came back to the webcam in a certain amount of time
+     * @return
+     */
     public boolean faceDetected(){
         // current frame
         Mat frame = new Mat();
         // read the current frame
         controller.capture.read(frame);
+        //in order to update the data of the face detection
         controller.detectAndDisplay(frame);
         //Check if there is a face
         if(controller.currentFacesArray.length>0){
@@ -61,8 +68,6 @@ public class FaceDetection extends VBox {
         Task task = new Task<Void>() {
             @Override public Void call() throws InterruptedException {
                 while(!faceDetect[0]){
-                    //refresh every 1sec
-                    //Thread.sleep(1000);
                     long now = System.currentTimeMillis();
                     long elapsedTime = Math.abs(now - start);
                     if(elapsedTime/1000>DELAY){
@@ -89,7 +94,7 @@ public class FaceDetection extends VBox {
                                 }
                             });
                         }else {
-                            //if face is detected
+                            //if face is detected smaller than a certain delay
                             Platform.runLater(new Runnable(){
                                 @Override
                                 public void run() {

@@ -43,9 +43,16 @@ public class StartScreen extends Application {
     private FileParser fileParser;
     public FaceDetection faceDetection;
 
+    /**
+     * initializer method
+     * @param primaryStage stage of the app
+     * @throws Exception
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
+        //class used for reading/writing in the text files
         fileParser = new FileParser();
+        //class that uses the openCV face detection
         faceDetection = new FaceDetection(mainScreen);
 
         root.setBackground(Data.createBackGround());
@@ -60,21 +67,32 @@ public class StartScreen extends Application {
             System.exit(0);
         });
         this.stage = primaryStage;
+        //start the webcam
         faceDetection.controller.init();
     }
 
+    /**
+     * handle login
+     * @throws Exception
+     */
     private void login() throws Exception {
+        //if the face detection is required
         if(faceDetection.isVisible()){
+            //if the camera is open
             if(faceDetection.controller.cameraActive){
+                //if a face is detected now
                 if(faceDetection.faceDetected()){
-                    counter++;
                     if(user.getText().isEmpty()||user.getText().isBlank() && psw.getText().isEmpty()||psw.getText().isBlank()){
                         errorInfo.setText("Sorry, username or password not possible");
                     }else{
+                        counter++;
+                        //checks if user exists
                         if(userAlreadyExists()){
+                            //check if password is correct
                             if(fileParser.checkUserInfo("-Password",user.getText(),psw.getText())){
+                                //start mainscreen and initialize
                                 initializeAgents(false);
-                                mainScreen = new MainScreen(this,faceDetection,stage);
+                                mainScreen = new MainScreen(faceDetection,stage);
                             }else{
                                 if(counter ==1 ) {
                                     errorInfo.setText("Username or password is wrong, 2 attempts left");
@@ -103,14 +121,15 @@ public class StartScreen extends Application {
                 errorInfo.setText("Camera is not activated, please turn it on");
             }
         }else{
-            counter++;
+            //same as above except face detection is not required
             if(user.getText().isEmpty()||user.getText().isBlank() && psw.getText().isEmpty()||psw.getText().isBlank()){
                 errorInfo.setText("Sorry, username or password not possible");
             }else{
+                counter++;
                 if(userAlreadyExists()){
                     if(fileParser.checkUserInfo("-Password",user.getText(),psw.getText())){
                         initializeAgents(false);
-                        mainScreen = new MainScreen(this,faceDetection,stage);
+                        mainScreen = new MainScreen(faceDetection,stage);
                     }else{
                         if(counter ==1 ) {
                             errorInfo.setText("Username or password is wrong, 2 attempts left");
@@ -133,20 +152,25 @@ public class StartScreen extends Application {
                 }
             }
         }
-
     }
 
+    /**
+     * handle new player signup
+     * @throws Exception
+     */
     private void signup() throws Exception {
+        //work as login except create a new user
         if(faceDetection.isVisible()){
             if (faceDetection.controller.cameraActive) {
                 if (faceDetection.faceDetected()) {
                     if (user.getText().isEmpty() || user.getText().isBlank() && psw.getText().isEmpty() || psw.getText().isBlank()) {
                         errorInfo.setText("Sorry, username or password not possible");
                     } else {
+                        //if the username is not already used
                         if (!userAlreadyExists()) {
                             //out.println(user.getText() + " "+psw.getText());
                             initializeAgents(true);
-                            mainScreen = new MainScreen(this,faceDetection,stage);
+                            mainScreen = new MainScreen(faceDetection,stage);
                         } else {
                             if (user.getText().isEmpty()) {
                                 errorInfo.setText("Sorry, username not possible");
@@ -168,7 +192,7 @@ public class StartScreen extends Application {
                 if (!userAlreadyExists()) {
                     //out.println(user.getText() + " "+psw.getText());
                     initializeAgents(true);
-                    mainScreen = new MainScreen(this,faceDetection,stage);
+                    mainScreen = new MainScreen(faceDetection,stage);
                 } else {
                     if (user.getText().isEmpty()) {
                         errorInfo.setText("Sorry, username not possible");
@@ -181,11 +205,19 @@ public class StartScreen extends Application {
 
     }
 
+    /**
+     * know whether the username is already used
+     * @return true if the username is already used, false else
+     */
     public boolean userAlreadyExists(){
         File userFile = new File("src/DataBase/Users/"+user.getText()+"/"+user.getText()+".txt");
         return userFile.exists();
     }
 
+    /**
+     * initialize user and assistant
+     * @param signup is true if it's a new user, false else
+     */
     public void initializeAgents(boolean signup){
         if(signup){
             fileParser.createUser(user.getText(),psw.getText(), errorInfo);
@@ -199,6 +231,9 @@ public class StartScreen extends Application {
         }
     }
 
+    /**
+     * create content in the login screen
+     */
     private void addContent() {
         addMenu();
 

@@ -2,6 +2,7 @@ package Interface.Display;
 
 import Interface.Display.ClockTools.AlarmVBox;
 import Interface.Screens.MainScreen;
+import Skills.Calendar.HandleReminders;
 import Skills.Schedule.Course;
 import Skills.Schedule.Skill_Schedule;
 import javafx.beans.InvalidationListener;
@@ -57,10 +58,12 @@ public class CalendarDisplay extends HBox {
     private ArrayList<Node> fix_hours = new ArrayList<>();
 
     private Skill_Schedule skill_schedule;
+    private HandleReminders reminders;
 
-    public CalendarDisplay(MainScreen mainScreen) throws ParseException {
+    public CalendarDisplay(MainScreen mainScreen) throws ParseException, IOException {
         this.mainScreen = mainScreen;
         this.skill_schedule = new Skill_Schedule();
+        this.reminders = new HandleReminders(this);
         today = LocalDate.now();
 
         createContent();
@@ -141,7 +144,7 @@ public class CalendarDisplay extends HBox {
         try {
             //add schedule and stored reminders
             addSchedule(firstDate,old1stDate);
-            mainScreen.prepareReminders(firstDate,old1stDate);
+            reminders.prepareReminders(firstDate,old1stDate);
         } catch (ParseException | IOException e) {
             e.printStackTrace();
         }
@@ -156,7 +159,7 @@ public class CalendarDisplay extends HBox {
         try {
             //add schedule and stored reminders
             addSchedule(oldLastDate,lastDate);
-            mainScreen.prepareReminders(oldLastDate,lastDate);
+            reminders.prepareReminders(oldLastDate,lastDate);
         } catch (ParseException | IOException e) {
             e.printStackTrace();
         }
