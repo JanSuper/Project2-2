@@ -1,3 +1,4 @@
+/*
 package Webcam;
 import java.awt.image.BufferedImage;
 import java.net.URL;
@@ -25,11 +26,13 @@ import javafx.scene.layout.FlowPane;
 import com.github.sarxos.webcam.Webcam;
 
 
+*/
 /**
  * This is controller for WebCamPreview FXML.
  *
  * @author Rakesh Bhatt (rakeshbhatt10)
- */
+ *//*
+
 public class WebCamPreviewController implements Initializable {
 
     @FXML
@@ -226,4 +229,4 @@ public class WebCamPreviewController implements Initializable {
         btnStopCamera.setDisable(true);
         btnStartCamera.setDisable(true);
     }
-}
+}*/
