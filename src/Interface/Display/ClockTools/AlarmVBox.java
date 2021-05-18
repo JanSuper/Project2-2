@@ -3,6 +3,7 @@ package Interface.Display.ClockTools;
 import DataBase.Data;
 import Interface.Display.ClockAppDisplay;
 import Interface.Screens.MainScreen;
+import Skills.Calendar.HandleReminders;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.EventHandler;
@@ -55,9 +56,14 @@ public class AlarmVBox extends VBox {
 
     private Timeline timeline;
 
-    public AlarmVBox(MainScreen mainScreen,boolean isReminder) {
+    private HandleReminders reminders;
+
+    public AlarmVBox(MainScreen mainScreen,boolean isReminder) throws IOException, ParseException {
         this.mainScreen = mainScreen;
         this.isReminder = isReminder;
+
+        reminders = new HandleReminders(mainScreen.calendarDisplay);
+
         this.timeline = new Timeline();
         if(isReminder){
             setSpacing(8);
@@ -230,7 +236,7 @@ public class AlarmVBox extends VBox {
         String today = java.time.LocalDate.now().toString();
         if (da.equals(today)) { //updating calendar shortcut and reminders
             mainScreen.todaysRemindersShortcut.add(localTime +";"+ localTime1 +";"+ description.getText());
-            mainScreen.displayReminderAtTime(timerTime.getText(), description.getText());
+            reminders.displayReminderAtTime(timerTime.getText(), description.getText());
         }
         mainScreen.chat.receiveMessage("Reminder on the " + da + " from " + timerTime.getText() + " to " + timerTime1.getText() + " with description \"" + description.getText() + "\" has been added");
     }

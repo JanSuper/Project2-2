@@ -24,6 +24,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
 
 public class ClockAppDisplay extends VBox {
     private HBox tabs;
@@ -102,10 +104,18 @@ public class ClockAppDisplay extends VBox {
         tab.setTextFill(Color.LIGHTGRAY);
         tab.setPrefSize(160, 80);
         tab.setAlignment(Pos.CENTER);
-        tab.setOnAction(e -> {deselectTab(prevTab); selectTab(tab);});
+        tab.setOnAction(e -> {deselectTab(prevTab);
+            try {
+                selectTab(tab);
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            } catch (ParseException parseException) {
+                parseException.printStackTrace();
+            }
+        });
     }
 
-    public void selectTab(Button selectedTab) {
+    public void selectTab(Button selectedTab) throws IOException, ParseException {
         prevTab = selectedTab;
         selectedTab.setBackground(new Background(new BackgroundFill(MainScreen.themeColor.darker(), CornerRadii.EMPTY, Insets.EMPTY)));
         selectedTab.setTextFill(Color.LIGHTGRAY.brighter());
@@ -132,7 +142,7 @@ public class ClockAppDisplay extends VBox {
         }
     }
 
-    private void setAlarmView() {
+    private void setAlarmView() throws IOException, ParseException {
         alarmVBox = new AlarmVBox(mainScreen,false);
         getChildren().add(alarmVBox);
     }

@@ -2,6 +2,7 @@ package Skills.Calendar;
 
 import DataBase.Data;
 import Interface.Display.CalendarDisplay;
+import Interface.Display.ClockAppDisplay;
 import Interface.Screens.MainScreen;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -156,7 +157,7 @@ public class HandleReminders {
      * @throws ParseException
      */
     public void displayReminderAtTime(String time, String desc) throws ParseException {
-        KeyFrame keyFrame = new KeyFrame(Duration.seconds(getTimeDiffInSec(time)), event -> notifyUser(time,desc));
+        KeyFrame keyFrame = new KeyFrame(Duration.seconds(getTimeDiffInSec(time)), event -> ClockAppDisplay.notifyUser("reminder",time,desc));
         timeline.getKeyFrames().add(keyFrame);
         timeline.play();
     }
@@ -176,59 +177,5 @@ public class HandleReminders {
             return -difference/1000;
         }
         return difference/1000;
-    }
-
-    /**
-     * notify user for each reminder
-     * @param time
-     * @param desc
-     */
-    private void notifyUser(String time,String desc) { //TODO add sound
-        VBox notification = new VBox(40);
-        notification.setAlignment(Pos.TOP_CENTER);
-        notification.setPrefSize(300, 285);
-        notification.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(7))));
-        notification.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
-
-        Stage stage = new Stage();
-        stage.setAlwaysOnTop(true);
-        stage.setOpacity(0.91);
-        stage.initStyle(StageStyle.UNDECORATED);
-        stage.setScene(new Scene(notification, 320, 190));
-        stage.show();
-
-        Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
-        stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2 - 280);
-        stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 4 + 110);
-
-        Label timerLabel = new Label("Reminder of " + time);
-        timerLabel.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 17));
-        timerLabel.setTextFill(Color.WHITE);
-        timerLabel.setAlignment(Pos.TOP_LEFT);
-        timerLabel.setTranslateX(15);
-
-        Button exit = new Button("x");
-        exit.setCursor(Cursor.HAND);
-        exit.setBackground(Background.EMPTY);
-        exit.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 17));
-        exit.setTextFill(Color.DARKRED);
-        exit.setBorder(null);
-        exit.setAlignment(Pos.TOP_RIGHT);
-        exit.setOnAction(e -> stage.close());
-
-        Region region = new Region();
-        HBox.setHgrow(region, Priority.ALWAYS);
-
-        HBox topBox = new HBox(60);
-        topBox.setAlignment(Pos.CENTER);
-        topBox.setBackground(new Background(new BackgroundFill(MainScreen.themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
-        topBox.getChildren().addAll(timerLabel, region, exit);
-
-        Label label = new Label(desc);
-        label.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 26));
-        label.setTextFill(Color.WHITESMOKE);
-        label.setAlignment(Pos.CENTER);
-
-        notification.getChildren().addAll(topBox, label);
     }
 }

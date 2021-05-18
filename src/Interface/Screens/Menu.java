@@ -25,6 +25,8 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.text.ParseException;
 
 public class Menu {
     private VBox shortcutsMenu;
@@ -248,7 +250,15 @@ public class Menu {
 
         VBox clockShortcut = mainScreen.clockAppDisplay.clockVBox.getClockShortcut();
         designShortcut(clockShortcut, Color.SLATEGREY.darker(), Pos.CENTER, 200);
-        clockShortcut.setOnMouseClicked(e-> mainScreen.setClockAppDisplay("Clock"));
+        clockShortcut.setOnMouseClicked(e-> {
+            try {
+                mainScreen.setClockAppDisplay("Clock");
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            } catch (ParseException parseException) {
+                parseException.printStackTrace();
+            }
+        });
 
         VBox mapShortcut = getIconShortcut("src/res/shortcutIcons/mapIcon.png", 80);
         mapShortcut.setOnMouseClicked(e-> {

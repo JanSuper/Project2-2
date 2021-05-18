@@ -196,7 +196,7 @@ public class MainScreen {
         root.setLeft(weatherDisplay);
     }
 
-    public void setClockAppDisplay(String firstTab) {
+    public void setClockAppDisplay(String firstTab) throws IOException, ParseException {
         if (clockAppDisplay.prevTab != null) { clockAppDisplay.deselectTab(clockAppDisplay.prevTab); }
         switch(firstTab) {
             case "Alarm": clockAppDisplay.selectTab(clockAppDisplay.alarm); break;

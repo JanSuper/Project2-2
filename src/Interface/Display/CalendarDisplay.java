@@ -86,7 +86,7 @@ public class CalendarDisplay extends HBox {
         centerNodeInScrollPane(scrollPane,node);
     }
 
-    private void createContent(){
+    private void createContent() throws IOException, ParseException {
         calendar = new GridPane();
         calendar.setGridLinesVisible(true);
         calendar.setStyle("-fx-background-color:#3d3d3d;");
