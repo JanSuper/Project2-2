@@ -1,25 +1,16 @@
-package OpenCV;
+package FaceDetection;
 import DataBase.Data;
 import Interface.Screens.MainScreen;
 import Interface.Screens.StartScreen;
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import org.opencv.core.*;
-
-import java.time.LocalTime;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class FaceDetection extends VBox {
     public MainScreen mainScreen;
-    public  FD_Controller controller;
+    public FD_Controller controller;
     private final int DELAY = 30;
 
     public FaceDetection(MainScreen mainScreen){
@@ -63,14 +54,15 @@ public class FaceDetection extends VBox {
     }
 
     public void manageFaceLeaving(){
+        //System.out.println("Timer started");
         //start a timer
+        final boolean[] faceDetect = {false};
         long start = System.currentTimeMillis();
         Task task = new Task<Void>() {
             @Override public Void call() throws InterruptedException {
-                final int max = 1000000;
-                for (int i = 1; i <= max; i++) {
+                while(!faceDetect[0]){
                     //refresh every 1sec
-                    Thread.sleep(1000);
+                    //Thread.sleep(1000);
                     long now = System.currentTimeMillis();
                     long elapsedTime = Math.abs(now - start);
                     if(elapsedTime/1000>DELAY){
@@ -78,23 +70,15 @@ public class FaceDetection extends VBox {
                         Platform.runLater(new Runnable(){
                             @Override
                             public void run() {
-                                Data.setImage("src/DataBase/defaultBackground.jpg");
-                                mainScreen.stage.close();
-                                mainScreen.faceDetection.controller.capture.release();
-                                try {
-                                    StartScreen startScreen = new StartScreen();
-                                    startScreen.start(mainScreen.stage);
-                                    startScreen.errorInfo.setText("You have been logged out because of inactivity");
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                mainScreen.logOut(true);
                             }
                         });
+                        faceDetect[0] = true;
                     }
                     if(faceDetected()){
                         //face detected
                         //System.out.println("face detected after " + elapsedTime/1000+  " seconds.");
-                        if(elapsedTime/1000>DELAY/5){
+                        if(elapsedTime/1000>DELAY/10){
                             //if face is detected after a certain time
                             //System.out.println("hey you are back");
                             Platform.runLater(new Runnable(){
@@ -104,8 +88,16 @@ public class FaceDetection extends VBox {
                                     mainScreen.manageFaceDetection();
                                 }
                             });
-                            break;
+                        }else {
+                            //if face is detected
+                            Platform.runLater(new Runnable(){
+                                @Override
+                                public void run() {
+                                    mainScreen.manageFaceDetection();
+                                }
+                            });
                         }
+                        faceDetect[0] = true;
                     }
                 }
                 return null;

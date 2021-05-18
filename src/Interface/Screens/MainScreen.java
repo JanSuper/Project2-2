@@ -84,6 +84,21 @@ public class MainScreen {
         manageFaceDetection();
     }
 
+    public void logOut(boolean inactive){
+        Data.setImage("src/DataBase/defaultBackground.jpg");
+        stage.close();
+        try {
+            StartScreen startScreen = new StartScreen();
+            startScreen.faceDetection = faceDetection;
+            startScreen.start(stage);
+            if(inactive){
+                startScreen.errorInfo.setText("You have been logged out because of inactivity");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void start(Stage primaryStage) {
         primaryStage.setScene(new Scene(root));
         primaryStage.setResizable(true);
@@ -110,7 +125,7 @@ public class MainScreen {
     public void manageFaceDetection(){
         final boolean[] faceDetected = {true};
         Task task = new Task<Void>() {
-            @Override public Void call() throws InterruptedException {
+            @Override public Void call(){
                 while (faceDetected[0]){
                     if(!firstFaceViewed&&faceDetection.faceDetected()){
                         //Assistant's first message when sees user for first time

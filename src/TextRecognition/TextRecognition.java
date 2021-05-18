@@ -34,7 +34,7 @@ public class TextRecognition {
     private int BFSdepth;
     private Node nodeInvestigated;
 
-    private boolean skillEdit = false;
+    public boolean skillEdit = false;
 
     private final File dataBase = new File("src/DataBase/textData.txt");
 

@@ -146,15 +146,7 @@ public class Menu {
 
         designOptionButton(logOut);
         logOut.setOnMouseClicked(event -> {
-            Data.setImage("src/DataBase/defaultBackground.jpg");
-            mainScreen.stage.close();
-            mainScreen.faceDetection.controller.capture.release();
-            try {
-                StartScreen startScreen = new StartScreen();
-                startScreen.start(mainScreen.stage);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            mainScreen.logOut(false);
         });
         mainMenu.getChildren().addAll(getMainMenu_shortcuts_Option(false), userNameLabel, settings, help, logOut);
     }

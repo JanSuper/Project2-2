@@ -28,7 +28,7 @@ import java.util.List;
 
 public class StartScreen extends Application {
 
-    private Stage stage;
+    public Stage stage;
     private MainScreen mainScreen;
 
     private VBox menuBox;
@@ -41,12 +41,17 @@ public class StartScreen extends Application {
     private StackPane root = new StackPane();
 
     private FileParser fileParser;
-    private FaceDetection faceDetection;
+    public FaceDetection faceDetection;
+
+    private boolean first;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         fileParser = new FileParser();
-        faceDetection = new FaceDetection(mainScreen);
+        if(faceDetection==null){
+            first = true;
+            faceDetection = new FaceDetection(mainScreen);
+        }
 
         root.setBackground(Data.createBackGround());
         Scene scene = new Scene(root, 800, 800);
@@ -61,7 +66,10 @@ public class StartScreen extends Application {
         });
         this.stage = primaryStage;
 
-        faceDetection.controller.init();
+        if(first){
+            faceDetection.controller.init();
+        }
+
     }
 
     private void login() throws Exception {
