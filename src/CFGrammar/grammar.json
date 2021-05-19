@@ -1,17 +1,23 @@
 {
-  "S":"_Add other s (sentence) structure",
-  "S":"_Add missing PP VP... also Sk for skill",
-
-  "S":"NP VP",
-  "S":"Interj NP VP",
-  "NP":"Det N",
-  "NP":"Det N that VP",
-  "NP":"Det Adj N",
-  "NP":"Det N PP",
-  "PP":"Prep NP",
-  "VP":"Vtrans NP",
-  "VP":"Vintr",
-
+  "S":[
+    "_Add other s (sentence) structure",
+    "_Add missing PP VP... also Sk for skill",
+    "NP VP",
+    "Interj NP VP"
+  ],
+  "NP":[
+    "Det N",
+    "Det N that VP",
+    "Det Adj N",
+    "Det N PP"
+  ],
+  "PP": [
+    "Prep NP"
+  ],
+  "Vp": [
+    "Vtrans NP",
+    "Vintr"
+  ],
   "Det":[
     "a",
     "an",
