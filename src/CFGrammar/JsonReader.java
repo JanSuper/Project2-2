@@ -1,5 +1,6 @@
 package CFGrammar;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -8,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 
 
@@ -17,29 +19,36 @@ public class JsonReader {
     /**
      * Should do the same as getAllRules from Main_CFG but with the json file
      */
-    public void getAllRules() throws FileNotFoundException {
-        FileReader reader = new FileReader("..\\grammar.json");
-        JSONParser parser = new JSONParser();
+    public void getAllRules() {
+        FileReader reader = null;
         try {
-            JSONObject grammar = (JSONObject) parser.parse(reader);
+            reader = new FileReader("..\\grammar.json");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        JSONParser parser = new JSONParser();
+        JSONObject grammar = null;
+        try {
+            grammar = (JSONObject) parser.parse(reader);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
-        JSONObject grammar = new JSONObject();
         Iterator<String> keys = grammar.keySet().iterator();
-        while(keys.hasNext()){
+        while (keys.hasNext()) {
             String key = keys.next();
             boolean found = false;
-            for(int f=0;f <rules.size(); f++) {
+            for (int f = 0; f < rules.size(); f++) {
                 Rule temp = rules.get(f);
                 if (temp.getL_side().equals(key)) {
                     found = true;
                 }
                 String lefthand = key;
-                ArrayList<String> righthand = (ArrayList<String>) grammar.get(key);
+                String tmprhs = (String) grammar.get(key);
+                String[] righthandside =  tmprhs.split(", ");
+                ArrayList<String> righthand = new ArrayList<>();
+                Collections.addAll(righthand,righthandside);
                 if (!found) {
                     if (righthand.size() == 1) {
                         Rule one = new Rule(lefthand, righthand.get(0));
@@ -57,18 +66,68 @@ public class JsonReader {
                 }
             }
         }
-        System.out.println("number of rules: "+rules.size());
+        System.out.println("number of rules: " + rules.size());
     }
 
     /**
      * Should be able to add a rule to the json file in the right place
      * @param rule
      */
-    public void addRules(String rule) {}
+    public void addRules(Rule rule) {
+        FileReader reader = null;
+        try {
+            reader = new FileReader("..\\grammar.json");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        JSONParser parser = new JSONParser();
+        JSONObject grammar = null;
+        try {
+            grammar = (JSONObject) parser.parse(reader);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        if(grammar.containsKey(rule.getL_side())){
+            JSONArray ruleAddition = (JSONArray) grammar.get(rule.getL_side());
+            ruleAddition.add(rule.getR_side());
+            if(rule.getMultiple()){
+                ruleAddition.add(rule.getR_side_2());
+            }
+        }
+        else{
+            grammar.put(rule.getL_side(), rule.getR_side());
+            rules.add(rule);
+        }
+    }
 
     /**
      * Should remove the specific rule from the json file
      * @param rule
      */
-    public void removeRule(String rule) {}
+    public void removeRule(Rule rule) {
+        FileReader reader = null;
+        try {
+            reader = new FileReader("..\\grammar.json");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        JSONParser parser = new JSONParser();
+        JSONObject grammar = null;
+        try {
+            grammar = (JSONObject) parser.parse(reader);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        if(grammar.containsKey(rule.getL_side()))
+        {
+            grammar.remove(rule.getL_side());
+        }
+        else{
+            System.out.println("Rule not in specified file");
+        }
+    }
 }
