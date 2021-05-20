@@ -230,7 +230,7 @@ public class Main_CFG {
 
     public void addWords(String word_cat, String word)
     {
-        //Adds a single word to the jason file in the right category "N","V"...
+        //Adds a single word to the json file in the right category "N","V"...
     }
 
     public void readfromJson()
