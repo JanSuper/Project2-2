@@ -10,11 +10,11 @@ public class Main_CFG {
      * @param args
      */
     public static void main(String[] args) throws IOException {
-        String in = "The cat saw a mouse";
-        String fileName = "src\\CFGrammar\\tempGrammar.cfg";
+        String in = "A car cost a house";
+        String fileName = "src\\CFGrammar\\grammar.json";
         Main_CFG cfg = new Main_CFG(in, fileName);
-        cfg.checkUserMessage(in);
-        cfg.printBestTree(in);
+        //cfg.checkUserMessage(in);
+        //cfg.printBestTree(in);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -33,7 +33,15 @@ public class Main_CFG {
     public Main_CFG(String pUser_message, String fileName) throws IOException
     {
         user_message = pUser_message;
-        getAllRules(fileName);
+        JsonReader jReader = new JsonReader();
+        jReader.getAllRules();
+        rules = jReader.getRules();
+        System.out.println(rules.size());
+        for(int i = 0; i < rules.size(); i++)
+        {
+            System.out.println(rules.get(i).getL_side());
+        }
+        //getAllRules(fileName);
     }
 
     public double checkUserMessage(String pUser_Message)
