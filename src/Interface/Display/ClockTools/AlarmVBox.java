@@ -66,18 +66,40 @@ public class AlarmVBox extends VBox {
 
         this.timeline = new Timeline();
         if(isReminder){
-            setSpacing(8);
+            setSpacing(6);
         }else{
-            setSpacing(15);
+            setSpacing(19);
         }
         setAlignment(Pos.CENTER);
-        setPadding(new Insets(40,0,0,0));
 
         createContent();
         if(isReminder){
-            getChildren().addAll(datePickerTxt,d,timePickerTxt,plus,timerTime,minus,timePickerTxt1,plus1,timerTime1,minus1,descriptionTxt,description,colorPicker,enter);
+            setPadding(new Insets(30,0, 0, 0));
+
+            VBox date = new VBox(12);
+            date.setAlignment(Pos.CENTER);
+            date.getChildren().addAll(datePickerTxt,d);
+
+            timePickerTxt.setTranslateY(27);
+            VBox from = new VBox();
+            from.getChildren().addAll(plus,timerTime,minus);
+            from.setTranslateY(-12);
+            from.setScaleX(0.85); from.setScaleY(0.85);
+
+            timePickerTxt1.setTranslateY(-25);
+            VBox to = new VBox();
+            to.getChildren().addAll(plus1,timerTime1,minus1);
+            to.setTranslateY(-67);
+            to.setScaleX(0.85); to.setScaleY(0.85);
+
+            VBox box = new VBox(10);
+            box.setAlignment(Pos.CENTER);
+            box.getChildren().addAll(descriptionTxt,description,colorPicker,enter);
+            box.setTranslateY(-75);
+
+            getChildren().addAll(date,timePickerTxt,from,timePickerTxt1,to,box);
         }else{
-            description.setPrefSize(150,100);
+            setPadding(new Insets(40,0,0,0));
             getChildren().addAll(timePickerTxt,plus,timerTime,minus,descriptionTxt,description,enter);
         }
     }
@@ -85,7 +107,7 @@ public class AlarmVBox extends VBox {
     private void createContent(){
         datePickerTxt = new Label("Date:");
         datePickerTxt.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
-        datePickerTxt.setTextFill(MainScreen.themeColor.darker());
+        datePickerTxt.setTextFill(ClockAppDisplay.color.darker());
         datePickerTxt.setAlignment(Pos.CENTER);
 
         // create a date picker
@@ -102,33 +124,33 @@ public class AlarmVBox extends VBox {
             timePickerTxt.setText("Time:");
         }
         timePickerTxt.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
-        timePickerTxt.setTextFill(MainScreen.themeColor.darker());
+        timePickerTxt.setTextFill(ClockAppDisplay.color.darker());
         timePickerTxt.setAlignment(Pos.CENTER);
 
         timerTime = new Label();
         timerTime.setFont(Font.font("Tahoma", FontWeight.EXTRA_BOLD, 58));
-        timerTime.setTextFill(MainScreen.themeColor.darker().darker());
+        timerTime.setTextFill(ClockAppDisplay.color.darker().darker());
         timerTime.setAlignment(Pos.CENTER);
 
-        plus = new HBox(70);
+        plus = new HBox(60);
         setPlusButtons(plus,true);
-        minus = new HBox(80);
+        minus = new HBox(60);
         setMinusButtons(minus,true);
         disablePlusMinus(false, plus, minus);
 
         timePickerTxt1 = new Label("To:");
         timePickerTxt1.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
-        timePickerTxt1.setTextFill(MainScreen.themeColor.darker());
+        timePickerTxt1.setTextFill(ClockAppDisplay.color.darker());
         timePickerTxt1.setAlignment(Pos.CENTER);
 
         timerTime1 = new Label();
         timerTime1.setFont(Font.font("Tahoma", FontWeight.EXTRA_BOLD, 58));
-        timerTime1.setTextFill(MainScreen.themeColor.darker().darker());
+        timerTime1.setTextFill(ClockAppDisplay.color.darker().darker());
         timerTime1.setAlignment(Pos.CENTER);
 
-        plus1 = new HBox(70);
+        plus1 = new HBox(60);
         setPlusButtons(plus1,false);
-        minus1 = new HBox(80);
+        minus1 = new HBox(60);
         setMinusButtons(minus1,false);
         disablePlusMinus(false, plus1, minus1);
 
@@ -136,12 +158,18 @@ public class AlarmVBox extends VBox {
 
         descriptionTxt = new Label("Description:");
         descriptionTxt.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
-        descriptionTxt.setTextFill(MainScreen.themeColor.darker());
+        descriptionTxt.setTextFill(ClockAppDisplay.color.darker());
         descriptionTxt.setAlignment(Pos.CENTER);
 
         description = new TextField();
         description.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
-        description.setPrefSize(150,400);
+        if (!isReminder) {
+            description.setMaxSize(700,60);
+            description.setMinSize(700,60);
+        }else {
+            description.setMaxSize(250,40);
+            description.setMinSize(250,40);
+        }
 
         colorPicker = new ColorPicker();
         colorPicker.setValue(Color.ORANGE);
@@ -150,6 +178,7 @@ public class AlarmVBox extends VBox {
         enter = new Button("Enter");
         enter.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(90,true), Insets.EMPTY)));
         designAlarmButton(enter);
+        if (!isReminder) {enter.setTranslateY(60);} else {enter.setTranslateY(20);}
         enter.setOnMouseClicked(e-> {
             try {
                 if(isReminder){
@@ -347,7 +376,7 @@ public class AlarmVBox extends VBox {
             if(isFrom){
                 Button minusH = new Button("_");
                 designPlusMinusButton(minusH);
-                minusH.setOnAction(e -> {if(hoursTimer>0){hoursTimer--; setTimerTime();}});
+                minusH.setOnAction(e -> {if(hoursTimer==0) {hoursTimer=23;} else {hoursTimer--;} setTimerTime();});
 
                 Button minusM = new Button("_");
                 designPlusMinusButton(minusM);
@@ -363,7 +392,7 @@ public class AlarmVBox extends VBox {
             }else{
                 Button minusH1 = new Button("_");
                 designPlusMinusButton(minusH1);
-                minusH1.setOnAction(e -> {if(hoursTimer1>0){hoursTimer1--; setTimerTime();}});
+                minusH1.setOnAction(e -> {if(hoursTimer1==0) {hoursTimer1=23;} else {hoursTimer1--;} setTimerTime();});
 
                 Button minusM1 = new Button("_");
                 designPlusMinusButton(minusM1);
@@ -380,7 +409,7 @@ public class AlarmVBox extends VBox {
         }else{
             Button minusH = new Button("_");
             designPlusMinusButton(minusH);
-            minusH.setOnAction(e -> {if(hoursTimer>0){hoursTimer--; setTimerTime();}});
+            minusH.setOnAction(e -> {if(hoursTimer==0) {hoursTimer=23;} else {hoursTimer--;} setTimerTime();});
 
             Button minusM = new Button("_");
             designPlusMinusButton(minusM);
@@ -397,6 +426,7 @@ public class AlarmVBox extends VBox {
     }
 
     private void designPlusMinusButton(Button button) {
+        if (isReminder && button.getText().equals("+")) { button.setTranslateY(-7);}
         button.setCursor(Cursor.HAND);
         button.setBackground(Background.EMPTY);
         button.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 28));

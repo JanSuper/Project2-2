@@ -1,11 +1,10 @@
 package Interface.Screens;
 
 import DataBase.Data;
+import FaceDetection.FaceDetection;
 import Interface.Chat.ChatApp;
 import Interface.Display.*;
-import FaceDetection.FaceDetection;
 import Skills.Calendar.HandleReminders;
-import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -20,17 +19,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class MainScreen {
     public FaceDetection faceDetection;
@@ -72,6 +64,7 @@ public class MainScreen {
         HandleReminders reminders = new HandleReminders(calendarDisplay);
         //reads the reminder file and add the one of today to the list
         reminders.prepareReminders(calendarDisplay.firstDate,calendarDisplay.lastDate);
+        todaysRemindersShortcut = reminders.todaysRemindersShortcut;
 
         //add content to the pane
         createContent();

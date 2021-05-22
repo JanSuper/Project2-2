@@ -31,7 +31,6 @@ import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static javafx.scene.paint.Color.LIGHTGRAY;
@@ -132,6 +131,7 @@ public class CalendarDisplay extends HBox {
         getChildren().add(scrollPane);
 
         alarmVBox = new AlarmVBox(this.mainScreen,true);
+        alarmVBox.setAlignment(Pos.TOP_CENTER);
         getChildren().add(alarmVBox);
     }
 
