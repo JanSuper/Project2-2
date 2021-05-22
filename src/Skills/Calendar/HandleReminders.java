@@ -107,22 +107,26 @@ public class HandleReminders {
                     counter1++;
                 }
 
-                //notify user if a reminder is for today
-                String today = java.time.LocalDate.now().toString();
-                if(username.equals(Data.getUsername())&&day.equals(today)){
-                    todaysRemindersShortcut.add(time.substring(0,5) +";"+ time1.substring(0,5) +";"+ desc);
-                    alarmsTime.add(new String[]{time,desc});
-                    displayReminderAtTime(time,desc);
+                if(username.equals(Data.getUsername())){
+                    //notify user if a reminder is for today
+                    String today = java.time.LocalDate.now().toString();
+                    if(day.equals(today)){
+                        todaysRemindersShortcut.add(time.substring(0,5) +";"+ time1.substring(0,5) +";"+ desc);
+                        alarmsTime.add(new String[]{time,desc});
+                        displayReminderAtTime(time,desc);
+                    }
+
+                    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    LocalDate localDate = LocalDate.parse(day,dateFormatter);
+                    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+                    LocalTime localTime = LocalTime.parse(time,timeFormatter);
+                    LocalTime localTime1 = LocalTime.parse(time1,timeFormatter);
+                    //add any reminder in the calendar
+                    if(localDate.isAfter(firstDate.minusDays(1)) && localDate.isBefore(lastDate.plusDays(1))) {
+                        calendarDisplay.addReminder(desc, localDate, localTime, localTime1, Color.valueOf(color));
+                    }
                 }
-                DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                LocalDate localDate = LocalDate.parse(day,dateFormatter);
-                DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-                LocalTime localTime = LocalTime.parse(time,timeFormatter);
-                LocalTime localTime1 = LocalTime.parse(time1,timeFormatter);
-                //add any reminder in the calendar
-                if(localDate.isAfter(firstDate.minusDays(1)) && localDate.isBefore(lastDate.plusDays(1))) {
-                    calendarDisplay.addReminder(desc, localDate, localTime, localTime1, Color.valueOf(color));
-                }
+
                 linesNbrChar=i+1;
                 counter = 0;
                 username = "";

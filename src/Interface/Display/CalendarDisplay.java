@@ -296,7 +296,7 @@ public class CalendarDisplay extends HBox {
                 node.toFront();
             }
             pane1.setOnMouseClicked(event -> {
-                getReminderInfo(desc,date.toString(),fromTime.toString());
+                getReminderInfo(desc,date.toString(),fromTime.toString(),toTime.toString());
             });
             calendar.add(pane1,inTable[0],inTable[1],1,inTable[2]);
 
@@ -338,7 +338,7 @@ public class CalendarDisplay extends HBox {
         return new int[]{col,row,rowSpan};
     }
 
-    private void getReminderInfo(String desc,String date,String hour) {
+    private void getReminderInfo(String desc,String date,String from,String to) {
         VBox notification = new VBox(40);
         notification.setAlignment(Pos.TOP_CENTER);
         notification.setPrefSize(300, 285);
@@ -356,7 +356,7 @@ public class CalendarDisplay extends HBox {
         stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2 - 280);
         stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 4 + 110);
 
-        Label timerLabel = new Label(date + " at " + hour);
+        Label timerLabel = new Label(date + " from " + from + " to " + to);
         timerLabel.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 13));
         timerLabel.setTextFill(Color.WHITE);
         timerLabel.setAlignment(Pos.TOP_LEFT);

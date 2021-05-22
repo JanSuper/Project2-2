@@ -40,8 +40,6 @@ public class MainScreen {
     public Stage stage;
 
     public ArrayList<String> todaysRemindersShortcut = new ArrayList<>();
-    private ArrayList<String[]> alarmsTime;
-    private Timeline timeline;
 
     private boolean firstFaceViewed;
 
