@@ -70,8 +70,7 @@ public class CalendarDisplay extends HBox {
 
         centerTo(today,LocalTime.parse("12:00"));
     }
-    public void centerTo(LocalDate date,LocalTime time){
-        //TODO fix method, sometimes it works sometimes it doesn't
+    public void centerTo(LocalDate date,LocalTime time) {
         if(date.isBefore(firstDate.plusDays(1))){
             int diff = firstDate.getDayOfYear()-date.getDayOfYear()-NBR_OF_DAYS;
             addPreviousCalendar(firstDate.minusDays(diff));
@@ -82,7 +81,7 @@ public class CalendarDisplay extends HBox {
 
         int[] inTable = convertToTable(date,time,time);
         Node node = getNodeByRowColumnIndex(inTable[1],inTable[0]);
-        centerNodeInScrollPane(scrollPane,node);
+        centerNodeInScrollPane(scrollPane,node.getParent());
     }
 
     private void createContent() throws IOException, ParseException {
