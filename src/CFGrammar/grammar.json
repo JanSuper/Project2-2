@@ -24,9 +24,9 @@
 "NP" : Det N
 "NP" : Prep N
 "NP" : Adj N
+"FWP" : Det FW
 "FWP" : Prep FW
-"FWP" : Prep FW
-"FWP" : Prep FW
+"FWP" : Adj FW
 "NPP" : PPZ Det Sk_N
 "NPP" : PPZ Prep Sk_N
 "Sk_N" : Weather_word
