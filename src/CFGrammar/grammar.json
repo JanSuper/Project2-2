@@ -27,9 +27,9 @@
 "NP" : Det N
 "NP" : Prep N
 "NP" : Adj N
-"FWP" : Prep Sk_N
-"FWP" : Prep Sk_N
-"FWP" : Prep Sk_N
+"FWP" : Prep FW
+"FWP" : Prep FW
+"FWP" : Prep FW
 "NPP" : PPZ Det Sk_N
 "NPP" : PPZ Prep Sk_N
 
