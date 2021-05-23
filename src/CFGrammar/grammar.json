@@ -1,24 +1,54 @@
-{
-  "S":[
-    "_Add other s (sentence) structure",
-    "_Add missing PP VP... also Sk for skill",
-    "NP VP",
-    "Interj NP VP"
+"S" : Sk_N
+"S" : VB Sk_N
+"S" : Sk_N Prep FW
+"S" : WP VBZ Sk_N
+"S" : WP VBZ NP
+"NP" : Det Sk_N
+"NP" : Det N
+"Sk_N" : Weather_word
+"Sk_N" : Map_word
+"Sk_N" : Alarm_word
+"Sk_N" : Timer_word
+"Sk_N" : Calendar_word
+"Sk_N" : Media_word
+// Production rules in progress
+
+{ 
+  "WP": [
+   "what",
+   "when",
+   "where",
+   "how"
   ],
-  "NP":[
-    "Det N",
-    "Det N that VP",
-    "Det Adj N",
-    "Det N PP"
+
+  "VBZ": [
+   "is",
+   "are",
+   "am",
   ],
-  "PP": [
-    "Prep NP"
+
+  "PPZ": [
+   "I",   
+   "me",
+   "my",
+   "you",
+   "your"
+   "it",
   ],
-  "Vp": [
-    "Vtrans NP",
-    "Vintr"
+
+  "Prep": [
+   "for",
+   "on",
+   "over",
+   "at",
+   "in",
+   "from",
+   "to",
+   "of",
+   "by"
   ],
-  "Det":[
+
+  "Det": [
     "a",
     "an",
     "the",
@@ -27,49 +57,139 @@
     "these",
     "those"
   ],
-  "N":[
-    "car",
-    "restaurant",
-    "home",
-    "house",
-    "phone"
+
+  "VB": [
+   "have",
+   "can",
+   "need",
+   "do",
+   "show",
+   "change",
+   "edit",
+   "modify",
+   "cancel",
+   "search",
+   "lookup",
+   "check",
+   "see",
+   "set",
+   "get",
+   "reset",
+   "add",
+   "start",
+   "listen",
+   "play",
+   "watch",
+   "pause",
+   "stop",
+   "resume",
+   "go"
   ],
-  "Sk_N":[
-    "clock",
-    "weather",
-    "schedule",
-    "lecture"
+
+  "ADJ": [
+   "next",
+   "later",
+   "",
   ],
-  "Sk_V":[
-    "search",
-    "look up"
+
+  "N": [
+    "skill",
+    "skilleditor",
+    "rule",
+    "operations",
+    "help",
+    "password",
+    "country",
+    "city"
+    "areas",
+    "location",
+    "age",
+    "lap",
+    "month",
+    "week",
+    "lectures",
+    "lecture",
+    "time-zones",
+    "IDs",
+    "personal",
+    "info",
+    "profession",
+    "background",
+    "theme",
+    "color",
+    "url"
   ],
-  "Adj":[
-    "big",
-    "samll",
-    "bad",
-    "good"
+
+  "FW": [
+   // (Foreign words)
   ],
-  "Vtrans":[
-    "bring",
-    "cost",
-    "sing"
+  
+  "Weather_word": [
+   "weather",
+   "temperature",
+   "climate",
+   "clima",
+   "sun",
+   "sunny",
+   "rain",
+   "rainy",
+   "snow",
+   "snowy",
+   "storm",
+   "stormy",
+   "thunder",
+   "thundery",
+   "thunderstorm",
+   "aridity",
+   "humidity"
   ],
-  "Vintr":[
-    "agree",
-    "go",
-    "live",
-    "sit",
-    "look"
+
+  "Map_word": [
+   "map",
+   "card",
+   "atlas",
+   "globe"
   ],
-  "Prep":[
-    "on",
-    "over",
-    "at",
-    "in"
+
+  "Route_word": [
+   "route",
+   "navigation",
+   "iternary",
+   "way"
   ],
-  "Interj":[
-  "oh",
-  "wow"
+
+  "Alarm_word": [
+   "alarm",
+   "alarmclock",
+   "alarmwatch"
+  ],
+
+  "Clock_word": [
+   "time",
+   "clock",
+   "watch",
+   "o'clock",
+   "oclock"
+  ],
+
+  "Timer_word": [
+   "timer",
+   "ticker"
+  ],
+
+  "Stopwatch_word": [
+   "stopwatch",
+   "timekeeper"
+  ],
+
+  "Calendar_word": [
+   "calendar"
+   "worklifebalance"
+  ],
+
+  "Media_word": [
+   "music",
+   "song",
+   "video"
   ]
 }
