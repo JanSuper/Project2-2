@@ -134,7 +134,7 @@
    "sunny",
    "rain",
    "rainy",
-   "snow,
+   "snow",
    "snowy",
    "storm",
    "stormy",
@@ -149,14 +149,14 @@
    "map",
    "card",
    "atlas",
-   "globe",
+   "globe"
   ],
 
   "Route_word": [
    "route",
    "navigation",
    "iternary",
-   "way",
+   "way"
   ],
 
   "Alarm_word": [
