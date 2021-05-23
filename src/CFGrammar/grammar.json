@@ -5,7 +5,6 @@
 "S" : VB Sk_N ("show weather", "lookup google", "play song", "add skill")
 "S" : VB NP ("show the weather", "browse in google", "open my calendar", "add a skill")
 "S" : VB NPP ("show me the weather")
-
 "S" : WP Sk_N ("what time", "when rain")
 "S" : WP NP ("what the time", "when my lecture")
 "S" : WP VB Sk_N ("when start rain", "when is lecture")
@@ -15,11 +14,9 @@
 "S" : WP VBZ NP FW ("what is the time maastricht", "how is the weather maastricht")
 "S" : WP VBZ NP FWP ("what is the time in maastricht", "how is the weather in maastricht") 
 "S" : WP VBZ Adj Sk_N ("when is my next lecture") 
-
 "S" : Sk_N Prep FW ("map of newyork", "weather in maastricht")
 "S" : Sk_N Prep FW Prep FW ("route from maastricht to amsterdam")
 "S" : VB NPP Prep FW Prep FW ("show me the way from maastricht to amsterdam")
-
 "NP" : PPZ Sk_N
 "NP" : Det Sk_N
 "NP" : Prep Sk_N
@@ -32,7 +29,6 @@
 "FWP" : Prep FW
 "NPP" : PPZ Det Sk_N
 "NPP" : PPZ Prep Sk_N
-
 "Sk_N" : Weather_word
 "Sk_N" : Map_word
 "Sk_N" : Route_word
@@ -41,7 +37,6 @@
 "Sk_N" : Calendar_word
 "Sk_N" : Media_word
 "Sk_N" : Skilleditor_word
-
 // Production rules are in progress
 
 
