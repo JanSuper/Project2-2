@@ -1,17 +1,44 @@
-"S" : Sk_N
-"S" : VB Sk_N
-"S" : Sk_N Prep FW
-"S" : WP VBZ Sk_N
-"S" : WP VBZ NP
+"S" : Sk_N ("weather", "calendar", "map")
+"S" : Sk_N FW ("weather amsterdam", "map maastricht")
+"S" : Sk_N FW FW ("route amsterdam maastricht") 
+"S" : Adj Sk_N ("next lecture", "new alarm")
+"S" : VB Sk_N ("show weather", "lookup google", "play song", "add skill")
+"S" : VB NP ("show the weather", "browse in google", "open my calendar", "add a skill")
+"S" : VB NPP ("show me the weather")
+"S" : WP Sk_N ("what time", "when rain")
+"S" : WP NP ("what the time", "when my lecture")
+"S" : WP VB Sk_N ("when start rain", "when is lecture")
+"S" : WP VB NP ("when start the rain", "when is a lecture")
+"S" : WP VBZ Sk_N ("what is time", how is weather", "when is lecture")
+"S" : WP VBZ NP ("what is the time", "how is the weather")
+"S" : WP VBZ NP FW ("what is the time maastricht", "how is the weather maastricht")
+"S" : WP VBZ NP FWP ("what is the time in maastricht", "how is the weather in maastricht") 
+"S" : WP VBZ Adj Sk_N ("when is my next lecture") 
+"S" : Sk_N Prep FW ("map of newyork", "weather in maastricht")
+"S" : Sk_N Prep FW Prep FW ("route from maastricht to amsterdam")
+"S" : VB NPP Prep FW Prep FW ("show me the way from maastricht to amsterdam")
+"NP" : PPZ Sk_N
 "NP" : Det Sk_N
+"NP" : Prep Sk_N
+"NP" : Adj Sk_N
 "NP" : Det N
+"NP" : Prep N
+"NP" : Adj N
+"FWP" : Prep FW
+"FWP" : Prep FW
+"FWP" : Prep FW
+"NPP" : PPZ Det Sk_N
+"NPP" : PPZ Prep Sk_N
 "Sk_N" : Weather_word
 "Sk_N" : Map_word
+"Sk_N" : Route_word
 "Sk_N" : Alarm_word
 "Sk_N" : Timer_word
 "Sk_N" : Calendar_word
 "Sk_N" : Media_word
-// Production rules in progress
+"Sk_N" : Skilleditor_word
+// Production rules are in progress
+
 
 { 
   "WP": [
@@ -21,32 +48,20 @@
    "how"
   ],
 
-  "VBZ": [
+  "VBZ" [
    "is",
    "are",
    "am",
   ],
 
-  "PPZ": [
+  "PPZ" [
    "I",   
    "me",
    "my",
    "you",
    "your"
    "it",
-  ],
-
-  "Prep": [
-   "for",
-   "on",
-   "over",
-   "at",
-   "in",
-   "from",
-   "to",
-   "of",
-   "by"
-  ],
+  ]
 
   "Det": [
     "a",
@@ -58,18 +73,32 @@
     "those"
   ],
 
+  "Prep":[
+   "for",
+   "on",
+   "over",
+   "at",
+   "in",
+   "from",
+   "to",
+   "of",
+   "by"
+  ],
+
   "VB": [
    "have",
    "can",
    "need",
    "do",
    "show",
+   "open",
    "change",
    "edit",
    "modify",
    "cancel",
    "search",
    "lookup",
+   "browse",
    "check",
    "see",
    "set",
@@ -86,15 +115,15 @@
    "go"
   ],
 
-  "ADJ": [
+  "Adj": [
    "next",
    "later",
-   "",
-  ],
+   "new",
+   "good",
+   "beautiful"
+  ]
 
   "N": [
-    "skill",
-    "skilleditor",
     "rule",
     "operations",
     "help",
@@ -107,8 +136,6 @@
     "lap",
     "month",
     "week",
-    "lectures",
-    "lecture",
     "time-zones",
     "IDs",
     "personal",
@@ -121,7 +148,7 @@
   ],
 
   "FW": [
-   // (Foreign words)
+   //(Foreign words)
   ],
   
   "Weather_word": [
@@ -133,12 +160,12 @@
    "sunny",
    "rain",
    "rainy",
-   "snow",
+   "snow,
    "snowy",
    "storm",
-   "stormy",
+   "stormy"
    "thunder",
-   "thundery",
+   "thundery"
    "thunderstorm",
    "aridity",
    "humidity"
@@ -148,14 +175,14 @@
    "map",
    "card",
    "atlas",
-   "globe"
+   "globe",
   ],
 
   "Route_word": [
    "route",
    "navigation",
    "iternary",
-   "way"
+   "way",
   ],
 
   "Alarm_word": [
@@ -167,7 +194,7 @@
   "Clock_word": [
    "time",
    "clock",
-   "watch",
+   "watchclock",
    "o'clock",
    "oclock"
   ],
@@ -183,13 +210,34 @@
   ],
 
   "Calendar_word": [
-   "calendar"
-   "worklifebalance"
-  ],
+   "calendar",
+   "schedule",
+   "timetable",
+   "plan"
+  ]
+
+  "Lecture_word": [
+   "lecture",
+   "lectures",
+   "schedule",
+   "university",
+   "school"
+  ]
 
   "Media_word": [
    "music",
    "song",
    "video"
   ]
+
+  "Google_word": [
+   "google",
+   "browser"
+  ]
+
+  "Skilleditor_word": [
+   "skill",
+   "skilleditor",
+   "editor"
+  ] 
 }
