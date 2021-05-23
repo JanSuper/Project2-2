@@ -48,10 +48,10 @@
    "how"
   ],
 
-  "VBZ" [
+  "VBZ": [
    "is",
    "are",
-   "am",
+   "am"
   ],
 
   "PPZ" [
@@ -59,8 +59,8 @@
    "me",
    "my",
    "you",
-   "your"
-   "it",
+   "your",
+   "it"
   ]
 
   "Det": [
