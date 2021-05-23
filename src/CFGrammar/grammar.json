@@ -9,7 +9,7 @@
 "S" : WP NP ("what the time", "when my lecture")
 "S" : WP VB Sk_N ("when start rain", "when is lecture")
 "S" : WP VB NP ("when start the rain", "when is a lecture")
-"S" : WP VBZ Sk_N ("what is time", how is weather", "when is lecture")
+"S" : WP VBZ Sk_N ("what is time", "how is weather", "when is lecture")
 "S" : WP VBZ NP ("what is the time", "how is the weather")
 "S" : WP VBZ NP FW ("what is the time maastricht", "how is the weather maastricht")
 "S" : WP VBZ NP FWP ("what is the time in maastricht", "how is the weather in maastricht") 
