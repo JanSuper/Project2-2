@@ -2,23 +2,16 @@
   "S": [
     ["Sk_N"],
     ["Sk_N", "FW"],
-    ["Sk_N", "FW", "FW"],
-    ["Adj", "Sk_N"],
-    ["VB", "Sk_N"],
-    ["VB", "NP"],
-    ["VB", "NPP"],
+    ["Sk_N", "FWW"],
+    ["NP"],
+    ["VBN"],
     ["WP", "Sk_N"],
     ["WP", "NP"],
-    ["WP", "VB", "Sk_N"],
-    ["WP", "VB", "NP"],
-    ["WP", "VBZ", "Sk_N"],
-    ["WP", "VBZ", "NP"],
-    ["WP", "VBZ", "NP", "FW"],
-    ["WP", "VBZ", "NP", "FWP"],
-    ["WP", "VBZ", "Adj", "Sk_N"],
-    ["Sk_N", "Prep", "FW"],
-    ["Sk_N", "Prep", "FW", "Prep", "FW"],
-    ["VB", "NPP", "Prep", "FW", "Prep", "FW"]
+    ["WP", "VBN"],
+    ["WP", "VBZN"],
+    ["Sk_N", "FWP"],
+    ["Sk_N", "FWWP"],
+    ["VBN", "FWWP"]
   ],
   "NP": [
     ["PPZ", "Sk_N"],
@@ -35,10 +28,42 @@
     ["Adj", "FW"]
   ],
   "NPP": [
-    ["PPZ", "Det", "Sk_N"],
-    ["PPZ", "Prep", "Sk_N"]
+    ["PPZ", "NP"],
+    ["PPZ", "NP"]
   ],
+  "VBN": [
+    ["VB", "Sk_N"],
+    ["VB", "N"],
+    ["VB", "NP"],
+    ["VB", "NPP"]
+  ],
+  "VBZN": [
+    ["VBZ", "Sk_N"],
+    ["VBZ", "N"],
+    ["VBZ", "NP"],
+    ["VBZ", "NPFW"]
+  ],
+  "NPFW": [
+    ["NP", "FW"],
+    ["NP", "FWP"]
+  ],
+  "FWW": [
+    ["FW", "FW"]
+  ]
+  "FWWP": [
+    ["FWP", "FWP"]
+  ]
 
+  "Sk_N": [
+    ["Weather_word"],
+    ["Map_word"],
+    ["Route_word"],
+    ["Alarm_word"],
+    ["Timer_word"],
+    ["Calendar_word"],
+    ["Media_word"],
+    ["Skilleditor_word"]
+  ],
 
   "terminals": {
     "WP": [
@@ -122,7 +147,7 @@
       "help",
       "password",
       "country",
-      "city",
+      "city"
       "areas",
       "location",
       "age",
