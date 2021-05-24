@@ -39,16 +39,6 @@
     ["PPZ", "Prep", "Sk_N"]
   ],
 
-  "Sk_N": [
-    ["Weather_word"],
-    ["Map_word"],
-    ["Route_word"],
-    ["Alarm_word"],
-    ["Timer_word"],
-    ["Calendar_word"],
-    ["Media_word"],
-    ["Skilleditor_word"]
-  ],
 
   "terminals": {
     "WP": [
@@ -132,7 +122,7 @@
       "help",
       "password",
       "country",
-      "city"
+      "city",
       "areas",
       "location",
       "age",

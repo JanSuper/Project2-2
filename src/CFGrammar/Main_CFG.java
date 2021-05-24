@@ -16,6 +16,8 @@ public class Main_CFG {
 
         //Make ArrayList<String> grammar
         ArrayList<String> grammar = getAllRules();
+        JsonReader reader = new JsonReader();
+        ArrayList<String> checkgrammar = reader.getAllRules();
         cfg.splitGrammar(grammar);
 
         cfg.initialize_Tree();

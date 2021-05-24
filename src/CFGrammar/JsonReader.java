@@ -9,18 +9,21 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 
 
 public class JsonReader {
-    private ArrayList<Rule> rules = new ArrayList<>();
+    private ArrayList<String> rules = new ArrayList<>();
 
     /**
-     * Should do the same as getAllRules from Main_CFG but with the json file
+     * Gets all rules from JSON file and saves them as Strings
+     * @return ArrayList filled with String Rules
      */
-    public void getAllRules() {
-        /*FileReader reader = null;
+    public ArrayList<String> getAllRules() {
+        /*
+        Open file
+         */
+        FileReader reader = null;
         try {
             reader = new FileReader("src\\CFGrammar\\grammar.json");
         } catch (FileNotFoundException e) {
@@ -28,6 +31,9 @@ public class JsonReader {
         }
         JSONParser parser = new JSONParser();
         JSONObject grammar = null;
+        /*
+        Parse the JSON file if found
+         */
         try {
             grammar = (JSONObject) parser.parse(reader);
         } catch (IOException e) {
@@ -35,39 +41,21 @@ public class JsonReader {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        /*
+        Iterate over all key = Lefthand sides of rules.
+        Get Righthand and concat to string rule.
+         */
         Iterator<String> keys = grammar.keySet().iterator();
         while (keys.hasNext()) {
             String key = keys.next();
-            boolean found = false;
-            for (int f = 0; f < rules.size(); f++) {
-                Rule temp = rules.get(f);
-                if (temp.getL_side().equals(key)) {
-                    found = true;
-                }
-                String lefthand = key;
-                String tmprhs = (String) grammar.get(key);
-                String[] righthandside =  tmprhs.split(", ");
-                ArrayList<String> righthand = new ArrayList<>();
-                Collections.addAll(righthand,righthandside);
-                if (!found) {
-                    if (righthand.size() == 1) {
-                        Rule one = new Rule(lefthand, righthand.get(0));
-                        rules.add(one);
-                    } else {
-                        Rule two = new Rule(lefthand, righthand.get(0), righthand.get(1));
-                        rules.add(two);
-                    }
-                } else {
-                    if (righthand.size() == 1) {
-                        temp.oneRule(righthand.get(0));
-                    } else {
-                        temp.multipleRule(righthand.get(0), righthand.get(1));
-                    }
-                }
-            }
+            System.out.println(key);
+            String lefthand = key;
+            String righthand = grammar.get(key).toString();
+            String rule = lefthand.concat(righthand);
+            rules.add(rule);
         }
         System.out.println("number of rules: " + rules.size());
-        */
+        return rules;
     }
 
     /**
@@ -99,7 +87,7 @@ public class JsonReader {
         }
         else{
             grammar.put(rule.getL_side(), rule.getR_side());
-            rules.add(rule);
+            //rules.add(rule);
         }
     }
 
@@ -132,7 +120,7 @@ public class JsonReader {
         }
     }
 
-    public ArrayList<Rule> getRules() {
+    public ArrayList<String> getRules() {
         return rules;
     }
 }
