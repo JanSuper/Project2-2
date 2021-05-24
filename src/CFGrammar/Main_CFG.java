@@ -2,6 +2,10 @@ package CFGrammar;
 
 import java.io.*;
 import java.util.*;
+import CFGrammar.JsonReader;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
+
 
 public class Main_CFG {
 
@@ -9,12 +13,13 @@ public class Main_CFG {
      * Use this main to test the CFG without running the whole project
      * @param args
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ParseException {
         String in = "The cat saw a mouse";
-        String fileName = "src\\CFGrammar\\tempGrammar.cfg";
+        String fileName = "src/CFGrammar/tempGrammar.cfg";
         Main_CFG cfg = new Main_CFG(in, fileName);
         cfg.checkUserMessage(in);
         cfg.printBestTree(in);
+
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -30,10 +35,10 @@ public class Main_CFG {
     private String[][][] l_best;
     private String[] u_message;
 
-    public Main_CFG(String pUser_message, String fileName) throws IOException
-    {
+    public Main_CFG(String pUser_message, String fileName) throws IOException, ParseException {
         user_message = pUser_message;
         getAllRules(fileName);
+        getAllRules2("src/CFGrammar/grammar.json");
     }
 
     public double checkUserMessage(String pUser_Message)
@@ -179,6 +184,11 @@ public class Main_CFG {
         System.out.println("number of rules: "+rules.size());
         br.close();
     }
+    public void getAllRules2(String fileName) throws IOException, ParseException {
+        JsonReader jsonreaddata = new JsonReader();
+        ArrayList rules_new = jsonreaddata.getAllRules(fileName);
+        //Rule temp = null
+    }
 
     public void printBestTree(String pUser_message)
     {
@@ -230,7 +240,7 @@ public class Main_CFG {
 
     public void addWords(String word_cat, String word)
     {
-        //Adds a single word to the json file in the right category "N","V"...
+        //Adds a single word to the jason file in the right category "N","V"...
     }
 
     public void readfromJson()
