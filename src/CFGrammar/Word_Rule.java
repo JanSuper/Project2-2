@@ -4,10 +4,12 @@ import java.util.ArrayList;
 
 public class Word_Rule {
     private ArrayList<Rule> word_Rules = null;
+    private ArrayList<String> result_array = null;
 
     public Word_Rule()
     {
         word_Rules = new ArrayList<>();
+        result_array = new ArrayList<>();
     }
 
     public void addRule(String[] rules)
@@ -27,6 +29,8 @@ public class Word_Rule {
             //System.out.println(word+" ---- ");
             if(word_Rules.get(i).getRHS_Word().equals(word))
             {
+                String res = (word_Rules.get(i).getLHS() +" : "+word_Rules.get(i).getRHS_Word());
+                result_array.add(res);
                 Branch word_Branch = new Branch();
                 word_Branch.setWord_category(word_Rules.get(i).getLHS());
                 word_Branch.setWord(word_Rules.get(i).getRHS_Word());
@@ -34,5 +38,15 @@ public class Word_Rule {
             }
         }
         return subTree;
+    }
+
+    public ArrayList<Rule> getWord_Rules()
+    {
+        return word_Rules;
+    }
+
+    public ArrayList<String> getResult_array()
+    {
+        return result_array;
     }
 }

@@ -42,4 +42,9 @@ public class Branch_Rule {
         }
         return null;
     }
+
+    public ArrayList<Rule> getBranch_rules()
+    {
+        return branch_rules;
+    }
 }

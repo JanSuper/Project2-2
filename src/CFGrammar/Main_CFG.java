@@ -1,5 +1,7 @@
 package CFGrammar;
 
+import FileParser.FileParser;
+
 import java.io.*;
 import java.util.*;
 
@@ -27,6 +29,8 @@ public class Main_CFG {
         StringBuffer result = new StringBuffer();
         cfg.getEndSplit(result);
         System.out.println(result.toString());
+
+        cfg.getSkill();
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -77,6 +81,24 @@ public class Main_CFG {
     public void getSkill()
     {
         //TODO: Utiliser le fichier .csv
+        ArrayList<String> res = WR.getResult_array();
+        for(int i = 0; i < res.size(); i++)
+        {
+            System.out.println(res.get(i));
+        }
+        FileParser sk_file = new FileParser();
+        List<List<String>> allSkills = sk_file.getAllSkills();
+        String r = "";
+        for (List<String> operation:allSkills) {
+            r+=("Verb : "+ operation.get(4) +" | Noun : "+ operation.get(5) +" | Variables : "+ operation.get(6) +"\n");
+        }
+        System.out.println(r);
+        //ArrayList<Branch> Br_ter = WR.interprete(Br_word);
+
+        /*
+        Branch end_branch = Br[0][message_length-1];
+        end_branch.get_endResult(sentence);
+         */
     }
 
     /**
@@ -258,13 +280,8 @@ public class Main_CFG {
     private int kk = 0;
     public void implement_Branch(int i, int j, int words_plus)
     {
-        //for(int j = i; j < words_plus; j++)
-        //{
-        //System.out.println("Co: "+i+" : "+j+" : "+words_plus);
         Branch this_Branch = Br[i][j];
         ArrayList<Branch> subTree = this_Branch.getValues();
-        //kk = kk + subTree.size();
-        //System.out.println(kk);
         for(int k = 0; k < subTree.size(); k++)
         {
             Branch this_Branch2 = Br[j+1][words_plus];
