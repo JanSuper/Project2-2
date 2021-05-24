@@ -18,3 +18,4 @@ V -> is
 V -> used
 V -> has
 P -> with
+p -> on

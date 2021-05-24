@@ -19,6 +19,13 @@ public class Branch_Rule {
     }
 
     private int kk = 0;
+
+    /**
+     * Checks the neighbour of the current branch
+     * @param B1
+     * @param B2
+     * @return
+     */
     public Branch test(Branch B1, Branch B2)
     {
         //kk++;

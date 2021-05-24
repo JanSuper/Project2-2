@@ -8,6 +8,9 @@ public class Rule
     private String RHS_Word = null;
     private String LHS = null;
 
+    /**
+     * Can be both, Branch_Rule and Word_Rule
+     */
     public Rule()
     {
         RHS_Branch = new ArrayList<>();

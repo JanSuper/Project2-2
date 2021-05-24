@@ -19,7 +19,6 @@ public class Main_CFG {
 
         cfg.initialize_Tree();
         cfg.implement_Tree();
-        //
         cfg.toPrint();
 
         StringBuffer result = new StringBuffer();

@@ -30,7 +30,6 @@ public class Branch {
     public String toString()
     {
         StringBuffer rule = new StringBuffer();
-        //TODO:  the words Array to short
         for(int i = 0; i < words.size(); i++)
         {
 

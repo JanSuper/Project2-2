@@ -17,7 +17,7 @@ public class JsonReader {
     private ArrayList<Rule> rules = new ArrayList<>();
 
     /**
-     * Should do the same as getAllRules from Main_CFG but with the json file
+     * Should do the same as getAllRules from Main_CFG but with the json file, there are a few new differences
      */
     public void getAllRules() {
         /*FileReader reader = null;

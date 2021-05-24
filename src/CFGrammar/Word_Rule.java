@@ -24,8 +24,6 @@ public class Word_Rule {
         for(int i = 0; i < word_Rules.size(); i++)
         {
             // LE PROBLEME EST ICI !!
-            //System.out.println(word_Rules.get(i).getRHS_Word()+ " ici ");
-            //System.out.println(word_Rules.get(i).getRHS_Word()+ " === ");
             //System.out.println(word+" ---- ");
             if(word_Rules.get(i).getRHS_Word().equals(word))
             {
