@@ -13,10 +13,15 @@ N -> house
 N -> man
 N -> boy
 N -> phone
+N -> weather
+N -> lecture
 V -> saw
 V -> see
 V -> is
 V -> used
 V -> has
+V -> are
 P -> with
 p -> on
+A -> tall
+A -> short

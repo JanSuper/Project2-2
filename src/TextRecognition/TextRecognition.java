@@ -44,6 +44,8 @@ public class TextRecognition {
         skillEditor = assistant.skillEditor;
     }
 
+    public TextRecognition() { }
+
     public String getResponse(String uMessage) throws Exception
     {
         originalCleanM = assistant.removePunctuation(uMessage);

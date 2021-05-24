@@ -5,7 +5,7 @@ Schedule,11,What are my lectures this week,0,are,lecture,n
 Schedule,12,What are my lectures this month,0,are,lecture,n
 Clock App,14,Display the alarm skill,0,display,alarm,n
 Clock App,15,Display the clock skill,0,display,clock,n
-Clock App,16,What are the time-zones I can add to the clock,0,are | can,time-zone,n
+Clock App,16,What are the time-zones I can add to the clock,0,are ,time-zone,n
 Clock App,17,Display the timer skill,0,display,timer,n
 Clock App,18,Start the timer,0,start,timer,n
 Clock App,19,Pause the timer,0,pause,timer,n

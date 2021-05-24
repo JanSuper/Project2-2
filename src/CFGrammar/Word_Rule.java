@@ -29,7 +29,7 @@ public class Word_Rule {
             //System.out.println(word+" ---- ");
             if(word_Rules.get(i).getRHS_Word().equals(word))
             {
-                String res = (word_Rules.get(i).getLHS() +" : "+word_Rules.get(i).getRHS_Word());
+                String res = (word_Rules.get(i).getLHS() +":"+word_Rules.get(i).getRHS_Word());
                 result_array.add(res);
                 Branch word_Branch = new Branch();
                 word_Branch.setWord_category(word_Rules.get(i).getLHS());

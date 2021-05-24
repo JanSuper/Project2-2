@@ -1,6 +1,7 @@
 package CFGrammar;
 
 import FileParser.FileParser;
+import TextRecognition.TextRecognition;
 
 import java.io.*;
 import java.util.*;
@@ -12,7 +13,8 @@ public class Main_CFG {
      * @param args
      */
     public static void main(String[] args) throws IOException {
-        String test = "the boy saw a girl with a phone";
+        //Only for test, doesn't make sense / MAKE SURE THE WORDS ARE IN THE GRAMMAR
+        String test = "the boy are a girl with a lecture";
 
         Main_CFG cfg = new Main_CFG(test);
 
@@ -81,18 +83,78 @@ public class Main_CFG {
     public void getSkill()
     {
         //TODO: Utiliser le fichier .csv
-        ArrayList<String> res = WR.getResult_array();
-        for(int i = 0; i < res.size(); i++)
+        int score = 0;
+        int best_score = 0;
+        int final_skill_nbr = 0;
+        ArrayList<Integer> possible_skills = new ArrayList<>();
+        ArrayList<String> words_toSearch = new ArrayList<>();
+        TextRecognition TR = new TextRecognition();
+
+        ArrayList<String> main_words = WR.getResult_array();
+        for(int i = 0; i < main_words.size(); i++)
         {
-            System.out.println(res.get(i));
+            System.out.println(main_words.get(i));
         }
         FileParser sk_file = new FileParser();
         List<List<String>> allSkills = sk_file.getAllSkills();
-        String r = "";
-        for (List<String> operation:allSkills) {
-            r+=("Verb : "+ operation.get(4) +" | Noun : "+ operation.get(5) +" | Variables : "+ operation.get(6) +"\n");
+        /*String r = "";
+        for (List<String> operation : allSkills) {
+            r+=("Verb : "+ operation.get(4) +" | Noun : "+ operation.get(5) +" | Variables : "+ operation.get(3) +"\n");
         }
-        System.out.println(r);
+        System.out.println(r);*/
+
+        for(int i = 0; i < main_words.size(); i++)
+        {
+            String[] main_word = main_words.get(i).split(":");
+            String category = main_word[0];
+            String word = main_word[1];
+
+            if(category.equals("N") || category.equals("V"))
+            {
+                System.out.println("Added word to the list: "+ word);
+                words_toSearch.add(word);
+            }
+        }
+
+        for(int i = 0; i < allSkills.size(); i++)
+        {
+            score = 0;
+            String verb = allSkills.get(i).get(4);
+            String noun = allSkills.get(i).get(5);
+            String var = allSkills.get(i).get(3);
+            String skill_nbr = allSkills.get(i).get(1);
+
+            for(int j = 0; j < words_toSearch.size(); j++)
+            {
+                if(words_toSearch.get(j).equals(verb))
+                {
+                    System.out.println("Added to score: "+verb);
+                    score++;
+                }
+                if(words_toSearch.get(j).equals(noun))
+                {
+                    System.out.println("Added to score: "+noun);
+                    score = score + 2;
+                }
+            }
+
+            if(score > best_score)
+            {
+                possible_skills.clear();
+                possible_skills.add(Integer.parseInt(skill_nbr));
+                best_score = score;
+            }
+            else if(score == best_score)
+            {
+                possible_skills.add(Integer.parseInt(skill_nbr));
+            }
+        }
+
+        System.out.println("Final skill list size : "+possible_skills.size());
+        for(int z = 0; z < possible_skills.size(); z++)
+        {
+            System.out.println("Skill nbr : "+possible_skills.get(z));
+        }
         //ArrayList<Branch> Br_ter = WR.interprete(Br_word);
 
         /*
@@ -329,6 +391,87 @@ public class Main_CFG {
             System.out.println();
         }
 
+    }
+
+    /**
+     * Compares the difference between two Strings using the Levenshtein algorithm.
+     * @param uMessage the user message without punctuation
+     * @param dataBase_message the message in the database
+     * @param threshold the maximum accepted distance between the Strings
+     * @return the score between -1 and threshold
+     */
+    public int LevenshteinDistance(String uMessage, String dataBase_message, int threshold)
+    {
+        int uM = uMessage.length();
+        int dB = dataBase_message.length();
+        int[] cost_previous = new int[uM + 1];
+        int[] cost_distance = new int[uM + 1];
+        int[] cost_memory;
+        int limit = Math.min(uM,threshold);
+        int score = -1;
+
+        if(uM == 0 || dB == 0)
+        {
+            return score;
+        }
+
+        if(uM > dB)
+        {
+            String temp = uMessage;
+            uMessage = dataBase_message;
+            dataBase_message = temp;
+            int temp2 = uM;
+            uM = dB;
+            dB = temp2;
+        }
+
+        for(int i = 0; i <= limit; i++)
+        {
+            cost_previous[i] = i;
+        }
+        Arrays.fill(cost_previous, limit, cost_previous.length, Integer.MAX_VALUE);
+        Arrays.fill(cost_distance, Integer.MAX_VALUE);
+
+        for(int i = 1; i <= dB; i++)
+        {
+            char database_char = dataBase_message.charAt(i-1);
+            cost_distance[0] = i;
+
+            int min = Math.max(1, i-threshold);
+            int max = i > Integer.MAX_VALUE - threshold ? uM : Math.min(uM,threshold+i);
+
+            if(min > max)
+            {
+                return -1;
+            }
+
+            if(min > 1)
+            {
+                cost_distance[min-1] = Integer.MAX_VALUE;
+            }
+
+            for(int j = min; j <= max; j++)
+            {
+                if(uMessage.charAt(j-1) == database_char)
+                {
+                    cost_distance[j] = cost_previous[j-1];
+                }
+                else
+                {
+                    cost_distance[j] = 1 + Math.min(Math.min(cost_distance[j-1], cost_previous[j]), cost_previous[j-1]);
+                }
+            }
+
+            cost_memory = cost_previous;
+            cost_previous = cost_distance;
+            cost_distance = cost_memory;
+        }
+
+        if(cost_previous[uM] <= threshold)
+        {
+            score = cost_previous[uM];
+        }
+        return score;
     }
 
 }
