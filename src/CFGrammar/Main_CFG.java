@@ -4,141 +4,124 @@ import java.io.*;
 import java.util.*;
 
 public class Main_CFG {
-
     /**
      * Use this main to test the CFG without running the whole project
      * @param args
      */
     public static void main(String[] args) throws IOException {
-        String in = "A car cost a house";
-        String fileName = "src\\CFGrammar\\grammar.json";
-        Main_CFG cfg = new Main_CFG(in, fileName);
-        //cfg.checkUserMessage(in);
-        //cfg.printBestTree(in);
+        String test = "the boy saw a girl with a phone";
+
+        Main_CFG cfg = new Main_CFG(test);
+
+        //Make ArrayList<String> grammar
+        ArrayList<String> grammar = getAllRules();
+        cfg.splitGrammar(grammar);
+
+        cfg.initialize_Tree();
+        cfg.implement_Tree();
+        //
+        cfg.toPrint();
+
+        StringBuffer result = new StringBuffer();
+        cfg.getEndSplit(result);
+        System.out.println(result.toString());
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
     private ArrayList<Rule> rules = new ArrayList<>();
+    private Branch_Rule BR = null;
+    private Word_Rule WR = null;
+    private Branch[][] Br = null;
     private String user_message;
-    private int[][][] best_res;
-    private int[][][] best_rule;
-    private int[][][] best_tree;
-    private String[][][] r_best;
-    private String[][][] l_best;
     private String[] u_message;
+    private int message_length;
 
-    public Main_CFG(String pUser_message, String fileName) throws IOException
+    public Main_CFG(String pUser_message)
     {
         user_message = pUser_message;
-        JsonReader jReader = new JsonReader();
-        jReader.getAllRules();
-        rules = jReader.getRules();
-        System.out.println(rules.size());
-        for(int i = 0; i < rules.size(); i++)
-        {
-            System.out.println(rules.get(i).getL_side());
-        }
-        //getAllRules(fileName);
+        u_message = pUser_message.split("\\s");
+        message_length = u_message.length;
     }
 
-    public double checkUserMessage(String pUser_Message)
+    public void splitGrammar(ArrayList<String> rules)
     {
-        // Using Cocke–Younger–Kasami algorithm, with start symbol "S"
-        String[] words = pUser_Message.trim().split("\\s");
-        u_message = words;
-        int word_length = words.length+1;
-
-        best_rule = new int[rules.size()][word_length][word_length];
-        best_res = new int[rules.size()][word_length][word_length];
-        r_best = new String[rules.size()][word_length][word_length];
-        l_best = new String[rules.size()][word_length][word_length];
-        best_tree = new int[rules.size()][word_length][word_length];
+        BR = new Branch_Rule();
+        WR = new Word_Rule();
 
         for(int i = 0; i < rules.size(); i++)
         {
-            for(int j = 0; j < word_length; j++)
+            String[] rule = rules.get(i).split("\\s");
+            if(rule.length < 3)
             {
-                for(int k = 0; k < word_length; k++)
-                {
-                    best_res[i][j][k] = -1;
-                    best_tree[i][j][k] = -2;
-                    best_rule[i][j][k] = -3;
-                    r_best[i][j][k] = "";
-                    l_best[i][j][k] = "";
-                }
+                continue;
+            }
+            else if(rule.length == 3)
+            {
+                WR.addRule(rule);
+            }
+            else
+            {
+                BR.addRule(rule);
             }
         }
-        return getCYK("S", 0, word_length-1);
     }
 
     public int getCYK(String this_rule, int iter, int word_length)
     {
-        System.out.println("Rule: " + this_rule);
+        return 1;
+    }
 
-        if(word_length == iter+1)
-        {
-            for(int i = 0; i < rules.size(); i++)
-            {
-                Rule new_rule = rules.get(i);
-                if(new_rule.getL_side().equals(this_rule) && !new_rule.getMultiple())
-                {
-                    for(int j = 0; j < new_rule.getR_side().size(); j++)
-                    {
-                        if(new_rule.getR_side().get(j).equals(u_message[iter]))
-                        {
-                            best_res[i][iter][word_length] = new_rule.getScore();
-                            best_rule[i][iter][word_length] = j;
-                            best_tree[i][iter][word_length] = iter;
-                            r_best[i][iter][word_length] = u_message[iter];
-                            l_best[i][iter][word_length] = u_message[iter];
-                            return best_tree[i][iter][word_length];
-                        }
-                    }
-                }
-            }
-        }
-
-        int best_score = 0;
-        for(int i = iter+1; i < word_length; i++)
-        {
-            for(int j = 0; j < rules.size(); j++)
-            {
-                Rule new_rule = rules.get(j);
-                if(new_rule.getL_side().equals(this_rule) && new_rule.getMultiple())
-                {
-                    for(int k = 0; k < new_rule.getR_side().size(); k++)
-                    {
-                        int score = getCYK(new_rule.getR_side().get(k), iter, i)+
-                                getCYK(new_rule.getR_side_2().get(k), i, word_length)
-                                +new_rule.getScore();
-                        if(score>best_score)
-                        {
-                            best_res[j][iter][word_length] = score;
-                            best_rule[j][iter][word_length] = k;
-                            r_best[j][iter][word_length] = new_rule.getR_side_2().get(k);
-                            l_best[j][iter][word_length] = new_rule.getR_side().get(k);
-                            best_tree[j][iter][word_length] = i;
-                        }
-                        best_score = Math.max(best_score,score);
-                        best_res[j][iter][word_length] = best_score;
-                    }
-                }
-            }
-        }
-        return best_score;
+    public void getSkill()
+    {
+        //TODO: Utiliser le fichier .csv
     }
 
     /**
      * Partly Stolen from Github, we need the same from json (read,write)
-     * @param fileName
      * @throws IOException
      */
-    public void getAllRules(String fileName) throws IOException
+    public static ArrayList<String> getAllRules() throws IOException
     {
-        FileInputStream fstream = new FileInputStream(fileName);
+        ArrayList<String> grammar = null;
+        FileReader file = null;
+        BufferedReader buffer = null;
+
+        try{
+            file = new FileReader(new File("src\\CFGrammar\\grammar.txt"));
+            buffer = new BufferedReader(file);
+            grammar = new ArrayList<>();
+            String rule = null;
+            while((rule = buffer.readLine()) != null)
+            {
+                grammar.add(rule);
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            if(file != null)
+            {
+                try{
+                    file.close();
+                }
+                catch(Exception e) {}
+            }
+            if(buffer != null)
+            {
+                try{
+                    buffer.close();
+                }
+                catch(Exception e) {}
+            }
+        }
+
+        return grammar;
+
+        /*FileInputStream fstream = new FileInputStream(fileName);
         DataInputStream in = new DataInputStream(fstream);
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
         String startLine;
@@ -185,45 +168,18 @@ public class Main_CFG {
             }
         }
         System.out.println("number of rules: "+rules.size());
-        br.close();
+        br.close();*/
     }
 
-    public void printBestTree(String pUser_message)
+    public void getEndSplit(StringBuffer sentence)
     {
-        String[] words = pUser_message.trim().split("\\s");
-        System.out.println(toStringTree(0,0,words.length));
+        Branch end_branch = Br[0][message_length-1];
+        end_branch.get_endResult(sentence);
     }
 
     public String toStringTree(int l_side, int iter, int length)
     {
-        if(length == iter+1)
-        {
-            return " "+ rules.get(l_side).getL_side() +" ";// + rules.get(l_side).getR_side().get(best_rule[l_side][iter][length])+" ";
-        }
-        else
-        {
-            int l = 0, r = 0;
-            for(int i = 0; i < rules.size(); i++)
-            {
-                if(rules.get(i).getL_side().equals(l_best[l_side][iter][length]))
-                {
-                    l = i;
-                }
-                if(rules.get(i).getL_side().equals(r_best[l_side][iter][length]))
-                {
-                    r = i;
-                }
-            }
-
-            return "( "+ rules.get(l_side).getL_side() +" ("+ toStringTree(l, iter, best_tree[l_side][iter][length])
-                    +" ) ( "+ toStringTree(r, best_tree[l_side][iter][length], length)+" ) )";
-        }
-    }
-
-
-    public boolean checkProductionRules()
-    {
-        return true;
+        return null;
     }
 
     public void addProductionRule(String rule)
@@ -241,14 +197,119 @@ public class Main_CFG {
         //Adds a single word to the json file in the right category "N","V"...
     }
 
-    public void readfromJson()
+    public void initialize_Tree()
     {
+        Br = new Branch[message_length][];
 
+        for(int i = 0; i < message_length; i++)
+        {
+            Br[i] = new Branch[message_length];
+            for(int j = i; j < message_length; j++)
+            {
+                Br[i][j] = new Branch();
+            }
+        }
+
+        for(int i = 0; i < message_length; i++)
+        {
+            initialize_Branch(i);
+        }
+    }
+
+    public void initialize_Branch(int nbr)
+    {
+        String Br_word = u_message[nbr];
+        //System.out.println(Br_word);
+        ArrayList<Branch> Br_ter = WR.interprete(Br_word);
+        for(int i = 0; i < Br_ter.size(); i++)
+        {
+            //Br[i][i].addRule(Br_ter.get(i), null, null);
+            addRuleToBranch(Br[nbr][nbr], Br_ter.get(i), null, null);
+        }
+        //System.out.println(Br_ter.size());
+    }
+
+    public void addRuleToBranch(Branch parent, Branch pBr, Branch LHS, Branch RHS)
+    {
+        parent.addRule(pBr, LHS, RHS);
+    }
+
+    public void implement_Tree()
+    {
+        for(int words = 1; words < message_length; words++)
+        {
+            for(int i = 0; i < message_length-words; i++)
+            {
+                implement_oneBranch(i,words+i);
+            }
+        }
+    }
+
+    public void implement_oneBranch(int i, int words_plus)
+    {
+        for(int j = i; j < words_plus; j++)
+        {
+            implement_Branch(i, j, words_plus);
+        }
+    }
+
+    private int kk = 0;
+    public void implement_Branch(int i, int j, int words_plus)
+    {
+        //for(int j = i; j < words_plus; j++)
+        //{
+        //System.out.println("Co: "+i+" : "+j+" : "+words_plus);
+        Branch this_Branch = Br[i][j];
+        ArrayList<Branch> subTree = this_Branch.getValues();
+        //kk = kk + subTree.size();
+        //System.out.println(kk);
+        for(int k = 0; k < subTree.size(); k++)
+        {
+            Branch this_Branch2 = Br[j+1][words_plus];
+            ArrayList<Branch> sub_subTree = this_Branch2.getValues();
+            //kk++;
+            //System.out.println("Into the second rule: "+subTree.size()+" : "+kk);
+            for(int l = 0; l < sub_subTree.size(); l++)
+            {
+                //System.out.println("Find "+ subTree.get(k).getWord_category() + " + " + sub_subTree.get(l).getWord_category());
+                Branch last_Branch = new Branch();
+                last_Branch = BR.test(subTree.get(k), sub_subTree.get(l));
+
+                if(last_Branch != null)
+                {
+                    //kk++;
+                    //System.out.println("--- FINALLY HERE --- "+kk);
+                    Br[i][words_plus].addRule(last_Branch, subTree.get(k), sub_subTree.get(l));
+                }
+            }
+        }
+        //}
     }
 
     public Map<String,Object> getSentenceStructure(String sentence)
     {
         return null;
+    }
+
+    public void toPrint()
+    {
+        System.out.println("--- Tree ---");
+        for(int i = 0; i < message_length; i++)
+        {
+            for(int j = 0; j < message_length; j++)
+            {
+                if(j<i)
+                {
+                    System.out.print("\t");
+                }
+                else
+                {
+                    System.out.print(Br[i][j].toString()+"\t");
+                }
+            }
+            System.out.println();
+        }
+
     }
 
 }

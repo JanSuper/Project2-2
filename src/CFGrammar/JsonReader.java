@@ -20,9 +20,9 @@ public class JsonReader {
      * Should do the same as getAllRules from Main_CFG but with the json file
      */
     public void getAllRules() {
-        FileReader reader = null;
+        /*FileReader reader = null;
         try {
-            reader = new FileReader("..\\grammar.json");
+            reader = new FileReader("src\\CFGrammar\\grammar.json");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -67,6 +67,7 @@ public class JsonReader {
             }
         }
         System.out.println("number of rules: " + rules.size());
+        */
     }
 
     /**
@@ -129,5 +130,9 @@ public class JsonReader {
         else{
             System.out.println("Rule not in specified file");
         }
+    }
+
+    public ArrayList<Rule> getRules() {
+        return rules;
     }
 }

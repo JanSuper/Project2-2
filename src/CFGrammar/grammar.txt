@@ -1,0 +1,20 @@
+S -> NP VP
+S -> N V
+NP -> DT N
+NP -> DT PP
+PP -> P NP
+VP -> VP PP
+VP -> V NP
+DT -> the
+DT -> a
+DT -> an
+N -> girl
+N -> house
+N -> man
+N -> boy
+N -> phone
+V -> saw
+V -> is
+V -> used
+V -> has
+P -> with
