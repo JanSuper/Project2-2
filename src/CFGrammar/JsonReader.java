@@ -16,13 +16,15 @@ import java.util.Iterator;
 public class JsonReader {
     private ArrayList<Rule> rules = new ArrayList<>();
 
+
     /**
      * Should do the same as getAllRules from Main_CFG but with the json file
      */
-    public void getAllRules() {
+
+    public ArrayList getAllRules(String fileName) {
         FileReader reader = null;
         try {
-            reader = new FileReader("..\\grammar.json");
+            reader = new FileReader("..\\"+fileName);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -67,12 +69,14 @@ public class JsonReader {
             }
         }
         System.out.println("number of rules: " + rules.size());
+        return rules;
     }
 
     /**
      * Should be able to add a rule to the json file in the right place
      * @param rule
      */
+
     public void addRules(Rule rule) {
         FileReader reader = null;
         try {
