@@ -1,53 +1,53 @@
 {
   "S": [
-    "Sk_N",
-    "Sk_N FW",
-    "Sk_N FW FW",
-    "Adj Sk_N",
-    "VB Sk_N",
-    "VB NP",
-    "VB NPP",
-    "WP Sk_N",
-    "WP NP",
-    "WP VB Sk_N",
-    "WP VB NP",
-    "WP VBZ Sk_N",
-    "WP VBZ NP",
-    "WP VBZ NP FW",
-    "WP VBZ NP FWP",
-    "WP VBZ Adj Sk_N",
-    "Sk_N Prep FW",
-    "Sk_N Prep FW Prep FW",
-    "VB NPP Prep FW Prep FW"
+    ["Sk_N"],
+    ["Sk_N", "FW"],
+    ["Sk_N", "FW", "FW"],
+    ["Adj", "Sk_N"],
+    ["VB", "Sk_N"],
+    ["VB", "NP"],
+    ["VB", "NPP"],
+    ["WP", "Sk_N"],
+    ["WP", "NP"],
+    ["WP", "VB", "Sk_N"],
+    ["WP", "VB", "NP"],
+    ["WP", "VBZ", "Sk_N"],
+    ["WP", "VBZ", "NP"],
+    ["WP", "VBZ", "NP", "FW"],
+    ["WP", "VBZ", "NP", "FWP"],
+    ["WP", "VBZ", "Adj", "Sk_N"],
+    ["Sk_N", "Prep", "FW"],
+    ["Sk_N", "Prep", "FW", "Prep", "FW"],
+    ["VB", "NPP", "Prep", "FW", "Prep", "FW"]
   ],
   "NP": [
-    "PPZ Sk_N",
-    "Det Sk_N",
-    "Prep Sk_N",
-    "Adj Sk_N",
-    "Det N",
-    "Prep N",
-    "Adj N"
+    ["PPZ", "Sk_N"],
+    ["Det", "Sk_N"],
+    ["Prep", "Sk_N"],
+    ["Adj", "Sk_N"],
+    ["Det", "N"],
+    ["Prep", "N"],
+    ["Adj", "N"]
   ],
   "FWP": [
-    "Det FW",
-    "Prep FW",
-    "Adj FW"
+    ["Det", "FW"],
+    ["Prep", "FW"],
+    ["Adj", "FW"]
   ],
   "NPP": [
-    "PPZ Det Sk_N",
-    "PPZ Prep Sk_N"
+    ["PPZ", "Det", "Sk_N"],
+    ["PPZ", "Prep", "Sk_N"]
   ],
 
   "Sk_N": [
-    "Weather_word",
-    "Map_word",
-    "Route_word",
-    "Alarm_word",
-    "Timer_word",
-    "Calendar_word",
-    "Media_word",
-    "Skilleditor_word"
+    ["Weather_word"],
+    ["Map_word"],
+    ["Route_word"],
+    ["Alarm_word"],
+    ["Timer_word"],
+    ["Calendar_word"],
+    ["Media_word"],
+    ["Skilleditor_word"]
   ],
 
   "terminals": {
