@@ -672,6 +672,9 @@ public class TextRecognition {
         else if(skill_num == 91){
             assistant.mainScreen.chat.receiveMessage(skillEditor.allOperations());
         }
+        else if(skill_num == 92){
+            assistant.mainScreen.displayCamera();
+        }
         else if(skill_num == 100){
             assistant.mainScreen.chat.receiveMessage("Test the text recognition : " + nodeInvestigated.getWordsRemoved().get(0) + " , " + nodeInvestigated.getWordsRemoved().get(1) + " , " + nodeInvestigated.getWordsRemoved().get(2));
         }

@@ -10,16 +10,24 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.*;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -175,6 +183,52 @@ public class MainScreen {
     //////
     //NEXT ARE ALL THE METHODS TO DISPLAY THE DIFFERENT SKILLS ON THE MAINSCREEN
     /////
+    public void displayCamera(){
+        VBox notification = new VBox(0);
+        notification.setAlignment(Pos.TOP_CENTER);
+        notification.setPrefSize(300, 285);
+        notification.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(7))));
+        notification.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        Stage stage = new Stage();
+        stage.setAlwaysOnTop(true);
+        stage.setOpacity(0.91);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.setScene(new Scene(notification, 320, 320));
+        stage.show();
+
+        Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
+        stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2 - 280);
+        stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 4 + 110);
+
+        Button exit = new Button("x");
+        exit.setCursor(Cursor.HAND);
+        exit.setBackground(Background.EMPTY);
+        exit.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 17));
+        exit.setTextFill(Color.DARKRED);
+        exit.setBorder(null);
+        exit.setAlignment(Pos.TOP_RIGHT);
+        exit.setOnAction(e -> {
+            if(!faceDetection.controller.cameraActive){
+                faceDetection.controller.startCamera();
+            }
+            stage.close();
+        });
+
+        Region region = new Region();
+        HBox.setHgrow(region, Priority.ALWAYS);
+
+        HBox topBox = new HBox(60);
+        topBox.setAlignment(Pos.CENTER);
+        if (MainScreen.themeColor.equals(Color.LIGHTGRAY)) {
+            topBox.setBackground(new Background(new BackgroundFill(Color.GRAY.darker(), CornerRadii.EMPTY, Insets.EMPTY)));
+        } else {
+            topBox.setBackground(new Background(new BackgroundFill(MainScreen.themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
+        }
+        topBox.getChildren().add(exit);
+        notification.getChildren().addAll(topBox,faceDetection);
+    }
+
     public void setWeatherDisplay(String city, String country) throws Exception {
         weatherDisplay.setLocation(city, country);
         weatherDisplay.setSpacing(7);

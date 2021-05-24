@@ -1,5 +1,6 @@
 package Interface.Display.SkillEditorDisplayTools;
 
+import CFGrammar.JsonReader;
 import FileParser.FileParser;
 import Interface.Screens.MainScreen;
 import SkillEditor.SkillEditorHandler;
@@ -20,6 +21,7 @@ import java.util.List;
 
 public class AddSkillEditorVBox extends VBox {
     private MainScreen mainScreen;
+    private JsonReader jsonReader;
     private FileParser fileParser;
     private SkillEditorHandler skillEditor;
 
@@ -46,6 +48,7 @@ public class AddSkillEditorVBox extends VBox {
 
     public AddSkillEditorVBox(MainScreen mainScreen){
         this.mainScreen = mainScreen;
+        jsonReader = new JsonReader();
         fileParser = new FileParser();
         skillEditor = new SkillEditorHandler();
         allSkills = fileParser.getAllSkills();

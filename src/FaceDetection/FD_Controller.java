@@ -55,8 +55,8 @@ public class FD_Controller {
         this.faceCascade = new CascadeClassifier();
         this.absoluteFaceSize = 0;
 
-        this.haarClassifier.setSelected(true);
-        this.haarSelected();
+        this.lbpClassifier.setSelected(true);
+        this.lbpSelected();
         startCamera();
     }
 
@@ -64,7 +64,7 @@ public class FD_Controller {
      * The action triggered by pushing the button on the GUI
      */
     @FXML
-    protected void startCamera()
+    public void startCamera()
     {
         if (!this.cameraActive)
         {
