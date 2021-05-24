@@ -14,6 +14,7 @@ N -> man
 N -> boy
 N -> phone
 V -> saw
+V -> see
 V -> is
 V -> used
 V -> has

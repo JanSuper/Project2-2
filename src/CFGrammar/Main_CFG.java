@@ -6,6 +6,7 @@ import java.util.*;
 public class Main_CFG {
     /**
      * Use this main to test the CFG without running the whole project
+     * [TO DELETE LATER]
      * @param args
      */
     public static void main(String[] args) throws IOException {

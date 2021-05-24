@@ -24,7 +24,7 @@ public class Branch_Rule {
      * Checks the neighbour of the current branch
      * @param B1
      * @param B2
-     * @return
+     * @return A new Branch
      */
     public Branch test(Branch B1, Branch B2)
     {

@@ -9,6 +9,9 @@ public class Branch {
     private Branch left_branch = null;
     private Branch right_branch = null;
 
+    /**
+     * Every Branch of the solution tree 
+     */
     public Branch()
     {
         words = new ArrayList<>();
@@ -37,6 +40,7 @@ public class Branch {
         }
         return rule.toString();
     }
+
 
     public void print_endResult()
     {

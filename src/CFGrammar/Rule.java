@@ -9,7 +9,8 @@ public class Rule
     private String LHS = null;
 
     /**
-     * Can be both, Branch_Rule and Word_Rule
+     * Can be both, Branch_Rule and Word_Rule.
+     * Careful with the method called.
      */
     public Rule()
     {
