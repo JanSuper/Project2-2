@@ -52,7 +52,7 @@
   ],
   "FWWP": [
     ["FWP", "FWP"]
-  ],
+ ],
   "Sk_N": [
     ["Weather_word"],
     ["Map_word"],
@@ -146,7 +146,7 @@
       "help",
       "password",
       "country",
-      "city"
+      "city",
       "areas",
       "location",
       "age",

@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 
+
+
 public class JsonReader {
     private ArrayList<String> rules = new ArrayList<>();
 
@@ -50,11 +52,41 @@ public class JsonReader {
             String key = keys.next();
             System.out.println(key);
             String lefthand = key;
-            String righthand = grammar.get(key).toString();
-            String rule = lefthand.concat(righthand);
-            rules.add(rule);
+            if(grammar.get(key) instanceof JSONObject){
+                JSONObject sub = (JSONObject) grammar.get(key);
+                Iterator<String> subkeys = grammar.keySet().iterator();
+                while (subkeys.hasNext()) {
+                    String subkey = subkeys.next();
+                    System.out.println(subkey);
+                    String lhs = subkey;
+                    if (sub.get(key) instanceof JSONArray) {
+                        JSONArray vals = (JSONArray) sub.get(key);
+                        ArrayList<String> values = new ArrayList<>();
+                        for (int i = 0; i < vals.size(); i++) {
+                            values.add(vals.get(i).toString());
+                        }
+                        for(int j = 0; j < values.size(); j++){
+                            String rule = lefthand.concat(values.get(j));
+                            rules.add(rule);
+                            //System.out.println(rule);
+                        }
+                    }
+                }
+            }
+            else if (grammar.get(key) instanceof JSONArray){
+                JSONArray vals = (JSONArray) grammar.get(key);
+                ArrayList<String> values = new ArrayList<>();
+                for(int i = 0; i < vals.size(); i++){
+                    values.add(vals.get(i).toString());
+                }
+                for(int j = 0; j < values.size(); j++) {
+                    String rule = lefthand.concat(values.get(j));
+                    rules.add(rule);
+                    //System.out.println(rule);
+                }
+            }
         }
-        System.out.println("number of rules: " + rules.size());
+        System.out.println("number of rules: " + rules.size());;
         return rules;
     }
 
