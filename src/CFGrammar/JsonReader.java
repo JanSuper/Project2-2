@@ -24,7 +24,7 @@ public class JsonReader {
     public ArrayList getAllRules(String fileName) {
         FileReader reader = null;
         try {
-            reader = new FileReader("..\\"+fileName);
+            reader = new FileReader(fileName);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -68,7 +68,7 @@ public class JsonReader {
                 }
             }
         }
-        System.out.println("number of rules: " + rules.size());
+        System.out.println("number of rules in json: " + rules.size());
         return rules;
     }
 
@@ -80,7 +80,7 @@ public class JsonReader {
     public void addRules(Rule rule) {
         FileReader reader = null;
         try {
-            reader = new FileReader("..\\grammar.json");
+            reader = new FileReader("C:\\Users\\messi\\IdeaProjects\\Project2-2\\src\\CFGrammar\\grammar.json");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
