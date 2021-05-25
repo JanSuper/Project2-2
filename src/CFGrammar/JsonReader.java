@@ -7,6 +7,7 @@ import org.json.simple.parser.ParseException;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -53,12 +54,12 @@ public class JsonReader {
             String lefthand = key;
             if(grammar.get(key) instanceof JSONObject){
                 processObject((JSONObject) grammar.get(key), lefthand);
-                System.out.println("JSONObject");
+                //System.out.println("JSONObject");
 
             }
 
             else if (grammar.get(key) instanceof JSONArray){
-                System.out.println("JSONArray");
+                //System.out.println("JSONArray");
                 processArray((JSONArray) grammar.get(key), lefthand);
 
             }
@@ -77,7 +78,7 @@ public class JsonReader {
                 processObject((JSONObject) array.get(i),lhs);
             }
             else{
-                rules.add(lhs+" : "+array.get(i).toString());
+                rules.add(lhs+":"+array.get(i).toString());
             }
         }
     }
@@ -92,7 +93,7 @@ public class JsonReader {
                 processObject((JSONObject) object.get(key), key);
             }
             else{
-                rules.add(key + " : " + object.get(key).toString());
+                rules.add(key + ":" + object.get(key).toString());
             }
         }
 
@@ -103,15 +104,21 @@ public class JsonReader {
      * Should be able to add a rule to the json file in the right place
      * @param rule
      */
-    public void addRules(Rule rule) {
+    public void addRules(String rule, boolean terminal) throws IOException {
+         /*
+        Open file
+         */
         FileReader reader = null;
         try {
-            reader = new FileReader("..\\grammar.json");
+            reader = new FileReader("src\\CFGrammar\\grammar.json");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         JSONParser parser = new JSONParser();
         JSONObject grammar = null;
+        /*
+        Parse the JSON file if found
+         */
         try {
             grammar = (JSONObject) parser.parse(reader);
         } catch (IOException e) {
@@ -119,17 +126,68 @@ public class JsonReader {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        if(grammar.containsKey(rule.getL_side())){
-            JSONArray ruleAddition = (JSONArray) grammar.get(rule.getL_side());
-            ruleAddition.add(rule.getR_side());
-            if(rule.getMultiple()){
-                ruleAddition.add(rule.getR_side_2());
+
+        String[] rule_split = rule.split(":");
+        String lhs = rule_split[0];
+        String righthand = rule_split[1];
+        String[] rhs;
+        if(righthand.contains(","))
+        {
+            rhs = righthand.split(",");
+        }
+        else {
+            rhs = new String[]{righthand};
+        }
+        if(terminal){
+            if(grammar.containsKey("terminals")){
+                System.out.println("Hasworked");
+                if(grammar.get("terminals") instanceof JSONObject){
+                    JSONObject terminals = (JSONObject) grammar.get("terminals");
+                    if(terminals.containsKey(lhs)){
+                        if(terminals.get(lhs) instanceof JSONArray){
+                            JSONArray values = (JSONArray) terminals.get(lhs);
+                            for(int k = 0; k<rhs.length;k++)
+                            {
+                                values.add(rhs[k]);
+                            }
+                            terminals.put(lhs,values);
+                        }
+                    }
+                    else {
+                        JSONArray values = new JSONArray();
+                        for(int k = 0; k<rhs.length;k++)
+                        {
+                            values.add(rhs[k]);
+                        }
+                        terminals.put(lhs,values);
+                    }
+                }
+            }
+        }
+        else if (grammar.containsKey(lhs)){
+            if(grammar.get(lhs) instanceof JSONArray){
+                JSONArray values = (JSONArray) grammar.get(lhs);
+                JSONArray value = new JSONArray();
+                for(int k = 0; k<rhs.length;k++)
+                {
+                    value.add(rhs[k]);
+                }
+                values.add(value);
+                grammar.put(lhs,values);
             }
         }
         else{
-            grammar.put(rule.getL_side(), rule.getR_side());
-            //rules.add(rule);
+            JSONArray value = new JSONArray();
+            for(int k = 0; k<rhs.length;k++)
+            {
+                value.add(rhs[k]);
+            }
+            grammar.put(lhs,value);
         }
+        FileWriter writer = new FileWriter("src\\CFGrammar\\grammar.json");
+        writer.write(grammar.toJSONString());
+        writer.close();
+        System.out.println(grammar.toJSONString());
     }
 
     /**
