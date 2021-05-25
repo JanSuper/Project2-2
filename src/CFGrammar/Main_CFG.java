@@ -21,19 +21,6 @@ public class Main_CFG {
         //reader.getAllRules();
         //cfg.splitGrammar(grammar);
 
-        /*for(int i = 0; i < grammar.size(); i++)
-        {
-            System.out.println(grammar.get(i));
-        }
-        System.out.println("Number of rules: "+grammar.size());*/
-
-        /*for(int i = 0; i < checkgrammar.size(); i++)
-        {
-            String res = checkgrammar.get(i);
-            System.out.println(res);
-        }
-        System.out.println("Number of rules: "+checkgrammar.size());*/
-
         //cfg.toPrint();
     }
 
