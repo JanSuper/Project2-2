@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 
-
-
 public class JsonReader {
     private ArrayList<String> rules = new ArrayList<>();
 
@@ -47,19 +45,24 @@ public class JsonReader {
         Iterate over all key = Lefthand sides of rules.
         Get Righthand and concat to string rule.
          */
+
         Iterator<String> keys = grammar.keySet().iterator();
+
         while (keys.hasNext()) {
             String key = keys.next();
-            System.out.println(key);
             String lefthand = key;
             if(grammar.get(key) instanceof JSONObject){
+                processObject((JSONObject) grammar.get(key), lefthand);
+                System.out.println("JSONObject");
+                /*
                 JSONObject sub = (JSONObject) grammar.get(key);
-                Iterator<String> subkeys = grammar.keySet().iterator();
+                Iterator<String> subkeys = sub.keySet().iterator();
                 while (subkeys.hasNext()) {
                     String subkey = subkeys.next();
                     System.out.println(subkey);
                     String lhs = subkey;
                     if (sub.get(key) instanceof JSONArray) {
+                        System.out.println("Subarray");
                         JSONArray vals = (JSONArray) sub.get(key);
                         ArrayList<String> values = new ArrayList<>();
                         for (int i = 0; i < vals.size(); i++) {
@@ -72,23 +75,68 @@ public class JsonReader {
                         }
                     }
                 }
+                 */
             }
+
             else if (grammar.get(key) instanceof JSONArray){
+                System.out.println("JSONArray");
+                processArray((JSONArray) grammar.get(key), lefthand);
+                /*
                 JSONArray vals = (JSONArray) grammar.get(key);
                 ArrayList<String> values = new ArrayList<>();
                 for(int i = 0; i < vals.size(); i++){
                     values.add(vals.get(i).toString());
+                    if(vals.get(i)instanceof JSONArray){
+                        System.out.println("another array");
+                    }
+                    else {
+                        values.add(vals.get(i).toString());
+                    }
                 }
                 for(int j = 0; j < values.size(); j++) {
                     String rule = lefthand.concat(values.get(j));
                     rules.add(rule);
                     //System.out.println(rule);
                 }
+
+                 */
             }
         }
-        System.out.println("number of rules: " + rules.size());;
+        System.out.println("number of rules: " + rules.size());
+        System.out.println(rules);
+
         return rules;
     }
+    public void processArray(JSONArray array, String lhs){
+        for(int i = 0; i< array.size();i++){
+            if(array.get(i) instanceof JSONArray){
+                processArray((JSONArray)array.get(i), lhs);
+            }
+            else if(array.get(i) instanceof JSONObject){
+                processObject((JSONObject) array.get(i),lhs);
+            }
+            else{
+                rules.add(lhs+" : "+array.get(i).toString());
+            }
+        }
+    }
+    public void processObject(JSONObject object, String lhs){
+        Iterator keys = object.keySet().iterator();
+        while(keys.hasNext()){
+            String key = (String) keys.next();
+            if(object.get(key) instanceof JSONArray){
+                processArray((JSONArray) object.get(key), lhs);
+            }
+            else if(object.get(key) instanceof JSONObject){
+                processObject((JSONObject) object.get(key), lhs);
+            }
+            else{
+                rules.add(lhs + " : " + object.get(key).toString());
+            }
+        }
+
+    }
+
 
     /**
      * Should be able to add a rule to the json file in the right place
