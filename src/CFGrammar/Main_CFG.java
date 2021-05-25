@@ -22,12 +22,6 @@ public class Main_CFG {
         ArrayList<String> grammar = getAllRules();
         JsonReader reader = new JsonReader();
         ArrayList<String> checkgrammar = reader.getAllRules();
-        /* For debugging
-        reader.addRules("1:A", true);
-        reader.addRules("WP:who",true);
-        reader.addRules("1:2",false);
-        reader.addRules("S:1", false);
-         */
         reader.getAllRules();
         cfg.splitGrammar(grammar);
 

@@ -65,7 +65,7 @@ public class JsonReader {
             }
         }
         System.out.println("number of rules: " + rules.size());
-        System.out.println(rules);
+        //System.out.println(rules);
 
         return rules;
     }
@@ -140,7 +140,6 @@ public class JsonReader {
         }
         if(terminal){
             if(grammar.containsKey("terminals")){
-                System.out.println("Hasworked");
                 if(grammar.get("terminals") instanceof JSONObject){
                     JSONObject terminals = (JSONObject) grammar.get("terminals");
                     if(terminals.containsKey(lhs)){
@@ -177,27 +176,28 @@ public class JsonReader {
             }
         }
         else{
+            JSONArray values = new JSONArray();
             JSONArray value = new JSONArray();
             for(int k = 0; k<rhs.length;k++)
             {
                 value.add(rhs[k]);
             }
-            grammar.put(lhs,value);
+            values.add(value);
+            grammar.put(lhs,values);
         }
         FileWriter writer = new FileWriter("src\\CFGrammar\\grammar.json");
         writer.write(grammar.toJSONString());
         writer.close();
-        System.out.println(grammar.toJSONString());
     }
 
     /**
      * Should remove the specific rule from the json file
      * @param rule
      */
-    public void removeRule(Rule rule) {
+    public void removeRule(String rule, boolean terminal) throws IOException {
         FileReader reader = null;
         try {
-            reader = new FileReader("..\\grammar.json");
+            reader = new FileReader("src\\CFGrammar\\grammar.json");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -210,13 +210,81 @@ public class JsonReader {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        if(grammar.containsKey(rule.getL_side()))
+        String[] rule_split = rule.split(":");
+        String lhs = rule_split[0];
+        String righthand = rule_split[1];
+        String[] rhs;
+        if(righthand.contains(","))
         {
-            grammar.remove(rule.getL_side());
+            rhs = righthand.split(",");
         }
-        else{
-            System.out.println("Rule not in specified file");
+        else {
+            rhs = new String[]{righthand};
         }
+        if(terminal){
+            if(grammar.containsKey("terminals")){
+                if(grammar.get("terminals") instanceof JSONObject) {
+                    JSONObject terminals = (JSONObject) grammar.get("terminals");
+                    if (terminals.containsKey(lhs)) {
+                        boolean remove = false;
+                        if (terminals.get(lhs) instanceof JSONArray) {
+                            JSONArray values = (JSONArray) terminals.get(lhs);
+                            for (int k = 0; k < values.size(); k++) {
+                                for(int j = 0; j < rhs.length; j++){
+                                    if(values.contains(rhs[j])) {
+                                        remove = true;
+                                    }
+                                }
+                                if(remove) {
+                                    for(int c = 0; c < rhs.length; c++)
+                                    {
+                                        if(values.size()>1) {
+                                            values.remove(rhs[c]);
+                                            terminals.put(lhs, values);
+                                        }
+                                        else{
+                                            terminals.remove(lhs);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else if (grammar.containsKey(lhs)) {
+            boolean remove = false;
+            if (grammar.get(lhs) instanceof JSONArray) {
+                JSONArray values = (JSONArray) grammar.get(lhs);
+                for (int k = 0; k < values.size(); k++) {
+                    if(values.get(k) instanceof JSONArray){
+                        JSONArray singleton = (JSONArray) values.get(k);
+                        for(int l = 0; l < rhs.length; l++)
+                        {
+                            if(singleton.contains(rhs[l])){
+                                remove = true;
+                            }
+                        }
+                        if(remove){
+                            for(int c = 0; c < rhs.length; c++)
+                            {
+                                if(values.size()>1) {
+                                    values.remove(singleton);
+                                    grammar.put(lhs, values);
+                                }
+                                else{
+                                    grammar.remove(lhs);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        FileWriter writer = new FileWriter("src\\CFGrammar\\grammar.json");
+        writer.write(grammar.toJSONString());
+        writer.close();
     }
 
     public ArrayList<String> getRules() {
