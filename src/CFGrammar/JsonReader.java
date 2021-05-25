@@ -54,52 +54,13 @@ public class JsonReader {
             if(grammar.get(key) instanceof JSONObject){
                 processObject((JSONObject) grammar.get(key), lefthand);
                 System.out.println("JSONObject");
-                /*
-                JSONObject sub = (JSONObject) grammar.get(key);
-                Iterator<String> subkeys = sub.keySet().iterator();
-                while (subkeys.hasNext()) {
-                    String subkey = subkeys.next();
-                    System.out.println(subkey);
-                    String lhs = subkey;
-                    if (sub.get(key) instanceof JSONArray) {
-                        System.out.println("Subarray");
-                        JSONArray vals = (JSONArray) sub.get(key);
-                        ArrayList<String> values = new ArrayList<>();
-                        for (int i = 0; i < vals.size(); i++) {
-                            values.add(vals.get(i).toString());
-                        }
-                        for(int j = 0; j < values.size(); j++){
-                            String rule = lefthand.concat(values.get(j));
-                            rules.add(rule);
-                            //System.out.println(rule);
-                        }
-                    }
-                }
-                 */
+
             }
 
             else if (grammar.get(key) instanceof JSONArray){
                 System.out.println("JSONArray");
                 processArray((JSONArray) grammar.get(key), lefthand);
-                /*
-                JSONArray vals = (JSONArray) grammar.get(key);
-                ArrayList<String> values = new ArrayList<>();
-                for(int i = 0; i < vals.size(); i++){
-                    values.add(vals.get(i).toString());
-                    if(vals.get(i)instanceof JSONArray){
-                        System.out.println("another array");
-                    }
-                    else {
-                        values.add(vals.get(i).toString());
-                    }
-                }
-                for(int j = 0; j < values.size(); j++) {
-                    String rule = lefthand.concat(values.get(j));
-                    rules.add(rule);
-                    //System.out.println(rule);
-                }
 
-                 */
             }
         }
         System.out.println("number of rules: " + rules.size());
@@ -125,13 +86,13 @@ public class JsonReader {
         while(keys.hasNext()){
             String key = (String) keys.next();
             if(object.get(key) instanceof JSONArray){
-                processArray((JSONArray) object.get(key), lhs);
+                processArray((JSONArray) object.get(key), key);
             }
             else if(object.get(key) instanceof JSONObject){
-                processObject((JSONObject) object.get(key), lhs);
+                processObject((JSONObject) object.get(key), key);
             }
             else{
-                rules.add(lhs + " : " + object.get(key).toString());
+                rules.add(key + " : " + object.get(key).toString());
             }
         }
 
