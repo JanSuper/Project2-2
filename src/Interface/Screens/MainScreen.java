@@ -95,7 +95,6 @@ public class MainScreen {
         final boolean[] faceDetected = {true};
         Task task = new Task<Void>() {
             @Override public Void call(){
-                System.out.println("oui");
                 //stops if a face is not detected anymore
                 while (faceDetected[0]){
                     if(!firstFaceViewed&&faceDetection.faceDetected()){

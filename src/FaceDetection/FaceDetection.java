@@ -67,7 +67,6 @@ public class FaceDetection extends VBox {
         Task task = new Task<Void>() {
             @Override public Void call() throws InterruptedException {
                 while(!faceDetect[0]){
-                    System.out.println("non");
                     long now = System.currentTimeMillis();
                     long elapsedTime = Math.abs(now - start);
                     if(elapsedTime/1000>DELAY){
