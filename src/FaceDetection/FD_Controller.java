@@ -221,11 +221,11 @@ public class FD_Controller {
      *
      * HOW TO TRAIN CLASSIFIER:
      *
-     * F:\Downloads\opencv\build\x64\vc14\bin\opencv_createsamples.exe -info F:\Downloads\classTrain\faces.info -num 6 -w 24 -h 24 -vec F:\Downloads\classTrain\face
+     * F:\Downloads\opencv\build\x64\vc14\bin\opencv_createsamples.exe -info F:\Downloads\classTrain\faces.info -num 1000 -w 128 -h 128 -vec F:\Downloads\classTrain\face
      * s.vec
      *
      * F:\Downloads\opencv\build\x64\vc15\bin\opencv_traincascade.exe -data F:\Downloads\classTrain\Data -vec F:\Downloads\classTrain\faces.vec -bg F:\Downloads\cla
-     * ssTrain\annotation_neg.txt -numPos 6 -numNeg 8 -numStages 2 -w 24 -h 24 -featureType LBP -precalcIdxBufSize 2048 -precalcValBufSize 2048
+     * ssTrain\annotation_neg.txt -numPos 1000 -numNeg 3027 -numStages 2 -w 128 -h 128 -featureType LBP -precalcIdxBufSize 2048 -precalcValBufSize 2048
      *
      *
      *
@@ -237,8 +237,8 @@ public class FD_Controller {
         if (this.lbpClassifier.isSelected())
             this.lbpClassifier.setSelected(false);
 
-        //this.checkboxSelection("src/FaceDetection/haarcascade_frontalface_default.xml");
-        this.checkboxSelection("src/FaceDetection/cascade.xml");
+        this.checkboxSelection("src/FaceDetection/haarcascade_frontalface_default.xml");
+        //this.checkboxSelection("src/FaceDetection/cascade.xml");
 
     }
 
@@ -254,7 +254,8 @@ public class FD_Controller {
         if (this.haarClassifier.isSelected())
             this.haarClassifier.setSelected(false);
 
-        this.checkboxSelection("src/FaceDetection/lbpcascade_frontalface.xml");
+        //this.checkboxSelection("src/FaceDetection/lbpcascade_frontalface.xml");
+        this.checkboxSelection("src/FaceDetection/cascade.xml");
     }
 
     /**
