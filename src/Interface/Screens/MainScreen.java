@@ -8,6 +8,7 @@ import Skills.Calendar.HandleReminders;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -16,6 +17,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -227,6 +229,24 @@ public class MainScreen {
         }
         topBox.getChildren().add(exit);
         notification.getChildren().addAll(topBox,faceDetection);
+
+        // to be able to move the camera window
+        final double[] xOffset = {0};
+        final double[] yOffset = {0};
+        notification.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                xOffset[0] = event.getSceneX();
+                yOffset[0] = event.getSceneY();
+            }
+        });
+        notification.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                stage.setX(event.getScreenX() - xOffset[0]);
+                stage.setY(event.getScreenY() - yOffset[0]);
+            }
+        });
     }
 
     public void setWeatherDisplay(String city, String country) throws Exception {
