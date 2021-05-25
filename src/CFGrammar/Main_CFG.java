@@ -22,7 +22,6 @@ public class Main_CFG {
         ArrayList<String> grammar = getAllRules();
         JsonReader reader = new JsonReader();
         ArrayList<String> checkgrammar = reader.getAllRules();
-        reader.getAllRules();
         cfg.splitGrammar(grammar);
 
         /*for(int i = 0; i < grammar.size(); i++)

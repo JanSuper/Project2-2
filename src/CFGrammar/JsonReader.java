@@ -54,12 +54,12 @@ public class JsonReader {
             String lefthand = key;
             if(grammar.get(key) instanceof JSONObject){
                 processObject((JSONObject) grammar.get(key), lefthand);
-                System.out.println(key + " is JSONObject");
+                //System.out.println(key + " is JSONObject");
 
             }
 
             else if (grammar.get(key) instanceof JSONArray){
-                System.out.println(key + " is JSONArray");
+                //System.out.println(key + " is JSONArray");
                 processArray((JSONArray) grammar.get(key), lefthand);
 
             }
@@ -72,7 +72,16 @@ public class JsonReader {
     public void processArray(JSONArray array, String lhs){
         for(int i = 0; i< array.size();i++){
             if(array.get(i) instanceof JSONArray){
-                rules.add(lhs+":"+array.get(i).toString());
+                JSONArray values = (JSONArray) array.get(i);
+                String rhs = "";
+                for(int k = 0; k < values.size(); k++)
+                {
+                    rhs = rhs.concat((String) values.get(k));
+                    if(k+1 < values.size()){
+                        rhs = rhs.concat(", ");
+                    }
+                }
+                rules.add(lhs+" : "+rhs);
             }
             else if(array.get(i) instanceof JSONObject){
                 processObject((JSONObject) array.get(i),lhs);
