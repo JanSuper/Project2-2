@@ -72,13 +72,10 @@ public class JsonReader {
     public void processArray(JSONArray array, String lhs){
         for(int i = 0; i< array.size();i++){
             if(array.get(i) instanceof JSONArray){
-                processArray((JSONArray)array.get(i), lhs);
+                rules.add(lhs+":"+array.get(i).toString());
             }
             else if(array.get(i) instanceof JSONObject){
                 processObject((JSONObject) array.get(i),lhs);
-            }
-            else{
-                rules.add(lhs+":"+array.get(i).toString());
             }
         }
     }
