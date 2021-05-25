@@ -61,13 +61,13 @@ public class FaceDetection extends VBox {
     }
 
     public void manageFaceLeaving(){
-        //System.out.println("Timer started");
         //start a timer
         final boolean[] faceDetect = {false};
         long start = System.currentTimeMillis();
         Task task = new Task<Void>() {
             @Override public Void call() throws InterruptedException {
                 while(!faceDetect[0]){
+                    System.out.println("non");
                     long now = System.currentTimeMillis();
                     long elapsedTime = Math.abs(now - start);
                     if(elapsedTime/1000>DELAY){
