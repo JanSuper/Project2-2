@@ -61,7 +61,6 @@ public class FaceDetection extends VBox {
     }
 
     public void manageFaceLeaving(){
-        //System.out.println("Timer started");
         //start a timer
         final boolean[] faceDetect = {false};
         long start = System.currentTimeMillis();

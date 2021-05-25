@@ -84,6 +84,7 @@ public class MainScreen {
         //handle face detection
         firstFaceViewed = false;
         manageFaceDetection();
+        faceDetection.controller.mainScreen = this;
     }
 
     /**

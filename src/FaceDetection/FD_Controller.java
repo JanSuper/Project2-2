@@ -1,4 +1,5 @@
 package FaceDetection;
+import Interface.Screens.MainScreen;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -45,6 +46,8 @@ public class FD_Controller {
     // each rectangle in faces is a face
     public Rect[] currentFacesArray;
     public Rect[] previousFacesArray;
+
+    public MainScreen mainScreen = null;
 
     /**
      * Init the controller variables
@@ -105,6 +108,9 @@ public class FD_Controller {
 
                 // update the button content
                 this.cameraButton.setText("Stop Camera");
+                if(mainScreen!=null){
+                    mainScreen.manageFaceDetection();
+                }
             }
             else
             {
