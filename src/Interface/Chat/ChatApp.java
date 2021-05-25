@@ -1,6 +1,7 @@
 package Interface.Chat;
 
 import Agents.Assistant;
+import CFGrammar.Main_CFG;
 import DataBase.Data;
 import FileParser.FileParser;
 import Interface.Screens.MainScreen;
@@ -250,11 +251,48 @@ public class ChatApp extends VBox {
         typeField.getChildren().setAll(userInput, sendMessageButton);
     }
 
+    private boolean CFG_on = false;
     public void sendMessage(String message) throws Exception {
         messages.add(new MessageBubble(message, 1));
         assistant_answer.setAssistantMessage(assistantMessages);
         //receiveMessage(assistant_answer.getResponseWithRandom(message));
-        receiveMessage(assistant_answer.textRecognition.getResponse(message));
+
+        if(CFG_on)
+        {
+            Main_CFG cfg = new Main_CFG(message);
+
+            int skill_nbr = cfg.getSkill();
+            if(skill_nbr == 0)
+            {
+                //Pas de Skill
+                receiveMessage(assistant_answer.textRecognition.getResponse(message));
+            }
+            else
+            {
+                //Lancer ce skill
+                receiveMessage("Found skill number: "+skill_nbr); //Juste pour tester
+                //Si le skill a besoin de variables
+                ArrayList<String> words_for_variables = cfg.getVariable_words();
+            }
+            //receiveMessage(); the answer
+        }
+        else
+        {
+            if(message.contains("CFG on"))
+            {
+                CFG_on = true;
+                receiveMessage("Context-free grammar parser turned on");
+            }
+            else if(message.contains("CFG off"))
+            {
+                CFG_on = false;
+                receiveMessage("Context-free grammar parser turned on");
+            }
+            else
+            {
+                receiveMessage(assistant_answer.textRecognition.getResponse(message));
+            }
+        }
     }
 
     public void receiveMessage(String message) {    //adds assistant's response

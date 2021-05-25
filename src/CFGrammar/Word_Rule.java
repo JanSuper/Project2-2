@@ -20,22 +20,41 @@ public class Word_Rule {
         word_Rules.add(tempRule);
     }
 
-    public ArrayList<Branch> interprete(String word)
+    public ArrayList<Branch> interpret(String word)
     {
         ArrayList<Branch> subTree = new ArrayList<>();
+        boolean foreign_word = true;
         for(int i = 0; i < word_Rules.size(); i++)
         {
-            // LE PROBLEME EST ICI !!!
-            //System.out.println(word+" ---- ");
             if(word_Rules.get(i).getRHS_Word().equals(word))
             {
                 String res = (word_Rules.get(i).getLHS() +":"+word_Rules.get(i).getRHS_Word());
                 result_array.add(res);
+
                 Branch word_Branch = new Branch();
                 word_Branch.setWord_category(word_Rules.get(i).getLHS());
                 word_Branch.setWord(word_Rules.get(i).getRHS_Word());
                 subTree.add(word_Branch);
+                foreign_word = false;
+                System.out.println("Added word : "+ word);
             }
+            /*if(word_Rules.get(i).getLHS().equals("FW"))
+            {
+                String res = (word_Rules.get(i).getLHS() +":"+ word);
+                result_array.add(res);
+            }*/
+        }
+        if(foreign_word)
+        {
+            System.out.println("Didn't found in corpus: "+word);
+
+            String res = ("FW:"+word);
+            result_array.add(res);
+
+            Branch foreign_word_Branch = new Branch();
+            foreign_word_Branch.setWord_category("FW");
+            foreign_word_Branch.setWord(word);
+            subTree.add(foreign_word_Branch);
         }
         return subTree;
     }

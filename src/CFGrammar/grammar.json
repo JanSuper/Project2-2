@@ -121,6 +121,7 @@
       "check",
       "see",
       "set",
+      "create",
       "get",
       "reset",
       "add",
@@ -131,7 +132,8 @@
       "pause",
       "stop",
       "resume",
-      "go"
+      "go",
+      "display"
     ],
     "Adj": [
       "next",
@@ -164,8 +166,7 @@
       "url"
     ],
     "FW": [
-      "maastricht",
-      "amsterdam"
+      "UNK"
     ],
     "Weather_word": [
       "weather",

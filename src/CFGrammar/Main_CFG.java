@@ -4,6 +4,7 @@ import FileParser.FileParser;
 import TextRecognition.TextRecognition;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class Main_CFG {
@@ -13,46 +14,33 @@ public class Main_CFG {
      * @param args
      */
     public static void main(String[] args) throws IOException {
-        //Only for test, doesn't make sense / MAKE SURE THE WORDS ARE IN THE GRAMMAR
-        String test = "what is my next lecture";
+        String test = "";
 
         Main_CFG cfg = new Main_CFG(test);
 
-        //Make ArrayList<String> grammar
-        ArrayList<String> grammar = getAllRules();
-        JsonReader reader = new JsonReader();
-        ArrayList<String> checkgrammar = reader.getAllRules();
-        cfg.splitGrammar(grammar);
+        //reader.getAllRules();
+        //cfg.splitGrammar(grammar);
 
         /*for(int i = 0; i < grammar.size(); i++)
         {
             System.out.println(grammar.get(i));
         }
         System.out.println("Number of rules: "+grammar.size());*/
-        for(int i = 0; i < checkgrammar.size(); i++)
+
+        /*for(int i = 0; i < checkgrammar.size(); i++)
         {
-            System.out.println(checkgrammar.get(i));
+            String res = checkgrammar.get(i);
+            System.out.println(res);
         }
-        System.out.println("Number of rules: "+checkgrammar.size());
+        System.out.println("Number of rules: "+checkgrammar.size());*/
 
-        //TODO: S'occuper du FW dans Word_Rule
-
-        cfg.splitGrammar(checkgrammar);
-
-        cfg.initialize_Tree();
-        cfg.implement_Tree();
-        cfg.toPrint();
-
-        StringBuffer result = new StringBuffer();
-        cfg.getEndSplit(result);
-        System.out.println(result.toString());
-
-        cfg.getSkill();
+        //cfg.toPrint();
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private ArrayList<Rule> rules = new ArrayList<>();
+    private ArrayList<String> variable_words;
     private Branch_Rule BR = null;
     private Word_Rule WR = null;
     private Branch[][] Br = null;
@@ -65,6 +53,18 @@ public class Main_CFG {
         user_message = pUser_message;
         u_message = pUser_message.split("\\s");
         message_length = u_message.length;
+
+        JsonReader reader = new JsonReader();
+        ArrayList<String> checkgrammar = reader.getAllRules();
+        splitGrammar(checkgrammar);
+        initialize_Tree();
+        implement_Tree();
+
+        StringBuffer result = new StringBuffer();
+        getEndSplit(result);
+        System.out.println(result.toString());
+
+        getSkill();
     }
 
     public void splitGrammar(ArrayList<String> rules)
@@ -81,10 +81,12 @@ public class Main_CFG {
             }
             else if(rule.length == 3)
             {
+                //System.out.println("Word rule : "+rule[0]);
                 WR.addRule(rule);
             }
             else
             {
+                //System.out.println("Branch rule : "+rule[0]);
                 BR.addRule(rule);
             }
         }
@@ -95,14 +97,14 @@ public class Main_CFG {
         return 1;
     }
 
-    public void getSkill()
+    public int getSkill()
     {
-        //TODO: Utiliser le fichier .csv
         int score = 0;
         int best_score = 0;
         int final_skill_nbr = 0;
         ArrayList<Integer> possible_skills = new ArrayList<>();
         ArrayList<String> words_toSearch = new ArrayList<>();
+        variable_words = new ArrayList<>();
         TextRecognition TR = new TextRecognition();
 
         ArrayList<String> main_words = WR.getResult_array();
@@ -112,11 +114,6 @@ public class Main_CFG {
         }
         FileParser sk_file = new FileParser();
         List<List<String>> allSkills = sk_file.getAllSkills();
-        /*String r = "";
-        for (List<String> operation : allSkills) {
-            r+=("Verb : "+ operation.get(4) +" | Noun : "+ operation.get(5) +" | Variables : "+ operation.get(3) +"\n");
-        }
-        System.out.println(r);*/
 
         for(int i = 0; i < main_words.size(); i++)
         {
@@ -129,6 +126,12 @@ public class Main_CFG {
                 System.out.println("Added word to the list: "+ word);
                 words_toSearch.add(word);
             }
+
+            if(category.equals("FW"))
+            {
+                System.out.println("Added FOREIGN word to the list: "+word);
+                variable_words.add(word);
+            }
         }
 
         for(int i = 0; i < allSkills.size(); i++)
@@ -136,21 +139,34 @@ public class Main_CFG {
             score = 0;
             String verb = allSkills.get(i).get(4);
             String noun = allSkills.get(i).get(5);
-            String var = allSkills.get(i).get(3);
+            String var = allSkills.get(i).get(6);
             String skill_nbr = allSkills.get(i).get(1);
 
+            //TODO: adapt the score!
             for(int j = 0; j < words_toSearch.size(); j++)
             {
                 if(words_toSearch.get(j).equals(verb))
                 {
                     System.out.println("Added to score: "+verb);
-                    score++;
+                    score = score +2;
                 }
                 if(words_toSearch.get(j).equals(noun))
                 {
                     System.out.println("Added to score: "+noun);
-                    score = score + 2;
+                    score = score + 3;
                 }
+            }
+
+            // "y" means there is a variable for this skill
+            if(var.equals("y"))
+            {
+                String var_nbr_s = allSkills.get(i).get(3);
+                int var_nbr = Integer.parseInt(var_nbr_s);
+                if(var_nbr == variable_words.size())
+                {
+                    score++;
+                }
+                //score++;
             }
 
             if(score > best_score)
@@ -165,17 +181,29 @@ public class Main_CFG {
             }
         }
 
+        for(int i = 0; i < variable_words.size(); i++)
+        {
+            System.out.println("Final variable : "+ variable_words.get(i));
+        }
+
         System.out.println("Final skill list size : "+possible_skills.size());
         for(int z = 0; z < possible_skills.size(); z++)
         {
             System.out.println("Skill nbr : "+possible_skills.get(z));
         }
-        //ArrayList<Branch> Br_ter = WR.interprete(Br_word);
 
-        /*
-        Branch end_branch = Br[0][message_length-1];
-        end_branch.get_endResult(sentence);
-         */
+        System.out.println("With best score: "+ best_score);
+
+        if(best_score > 3)
+        {
+            int n = new Random().nextInt(possible_skills.size());
+            final_skill_nbr = possible_skills.get(n);
+        }
+        else
+        {
+            final_skill_nbr = 0;
+        }
+        return final_skill_nbr;
     }
 
     /**
@@ -219,63 +247,18 @@ public class Main_CFG {
                 catch(Exception e) {}
             }
         }
-
         return grammar;
-
-        /*FileInputStream fstream = new FileInputStream(fileName);
-        DataInputStream in = new DataInputStream(fstream);
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        String startLine;
-        while ((startLine = br.readLine()) != null)   {
-
-            String[] result = startLine.trim().split("\\s");
-            for (int x=0; x<result.length; x++){
-            }
-            String lefthand="S";
-            if(result.length > 0){
-                lefthand= result[0];
-            }
-            if(result.length > 1){
-                double aDouble = Double.parseDouble(result[result.length-1]);
-                ArrayList <String> righthand = new ArrayList<String>();
-                for (int x=2; x<result.length-2; x++){
-                    righthand.add(result[x]);
-                }
-
-                boolean found=false;
-                Rule temp=null;
-                for(int f=0;f <rules.size(); f++){
-                    temp=rules.get(f);
-                    if(temp.getL_side().equals(lefthand)){
-                        found=true;
-                    }
-                }
-                if(!found){
-                    if(righthand.size()==1){
-                        Rule one=new Rule(lefthand, righthand.get(0));
-                        rules.add(one);
-                    }else{
-                        Rule two=new Rule(lefthand, righthand.get(0), righthand.get(1));
-                        rules.add(two);
-                    }
-                }else{
-                    if(righthand.size()==1){
-                        temp.oneRule(righthand.get(0));
-                    }
-                    else{
-                        temp.multipleRule(righthand.get(0), righthand.get(1));
-                    }
-                }
-            }
-        }
-        System.out.println("number of rules: "+rules.size());
-        br.close();*/
     }
 
     public void getEndSplit(StringBuffer sentence)
     {
         Branch end_branch = Br[0][message_length-1];
         end_branch.get_endResult(sentence);
+    }
+
+    public ArrayList<String> getVariable_words()
+    {
+        return variable_words;
     }
 
     public String toStringTree(int l_side, int iter, int length)
@@ -317,17 +300,20 @@ public class Main_CFG {
         }
     }
 
+
+    private int kk = 0;
     public void initialize_Branch(int nbr)
     {
         String Br_word = u_message[nbr];
-        //System.out.println(Br_word);
-        ArrayList<Branch> Br_ter = WR.interprete(Br_word);
+        kk++;
+        //System.out.println("Branch init. : "+kk);
+        ArrayList<Branch> Br_ter = WR.interpret(Br_word);
+        //System.out.println("Size with unknown word: "+Br_ter.size());
         for(int i = 0; i < Br_ter.size(); i++)
         {
             //Br[i][i].addRule(Br_ter.get(i), null, null);
             addRuleToBranch(Br[nbr][nbr], Br_ter.get(i), null, null);
         }
-        //System.out.println(Br_ter.size());
     }
 
     public void addRuleToBranch(Branch parent, Branch pBr, Branch LHS, Branch RHS)
@@ -354,7 +340,6 @@ public class Main_CFG {
         }
     }
 
-    private int kk = 0;
     public void implement_Branch(int i, int j, int words_plus)
     {
         Branch this_Branch = Br[i][j];

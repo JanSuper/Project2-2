@@ -78,7 +78,7 @@ public class JsonReader {
                 {
                     rhs = rhs.concat((String) values.get(k));
                     if(k+1 < values.size()){
-                        rhs = rhs.concat(", ");
+                        rhs = rhs.concat(" ");
                     }
                 }
                 rules.add(lhs+" : "+rhs);
@@ -87,7 +87,7 @@ public class JsonReader {
                 processObject((JSONObject) array.get(i),lhs);
             }
             else{
-                rules.add(lhs+":"+array.get(i).toString());
+                rules.add(lhs+" : "+array.get(i).toString());
             }
         }
     }
