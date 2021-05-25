@@ -1,27 +1,180 @@
-S -> NP VP
-S -> N V
-NP -> DT N
-NP -> DT PP
-PP -> P NP
-VP -> VP PP
-VP -> V NP
-DT -> the
-DT -> a
-DT -> an
-N -> girl
-N -> house
-N -> man
-N -> boy
-N -> phone
-N -> weather
-N -> lecture
-V -> saw
-V -> see
-V -> is
-V -> used
-V -> has
-V -> are
-P -> with
-p -> on
-A -> tall
-A -> short
+S -> Sk_N
+S -> Sk_N FW
+S -> Sk_N FWW
+S -> NB
+S -> VBN
+S -> WP Sk_N
+S -> WP NP
+S -> WP VBN
+S -> WP VBZN
+S -> Sk_N FWP
+S -> Sk_N FWWP
+S -> VBN FWWP
+NP -> PPZ Sk_N
+NP -> Det Sk_N
+NP -> Prep Sk_N
+NP -> Adj Sk_N
+NP -> Det N
+NP -> Prep N
+NP -> Adj N
+FWP -> Det FW
+FWP -> Prep FW
+FWP -> Adj FW
+NPP -> PPZ NP
+NPP -> PPZ NP
+VBN -> VB Sk_N
+VBN -> VB N
+VBN -> VB NP
+VBN -> VB NPP
+VBZN -> VBZ Sk_N
+VBZN -> VBZ N
+VBZN -> VBZ NP
+VBZN -> VBZ NPFW
+NPFW -> NP FW
+NPFW -> NP FWP
+FWW -> FW FW
+FWWP -> FWP FWP
+Sk_N -> Weather_word
+Sk_N -> Map_word
+Sk_N -> Route_word
+Sk_N -> Alarm_word
+Sk_N -> Timer_word
+Sk_N -> Calendar_word
+Sk_N -> Media_word
+Sk_N -> Skilleditor_word
+WP -> what
+WP -> when
+WP -> where
+WP -> how
+VBZ -> is
+VBZ -> are
+VBZ -> am
+PPZ -> I
+PPZ -> me
+PPZ -> my
+PPZ -> you
+PPZ -> your
+PPZ -> it
+Det -> a
+Det -> an
+Det -> the
+Det -> this
+Det -> that
+Det -> these
+Det -> those
+Prep -> for
+Prep -> on
+Prep -> over
+Prep -> at
+Prep -> in
+Prep -> from
+Prep -> to
+Prep -> of
+Prep -> by
+VB -> have
+VB -> can
+VB -> need
+VB -> do
+VB -> show
+VB -> open
+VB -> change
+VB -> edit
+VB -> modify
+VB -> cancel
+VB -> search
+VB -> lookup
+VB -> browse
+VB -> check
+VB -> see
+VB -> set
+VB -> get
+VB -> reset
+VB -> add
+VB -> start
+VB -> listen
+VB -> play
+VB -> watch
+VB -> pause
+VB -> stop
+VB -> resume
+VB -> go
+Adj -> next
+Adj -> later
+Adj -> new
+Adj -> good
+Adj -> beautiful
+N -> rule
+N -> operations
+N -> help
+N -> password
+N -> country
+N -> city
+N -> areas
+N -> location
+N -> age
+N -> lap
+N -> month
+N -> week
+N -> time-zone
+N -> IDs
+N -> personal
+N -> info
+N -> profession
+N -> background
+N -> theme
+N -> color
+N -> url
+FW -> maastricht
+FW -> amsterdam
+Weather_word -> weather
+Weather_word -> temperature
+Weather_word -> climate
+Weather_word -> clima
+Weather_word -> sun sunny
+Weather_word -> rain
+Weather_word -> rainy
+Weather_word -> snow
+Weather_word -> snowy
+Weather_word -> storm
+Weather_word -> stormy
+Weather_word -> thunder
+Weather_word -> thundery
+Weather_word -> thunderstorm
+Weather_word -> aridity
+Weather_word -> humidity
+Map_word -> map
+Map_word -> card
+Map_word -> atlas
+Map_word -> globe
+Route_word -> route
+Route_word -> navigation
+Route_word -> itinerary
+Route_word -> way
+Alarm_word -> alarm
+Alarm_word -> alarmclock
+Alarm_word -> alarwatch
+Clock_word -> time
+Clock_word -> clock
+Clock_word -> watchclock
+Clock_word -> o'clock
+Clock_word -> oclock
+Timer_word -> timer
+Timer_word -> ticker
+Stopwatch_word -> stopwatch
+Stopwatch_word -> timekeeper
+Calendar_word -> calendar
+Calendar_word -> schedule
+Calendar_word -> timetable
+Calendar_word -> plan
+Lecture_word -> lecture
+Lecture_word -> lectures
+Lecture_word -> university
+Lecture_word -> school
+Media_word -> music
+Media_word -> song
+Media_word -> video
+Google_word -> google
+Google_word -> browser
+Skilleditor_word -> skill
+Skilleditor_word -> skilleditor
+Skilleditor_word -> editor

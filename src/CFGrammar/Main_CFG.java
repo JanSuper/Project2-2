@@ -14,15 +14,29 @@ public class Main_CFG {
      */
     public static void main(String[] args) throws IOException {
         //Only for test, doesn't make sense / MAKE SURE THE WORDS ARE IN THE GRAMMAR
-        String test = "the boy are a girl with a lecture";
+        String test = "what is my next lecture";
 
         Main_CFG cfg = new Main_CFG(test);
 
         //Make ArrayList<String> grammar
-        ArrayList<String> grammar = getAllRules();
+        //ArrayList<String> grammar = getAllRules();
         JsonReader reader = new JsonReader();
         ArrayList<String> checkgrammar = reader.getAllRules();
-        cfg.splitGrammar(grammar);
+
+        /*for(int i = 0; i < grammar.size(); i++)
+        {
+            System.out.println(grammar.get(i));
+        }
+        System.out.println("Number of rules: "+grammar.size());*/
+        for(int i = 0; i < checkgrammar.size(); i++)
+        {
+            System.out.println(checkgrammar.get(i));
+        }
+        System.out.println("Number of rules: "+checkgrammar.size());
+
+        //TODO: S'occuper du FW dans Word_Rule
+
+        cfg.splitGrammar(checkgrammar);
 
         cfg.initialize_Tree();
         cfg.implement_Tree();
@@ -109,7 +123,7 @@ public class Main_CFG {
             String category = main_word[0];
             String word = main_word[1];
 
-            if(category.equals("N") || category.equals("V"))
+            if(category.contains("_word") || category.equals("VB") || category.equals(("VBZ")))
             {
                 System.out.println("Added word to the list: "+ word);
                 words_toSearch.add(word);
