@@ -54,12 +54,12 @@ public class JsonReader {
             String lefthand = key;
             if(grammar.get(key) instanceof JSONObject){
                 processObject((JSONObject) grammar.get(key), lefthand);
-                //System.out.println("JSONObject");
+                System.out.println(key + " is JSONObject");
 
             }
 
             else if (grammar.get(key) instanceof JSONArray){
-                //System.out.println("JSONArray");
+                System.out.println(key + " is JSONArray");
                 processArray((JSONArray) grammar.get(key), lefthand);
 
             }
@@ -76,6 +76,9 @@ public class JsonReader {
             }
             else if(array.get(i) instanceof JSONObject){
                 processObject((JSONObject) array.get(i),lhs);
+            }
+            else{
+                rules.add(lhs+":"+array.get(i).toString());
             }
         }
     }
