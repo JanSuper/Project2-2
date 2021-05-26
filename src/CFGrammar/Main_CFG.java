@@ -14,10 +14,35 @@ public class Main_CFG {
      * @param args
      */
     public static void main(String[] args) throws IOException {
-        String test = "";
+        String test = "How is the weather";
 
         Main_CFG cfg = new Main_CFG(test);
 
+        JsonReader jr = new JsonReader();
+        ArrayList<String> grammar = jr.getAllRules();
+
+        /*cfg.splitGrammar(grammar);
+        cfg.initialize_Tree();
+        cfg.implement_Tree();
+
+        StringBuffer result = new StringBuffer();
+        cfg.getEndSplit(result);
+        System.out.println(result.toString());
+
+        cfg.getSkill();*/
+
+        for(int i = 0; i < grammar.size(); i++)
+        {
+            System.out.println("Old: "+grammar.get(i));
+        }
+        //jr.addRules("NB:Z,FG" , false);
+        //jr.addRules("N:Deng",true);
+        jr.removeRule("N:Deng",true);
+        grammar = jr.getAllRules();
+        for(int i = 0; i < grammar.size(); i++)
+        {
+            System.out.println("New : "+grammar.get(i));
+        }
         //reader.getAllRules();
         //cfg.splitGrammar(grammar);
 
@@ -41,7 +66,7 @@ public class Main_CFG {
         u_message = pUser_message.split("\\s");
         message_length = u_message.length;
 
-        JsonReader reader = new JsonReader();
+        /*JsonReader reader = new JsonReader();
         ArrayList<String> checkgrammar = reader.getAllRules();
         splitGrammar(checkgrammar);
         initialize_Tree();
@@ -51,7 +76,7 @@ public class Main_CFG {
         getEndSplit(result);
         System.out.println(result.toString());
 
-        getSkill();
+        getSkill();*/
     }
 
     public void splitGrammar(ArrayList<String> rules)
@@ -191,6 +216,42 @@ public class Main_CFG {
             final_skill_nbr = 0;
         }
         return final_skill_nbr;
+    }
+
+    public String addOrRemoveRule(String message) throws IOException
+    {
+        Boolean terminal = true;
+        String[] rule = message.split("/");
+        if(rule[0].equals("ADD"))
+        {
+            String[] add = rule[1].split(":");
+            String LHS = add[0];
+            if(add[1].contains(","))
+            {
+                String[] RHS = add[1].split(",");
+                terminal = false;
+            }
+            JsonReader jr = new JsonReader();
+            jr.addRules(rule[1], terminal);
+            return "The rule was added to the grammar.";
+        }
+        else if(rule[0].equals("REMOVE"))
+        {
+            String[] add = rule[1].split(":");
+            String LHS = add[0];
+            if(add[1].contains(","))
+            {
+                String[] RHS = add[1].split(",");
+                terminal = false;
+            }
+            JsonReader jr = new JsonReader();
+            jr.removeRule(rule[1], terminal);
+            return "The rule was removed to the grammar.";
+        }
+        else
+        {
+            return "Error - could not add/remove the rule";
+        }
     }
 
     /**

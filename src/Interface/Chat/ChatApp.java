@@ -259,29 +259,42 @@ public class ChatApp extends VBox {
 
         if(CFG_on)
         {
-            Main_CFG cfg = new Main_CFG(message);
-
-            int skill_nbr = cfg.getSkill();
-            if(skill_nbr == 0)
+            if(message.contains("ADD/") || message.contains("REMOVE/"))
             {
-                //Pas de Skill
-                receiveMessage(assistant_answer.textRecognition.getResponse(message));
+                Main_CFG cfg = new Main_CFG(message);
+                String answer = cfg.addOrRemoveRule(message);
+                receiveMessage(answer);
             }
             else
             {
-                //Lancer ce skill
-                receiveMessage("Found skill number: "+skill_nbr); //Juste pour tester
-                //Si le skill a besoin de variables
-                ArrayList<String> words_for_variables = cfg.getVariable_words();
+                Main_CFG cfg = new Main_CFG(message);
+
+                int skill_nbr = cfg.getSkill();
+                if(skill_nbr == 0)
+                {
+                    //Pas de Skill
+                    receiveMessage(assistant_answer.textRecognition.getResponse(message));
+                }
+                else
+                {
+                    //Lancer ce skill
+                    receiveMessage("Found skill number: "+skill_nbr); //Juste pour tester
+                    //Si le skill a besoin de variables
+                    ArrayList<String> words_for_variables = cfg.getVariable_words();
+                }
+                //receiveMessage(); the answer
             }
-            //receiveMessage(); the answer
         }
         else
         {
             if(message.contains("CFG on"))
             {
                 CFG_on = true;
-                receiveMessage("Context-free grammar parser turned on");
+                String answer = "Context-free grammar parser turned on"+"\r\n"+
+                                "To add a production rule to the grammar write: ADD/LHS:RHS1,RHS2"+"\r\n"+
+                                "To add a terminal to the grammar write: ADD/LHS:Word"+"\r\n"+
+                                "To remove same with REMOVE/...";
+                receiveMessage(answer);
             }
             else if(message.contains("CFG off"))
             {
