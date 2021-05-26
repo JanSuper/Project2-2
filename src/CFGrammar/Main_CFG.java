@@ -1,10 +1,25 @@
 package CFGrammar;
 
+import Agents.Assistant;
+import DataBase.Data;
 import FileParser.FileParser;
+import Interface.Display.MediaPlayerDisplay;
+import SkillEditor.SkillEditorHandler;
+import Skills.Schedule.Skill_Schedule;
 import TextRecognition.TextRecognition;
+import javafx.application.Platform;
+import javafx.scene.layout.Pane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaException;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.paint.Color;
+import javafx.scene.web.WebView;
+import javafx.stage.FileChooser;
 
 import java.io.*;
 import java.lang.reflect.Array;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 public class Main_CFG {
@@ -32,10 +47,12 @@ public class Main_CFG {
     private String user_message;
     private String[] u_message;
     private int message_length;
+    private Assistant assistant;
+    private SkillEditorHandler skillEditor;
 
     public Main_CFG(String pUser_message)
     {
-        user_message = pUser_message;
+        user_message = removePunctuation(pUser_message);
         u_message = pUser_message.split("\\s");
         message_length = u_message.length;
 
@@ -50,6 +67,38 @@ public class Main_CFG {
         System.out.println(result.toString());
 
         getSkill();
+    }
+
+    public Main_CFG(String pUser_message, Assistant assistant)
+    {
+        user_message = removePunctuation(pUser_message);
+        u_message = pUser_message.split("\\s");
+        message_length = u_message.length;
+
+        this.assistant = assistant;
+        skillEditor = assistant.skillEditor;
+
+        JsonReader reader = new JsonReader();
+        ArrayList<String> checkgrammar = reader.getAllRules();
+        splitGrammar(checkgrammar);
+        initialize_Tree();
+        implement_Tree();
+
+        StringBuffer result = new StringBuffer();
+        getEndSplit(result);
+        System.out.println(result.toString());
+
+        getSkill();
+    }
+
+    public String removePunctuation(String uMessage)
+    {
+        String clean_uMessage = "";
+        String temp = uMessage.replaceAll("\\p{Punct}&&[^/]]","");
+        clean_uMessage = temp.trim().replaceAll(" +", " ");
+        if(clean_uMessage.endsWith("?")) {clean_uMessage = clean_uMessage.replaceAll("[?]", ""); }
+        else if((clean_uMessage.endsWith("."))) { clean_uMessage = clean_uMessage.substring(0,clean_uMessage.length()-1);}
+        return clean_uMessage;
     }
 
     public void splitGrammar(ArrayList<String> rules)
@@ -493,6 +542,345 @@ public class Main_CFG {
             score = cost_previous[uM];
         }
         return score;
+    }
+
+    public String getSkill(String pNumb, ArrayList<String> variable_words) throws Exception
+    {
+        //The specific Skills will be called here
+        int skill_num = Integer.parseInt(pNumb);
+        int variable_words_size = variable_words.size();
+        String final_answer = null;
+        if(skill_num == 1)
+        {
+            String city = assistant.fileParser.getUserInfo("-City");
+            String country = assistant.fileParser.getUserInfo("-Country");
+            if(city.isEmpty()||country.isEmpty()){
+                System.out.println("It seems like you haven't completed your location yet.");
+                city = "Maastricht";
+                country = "NL";
+            }
+            assistant.mainScreen.setWeatherDisplay(city,country);
+            final_answer = "This is what I found for the weather in "+ city + ", " + country + ". " + assistant.mainScreen.weatherDisplay.currentDataString() + "If you want to change the location, type 'Change weather location to City,Country.' (e.g. Amsterdam,NL).";
+        }
+        else if(skill_num == 2){
+            String city;
+            String country = "";
+            if(variable_words_size == 1)
+            {
+                city = variable_words.get(0);
+                assistant.mainScreen.setWeatherDisplay(city, country);
+                final_answer = "This is what I found for the weather in "+ city + ". " + assistant.mainScreen.weatherDisplay.currentDataString() + "If you want to change the location, type 'Change weather location to City,Country.' (e.g. Amsterdam,NL).";
+            }
+            else if(variable_words_size == 2)
+            {
+                city = variable_words.get(0);
+                country = variable_words.get(1);
+                assistant.mainScreen.setWeatherDisplay(city, country);
+                final_answer = "This is what I found for the weather in "+ city + ". " + assistant.mainScreen.weatherDisplay.currentDataString() + "If you want to change the location, type 'Change weather location to City,Country.' (e.g. Amsterdam,NL).";
+            }
+            else
+            {
+                final_answer = "Something went wrong! Please try again.";
+            }
+        }
+        else if(skill_num == 10)
+        {
+            final_answer = "Your next lecture is:" + System.lineSeparator();
+            final_answer = final_answer + new Skill_Schedule().getNextCourse();
+        }
+        else if(skill_num == 11)
+        {
+            final_answer = "Your lectures this week are:" + System.lineSeparator();
+            final_answer = final_answer + new Skill_Schedule().getThisWeek();
+        }
+        else if(skill_num == 12)
+        {
+            ArrayList<String> this_month = new Skill_Schedule().getThisMonth();
+            final_answer = "Your lectures this month are:" + System.lineSeparator();
+
+            for(int i = 0; i < this_month.size(); i++)
+            {
+                final_answer = final_answer + System.lineSeparator() + System.lineSeparator() + this_month.get(i);
+            }
+        }
+        else if(skill_num == 14) {
+            assistant.mainScreen.setClockAppDisplay("Alarm");
+        }
+        else if(skill_num == 15) {
+            assistant.mainScreen.setClockAppDisplay("Clock");
+            final_answer = "Here's the clock! To add a new clock use the options on the left screen or type 'Add a new clock for Continent/City'. If you want the available areas you can add, type 'What areas can I add to the clock'.";
+        }
+        else if(skill_num == 16) {
+            String messageT = "";
+            for (String string : assistant.mainScreen.clockAppDisplay.clockVBox.listOfZoneIDs) {
+                messageT += string + ", ";
+            }
+            final_answer = "The available timezones you can add to the clock are:  " + messageT;
+        }
+        else if(skill_num == 17) {
+            final_answer = "Here's the timer! To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
+            assistant.mainScreen.setClockAppDisplay("Timer");
+        }
+        else if(skill_num == 18) {
+            if (!assistant.mainScreen.clockAppDisplay.timerVBox.timerTime.getText().equals("00 : 00 : 00") && assistant.mainScreen.clockAppDisplay.timerVBox.startPauseResume.getText().equals("Start")) {
+                assistant.mainScreen.clockAppDisplay.timerVBox.startTimer();
+                final_answer = "The timer started. Type 'Pause/Cancel timer' or use the options on the left screen.";
+            }
+            else {
+                final_answer = "To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
+            }
+            assistant.mainScreen.setClockAppDisplay("Timer");
+        }
+        else if(skill_num == 19) {
+            if (assistant.mainScreen.clockAppDisplay.timerVBox.startPauseResume.getText().equals("Pause")) {
+                assistant.mainScreen.clockAppDisplay.timerVBox.pauseTimer();
+                final_answer = "The timer is paused. Type 'Resume/Cancel timer' or use the options on the left screen.";
+            }
+            assistant.mainScreen.setClockAppDisplay("Timer");
+        }
+        else if(skill_num == 20) {
+            if (assistant.mainScreen.clockAppDisplay.timerVBox.startPauseResume.getText().equals("Resume")) {
+                assistant.mainScreen.clockAppDisplay.timerVBox.resumeTimer();
+                final_answer = "The timer is resumed. Type 'Pause/Cancel timer' or use the options on the left screen.";
+            }
+            else {
+                final_answer = "To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
+            }
+            assistant.mainScreen.setClockAppDisplay("Timer");
+        }
+        else if(skill_num == 21) {
+            if (!assistant.mainScreen.clockAppDisplay.timerVBox.cancel.isDisabled()) {
+                assistant.mainScreen.clockAppDisplay.timerVBox.cancelTimer();
+                final_answer = "The timer is canceled. To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
+            }
+            else {
+                final_answer = "To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
+            }
+            assistant.mainScreen.setClockAppDisplay("Timer");
+        }
+        else if(skill_num == 22) {
+            assistant.mainScreen.setClockAppDisplay("Stopwatch");
+            final_answer = "Here's the stopwatch! Type 'Start the stopwatch' or use the buttons on the left screen.";
+        }
+        else if(skill_num == 23) {
+            if (assistant.mainScreen.clockAppDisplay.stopwatchVBox.startPause.getText().equals("Start")) {
+                assistant.mainScreen.clockAppDisplay.stopwatchVBox.startStopwatch();
+                final_answer = "The stopwatch has been started! Type 'lap/pause stopwatch' or use the buttons on the left screen.";
+            }
+            assistant.mainScreen.setClockAppDisplay("Stopwatch");
+        }
+        else if(skill_num == 24) {
+            if (assistant.mainScreen.clockAppDisplay.stopwatchVBox.startPause.getText().equals("Pause")) {
+                assistant.mainScreen.clockAppDisplay.stopwatchVBox.pauseStopwatch();
+                final_answer = "The stopwatch is paused! Type 'reset/start stopwatch' or use the buttons on the left screen.";
+            }
+            assistant.mainScreen.setClockAppDisplay("Stopwatch");
+        }
+        else if(skill_num == 25) {
+            if (assistant.mainScreen.clockAppDisplay.stopwatchVBox.lapReset.getText().equals("Lap") && !assistant.mainScreen.clockAppDisplay.stopwatchVBox.lapReset.isDisabled()) {
+                assistant.mainScreen.clockAppDisplay.stopwatchVBox.lapStopwatch();
+                final_answer = assistant.mainScreen.clockAppDisplay.stopwatchVBox.lap.getText();
+            }
+            assistant.mainScreen.setClockAppDisplay("Stopwatch");
+        }
+        else if(skill_num == 26) {
+            if (assistant.mainScreen.clockAppDisplay.stopwatchVBox.lapReset.getText().equals("Reset")) {
+                assistant.mainScreen.clockAppDisplay.stopwatchVBox.resetStopwatch();
+                final_answer = "The stopwatch was reset. Type 'Start the stopwatch' or use the buttons on the left screen.";
+            }
+            assistant.mainScreen.setClockAppDisplay("Stopwatch");
+        }
+        else if(skill_num == 27) {
+            assistant.mainScreen.setClockAppDisplay("Alarm");
+            assistant.mainScreen.clockAppDisplay.alarmVBox.addAlarm(variable_words.get(0),variable_words.get(1));
+        }
+        else if(skill_num == 28) {
+            String err = "Something went wrong! To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
+            assistant.mainScreen.setClockAppDisplay("Timer");
+            String time = variable_words.get(0).replace(" ", "");
+            if (time.length() == 8) {
+                String[] arr = new String[time.length()];
+                for(int i = 0; i < time.length(); i++)
+                {
+                    arr[i] = String.valueOf(time.charAt(i));
+                }
+                if ((arr[2].equals(":") || arr[2].equals(".")) && (arr[5].equals(":")|| arr[5].equals("."))) {
+                    try {
+                        assistant.mainScreen.clockAppDisplay.timerVBox.hoursTimer = Integer.parseInt(arr[0] + arr[1]);
+                        assistant.mainScreen.clockAppDisplay.timerVBox.minutesTimer = Math.min(Integer.parseInt(arr[3] + arr[4]), 59); //max value for seconds and minutes is 59
+                        assistant.mainScreen.clockAppDisplay.timerVBox.secondsTimer = Math.min(Integer.parseInt(arr[6] + arr[7]), 59);
+
+                        assistant.mainScreen.clockAppDisplay.timerVBox.setTimerTime();
+                        assistant.mainScreen.clockAppDisplay.timerVBox.startTimer();
+                        final_answer = "A timer has been set for " + assistant.mainScreen.clockAppDisplay.timerVBox.timerTime.getText() + ". Type 'Pause/Cancel timer' or use the options on the left screen.";
+                    }
+                    catch (NumberFormatException e) {
+                        final_answer = err;
+                    }
+                }
+                else { final_answer = err; }
+            }
+            else { final_answer = err; }
+        }
+        else if(skill_num == 29) {
+            if(assistant.mainScreen.clockAppDisplay.clockVBox.tempTimeZoneIDs.contains(variable_words.get(0).replace(" ", ""))) {
+                final_answer = assistant.mainScreen.clockAppDisplay.clockVBox.getTimeFromZoneID(variable_words.get(0).replace(" ", "")) + " If you want to add a new clock type 'Add a new clock for Continent/City'.";
+            }
+            else {
+                final_answer = "The area you requested the time for couldn't be found. If you want the available areas, type 'What are the time-zone IDs'.";
+            }
+        }
+        else if(skill_num == 30) {
+            if(assistant.mainScreen.clockAppDisplay.clockVBox.tempTimeZoneIDs.contains(variable_words.get(0).replace(" ", ""))) {
+                assistant.mainScreen.clockAppDisplay.clockVBox.addClock(variable_words.get(0).replace(" ", ""));
+                final_answer = "The clock was successfully added!";
+            }
+            else {
+                final_answer = "The area you requested couldn't be found. If you want the available areas, type 'What areas can I add to the clock' or use the options on the left screen.";
+            }
+            assistant.mainScreen.setClockAppDisplay("Clock");
+        }
+        else if(skill_num == 31)
+        {
+            assistant.mainScreen.setSkillEditorAppDisplay("Add skill");
+        }else if(skill_num == 32){
+            assistant.mainScreen.setSkillEditorAppDisplay("Add rule");
+        }
+        else if(skill_num == 40){
+            String searchURL = "https://www.google.com/search" + "?q=" + assistant.messageToUrl(variable_words.get(0));
+            Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start chrome.exe " + searchURL});
+        }
+        else if(skill_num == 50){
+            if(Data.getMp()!=null){
+                Data.getMp().play();
+                MediaPlayerDisplay mediaControl = new MediaPlayerDisplay(Data.getMp());
+                assistant.mainScreen.displayUrlMediaPlayer(mediaControl);
+            }else{
+                FileChooser fileChooser = new FileChooser();
+                File selectedFile = fileChooser.showOpenDialog(assistant.mainScreen.stage);
+                try {
+                    Media media = new Media (selectedFile.toURI().toString());
+                    MediaPlayer mediaPlayer = new MediaPlayer(media);
+                    Data.setMp(mediaPlayer);
+                    mediaPlayer.setAutoPlay(true);
+                    MediaPlayerDisplay mediaControl = new MediaPlayerDisplay(mediaPlayer);
+                    assistant.mainScreen.displayUrlMediaPlayer(mediaControl);
+                } catch(NullPointerException e){
+                    assistant.mainScreen.chat.receiveMessage("No file chosen");
+                } catch(MediaException e){
+                    assistant.mainScreen.chat.receiveMessage("Filetype not supported");
+                }
+            }
+        }
+        else if(skill_num==51){
+            if(Data.getMp()!=null){
+                FileChooser fileChooser = new FileChooser();
+                File selectedFile = fileChooser.showOpenDialog(assistant.mainScreen.stage);
+                try {
+                    Data.getMp().pause();
+                    Media media = new Media (selectedFile.toURI().toString());
+                    MediaPlayer mediaPlayer = new MediaPlayer(media);
+                    Data.setMp(mediaPlayer);
+                    mediaPlayer.setAutoPlay(true);
+                    MediaPlayerDisplay mediaControl = new MediaPlayerDisplay(mediaPlayer);
+                    assistant.mainScreen.displayUrlMediaPlayer(mediaControl);
+                } catch(NullPointerException e){
+                    Data.getMp().play();
+                    assistant.mainScreen.chat.receiveMessage("No file chosen");
+                } catch(MediaException e){
+                    Data.getMp().play();
+                    assistant.mainScreen.chat.receiveMessage("Filetype not supported");
+                }
+            }else{
+                assistant.mainScreen.chat.receiveMessage("No music is being played");
+            }
+        }
+        else if(skill_num==52){
+            Data.getMp().pause();
+        }
+        else if(skill_num==53){
+            Data.getMp().stop();
+        }
+        else if(skill_num == 59){
+            WebView webview = new WebView();
+            webview.getEngine().load(
+                    variable_words.get(0)
+            );
+            Pane pane = new Pane();
+            pane.getChildren().add(webview);
+            assistant.mainScreen.displaySkill(pane,"ytb watcher");
+        }
+        else if(skill_num == 60){
+            assistant.mainScreen.displaySkill(assistant.mainScreen.calendarDisplay,"calendar");
+        }
+        else if(skill_num == 61){
+            assistant.mainScreen.displaySkill(assistant.mainScreen.calendarDisplay,"calendar");
+            assistant.mainScreen.clockAppDisplay.alarmVBox.createAlert(variable_words.get(0),variable_words.get(1),variable_words.get(2),variable_words.get(3), Color.ORANGE);
+        }
+        else if(skill_num == 70){
+            assistant.mainScreen.chat.receiveMessage("Route from " + variable_words.get(0) + " to "+variable_words.get(1) + " being computed");
+            assistant.mainScreen.setMapDisplay("route",variable_words.get(0),variable_words.get(1));
+        }
+        else if(skill_num == 71){
+            assistant.mainScreen.setMapDisplay("google",null,null);
+        }
+        else if(skill_num == 72){
+            assistant.mainScreen.setMapDisplay("map",variable_words.get(0),null);
+        }
+        else if(skill_num == 80){
+            if(!variable_words.get(0).contains(" ")){
+                if(!assistant.fileParser.changeUserInfo("-Password", variable_words.get(0),assistant.mainScreen)){
+                    assistant.mainScreen.chat.receiveMessage("Couldn't change the password for some reason.");
+                }
+            }else{
+                assistant.mainScreen.chat.receiveMessage("Please remove the space in the password.");
+            }
+        }
+        else if(skill_num==81){
+            assistant.mainScreen.chat.receiveMessage("You can change your password/location/age/profession by typing \"Change my password/location/age/profession to <...>\".");
+        }
+        else if(skill_num==82){
+            if(!assistant.fileParser.changeUserInfo("-City", variable_words.get(0),assistant.mainScreen)){
+                assistant.mainScreen.chat.receiveMessage("Couldn't change the location for some reason.");
+            }
+        }
+        else if(skill_num==83){
+            if(!assistant.fileParser.changeUserInfo("-Country", variable_words.get(0),assistant.mainScreen)){
+                assistant.mainScreen.chat.receiveMessage("Couldn't change the location for some reason.");
+            }
+        }
+        else if(skill_num==84){
+            if(!assistant.fileParser.changeUserInfo("-Age", variable_words.get(0),assistant.mainScreen)){
+                assistant.mainScreen.chat.receiveMessage("Couldn't change the age for some reason.");
+            }
+        }
+        else if(skill_num==85){
+            if(!assistant.fileParser.changeUserInfo("-Profession", variable_words.get(0),assistant.mainScreen)){
+                assistant.mainScreen.chat.receiveMessage("Couldn't change the profession for some reason.");
+            }
+        }
+        else if(skill_num==86){
+            assistant.mainScreen.setMenu("Background");
+        }
+        else if(skill_num==87){
+            assistant.mainScreen.setMenu("ThemeColors");
+        }
+        else if(skill_num==89){
+            String info = Files.readString(Path.of("src/DataBase/Users/" + Data.getUsername() + "/" + Data.getUsername() + ".txt"));
+            assistant.mainScreen.chat.receiveMessage(info);
+        }
+        else if(skill_num == 90)
+        {
+            Platform.exit();
+            System.exit(0);
+        }
+        else if(skill_num == 91){
+            assistant.mainScreen.chat.receiveMessage(skillEditor.allOperations());
+        }
+        else if(skill_num == 92){
+            assistant.mainScreen.displayCamera();
+        }
+        return final_answer;
     }
 
 }
