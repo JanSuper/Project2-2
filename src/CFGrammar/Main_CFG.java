@@ -52,7 +52,7 @@ public class Main_CFG {
 
     public Main_CFG(String pUser_message)
     {
-        user_message = removePunctuation(pUser_message);
+        user_message = removePunctuation(pUser_message).toLowerCase();
         u_message = pUser_message.split("\\s");
         message_length = u_message.length;
 
@@ -71,7 +71,7 @@ public class Main_CFG {
 
     public Main_CFG(String pUser_message, Assistant assistant)
     {
-        user_message = removePunctuation(pUser_message);
+        user_message = removePunctuation(pUser_message).toLowerCase();
         u_message = pUser_message.split("\\s");
         message_length = u_message.length;
 
