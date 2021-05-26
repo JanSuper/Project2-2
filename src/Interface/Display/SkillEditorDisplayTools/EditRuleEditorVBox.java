@@ -1,15 +1,13 @@
 package Interface.Display.SkillEditorDisplayTools;
 
+import CFGrammar.JsonReader;
 import DataBase.Data;
 import Interface.Screens.MainScreen;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -21,6 +19,7 @@ import java.util.ArrayList;
 
 public class EditRuleEditorVBox extends VBox {
     private MainScreen mainScreen;
+    private JsonReader jsonReader;
     private VBox principal;
 
     private File dataBase = new File("src\\DataBase\\textData.txt");
@@ -30,6 +29,8 @@ public class EditRuleEditorVBox extends VBox {
 
     public EditRuleEditorVBox(MainScreen mainScreen){
         this.mainScreen = mainScreen;
+        jsonReader=new JsonReader();
+
         questions = new ArrayList();
         answers = new ArrayList();
         createContent();
@@ -37,89 +38,39 @@ public class EditRuleEditorVBox extends VBox {
     }
 
     public void createContent(){
-        principal = new VBox(25);
+        principal = new VBox(40);
         principal.setBackground(Background.EMPTY);
         principal.setAlignment(Pos.CENTER);
         principal.setPadding(new Insets(15));
 
-        Label qLabel = new Label("Question:");
+        Label qLabel = new Label("Rule:");
         qLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
         qLabel.setTextFill(MainScreen.themeColor.darker());
         qLabel.setAlignment(Pos.CENTER);
 
-        TextField question = new TextField();
-        question.setFont(Font.font("Verdana", FontWeight.BOLD, 30));
-        question.setPrefSize(10,50);
-        question.setScaleX(0.5);question.setScaleY(0.5);
-
-        Label aLabel = new Label("Answer:");
-        aLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
-        aLabel.setTextFill(MainScreen.themeColor.darker());
-        aLabel.setAlignment(Pos.CENTER);
-
-        TextField answer = new TextField();
-        answer.setFont(Font.font("Verdana", FontWeight.BOLD, 30));
-        answer.setPrefSize(10,50);
-        answer.setScaleX(0.5);answer.setScaleY(0.5);
-
-        Label skillDisplayLabel = new Label("Which skill displays:");
-        skillDisplayLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
-        skillDisplayLabel.setTextFill(MainScreen.themeColor.darker());
-        skillDisplayLabel.setAlignment(Pos.CENTER);
-
-        ObservableList<String> options =
-                FXCollections.observableArrayList(
-                        "later"
-                );
-        final ComboBox skillDisplay = new ComboBox(options);
-        skillDisplay.setValue(options.get(0));
+        TextField rule = new TextField();
+        rule.setFont(Font.font("Verdana", FontWeight.BOLD, 30));
+        rule.setPrefSize(10,50);
 
 
-        HBox qPlus = new HBox(70);
-        setQPlusButton(qPlus);
-        HBox aPlus = new HBox(80);
-        setAPlusButton(aPlus);
+        CheckBox isTerminal = new CheckBox("Is terminal");
+        isTerminal.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
+        isTerminal.setTextFill(MainScreen.themeColor.darker());
+        isTerminal.setAlignment(Pos.CENTER);
 
-        Button enter = new Button("Enter");
+        Button enter = new Button("Add");
         enter.setScaleX(2);enter.setScaleY(2);
         enter.setTranslateY(50);
         enter.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(90,true), Insets.EMPTY)));
         enter.setOnAction(e-> {
-            //TODO add all the questions and answers when the possibility to add questions and answers is implemented
-            questions.add(question.getText());
-            answers.add(answer.getText());
-            int result = 0;
             try {
-                result = handleAddSkill();
+                jsonReader.addRules(rule.getText(),isTerminal.isSelected());
             } catch (IOException ioException) {
                 ioException.printStackTrace();
             }
-            String response = "";
-            if(result == 1)
-            {
-                response =  "The new skill was successfully added to the database.";
-                question.setText("");
-                answer.setText("");
-                skillDisplay.setValue(options.get(0));
-                questions.clear();
-                answers.clear();
-            }
-            else if(result==-2){
-                response = "Task already implemented.";
-                question.setText("");
-                answer.setText("");
-                skillDisplay.setValue(options.get(0));
-                questions.clear();
-                answers.clear();
-            }
-            else
-            {
-                response =  "Sorry something went wrong, the new skill could not be added to the database";
-            }
-            System.out.println(response);
         });
 
-        principal.getChildren().addAll(qLabel,question,qPlus,aLabel,answer,aPlus,skillDisplayLabel,skillDisplay,enter);
+        principal.getChildren().addAll(qLabel,rule,isTerminal,enter);
     }
 
     public void setQPlusButton(HBox box){

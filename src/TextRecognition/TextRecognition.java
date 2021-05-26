@@ -539,12 +539,6 @@ public class TextRecognition {
         {
             skillEdit = true;
             assistant.mainScreen.setSkillEditorAppDisplay("Add skill");
-            final_answer = "To add a new skill to the assistant you have to follow these rules:" + System.lineSeparator() +
-                    "1. Write down the question(s) you will ask to the assistant. If there is more than one question (for the same answer) make sure to separate them with a comma , " + System.lineSeparator() +
-                    "2. After the question(s) add a semicolon ; " + System.lineSeparator() +
-                    "3. Write down the answer you want from the assistant, either write a sentence for a chat/talk or the number of an operation (if you which to see all the possible operations, please write \"See all possible operations\")." + System.lineSeparator() +
-                    "4. Send everything into one message." +System.lineSeparator() +
-                    "If you don't want to add a skill write: Cancel";
         }else if(skill_num == 32){
             assistant.mainScreen.setSkillEditorAppDisplay("Add rule");
         }

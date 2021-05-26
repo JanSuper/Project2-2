@@ -22,13 +22,13 @@ public class SkillEditorDisplay extends VBox {
     public Button prevTab;
 
     private AddSkillEditorVBox addSkillEditorVBox;
-    private EditRuleEditorVBox editSkillEditorVBox;
+    private EditRuleEditorVBox addRuleEditorVBox;
 
 
     public SkillEditorDisplay(MainScreen mainScreen){
         this.mainScreen = mainScreen;
         addSkillEditorVBox = new AddSkillEditorVBox(this.mainScreen);
-        editSkillEditorVBox = new EditRuleEditorVBox(this.mainScreen);
+        addRuleEditorVBox = new EditRuleEditorVBox(this.mainScreen);
         setBackground(new Background(new BackgroundFill(new Color(0.08,0.12, 0.15, 0.3), CornerRadii.EMPTY, Insets.EMPTY)));
         createContent();
         getChildren().add(tabs);
@@ -98,15 +98,22 @@ public class SkillEditorDisplay extends VBox {
 
         switch(prevTab.getText()) {
             case "Add Skill": getChildren().remove(addSkillEditorVBox); break;
-            case "Add Rule": getChildren().remove(editSkillEditorVBox); break;
+            case "Add Rule": getChildren().remove(addRuleEditorVBox); break;
         }
     }
 
     private void setAddSkillView(){
         getChildren().add(addSkillEditorVBox);
+        mainScreen.chat.receiveMessage("To add a new skill to the assistant you have to follow these rules:" + System.lineSeparator() +
+                "1. Write down the question(s) you will ask to the assistant. If there is more than one question (for the same answer) make sure to separate them with a comma , " + System.lineSeparator() +
+                "2. After the question(s) add a semicolon ; " + System.lineSeparator() +
+                "3. Write down the answer you want from the assistant, either write a sentence for a chat/talk or the number of an operation (if you which to see all the possible operations, please write \"See all possible operations\")." + System.lineSeparator() +
+                "4. Send everything into one message." +System.lineSeparator() +
+                "If you don't want to add a skill write: Cancel");
     }
     private void setEditSkillView(){
-        getChildren().add(editSkillEditorVBox);
+        getChildren().add(addRuleEditorVBox);
+        mainScreen.chat.receiveMessage("To add a new rule, write in the form: LeftHandSide:RightHandSide1,RightHandSide2,...,RightHandSideN and decide, whether the rule is terminal or not.");
     }
 
 

@@ -216,3 +216,5 @@ U get the skill editor
 B 31
 U see the skill editor
 B 31
+U Add an alarm for <VARIABLE> with <VARIABLE>
+B 27
