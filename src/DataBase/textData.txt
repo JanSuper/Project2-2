@@ -159,6 +159,8 @@ U Route from <VARIABLE> to <VARIABLE>
 B 70
 U Map of <VARIABLE>
 B 72
+U Show me <VARIABLE> places in <VARIABLE>
+B 73
 
 U How is the weather in <VARIABLE>
 B 2
