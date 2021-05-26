@@ -1,7 +1,7 @@
 package Interface.Display;
 
 import Interface.Display.SkillEditorDisplayTools.AddSkillEditorVBox;
-import Interface.Display.SkillEditorDisplayTools.EditRuleEditorVBox;
+import Interface.Display.SkillEditorDisplayTools.AddRuleEditorVBox;
 import Interface.Screens.MainScreen;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -22,13 +22,13 @@ public class SkillEditorDisplay extends VBox {
     public Button prevTab;
 
     private AddSkillEditorVBox addSkillEditorVBox;
-    private EditRuleEditorVBox addRuleEditorVBox;
+    private AddRuleEditorVBox addRuleEditorVBox;
 
 
     public SkillEditorDisplay(MainScreen mainScreen){
         this.mainScreen = mainScreen;
         addSkillEditorVBox = new AddSkillEditorVBox(this.mainScreen);
-        addRuleEditorVBox = new EditRuleEditorVBox(this.mainScreen);
+        addRuleEditorVBox = new AddRuleEditorVBox(this.mainScreen);
         setBackground(new Background(new BackgroundFill(new Color(0.08,0.12, 0.15, 0.3), CornerRadii.EMPTY, Insets.EMPTY)));
         createContent();
         getChildren().add(tabs);

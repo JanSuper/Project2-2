@@ -17,7 +17,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
 
-public class EditRuleEditorVBox extends VBox {
+public class AddRuleEditorVBox extends VBox {
     private MainScreen mainScreen;
     private JsonReader jsonReader;
     private VBox principal;
@@ -27,7 +27,7 @@ public class EditRuleEditorVBox extends VBox {
     private ArrayList<String> questions;
     private ArrayList<String> answers;
 
-    public EditRuleEditorVBox(MainScreen mainScreen){
+    public AddRuleEditorVBox(MainScreen mainScreen){
         this.mainScreen = mainScreen;
         jsonReader=new JsonReader();
 
@@ -65,8 +65,10 @@ public class EditRuleEditorVBox extends VBox {
         enter.setOnAction(e-> {
             try {
                 jsonReader.addRules(rule.getText(),isTerminal.isSelected());
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
+                rule.clear();
+                isTerminal.setSelected(false);
+            } catch (Exception exception) {
+                mainScreen.chat.receiveMessage("The rule could not be added for some reason, please recheck its format");
             }
         });
 
