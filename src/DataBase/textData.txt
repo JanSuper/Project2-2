@@ -167,7 +167,7 @@ B 2
 U Change weather location to <VARIABLE>
 B 2
 
-U Set an alarm at <VARIABLE>
+U Set an alarm at <VARIABLE> with description <VARIABLE>
 B 27
 U Set a timer for <VARIABLE>
 B 28
@@ -204,9 +204,15 @@ B 84
 U Change profession to <VARIABLE>
 B 85
 
-U Go from <VARIABLE> to <VARIABLE> to <VARIABLE>
+U Add a reminder for the <VARIABLE> from <VARIABLE> to <VARIABLE> with description <VARIABLE>
 B 100
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // NEW SKILLS ADDED (WITH AND WITHOUT VARIABLES)
 /////////////////////////////////////////////////////////////////////////////////////////
+U display the skill editor
+B 31
+U get the skill editor
+B 31
+U see the skill editor
+B 31

@@ -182,7 +182,7 @@ public class AlarmVBox extends VBox {
         enter.setOnMouseClicked(e-> {
             try {
                 if(isReminder){
-                    createAlert();
+                    createAlert("",timerTime.getText(),timerTime1.getText(),description.getText(),colorPicker.getValue());
                 }else{
                     addAlarm(timerTime.getText(),description.getText());
                 }
@@ -214,10 +214,18 @@ public class AlarmVBox extends VBox {
         button.setAlignment(Pos.CENTER);
     }
 
-    private void createAlert() throws IOException, ParseException {
-        String res = getAlreadyOnFile();
-        addReminder(res);
-        //mainScreen.prepareAlarms();
+    public void createAlert(String da,String from,String to,String desc,Color color) throws IOException{
+        try{
+            String res = getAlreadyOnFile();
+            addReminder(res,da,from,to,desc,color);
+            if(da.equals("")){
+                mainScreen.chat.receiveMessage("Reminder added for the " + d.getValue() + " from " + from + " to " + to + " with description " + desc);
+            }else{
+                mainScreen.chat.receiveMessage("Reminder added for the " + da + " from " + from + " to " + to + " with description " + desc);
+            }
+        }catch (ParseException e){
+            mainScreen.chat.receiveMessage("Dates must be as yyyy-MM-dd and hours must be as HH:mm:ss");
+        }
     }
     private String getAlreadyOnFile() throws IOException {
         String res = "";
@@ -228,15 +236,24 @@ public class AlarmVBox extends VBox {
         fr.close();
         return res;
     }
-    private void addReminder(String res) throws ParseException {
-        String da = "";
-        //convert date to string
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate date = d.getValue();
-        if (date != null) {
-            da = (formatter.format(date));
-        } else {
-            da = LocalDate.now().format(formatter);
+    private void addReminder(String res,String da,String from,String to,String desc,Color color) throws ParseException {
+        if(da.equals("")){
+            //convert date to string
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate date = d.getValue();
+            if (date != null) {
+                da = (formatter.format(date));
+            } else {
+                da = LocalDate.now().format(formatter);
+            }
+        }else{
+            //use to get the parser exception
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            Date date1 = (Date) formatter.parse(da);
+
+            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+            Date dateF = format.parse(from);
+            Date dateT = format.parse(to);
         }
 
         FileWriter writer;
@@ -245,11 +262,10 @@ public class AlarmVBox extends VBox {
                 writer = new FileWriter(Data.getRemindersFile());
                 PrintWriter out = new PrintWriter(writer);
                 out.print(res);
-                System.out.println(description.getText());
-                if(description.getText().isEmpty()||description.getText().isBlank()){
-                    out.print(Data.getUsername() + ";" + da + ";"+ timerTime.getText() + ";" +timerTime1.getText() + ";" + colorPicker.getValue() +  ";" + "\"no description\"" + "\n");
+                if(desc.isEmpty()||desc.isBlank()){
+                    out.print(Data.getUsername() + ";" + da + ";"+ from + ";" +to + ";" + color +  ";" + "\"no description\"" + "\n");
                 }else{
-                    out.print(Data.getUsername() + ";" + da + ";"+ timerTime.getText() + ";" +timerTime1.getText() + ";" + colorPicker.getValue() +  ";" + description.getText() + "\n");
+                    out.print(Data.getUsername() + ";" + da + ";"+ from + ";" +to + ";" + color+  ";" + desc + "\n");
                 }
                 writer.close();
             } catch (IOException e) {
@@ -271,8 +287,12 @@ public class AlarmVBox extends VBox {
     }
 
     public void addAlarm(String time,String desc) throws ParseException {
-        mainScreen.chat.receiveMessage("Today, there will be the alarm at " + time + " with description \"" + desc + "\"");
-        displayAlarmAtTime(time,desc);
+        try{
+            displayAlarmAtTime(time,desc);
+            mainScreen.chat.receiveMessage("Today, there will be the alarm at " + time + " with description \"" + desc + "\"");
+        }catch (ParseException e){
+            mainScreen.chat.receiveMessage("Hour must be as HH:mm:ss");
+        }
     }
 
     public void displayAlarmAtTime(String time,String desc) throws ParseException {

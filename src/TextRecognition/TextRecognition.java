@@ -11,6 +11,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.paint.Color;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 
@@ -486,7 +487,7 @@ public class TextRecognition {
         }
         else if(skill_num == 27) {
             assistant.mainScreen.setClockAppDisplay("Alarm");
-            assistant.mainScreen.clockAppDisplay.alarmVBox.addAlarm(nodeInvestigated.getWordsRemoved().get(0),"no desc");
+            assistant.mainScreen.clockAppDisplay.alarmVBox.addAlarm(nodeInvestigated.getWordsRemoved().get(0),nodeInvestigated.getWordsRemoved().get(1));
         }
         else if(skill_num == 28) {
             String err = "Something went wrong! To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
@@ -678,7 +679,7 @@ public class TextRecognition {
             assistant.mainScreen.displayCamera();
         }
         else if(skill_num == 100){
-            assistant.mainScreen.chat.receiveMessage("Test the text recognition : " + nodeInvestigated.getWordsRemoved().get(0) + " , " + nodeInvestigated.getWordsRemoved().get(1) + " , " + nodeInvestigated.getWordsRemoved().get(2));
+            assistant.mainScreen.clockAppDisplay.alarmVBox.createAlert(nodeInvestigated.getWordsRemoved().get(0),nodeInvestigated.getWordsRemoved().get(1),nodeInvestigated.getWordsRemoved().get(2),nodeInvestigated.getWordsRemoved().get(3), Color.ORANGE);
         }
         return final_answer;
     }

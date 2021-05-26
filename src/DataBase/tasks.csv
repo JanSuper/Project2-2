@@ -16,7 +16,7 @@ Clock App,23,Start the stopwatch,0,start,stopwatch,n
 Clock App,24,Pause the stopwatch,0,pause,stopwatch,n
 Clock App,25,Lap the stopwatch,0,lap,stopwatch,n
 Clock App,26,Reset the stopwatch,0,reset,stopwatch,n
-Clock App,27,Set an alarm at <VARIABLE>,1,set,alarm,y
+Clock App,27,Set an alarm at <VARIABLE> with description <VARIABLE>,2,set,alarm,description,y
 Clock App,28,Set a timer for <VARIABLE>,1,set,timer,y
 Clock App,29,What time is it in <VARIABLE>,1,is,time,y
 Clock App,30,Add a clock for <VARIABLE>,1,add,clock,y
@@ -42,4 +42,5 @@ Profile Edit,87,Edit the theme color,0,edit,color,n
 Profile Edit,89,See my personal info,0,see,info,n
 System,90,Bye/Leave,0,,Bye/Leave,n
 System,91,See all possible operations,0,see,operations,n
-System,92,See camera,0,see,operations,n
+System,92,See camera,0,see,camera,n
+Calendar,100,Add a reminder for the <VARIABLE> from <VARIABLE> to <VARIABLE> with description <VARIABLE>,4,add,reminder,,y
