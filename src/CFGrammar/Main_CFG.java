@@ -29,12 +29,12 @@ public class Main_CFG {
      * @param args
      */
     public static void main(String[] args) throws IOException {
-        /*String test = "How is the weather";
+        /*String test = "What is my next lecture?";
 
-        Main_CFG cfg = new Main_CFG(test);
+        Main_CFG cfg = new Main_CFG(test);*/
 
-        JsonReader jr = new JsonReader();
-        ArrayList<String> grammar = jr.getAllRules();*/
+        //JsonReader jr = new JsonReader();
+        //ArrayList<String> grammar = jr.getAllRules();
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,7 +53,7 @@ public class Main_CFG {
     public Main_CFG(String pUser_message)
     {
         user_message = removePunctuation(pUser_message).toLowerCase();
-        u_message = pUser_message.split("\\s");
+        u_message = user_message.split("\\s");
         message_length = u_message.length;
 
         JsonReader reader = new JsonReader();
@@ -72,7 +72,7 @@ public class Main_CFG {
     public Main_CFG(String pUser_message, Assistant assistant)
     {
         user_message = removePunctuation(pUser_message).toLowerCase();
-        u_message = pUser_message.split("\\s");
+        u_message = user_message.split("\\s");
         message_length = u_message.length;
 
         this.assistant = assistant;
