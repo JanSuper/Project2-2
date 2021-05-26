@@ -14,39 +14,12 @@ public class Main_CFG {
      * @param args
      */
     public static void main(String[] args) throws IOException {
-        String test = "How is the weather";
+        /*String test = "How is the weather";
 
         Main_CFG cfg = new Main_CFG(test);
 
         JsonReader jr = new JsonReader();
-        ArrayList<String> grammar = jr.getAllRules();
-
-        /*cfg.splitGrammar(grammar);
-        cfg.initialize_Tree();
-        cfg.implement_Tree();
-
-        StringBuffer result = new StringBuffer();
-        cfg.getEndSplit(result);
-        System.out.println(result.toString());
-
-        cfg.getSkill();*/
-
-        for(int i = 0; i < grammar.size(); i++)
-        {
-            System.out.println("Old: "+grammar.get(i));
-        }
-        //jr.addRules("NB:Z,FG" , false);
-        //jr.addRules("N:Deng",true);
-        jr.removeRule("N:Deng",true);
-        grammar = jr.getAllRules();
-        for(int i = 0; i < grammar.size(); i++)
-        {
-            System.out.println("New : "+grammar.get(i));
-        }
-        //reader.getAllRules();
-        //cfg.splitGrammar(grammar);
-
-        //cfg.toPrint();
+        ArrayList<String> grammar = jr.getAllRules();*/
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -66,7 +39,7 @@ public class Main_CFG {
         u_message = pUser_message.split("\\s");
         message_length = u_message.length;
 
-        /*JsonReader reader = new JsonReader();
+        JsonReader reader = new JsonReader();
         ArrayList<String> checkgrammar = reader.getAllRules();
         splitGrammar(checkgrammar);
         initialize_Tree();
@@ -76,7 +49,7 @@ public class Main_CFG {
         getEndSplit(result);
         System.out.println(result.toString());
 
-        getSkill();*/
+        getSkill();
     }
 
     public void splitGrammar(ArrayList<String> rules)
@@ -159,12 +132,12 @@ public class Main_CFG {
             {
                 if(words_toSearch.get(j).equals(verb))
                 {
-                    System.out.println("Added to score: "+verb);
+                    //System.out.println("Added to score: "+verb);
                     score = score +2;
                 }
                 if(words_toSearch.get(j).equals(noun))
                 {
-                    System.out.println("Added to score: "+noun);
+                    //System.out.println("Added to score: "+noun);
                     score = score + 3;
                 }
             }
