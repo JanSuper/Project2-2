@@ -1,92 +1,293 @@
 package CFGrammar;
 
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Scanner;
-import java.io.File;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+
 
 public class JsonReader {
+    private ArrayList<String> rules = new ArrayList<>();
 
     /**
-     * Should do the same as getAllRules from Main_CFG but with the json file
+     * Gets all rules from JSON file and saves them as Strings
+     * @return ArrayList filled with String Rules
      */
-    public ArrayList getAllRules(String fileName) throws FileNotFoundException, ParseException {
-
-        ArrayList rules = null;
-
-        File json_rules = new File(fileName);
-        Scanner sc= new Scanner(json_rules);
-        String json_string = "";
-        while(sc.hasNext())
-        {
-            json_string+=sc.nextLine();
-        }
-        sc.close();
-
-        // Parse the datas into json
-        JSONParser parse = new JSONParser();
-        JSONObject json_obj = (JSONObject)parse.parse(json_string);
-
+    public ArrayList<String> getAllRules() {
         /*
-        while ((startLine = br.readLine()) != null)   {
-            String[] result = startLine.trim().split("\\s");
-            for (int x=0; x<result.length; x++){
-            }
-            String lefthand="S";
-            if(result.length > 0){
-                lefthand= result[0];
-            }
-            if(result.length > 1){
-                double aDouble = Double.parseDouble(result[result.length-1]);
-                ArrayList<String> righthand = new ArrayList<String>();
-                for (int x=2; x<result.length-2; x++){
-                    righthand.add(result[x]);
-                }
+        Open file
+         */
+        FileReader reader = null;
+        try {
+            reader = new FileReader("src\\CFGrammar\\grammar.json");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        JSONParser parser = new JSONParser();
+        JSONObject grammar = null;
+        /*
+        Parse the JSON file if found
+         */
+        try {
+            grammar = (JSONObject) parser.parse(reader);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        /*
+        Iterate over all key = Lefthand sides of rules.
+        Get Righthand and concat to string rule.
+         */
 
-                boolean found=false;
-                Rule temp=null;
-                for(int f=0;f <rules.size(); f++){
-                    temp=rules.get(f);
-                    if(temp.getL_side().equals(lefthand)){
-                        found=true;
-                    }
-                }
-                if(!found){
-                    if(righthand.size()==1){
-                        Rule one=new Rule(lefthand, righthand.get(0));
-                        rules.add(one);
-                    }else{
-                        Rule two=new Rule(lefthand, righthand.get(0), righthand.get(1));
-                        rules.add(two);
-                    }
-                }else{
-                    if(righthand.size()==1){
-                        temp.oneRule(righthand.get(0));
-                    }
-                    else{
-                        temp.multipleRule(righthand.get(0), righthand.get(1));
-                    }
-                }
+        Iterator<String> keys = grammar.keySet().iterator();
+
+        while (keys.hasNext()) {
+            String key = keys.next();
+            String lefthand = key;
+            if(grammar.get(key) instanceof JSONObject){
+                processObject((JSONObject) grammar.get(key), lefthand);
+                //System.out.println("JSONObject");
+
+            }
+
+            else if (grammar.get(key) instanceof JSONArray){
+                //System.out.println("JSONArray");
+                processArray((JSONArray) grammar.get(key), lefthand);
+
             }
         }
-        */
+        System.out.println("number of rules: " + rules.size());
+        //System.out.println(rules);
 
         return rules;
     }
+    public void processArray(JSONArray array, String lhs){
+        for(int i = 0; i< array.size();i++){
+            if(array.get(i) instanceof JSONArray){
+                processArray((JSONArray)array.get(i), lhs);
+            }
+            else if(array.get(i) instanceof JSONObject){
+                processObject((JSONObject) array.get(i),lhs);
+            }
+            else{
+                rules.add(lhs+":"+array.get(i).toString());
+            }
+        }
+    }
+    public void processObject(JSONObject object, String lhs){
+        Iterator keys = object.keySet().iterator();
+        while(keys.hasNext()){
+            String key = (String) keys.next();
+            if(object.get(key) instanceof JSONArray){
+                processArray((JSONArray) object.get(key), key);
+            }
+            else if(object.get(key) instanceof JSONObject){
+                processObject((JSONObject) object.get(key), key);
+            }
+            else{
+                rules.add(key + ":" + object.get(key).toString());
+            }
+        }
+
+    }
+
 
     /**
      * Should be able to add a rule to the json file in the right place
      * @param rule
      */
-    public void addRules(String rule) {}
+    public void addRules(String rule, boolean terminal) throws IOException {
+         /*
+        Open file
+         */
+        FileReader reader = null;
+        try {
+            reader = new FileReader("src\\CFGrammar\\grammar.json");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        JSONParser parser = new JSONParser();
+        JSONObject grammar = null;
+        /*
+        Parse the JSON file if found
+         */
+        try {
+            grammar = (JSONObject) parser.parse(reader);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        String[] rule_split = rule.split(":");
+        String lhs = rule_split[0];
+        String righthand = rule_split[1];
+        String[] rhs;
+        if(righthand.contains(","))
+        {
+            rhs = righthand.split(",");
+        }
+        else {
+            rhs = new String[]{righthand};
+        }
+        if(terminal){
+            if(grammar.containsKey("terminals")){
+                if(grammar.get("terminals") instanceof JSONObject){
+                    JSONObject terminals = (JSONObject) grammar.get("terminals");
+                    if(terminals.containsKey(lhs)){
+                        if(terminals.get(lhs) instanceof JSONArray){
+                            JSONArray values = (JSONArray) terminals.get(lhs);
+                            for(int k = 0; k<rhs.length;k++)
+                            {
+                                values.add(rhs[k]);
+                            }
+                            terminals.put(lhs,values);
+                        }
+                    }
+                    else {
+                        JSONArray values = new JSONArray();
+                        for(int k = 0; k<rhs.length;k++)
+                        {
+                            values.add(rhs[k]);
+                        }
+                        terminals.put(lhs,values);
+                    }
+                }
+            }
+        }
+        else if (grammar.containsKey(lhs)){
+            if(grammar.get(lhs) instanceof JSONArray){
+                JSONArray values = (JSONArray) grammar.get(lhs);
+                JSONArray value = new JSONArray();
+                for(int k = 0; k<rhs.length;k++)
+                {
+                    value.add(rhs[k]);
+                }
+                values.add(value);
+                grammar.put(lhs,values);
+            }
+        }
+        else{
+            JSONArray values = new JSONArray();
+            JSONArray value = new JSONArray();
+            for(int k = 0; k<rhs.length;k++)
+            {
+                value.add(rhs[k]);
+            }
+            values.add(value);
+            grammar.put(lhs,values);
+        }
+        FileWriter writer = new FileWriter("src\\CFGrammar\\grammar.json");
+        writer.write(grammar.toJSONString());
+        writer.close();
+    }
 
     /**
      * Should remove the specific rule from the json file
      * @param rule
      */
-    public void removeRule(String rule) {}
+    public void removeRule(String rule, boolean terminal) throws IOException {
+        FileReader reader = null;
+        try {
+            reader = new FileReader("src\\CFGrammar\\grammar.json");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        JSONParser parser = new JSONParser();
+        JSONObject grammar = null;
+        try {
+            grammar = (JSONObject) parser.parse(reader);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        String[] rule_split = rule.split(":");
+        String lhs = rule_split[0];
+        String righthand = rule_split[1];
+        String[] rhs;
+        if(righthand.contains(","))
+        {
+            rhs = righthand.split(",");
+        }
+        else {
+            rhs = new String[]{righthand};
+        }
+        if(terminal){
+            if(grammar.containsKey("terminals")){
+                if(grammar.get("terminals") instanceof JSONObject) {
+                    JSONObject terminals = (JSONObject) grammar.get("terminals");
+                    if (terminals.containsKey(lhs)) {
+                        boolean remove = false;
+                        if (terminals.get(lhs) instanceof JSONArray) {
+                            JSONArray values = (JSONArray) terminals.get(lhs);
+                            for (int k = 0; k < values.size(); k++) {
+                                for(int j = 0; j < rhs.length; j++){
+                                    if(values.contains(rhs[j])) {
+                                        remove = true;
+                                    }
+                                }
+                                if(remove) {
+                                    for(int c = 0; c < rhs.length; c++)
+                                    {
+                                        if(values.size()>1) {
+                                            values.remove(rhs[c]);
+                                            terminals.put(lhs, values);
+                                        }
+                                        else{
+                                            terminals.remove(lhs);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else if (grammar.containsKey(lhs)) {
+            boolean remove = false;
+            if (grammar.get(lhs) instanceof JSONArray) {
+                JSONArray values = (JSONArray) grammar.get(lhs);
+                for (int k = 0; k < values.size(); k++) {
+                    if(values.get(k) instanceof JSONArray){
+                        JSONArray singleton = (JSONArray) values.get(k);
+                        for(int l = 0; l < rhs.length; l++)
+                        {
+                            if(singleton.contains(rhs[l])){
+                                remove = true;
+                            }
+                        }
+                        if(remove){
+                            for(int c = 0; c < rhs.length; c++)
+                            {
+                                if(values.size()>1) {
+                                    values.remove(singleton);
+                                    grammar.put(lhs, values);
+                                }
+                                else{
+                                    grammar.remove(lhs);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        FileWriter writer = new FileWriter("src\\CFGrammar\\grammar.json");
+        writer.write(grammar.toJSONString());
+        writer.close();
+    }
+
+    public ArrayList<String> getRules() {
+        return rules;
+    }
 }

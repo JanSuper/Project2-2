@@ -1,11 +1,14 @@
 package Interface.Screens;
 
 import DataBase.Data;
+import FaceDetection.FaceDetection;
 import Interface.Chat.ChatApp;
 import Interface.Display.*;
-import javafx.animation.KeyFrame;
+import Skills.Calendar.HandleReminders;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -14,26 +17,26 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.util.Duration;
 
-import java.io.FileReader;
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class MainScreen {
+    public FaceDetection faceDetection;
+
     public ChatApp chat;
     public ClockAppDisplay clockAppDisplay;
     public WeatherDisplay weatherDisplay;
@@ -47,35 +50,111 @@ public class MainScreen {
     public Stage stage;
 
     public ArrayList<String> todaysRemindersShortcut = new ArrayList<>();
-    private ArrayList<String[]> alarmsTime;
-    private Timeline timeline;
 
-    public MainScreen() throws Exception {
+    private boolean firstFaceViewed;
+
+    public MainScreen(FaceDetection faceDetection,Stage stage) throws Exception {
+        this.faceDetection = faceDetection;
+        //refresh the mainscreen object
+        faceDetection.mainScreen = this;
+        //border of main pane
         borderWidth = 10;
         border = new Border(new BorderStroke(Color.DARKGRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(borderWidth)));
 
+        //chatapp
         chat = new ChatApp(Data.getUsername(),this);
+        //all the skills display object
         clockAppDisplay = new ClockAppDisplay(this);
         skillEditorDisplay = new SkillEditorDisplay(this);
         weatherDisplay = new WeatherDisplay(this);
         calendarDisplay = new CalendarDisplay(this);
 
-        alarmsTime = new ArrayList<>();
-        timeline = new Timeline();
-        prepareReminders(calendarDisplay.firstDate,calendarDisplay.lastDate);
+        HandleReminders reminders = new HandleReminders(calendarDisplay);
+        //reads the reminder file and add the one of today to the list
+        reminders.prepareReminders(calendarDisplay.firstDate,calendarDisplay.lastDate);
+        todaysRemindersShortcut = reminders.todaysRemindersShortcut;
+
+        //add content to the pane
         createContent();
 
-        start(new Stage());
+        //start displaying the scene
+        this.stage = stage;
+        start(this.stage);
+
+        //handle face detection
+        firstFaceViewed = false;
+        manageFaceDetection();
+        faceDetection.controller.mainScreen = this;
     }
 
+    /**
+     *handle the face leaving the webcam
+     */
+    public void manageFaceDetection(){
+        //Starts a multithreading task that stops and call another multithreading task when a face is not detected
+        final boolean[] faceDetected = {true};
+        Task task = new Task<Void>() {
+            @Override public Void call(){
+                //stops if a face is not detected anymore
+                while (faceDetected[0]){
+                    if(!firstFaceViewed&&faceDetection.faceDetected()){
+                        //Assistant's first message when sees user for first time
+                        Platform.runLater(new Runnable(){
+                            @Override
+                            public void run() {
+                                chat.receiveMessage("Welcome " + Data.getUsername() + "! How may I help you?");
+                            }
+                        });
+                        firstFaceViewed = true;
+                    }
+                    if(!faceDetection.faceDetected()){
+                        //Manage face not detected
+                        faceDetection.manageFaceLeaving();
+                        faceDetected[0] = false;
+                    }
+                }
+                return null;
+            }
+        };
+        new Thread(task).start();
+    }
+
+    /**
+     * method to log out of the mainscreen and come back to startscreen
+     * @param inactive if user has been logged out for inactive cause
+     */
+    public void logOut(boolean inactive){
+        Data.setImage("src/DataBase/defaultBackground.jpg");
+        stage.close();
+        try {
+            StartScreen startScreen = new StartScreen();
+            startScreen.start(stage);
+            if(inactive){
+                startScreen.errorInfo.setText("You have been logged out because of inactivity");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * method for showing the stage
+     * @param primaryStage
+     */
     public void start(Stage primaryStage) {
         primaryStage.setScene(new Scene(root));
         primaryStage.setResizable(true);
         primaryStage.setMaximized(true);
-        stage = primaryStage;
         primaryStage.show();
+        primaryStage.setOnCloseRequest(event -> {
+            System.exit(0);
+        });
     }
 
+    /**
+     * create content on the mainscreen
+     * @throws Exception
+     */
     public void createContent() throws Exception {
         root = new BorderPane();
         root.setBorder(border);
@@ -89,6 +168,11 @@ public class MainScreen {
         setMenu("MainMenu");
     }
 
+    /**
+     * handles the menu-shortcuts tans
+     * @param menuString
+     * @throws Exception
+     */
     public void setMenu(String menuString) throws Exception {
         switch (menuString){
             case "MainMenu": menu.displayMainMenu(); break;
@@ -97,6 +181,73 @@ public class MainScreen {
             case "Background": menu.displayBackgroundEditing(); break;
             case "Settings": menu.displaySettingsMenu(); break;
         }
+    }
+
+    //////
+    //NEXT ARE ALL THE METHODS TO DISPLAY THE DIFFERENT SKILLS ON THE MAINSCREEN
+    /////
+    public void displayCamera(){
+        VBox notification = new VBox(0);
+        notification.setAlignment(Pos.TOP_CENTER);
+        notification.setPrefSize(300, 285);
+        notification.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(7))));
+        notification.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        Stage stage = new Stage();
+        stage.setAlwaysOnTop(true);
+        stage.setOpacity(0.91);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.setScene(new Scene(notification, 320, 320));
+        stage.show();
+
+        Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
+        stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2 - 280);
+        stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 4 + 110);
+
+        Button exit = new Button("x");
+        exit.setCursor(Cursor.HAND);
+        exit.setBackground(Background.EMPTY);
+        exit.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 17));
+        exit.setTextFill(Color.DARKRED);
+        exit.setBorder(null);
+        exit.setAlignment(Pos.TOP_RIGHT);
+        exit.setOnAction(e -> {
+            if(!faceDetection.controller.cameraActive){
+                faceDetection.controller.startCamera();
+            }
+            stage.close();
+        });
+
+        Region region = new Region();
+        HBox.setHgrow(region, Priority.ALWAYS);
+
+        HBox topBox = new HBox(60);
+        topBox.setAlignment(Pos.CENTER);
+        if (MainScreen.themeColor.equals(Color.LIGHTGRAY)) {
+            topBox.setBackground(new Background(new BackgroundFill(Color.GRAY.darker(), CornerRadii.EMPTY, Insets.EMPTY)));
+        } else {
+            topBox.setBackground(new Background(new BackgroundFill(MainScreen.themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
+        }
+        topBox.getChildren().add(exit);
+        notification.getChildren().addAll(topBox,faceDetection);
+
+        // to be able to move the camera window
+        final double[] xOffset = {0};
+        final double[] yOffset = {0};
+        notification.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                xOffset[0] = event.getSceneX();
+                yOffset[0] = event.getSceneY();
+            }
+        });
+        notification.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                stage.setX(event.getScreenX() - xOffset[0]);
+                stage.setY(event.getScreenY() - yOffset[0]);
+            }
+        });
     }
 
     public void setWeatherDisplay(String city, String country) throws Exception {
@@ -111,7 +262,7 @@ public class MainScreen {
         root.setLeft(weatherDisplay);
     }
 
-    public void setClockAppDisplay(String firstTab) {
+    public void setClockAppDisplay(String firstTab) throws IOException, ParseException {
         if (clockAppDisplay.prevTab != null) { clockAppDisplay.deselectTab(clockAppDisplay.prevTab); }
         switch(firstTab) {
             case "Alarm": clockAppDisplay.selectTab(clockAppDisplay.alarm); break;
@@ -215,168 +366,5 @@ public class MainScreen {
         newPane.getChildren().addAll(topBox, node);
 
         return newPane;
-    }
-
-    public void prepareReminders(LocalDate firstDate, LocalDate lastDate) throws IOException, ParseException {
-        String allReminders = getAlreadyOnFile();
-        int nbrOfInfo = 5;
-        int counter = 0;
-        String username = "";
-        String day = "";
-        String time = "";
-        String time1 = "";
-        String color = "";
-        String desc = "";
-        int linesNbrChar = 0;
-        for (int i = 0; i < allReminders.length(); i++) {
-            if(allReminders.charAt(i)==';'&&counter<nbrOfInfo){
-                if(counter==0){
-                    int counter1 = linesNbrChar;
-                    while(counter1<i){
-                        username+=allReminders.charAt(counter1++);
-                    }
-                    //System.out.println("username = " + username);
-                }else if(counter==1){
-                    int counter1 = linesNbrChar+username.length()+1;
-                    while(counter1<i){
-                        day+=allReminders.charAt(counter1++);
-                    }
-                    //System.out.println("day = " + day);
-                }else if(counter==2){
-                    int counter1 = linesNbrChar+username.length() + day.length() +2;
-                    while(counter1<i){
-                        time+=allReminders.charAt(counter1++);
-                    }
-                    //System.out.println("time = " + time);
-                }else if(counter==3){
-                    int counter1 = linesNbrChar+username.length() + day.length()+time.length() +3;
-                    while(counter1<i){
-                        time1+=allReminders.charAt(counter1++);
-                    }
-                    //System.out.println("time1 = " + time);
-                }else if(counter==4){
-                    int counter1 = linesNbrChar+username.length() + day.length()+time.length()+time1.length() +4;
-                    while(counter1<i){
-                        color+=allReminders.charAt(counter1++);
-                    }
-                    //System.out.println("color  = " + color);
-                }
-                counter++;
-            }
-            if(allReminders.charAt(i)=='\n'&&counter==nbrOfInfo){
-                int counter1 = linesNbrChar+username.length()+day.length()+time.length()+time1.length()+color.length()+nbrOfInfo;
-                while(allReminders.charAt(counter1)!='\n'){
-                    desc+=allReminders.charAt(counter1);
-                    counter1++;
-                }
-
-                //notify user if a reminder is for today
-                String today = java.time.LocalDate.now().toString();
-                if(username.equals(Data.getUsername())&&day.equals(today)){
-                    todaysRemindersShortcut.add(time.substring(0,5) +";"+ time1.substring(0,5) +";"+ desc);
-                    alarmsTime.add(new String[]{time,desc});
-                    displayReminderAtTime(time,desc);
-                }
-                DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                LocalDate localDate = LocalDate.parse(day,dateFormatter);
-                DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-                LocalTime localTime = LocalTime.parse(time,timeFormatter);
-                LocalTime localTime1 = LocalTime.parse(time1,timeFormatter);
-                //add any reminder in the calendar
-                if(localDate.isAfter(firstDate.minusDays(1)) && localDate.isBefore(lastDate.plusDays(1))) {
-                    calendarDisplay.addReminder(desc, localDate, localTime, localTime1, Color.valueOf(color));
-                }
-                linesNbrChar=i+1;
-                counter = 0;
-                username = "";
-                day = "";
-                time = "";
-                time1 = "";
-                color = "";
-                desc = "";
-            }
-        }
-    }
-
-    private String getAlreadyOnFile() throws IOException {
-        String res = "";
-        FileReader fr=new FileReader(Data.getRemindersFile());
-        int i;
-        while((i=fr.read())!=-1)
-            res += ((char)i);
-        fr.close();
-        return res;
-    }
-
-    public void displayReminderAtTime(String time, String desc) throws ParseException {
-        KeyFrame keyFrame = new KeyFrame(Duration.seconds(getTimeDiffInSec(time)), event -> notifyUser(time,desc));
-        timeline.getKeyFrames().add(keyFrame);
-        timeline.play();
-    }
-
-    public int getTimeDiffInSec(String time) throws ParseException {
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
-        Date date1 = format.parse(time);
-        Date date2 = format.parse(java.time.LocalTime.now().toString());
-        int difference = (int) (date2.getTime() - date1.getTime());
-        if(date2.before(date1)){
-            return -difference/1000;
-        }
-        return difference/1000;
-    }
-
-    private void notifyUser(String time,String desc) { //TODO add sound
-        VBox notification = new VBox(40);
-        notification.setAlignment(Pos.TOP_CENTER);
-        notification.setPrefSize(300, 285);
-        notification.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(7))));
-        notification.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
-
-        Stage stage = new Stage();
-        stage.setAlwaysOnTop(true);
-        stage.setOpacity(0.91);
-        stage.initStyle(StageStyle.UNDECORATED);
-        stage.setScene(new Scene(notification, 320, 190));
-        stage.show();
-
-        Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
-        stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2 - 280);
-        stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 4 + 110);
-
-        Label timerLabel = new Label("Reminder of " + time);
-        timerLabel.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 17));
-        timerLabel.setTextFill(Color.WHITE);
-        timerLabel.setAlignment(Pos.TOP_LEFT);
-        timerLabel.setTranslateX(15);
-
-        Button exit = new Button("x");
-        exit.setCursor(Cursor.HAND);
-        exit.setBackground(Background.EMPTY);
-        exit.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 17));
-        exit.setTextFill(Color.DARKRED);
-        exit.setBorder(null);
-        exit.setAlignment(Pos.TOP_RIGHT);
-        exit.setOnAction(e -> stage.close());
-
-        Region region = new Region();
-        HBox.setHgrow(region, Priority.ALWAYS);
-
-        HBox topBox = new HBox(60);
-        topBox.setAlignment(Pos.CENTER);
-        topBox.setBackground(new Background(new BackgroundFill(MainScreen.themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
-        topBox.getChildren().addAll(timerLabel, region, exit);
-
-        Label label = new Label(desc);
-        label.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 26));
-        label.setTextFill(Color.WHITESMOKE);
-        label.setAlignment(Pos.CENTER);
-
-        notification.getChildren().addAll(topBox, label);
-    }
-
-    public void exitWindow()
-    {
-        Platform.exit();
-        System.exit(0);
     }
 }

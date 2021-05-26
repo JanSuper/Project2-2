@@ -2,6 +2,7 @@ package Interface.Display;
 
 import Interface.Display.ClockTools.AlarmVBox;
 import Interface.Screens.MainScreen;
+import Skills.Calendar.HandleReminders;
 import Skills.Schedule.Course;
 import Skills.Schedule.Skill_Schedule;
 import javafx.beans.InvalidationListener;
@@ -30,7 +31,6 @@ import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static javafx.scene.paint.Color.LIGHTGRAY;
@@ -57,10 +57,12 @@ public class CalendarDisplay extends HBox {
     private ArrayList<Node> fix_hours = new ArrayList<>();
 
     private Skill_Schedule skill_schedule;
+    private HandleReminders reminders;
 
-    public CalendarDisplay(MainScreen mainScreen) throws ParseException {
+    public CalendarDisplay(MainScreen mainScreen) throws ParseException, IOException {
         this.mainScreen = mainScreen;
         this.skill_schedule = new Skill_Schedule();
+        this.reminders = new HandleReminders(this);
         today = LocalDate.now();
 
         createContent();
@@ -68,8 +70,7 @@ public class CalendarDisplay extends HBox {
 
         centerTo(today,LocalTime.parse("12:00"));
     }
-    public void centerTo(LocalDate date,LocalTime time){
-        //TODO fix method, sometimes it works sometimes it doesn't
+    public void centerTo(LocalDate date,LocalTime time) {
         if(date.isBefore(firstDate.plusDays(1))){
             int diff = firstDate.getDayOfYear()-date.getDayOfYear()-NBR_OF_DAYS;
             addPreviousCalendar(firstDate.minusDays(diff));
@@ -80,10 +81,10 @@ public class CalendarDisplay extends HBox {
 
         int[] inTable = convertToTable(date,time,time);
         Node node = getNodeByRowColumnIndex(inTable[1],inTable[0]);
-        centerNodeInScrollPane(scrollPane,node);
+        centerNodeInScrollPane(scrollPane,node.getParent());
     }
 
-    private void createContent(){
+    private void createContent() throws IOException, ParseException {
         calendar = new GridPane();
         calendar.setGridLinesVisible(true);
         calendar.setStyle("-fx-background-color:#3d3d3d;");
@@ -129,6 +130,7 @@ public class CalendarDisplay extends HBox {
         getChildren().add(scrollPane);
 
         alarmVBox = new AlarmVBox(this.mainScreen,true);
+        alarmVBox.setAlignment(Pos.TOP_CENTER);
         getChildren().add(alarmVBox);
     }
 
@@ -141,7 +143,7 @@ public class CalendarDisplay extends HBox {
         try {
             //add schedule and stored reminders
             addSchedule(firstDate,old1stDate);
-            mainScreen.prepareReminders(firstDate,old1stDate);
+            reminders.prepareReminders(firstDate,old1stDate);
         } catch (ParseException | IOException e) {
             e.printStackTrace();
         }
@@ -156,7 +158,7 @@ public class CalendarDisplay extends HBox {
         try {
             //add schedule and stored reminders
             addSchedule(oldLastDate,lastDate);
-            mainScreen.prepareReminders(oldLastDate,lastDate);
+            reminders.prepareReminders(oldLastDate,lastDate);
         } catch (ParseException | IOException e) {
             e.printStackTrace();
         }
@@ -293,7 +295,7 @@ public class CalendarDisplay extends HBox {
                 node.toFront();
             }
             pane1.setOnMouseClicked(event -> {
-                getReminderInfo(desc,date.toString(),fromTime.toString());
+                getReminderInfo(desc,date.toString(),fromTime.toString(),toTime.toString());
             });
             calendar.add(pane1,inTable[0],inTable[1],1,inTable[2]);
 
@@ -335,7 +337,7 @@ public class CalendarDisplay extends HBox {
         return new int[]{col,row,rowSpan};
     }
 
-    private void getReminderInfo(String desc,String date,String hour) {
+    private void getReminderInfo(String desc,String date,String from,String to) {
         VBox notification = new VBox(40);
         notification.setAlignment(Pos.TOP_CENTER);
         notification.setPrefSize(300, 285);
@@ -353,7 +355,7 @@ public class CalendarDisplay extends HBox {
         stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2 - 280);
         stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 4 + 110);
 
-        Label timerLabel = new Label(date + " at " + hour);
+        Label timerLabel = new Label(date + " from " + from + " to " + to);
         timerLabel.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 13));
         timerLabel.setTextFill(Color.WHITE);
         timerLabel.setAlignment(Pos.TOP_LEFT);

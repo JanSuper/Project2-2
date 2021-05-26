@@ -4,81 +4,117 @@ import java.util.*;
 
 public class Rule
 {
-    private ArrayList<String> r_side = new ArrayList<>();
-    private ArrayList<String> r_side_2 = new ArrayList<>();
+    private ArrayList<String> RHS_Branch = null;
+    private String RHS_Word = null;
+    private String LHS = null;
 
-    private String l_side;
-    private boolean multiple = true;
-
-    public Rule(String pl_side, String pr_side)
+    /**
+     * Can be both, Branch_Rule and Word_Rule.
+     * Careful with the method called.
+     */
+    public Rule()
     {
-        l_side = pl_side;
-        r_side.add(pr_side);
-        multiple = false;
+        RHS_Branch = new ArrayList<>();
     }
 
-    public Rule(String pl_side, String pr_side, String pr_side_2)
+    public Rule create_WordRule(String[] rules)
     {
-        l_side = pl_side;
-        r_side.add(pr_side);
-        r_side_2.add(pr_side_2);
-        multiple = true;
+        Rule rule = new Rule();
+        rule.LHS = rules[0];
+        rule.RHS_Word = rules[2];
+        return rule;
     }
 
-    public void multipleRule(String rule_1, String rule_2)
+    public Rule create_BranchRule(String[] rules)
     {
-        boolean res = false;
-        for(int i = 0; i < r_side.size(); i++)
+        Rule rule = new Rule();
+        rule.LHS = rules[0];
+
+        for(int i = 2; i < rules.length; i++)
         {
-            if(r_side.get(i).equals(rule_1) && r_side_2.get(i).equals(rule_2))
-            {
-                res = true;
-            }
+            rule.RHS_Branch.add(rules[i]);
         }
-        if(!res)
-        {
-            r_side.add(rule_1);
-            r_side_2.add(rule_2);
-            multiple = true;
-        }
+        return rule;
     }
 
-    public void oneRule(String rule_1)
+    public Rule create_SubTree(String LHS, String RHS_1, String RHS_2)
     {
-        boolean res = false;
-        for(int i = 0; i < r_side.size(); i++)
+        RHS_Branch = new ArrayList<>();
+        Rule rule = new Rule();
+        rule.LHS = LHS;
+        rule.RHS_Branch.add(RHS_1);
+        rule.RHS_Branch.add(RHS_2);
+        return rule;
+    }
+
+    public String print_WordRule()
+    {
+        StringBuffer rule = new StringBuffer();
+        rule.append(LHS);
+        rule.append(" : ");
+        rule.append(RHS_Word);
+        return rule.toString();
+    }
+
+    public String print_BranchRule()
+    {
+        StringBuffer rule = new StringBuffer();
+        rule.append(LHS);
+        rule.append(" : ");
+        for(int i = 0; i < RHS_Branch.size(); i++)
         {
-            if(r_side.get(i).equals(rule_1))
-            {
-                res = true;
-            }
+            rule.append(RHS_Branch.get(i)+" - ");
         }
-        if(!res)
-        {
-            r_side.add(rule_1);
-            multiple = false;
-        }
+        return rule.toString();
+    }
+
+    public String getLHS()
+    {
+        return LHS;
+    }
+
+    public ArrayList<String> getRHS_Branch()
+    {
+        return RHS_Branch;
+    }
+
+    public String getRHS_Word()
+    {
+        return RHS_Word;
+    }
+
+    public void setRHS_Branch(ArrayList<String> rHS_Branch)
+    {
+        RHS_Branch = rHS_Branch;
+    }
+
+    public void setRHS_Word(String rHS_Word)
+    {
+        RHS_Word = rHS_Word;
     }
 
     public boolean getMultiple()
     {
-        return multiple;
+        return true;
     }
 
     public String getL_side()
     {
-        return l_side;
+        return null;
     }
 
     public ArrayList<String> getR_side()
     {
-        return r_side;
+        return null;
     }
 
     public ArrayList<String> getR_side_2()
     {
-        return r_side_2;
+        return null;
     }
 
-    public int getScore() { return 1; }
+    public int getScore()
+    {
+        return 1;
+    }
 }

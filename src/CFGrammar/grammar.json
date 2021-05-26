@@ -1,75 +1,248 @@
 {
-  "S":[
-    "_Add other s (sentence) structure",
-    "_Add missing PP VP... also Sk for skill",
-    "NP VP",
-    "Interj NP VP"
+  "S": [
+    ["Sk_N"],
+    ["Sk_N", "FW"],
+    ["Sk_N", "FWW"],
+    ["NP"],
+    ["VBN"],
+    ["WP", "Sk_N"],
+    ["WP", "NP"],
+    ["WP", "VBN"],
+    ["WP", "VBZN"],
+    ["Sk_N", "FWP"],
+    ["Sk_N", "FWWP"],
+    ["VBN", "FWWP"]
   ],
-  "NP":[
-    "Det N",
-    "Det N that VP",
-    "Det Adj N",
-    "Det N PP"
+  "NP": [
+    ["PPZ", "Sk_N"],
+    ["Det", "Sk_N"],
+    ["Prep", "Sk_N"],
+    ["Adj", "Sk_N"],
+    ["Det", "N"],
+    ["Prep", "N"],
+    ["Adj", "N"]
   ],
-  "PP": [
-    "Prep NP"
+  "FWP": [
+    ["Det", "FW"],
+    ["Prep", "FW"],
+    ["Adj", "FW"]
   ],
-  "Vp": [
-    "Vtrans NP",
-    "Vintr"
+  "NPP": [
+    ["PPZ", "NP"],
+    ["PPZ", "NP"]
   ],
-  "Det":[
-    "a",
-    "an",
-    "the",
-    "this",
-    "that",
-    "these",
-    "those"
+  "VBN": [
+    ["VB", "Sk_N"],
+    ["VB", "N"],
+    ["VB", "NP"],
+    ["VB", "NPP"]
   ],
-  "N":[
-    "car",
-    "restaurant",
-    "home",
-    "house",
-    "phone"
+  "VBZN": [
+    ["VBZ", "Sk_N"],
+    ["VBZ", "N"],
+    ["VBZ", "NP"],
+    ["VBZ", "NPFW"]
   ],
-  "Sk_N":[
-    "clock",
-    "weather",
-    "schedule",
-    "lecture"
+  "NPFW": [
+    ["NP", "FW"],
+    ["NP", "FWP"]
   ],
-  "Sk_V":[
-    "search",
-    "look up"
+  "FWW": [
+    ["FW", "FW"]
   ],
-  "Adj":[
-    "big",
-    "samll",
-    "bad",
-    "good"
+  "FWWP": [
+    ["FWP", "FWP"]
   ],
-  "Vtrans":[
-    "bring",
-    "cost",
-    "sing"
+  "Sk_N": [
+    ["Weather_word"],
+    ["Map_word"],
+    ["Route_word"],
+    ["Alarm_word"],
+    ["Timer_word"],
+    ["Calendar_word"],
+    ["Media_word"],
+    ["Skilleditor_word"]
   ],
-  "Vintr":[
-    "agree",
-    "go",
-    "live",
-    "sit",
-    "look"
-  ],
-  "Prep":[
-    "on",
-    "over",
-    "at",
-    "in"
-  ],
-  "Interj":[
-  "oh",
-  "wow"
-  ]
+
+  "terminals": {
+    "WP": [
+      "what",
+      "when",
+      "where",
+      "how"
+    ],
+    "VBZ": [
+      "is",
+      "are",
+      "am"
+    ],
+    "PPZ": [
+      "I",
+      "me",
+      "my",
+      "you",
+      "your",
+      "it"
+    ],
+    "Det": [
+      "a",
+      "an",
+      "the",
+      "this",
+      "that",
+      "these",
+      "those"
+    ],
+    "Prep": [
+      "for",
+      "on",
+      "over",
+      "at",
+      "in",
+      "from",
+      "to",
+      "of",
+      "by"
+    ],
+    "VB": [
+      "have",
+      "can",
+      "need",
+      "do",
+      "show",
+      "open",
+      "change",
+      "edit",
+      "modify",
+      "cancel",
+      "search",
+      "lookup",
+      "browse",
+      "check",
+      "see",
+      "set",
+      "get",
+      "reset",
+      "add",
+      "start",
+      "listen",
+      "play",
+      "watch",
+      "pause",
+      "stop",
+      "resume",
+      "go"
+    ],
+    "Adj": [
+      "next",
+      "later",
+      "new",
+      "good",
+      "beautiful"
+    ],
+    "N": [
+      "rule",
+      "operations",
+      "help",
+      "password",
+      "country",
+      "city"
+      "areas",
+      "location",
+      "age",
+      "lap",
+      "month",
+      "week",
+      "time-zones",
+      "IDs",
+      "personal",
+      "info",
+      "profession",
+      "background",
+      "theme",
+      "color",
+      "url"
+    ],
+    "FW": [
+      "maastricht",
+      "amsterdam"
+    ],
+    "Weather_word": [
+      "weather",
+      "temperature",
+      "climate",
+      "clima",
+      "sun",
+      "sunny",
+      "rain",
+      "rainy",
+      "snow",
+      "snowy",
+      "storm",
+      "stormy",
+      "thunder",
+      "thundery",
+      "thunderstorm",
+      "aridity",
+      "humidity"
+    ],
+    "Map_word": [
+      "map",
+      "card",
+      "atlas",
+      "globe"
+    ],
+    "Route_word": [
+      "route",
+      "navigation",
+      "iternary",
+      "way"
+    ],
+    "Alarm_word": [
+      "alarm",
+      "alarmclock",
+      "alarmwatch"
+    ],
+    "Clock_word": [
+      "time",
+      "clock",
+      "watchclock",
+      "o'clock",
+      "oclock"
+    ],
+    "Timer_word": [
+      "timer",
+      "ticker"
+    ],
+    "Stopwatch_word": [
+      "stopwatch",
+      "timekeeper"
+    ],
+    "Calendar_word": [
+      "calendar",
+      "schedule",
+      "timetable",
+      "plan"
+    ],
+    "Lecture_word": [
+      "lecture",
+      "lectures",
+      "university",
+      "school"
+    ],
+    "Media_word": [
+      "music",
+      "song",
+      "video"
+    ],
+    "Google_word": [
+      "google",
+      "browser"
+    ],
+    "Skilleditor_word": [
+      "skill",
+      "skilleditor",
+      "editor"
+    ]
+  }
 }

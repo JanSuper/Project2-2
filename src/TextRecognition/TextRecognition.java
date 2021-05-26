@@ -2,8 +2,11 @@ package TextRecognition;
 
 import Agents.Assistant;
 import DataBase.Data;
+import FileParser.FileParser;
 import Interface.Display.MediaPlayerDisplay;
+import SkillEditor.SkillEditorHandler;
 import Skills.Schedule.Skill_Schedule;
+import javafx.application.Platform;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaException;
@@ -18,6 +21,7 @@ import java.util.*;
 
 public class TextRecognition {
     private Assistant assistant;
+    private SkillEditorHandler skillEditor;
 
     private int max_Distance = 2;
     private String originalCleanM;
@@ -31,11 +35,16 @@ public class TextRecognition {
     private int BFSdepth;
     private Node nodeInvestigated;
 
+    public boolean skillEdit = false;
+
     private final File dataBase = new File("src/DataBase/textData.txt");
 
     public TextRecognition(Assistant assistant){
         this.assistant = assistant;
+        skillEditor = assistant.skillEditor;
     }
+
+    public TextRecognition() { }
 
     public String getResponse(String uMessage) throws Exception
     {
@@ -47,10 +56,11 @@ public class TextRecognition {
         thirdPhase = false;
         fourthPhase = false;
         firstPhase = true;
+        //System.out.println("FIRST PHASE");
         //first test without variables
         if(getInfo_withLevenshtein(new Node(originalCleanM))) {
-            System.out.println("SOLUTION FOUND");
-            System.out.println("SEARCH DONE in first phase");
+            //System.out.println("SOLUTION FOUND");
+            //System.out.println("SEARCH DONE in first phase");
         }else{
             firstPhase = false;
             //START BFS
@@ -58,25 +68,25 @@ public class TextRecognition {
             Node root = new Node(originalCleanM);
             //First create tree
             if(createTree(root)){
-                System.out.println("TREE CREATION DONE");
+                //System.out.println("TREE CREATION DONE");
             }else{
-                System.out.println("smth went wrong creating the tree");
+                //System.out.println("smth went wrong creating the tree");
             }
-            System.out.println("START SEARCHING IN TREE");
+            //System.out.println("START SEARCHING IN TREE");
             //Then search in the tree
             secondPhase = true;
             if(search(root)){
-                System.out.println("SEARCH DONE in second phase");
+                //System.out.println("SEARCH DONE in second phase");
             }else{
                 secondPhase = false;
                 thirdPhase = true;
                 if(search(root)){
-                    System.out.println("SEARCH DONE in third phase");
+                    //System.out.println("SEARCH DONE in third phase");
                 }else{
                     thirdPhase = false;
                     fourthPhase = true;
                     if(search(root)){
-                        System.out.println("SEARCH DONE in fourth phase");
+                       //System.out.println("SEARCH DONE in fourth phase");
                     }
                 }
             }
@@ -192,7 +202,6 @@ public class TextRecognition {
                                 }
                             }
                         }
-
                     }else if(secondPhase){
                         //CHECKS SKILLS WITH ONLY THE SAME NBR OF VARIABLES AS WORDS DELETED IN THE MESSAGE (WITH DELETING WORDS)
                         if (s.contains("<VARIABLE>") && containsSameNbrOfVariables(s,node)) {
@@ -252,14 +261,19 @@ public class TextRecognition {
             e.printStackTrace();
         }
 
-        if(assistant.assistantMessage.get(assistant.assistantMessage.size()-1).startsWith("To add a new skill to the assistant you have to follow these rules:"))
+        if(skillEdit)
         {
-            if(node.getSentence().toLowerCase().equals("cancel") || node.getSentence().toLowerCase().equals("cancel skill editor"))
+            if(node.getSentence().equals("cancel") || node.getSentence().equals("cancel skill editor"))
             {
+                skillEdit = false;
                 response = "Canceled the skill editor, you can now type in your request.";
+            }
+            else if(node.getSentence().equals("See all possible operations")){
+                response = skillEditor.allOperations();
             }
             else
             {
+                skillEdit = false;
                 response = assistant.handleNewSkill(node.getSentence());
             }
         }
@@ -336,7 +350,7 @@ public class TextRecognition {
             String city = assistant.fileParser.getUserInfo("-City");
             String country = assistant.fileParser.getUserInfo("-Country");
             if(city.isEmpty()||country.isEmpty()){
-                System.out.println("It seems like you don't have completed your location yet");
+                System.out.println("It seems like you haven't completed your location yet.");
                 city = "Maastricht";
                 country = "NL";
             }
@@ -347,13 +361,7 @@ public class TextRecognition {
             try {
                 String city;
                 String country = "";
-                String[] split;
-                if(originalCleanM.contains("in")) {
-                    split = originalCleanM.split("in");
-                }
-                else { split = originalCleanM.split("to"); }
-
-                String temp = split[1];
+                String temp = nodeInvestigated.getWordsRemoved().get(0);
                 if (temp.contains(",")) {
                     String[] split2 = temp.split(",");
                     city = split2[0].replace(" ", "");
@@ -362,7 +370,6 @@ public class TextRecognition {
                 else {
                     city = temp.replace(" ", "");
                 }
-
                 assistant.mainScreen.setWeatherDisplay(city, country);
                 final_answer = "This is what I found for the weather in "+ city + ". " + assistant.mainScreen.weatherDisplay.currentDataString() + "If you want to change the location, type 'Change weather location to City,Country.' (e.g. Amsterdam,NL).";
             }
@@ -484,11 +491,12 @@ public class TextRecognition {
         else if(skill_num == 28) {
             String err = "Something went wrong! To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
             assistant.mainScreen.setClockAppDisplay("Timer");
-            if (actual_lastWord.length() == 8) {
-                String[] arr = new String[actual_lastWord.length()];
-                for(int i = 0; i < actual_lastWord.length(); i++)
+            String time = nodeInvestigated.getWordsRemoved().get(0).replace(" ", "");
+            if (time.length() == 8) {
+                String[] arr = new String[time.length()];
+                for(int i = 0; i < time.length(); i++)
                 {
-                    arr[i] = String.valueOf(actual_lastWord.charAt(i));
+                    arr[i] = String.valueOf(time.charAt(i));
                 }
                 if ((arr[2].equals(":") || arr[2].equals(".")) && (arr[5].equals(":")|| arr[5].equals("."))) {
                     try {
@@ -509,16 +517,16 @@ public class TextRecognition {
             else { final_answer = err; }
         }
         else if(skill_num == 29) {
-            if(assistant.mainScreen.clockAppDisplay.clockVBox.tempTimeZoneIDs.contains(actual_lastWord.replace("?", "").replace(".", ""))) {
-                final_answer = assistant.mainScreen.clockAppDisplay.clockVBox.getTimeFromZoneID(actual_lastWord.replace("?", "").replace(".", "")) + " If you want to add a new clock type 'Add a new clock for Continent/City'.";
+            if(assistant.mainScreen.clockAppDisplay.clockVBox.tempTimeZoneIDs.contains(nodeInvestigated.getWordsRemoved().get(0).replace(" ", ""))) {
+                final_answer = assistant.mainScreen.clockAppDisplay.clockVBox.getTimeFromZoneID(nodeInvestigated.getWordsRemoved().get(0).replace(" ", "")) + " If you want to add a new clock type 'Add a new clock for Continent/City'.";
             }
             else {
                 final_answer = "The area you requested the time for couldn't be found. If you want the available areas, type 'What are the time-zone IDs'.";
             }
         }
         else if(skill_num == 30) {
-            if(assistant.mainScreen.clockAppDisplay.clockVBox.tempTimeZoneIDs.contains(actual_lastWord.replace("?", "").replace(".", ""))) {
-                assistant.mainScreen.clockAppDisplay.clockVBox.addClock(actual_lastWord.replace("?", "").replace(".", ""));
+            if(assistant.mainScreen.clockAppDisplay.clockVBox.tempTimeZoneIDs.contains(nodeInvestigated.getWordsRemoved().get(0).replace(" ", ""))) {
+                assistant.mainScreen.clockAppDisplay.clockVBox.addClock(nodeInvestigated.getWordsRemoved().get(0).replace(" ", ""));
                 final_answer = "The clock was successfully added!";
             }
             else {
@@ -528,11 +536,12 @@ public class TextRecognition {
         }
         else if(skill_num == 31)
         {
+            skillEdit = true;
             assistant.mainScreen.setSkillEditorAppDisplay("Add skill");
             final_answer = "To add a new skill to the assistant you have to follow these rules:" + System.lineSeparator() +
                     "1. Write down the question(s) you will ask to the assistant. If there is more than one question (for the same answer) make sure to separate them with a comma , " + System.lineSeparator() +
                     "2. After the question(s) add a semicolon ; " + System.lineSeparator() +
-                    "3. Write down the answer(s) you want from the assistant. If there is more than one answer (for the same question) make sure to separate them with a comma , " + System.lineSeparator() +
+                    "3. Write down the answer you want from the assistant, either write a sentence for a chat/talk or the number of an operation (if you which to see all the possible operations, please write \"See all possible operations\")." + System.lineSeparator() +
                     "4. Send everything into one message." +System.lineSeparator() +
                     "If you don't want to add a skill write: Cancel";
         }else if(skill_num == 32){
@@ -663,7 +672,14 @@ public class TextRecognition {
         }
         else if(skill_num == 90)
         {
-            assistant.mainScreen.exitWindow();
+            Platform.exit();
+            System.exit(0);
+        }
+        else if(skill_num == 91){
+            assistant.mainScreen.chat.receiveMessage(skillEditor.allOperations());
+        }
+        else if(skill_num == 92){
+            assistant.mainScreen.displayCamera();
         }
         else if(skill_num == 100){
             assistant.mainScreen.chat.receiveMessage("Test the text recognition : " + nodeInvestigated.getWordsRemoved().get(0) + " , " + nodeInvestigated.getWordsRemoved().get(1) + " , " + nodeInvestigated.getWordsRemoved().get(2));

@@ -7,12 +7,25 @@ import Interface.Display.ClockTools.TimerVBox;
 import Interface.Screens.MainScreen;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.*;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
 
 public class ClockAppDisplay extends VBox {
     private HBox tabs;
@@ -91,10 +104,18 @@ public class ClockAppDisplay extends VBox {
         tab.setTextFill(Color.LIGHTGRAY);
         tab.setPrefSize(160, 80);
         tab.setAlignment(Pos.CENTER);
-        tab.setOnAction(e -> {deselectTab(prevTab); selectTab(tab);});
+        tab.setOnAction(e -> {deselectTab(prevTab);
+            try {
+                selectTab(tab);
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            } catch (ParseException parseException) {
+                parseException.printStackTrace();
+            }
+        });
     }
 
-    public void selectTab(Button selectedTab) {
+    public void selectTab(Button selectedTab) throws IOException, ParseException {
         prevTab = selectedTab;
         selectedTab.setBackground(new Background(new BackgroundFill(MainScreen.themeColor.darker(), CornerRadii.EMPTY, Insets.EMPTY)));
         selectedTab.setTextFill(Color.LIGHTGRAY.brighter());
@@ -121,7 +142,7 @@ public class ClockAppDisplay extends VBox {
         }
     }
 
-    private void setAlarmView() {
+    private void setAlarmView() throws IOException, ParseException {
         alarmVBox = new AlarmVBox(mainScreen,false);
         getChildren().add(alarmVBox);
     }
@@ -136,5 +157,82 @@ public class ClockAppDisplay extends VBox {
 
     private void setStopwatchView() {
         getChildren().add(stopwatchVBox);
+    }
+
+    public static void notifyUser(String isFor, String time, String desc) { //isFor = "timer";"alarm";"reminder"
+        String mediasrc = "src/res/analog-watch-alarm_daniel-simion.mp3";
+        File file = new File(mediasrc);
+        MediaPlayer mediaPlayer = new MediaPlayer(new Media(file.toURI().toString()));
+        mediaPlayer.setAutoPlay(true);
+        mediaPlayer.setVolume(0.5);
+        mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+        MediaView mediaView = new MediaView(mediaPlayer);   //notification sound (*.mp3) , stops on exit
+
+        VBox notification = new VBox(40);
+        notification.setAlignment(Pos.TOP_CENTER);
+        notification.setPrefSize(300, 285);
+        notification.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, new CornerRadii(0), new BorderWidths(7))));
+        notification.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        Stage stage = new Stage();
+        stage.setAlwaysOnTop(true);
+        stage.setOpacity(0.91);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.setScene(new Scene(notification, 320, 190));
+        stage.show();
+
+        Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
+        stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2 - 280);
+        stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 4 + 110);
+
+        Label timerLabel = new Label();
+        Label label = new Label();
+        switch (isFor) {
+            case "timer":
+                timerLabel = new Label("Timer");
+                label = new Label("Time's up!");
+                break;
+            case "alarm":
+                timerLabel = new Label("Alarm of " + time);
+                label = new Label(desc);
+                break;
+            case "reminder":
+                timerLabel = new Label("Reminder of " + time);
+                label = new Label(desc);
+                break;
+        }
+        timerLabel.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 17));
+        timerLabel.setTextFill(Color.WHITE);
+        timerLabel.setAlignment(Pos.TOP_LEFT);
+        timerLabel.setTranslateX(15);
+
+        label.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 26));
+        label.setTextFill(Color.WHITESMOKE);
+        label.setAlignment(Pos.CENTER);
+
+        Button exit = new Button("x");
+        exit.setCursor(Cursor.HAND);
+        exit.setBackground(Background.EMPTY);
+        exit.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 17));
+        exit.setTextFill(Color.DARKRED);
+        exit.setBorder(null);
+        exit.setAlignment(Pos.TOP_RIGHT);
+        exit.setOnAction(e -> {
+            mediaPlayer.stop();
+            stage.close();
+        });
+
+        Region region = new Region();
+        HBox.setHgrow(region, Priority.ALWAYS);
+
+        HBox topBox = new HBox(60);
+        topBox.setAlignment(Pos.CENTER);
+        if (MainScreen.themeColor.equals(Color.LIGHTGRAY)) {
+            topBox.setBackground(new Background(new BackgroundFill(Color.GRAY.darker(), CornerRadii.EMPTY, Insets.EMPTY)));
+        } else {
+            topBox.setBackground(new Background(new BackgroundFill(MainScreen.themeColor, CornerRadii.EMPTY, Insets.EMPTY)));
+        }
+        topBox.getChildren().addAll(timerLabel, region, exit);
+        notification.getChildren().addAll(topBox, label, mediaView);
     }
 }
