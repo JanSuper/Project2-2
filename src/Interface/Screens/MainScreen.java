@@ -102,7 +102,8 @@ public class MainScreen {
                         Platform.runLater(new Runnable(){
                             @Override
                             public void run() {
-                                chat.receiveMessage("Welcome " + Data.getUsername() + "! How may I help you?");
+                                chat.receiveMessage("Welcome " + Data.getUsername() + "! How may I help you?"+"\r\n"+
+                                        "To use CFG-parser type in: CFG on");
                             }
                         });
                         firstFaceViewed = true;
