@@ -623,6 +623,10 @@ public class TextRecognition {
         else if(skill_num == 72){
             assistant.mainScreen.setMapDisplay("map",nodeInvestigated.getWordsRemoved().get(0),null);
         }
+        else if(skill_num == 73){
+            assistant.mainScreen.chat.receiveMessage("Places " + nodeInvestigated.getWordsRemoved().get(0) + "in "+nodeInvestigated.getWordsRemoved().get(1) + " being computed");
+            assistant.mainScreen.setMapDisplay("places",nodeInvestigated.getWordsRemoved().get(0),nodeInvestigated.getWordsRemoved().get(1));
+        }
         else if(skill_num == 80){
             if(!nodeInvestigated.getWordsRemoved().get(0).contains(" ")){
                 if(!assistant.fileParser.changeUserInfo("-Password", nodeInvestigated.getWordsRemoved().get(0),assistant.mainScreen)){
