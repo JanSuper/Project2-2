@@ -28,6 +28,7 @@ Music Player,52,Pause music/video,0,pause,music/video,n
 Music Player,53,Stop music/video,0,stop,music/video,n
 Music Player,59,Watch from url <VARIABLE>,1,watch,url,y
 Calendar,60,Display the calendar skill,0,display,calendar,n
+Calendar,61,Add a reminder for the <VARIABLE> from <VARIABLE> to <VARIABLE> with description <VARIABLE>,4,add,reminder,y
 Google,71,Make a research on google,0,research,google,n
 Map,70,Route from <VARIABLE> to <VARIABLE>,2,route,,y
 Map,72,Map of <VARIABLE>,1,,map,y
@@ -43,4 +44,3 @@ Profile Edit,89,See my personal info,0,see,info,n
 System,90,Bye/Leave,0,,Bye/Leave,n
 System,91,See all possible operations,0,see,operations,n
 System,92,See camera,0,see,camera,n
-Calendar,100,Add a reminder for the <VARIABLE> from <VARIABLE> to <VARIABLE> with description <VARIABLE>,4,add,reminder,,y

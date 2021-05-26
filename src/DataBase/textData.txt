@@ -189,6 +189,9 @@ B 30
 U Watch from url <VARIABLE>
 B 59
 
+U Add a reminder for the <VARIABLE> from <VARIABLE> to <VARIABLE> with description <VARIABLE>
+B 61
+
 U Change password to <VARIABLE>
 B 80
 U Set my password to <VARIABLE>
@@ -204,8 +207,6 @@ B 84
 U Change profession to <VARIABLE>
 B 85
 
-U Add a reminder for the <VARIABLE> from <VARIABLE> to <VARIABLE> with description <VARIABLE>
-B 100
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // NEW SKILLS ADDED (WITH AND WITHOUT VARIABLES)

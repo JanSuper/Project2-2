@@ -609,6 +609,10 @@ public class TextRecognition {
         else if(skill_num == 60){
             assistant.mainScreen.displaySkill(assistant.mainScreen.calendarDisplay,"calendar");
         }
+        else if(skill_num == 61){
+            assistant.mainScreen.displaySkill(assistant.mainScreen.calendarDisplay,"calendar");
+            assistant.mainScreen.clockAppDisplay.alarmVBox.createAlert(nodeInvestigated.getWordsRemoved().get(0),nodeInvestigated.getWordsRemoved().get(1),nodeInvestigated.getWordsRemoved().get(2),nodeInvestigated.getWordsRemoved().get(3), Color.ORANGE);
+        }
         else if(skill_num == 70){
             assistant.mainScreen.chat.receiveMessage("Route from " + nodeInvestigated.getWordsRemoved().get(0) + " to "+nodeInvestigated.getWordsRemoved().get(1) + " being computed");
             assistant.mainScreen.setMapDisplay("route",nodeInvestigated.getWordsRemoved().get(0),nodeInvestigated.getWordsRemoved().get(1));
@@ -671,9 +675,6 @@ public class TextRecognition {
         }
         else if(skill_num == 92){
             assistant.mainScreen.displayCamera();
-        }
-        else if(skill_num == 100){
-            assistant.mainScreen.clockAppDisplay.alarmVBox.createAlert(nodeInvestigated.getWordsRemoved().get(0),nodeInvestigated.getWordsRemoved().get(1),nodeInvestigated.getWordsRemoved().get(2),nodeInvestigated.getWordsRemoved().get(3), Color.ORANGE);
         }
         return final_answer;
     }
