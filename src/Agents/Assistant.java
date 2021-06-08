@@ -1,9 +1,11 @@
 package Agents;
 
+import CFGrammar.JsonReader;
 import FileParser.FileParser;
 import Interface.Screens.MainScreen;
 import SkillEditor.SkillEditorHandler;
 import TextRecognition.TextRecognition;
+import org.json.simple.parser.JSONParser;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -22,6 +24,7 @@ public class Assistant {
     private String response;
 
     public TextRecognition textRecognition;
+    private JsonReader jsonParser;
 
     public void loadKeys() throws IOException {
         Properties keys = new Properties();
@@ -45,6 +48,7 @@ public class Assistant {
 
     public Assistant(MainScreen pMainScreen, String pUser_name, List pAssistantMessage) throws IOException {
         mainScreen = pMainScreen;
+        jsonParser = new JsonReader();
         fileParser = new FileParser();
         skillEditor = new SkillEditorHandler();
         user_name = pUser_name;
@@ -91,6 +95,7 @@ public class Assistant {
         }
         return response;
     }
+
 
     public String messageToUrl(String message){
         String url = "";
@@ -139,6 +144,23 @@ public class Assistant {
             success = 1;
         }
         return success;
+    }
+
+    /**
+     * Adds a new rule in the database, the user has to follow a specific structure to
+     * add question(s) and answer(s) to the database.
+     * @param uMessage the message from the user containing the new skill
+     */
+    public void addNewRule(String uMessage) throws IOException {
+        boolean isTerminal = false;
+        if(uMessage.charAt(uMessage.length()-1)=='+'){
+            isTerminal = true;
+        }
+        //creating a constructor of StringBuffer class
+        StringBuffer sb= new StringBuffer(uMessage);
+        //invoking the method
+        sb.deleteCharAt(sb.length()-1);
+        jsonParser.addRules(sb.toString(),isTerminal);
     }
 
     public String removePunctuation(String uMessage)

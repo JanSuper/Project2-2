@@ -37,6 +37,7 @@ public class TextRecognition {
     private Node nodeInvestigated;
 
     public boolean skillEdit = false;
+    public boolean ruleEdit = false;
 
     private final File dataBase = new File("src/DataBase/textData.txt");
 
@@ -276,6 +277,19 @@ public class TextRecognition {
             {
                 skillEdit = false;
                 response = assistant.handleNewSkill(node.getSentence());
+            }
+        }
+        else if(ruleEdit){
+            if(node.getSentence().equals("cancel") || node.getSentence().equals("cancel skill editor"))
+            {
+                ruleEdit = false;
+                response = "Canceled the rule editor, you can now type in your request.";
+            }
+            else
+            {
+                ruleEdit = false;
+                assistant.addNewRule(node.getSentence());
+                response = "Rules have been added to the database with success.";
             }
         }
         else if(res.isEmpty()||best_score>1)

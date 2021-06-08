@@ -5,7 +5,6 @@ import FaceDetection.FaceDetection;
 import Interface.Chat.ChatApp;
 import Interface.Display.*;
 import Skills.Calendar.HandleReminders;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;

@@ -1,128 +1,128 @@
 package Interface.Display.SkillEditorDisplayTools;
 
 import CFGrammar.JsonReader;
-import DataBase.Data;
 import Interface.Screens.MainScreen;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.util.ArrayList;
-
 public class AddRuleEditorVBox extends VBox {
     private MainScreen mainScreen;
     private JsonReader jsonReader;
-    private VBox principal;
 
-    private File dataBase = new File("src\\DataBase\\textData.txt");
+    private VBox allQuestions;
+    private ScrollPane qScroll;
 
-    private ArrayList<String> questions;
-    private ArrayList<String> answers;
+    private HBox howManyQ;
+    private Spinner<Integer> spinner;
+    private int oldValue;
+    private Label titleLabel;
+    private TextField lhs;
+    private CheckBox isTerminal;
+    private Button enter;
+
 
     public AddRuleEditorVBox(MainScreen mainScreen){
         this.mainScreen = mainScreen;
         jsonReader=new JsonReader();
-
-        questions = new ArrayList();
-        answers = new ArrayList();
+        setSpacing(16);
+        setAlignment(Pos.CENTER);
+        setPadding(new Insets(40,0,0,0));
         createContent();
-        getChildren().add(principal);
+        getChildren().addAll(titleLabel,lhs,howManyQ,qScroll,isTerminal,enter);
     }
 
     public void createContent(){
-        principal = new VBox(40);
-        principal.setBackground(Background.EMPTY);
-        principal.setAlignment(Pos.CENTER);
-        principal.setPadding(new Insets(15));
 
-        Label qLabel = new Label("Rule:");
-        qLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
-        qLabel.setTextFill(MainScreen.themeColor.darker());
-        qLabel.setAlignment(Pos.CENTER);
+        allQuestions = new VBox();
+        allQuestions.setSpacing(10);
+        allQuestions.setAlignment(Pos.CENTER);
 
-        TextField rule = new TextField();
-        rule.setFont(Font.font("Verdana", FontWeight.BOLD, 30));
-        rule.setPrefSize(10,50);
+        qScroll = new ScrollPane(allQuestions);
+        qScroll.setMaxWidth(710);
+        qScroll.setBackground(getBackground());
+        qScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
 
+        titleLabel = new Label("Title (LHS):");
+        titleLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
+        titleLabel.setTextFill(MainScreen.themeColor.darker());
+        titleLabel.setAlignment(Pos.CENTER);
 
-        CheckBox isTerminal = new CheckBox("Is terminal");
+        lhs = new TextField();
+        lhs.setPromptText("Write the left hand side of the rule");
+        lhs.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
+        lhs.setPrefSize(10,36);
+        lhs.setMaxWidth(710);
+
+        spinner = new Spinner<Integer>();
+        spinner.setMaxWidth(60);
+        int initialValue = 0;
+        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10, initialValue);
+        spinner.setValueFactory(valueFactory);
+        oldValue = initialValue;
+        spinner.setOnMouseClicked(event -> {
+            int newVal = spinner.getValue();
+            if(newVal>oldValue){
+                addRule();
+            }else if(newVal<oldValue){
+                allQuestions.getChildren().remove(allQuestions.getChildren().size()-1);
+            }
+            if(oldValue==4){
+                qScroll.setMaxHeight(qScroll.getHeight());
+            }
+            oldValue = newVal;
+        });
+
+        Label ruleLabel = new Label("Rule (RHS):");
+        ruleLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
+        ruleLabel.setTextFill(MainScreen.themeColor.darker());
+        ruleLabel.setAlignment(Pos.CENTER);
+
+        howManyQ = new HBox();
+        howManyQ.setSpacing(20);
+        howManyQ.setAlignment(Pos.CENTER);
+        howManyQ.getChildren().addAll(ruleLabel,spinner);
+
+        isTerminal = new CheckBox("Is terminal");
         isTerminal.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
         isTerminal.setTextFill(MainScreen.themeColor.darker());
         isTerminal.setAlignment(Pos.CENTER);
 
-        Button enter = new Button("Add");
+        enter = new Button("Add");
         enter.setScaleX(2);enter.setScaleY(2);
         enter.setTranslateY(50);
         enter.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(90,true), Insets.EMPTY)));
         enter.setOnAction(e-> {
             try {
-                jsonReader.addRules(rule.getText(),isTerminal.isSelected());
-                rule.clear();
-                isTerminal.setSelected(false);
+                String rhs = "";
+                for (int i=0;i<allQuestions.getChildren().size()-1;i++) {
+                    TextField question = (TextField) allQuestions.getChildren().get(i);
+                    rhs += question.getText()+",";
+                }
+                TextField question = (TextField) allQuestions.getChildren().get(allQuestions.getChildren().size()-1);
+                rhs+=question.getText();
+                mainScreen.chat.receiveMessage(lhs.getText()+":"+rhs + isTerminal.isSelected());
+                jsonReader.addRules(lhs.getText()+":"+rhs,isTerminal.isSelected());
             } catch (Exception exception) {
                 mainScreen.chat.receiveMessage("The rule could not be added for some reason, please recheck its format");
             }
+            lhs.setText("");
+            isTerminal.setSelected(false);
+            mainScreen.chat.receiveMessage("The rule has been added in the database");
         });
-
-        principal.getChildren().addAll(qLabel,rule,isTerminal,enter);
     }
 
-    public void setQPlusButton(HBox box){
-        //TODO add the possibility to add more questions for the same task
-    }
-
-    public void setAPlusButton(HBox box){
-        //TODO add the possibility to add more responses for the same task
-    }
-
-    public int handleAddSkill() throws IOException {
-        int success = -1;
-        if(skillAlreadyIn(questions)){
-            success = -2;
-        }
-        else
-        {
-
-            try{
-                BufferedWriter newData = new BufferedWriter(new FileWriter(dataBase, true));
-                for(int j = 0; j <= questions.size()-1; j++)
-                {
-                    newData.append("U " + questions.get(j) + System.lineSeparator());
-                }
-                for(int y = 0; y <= answers.size()-1; y++)
-                {
-                    newData.append("B " + answers.get(y) + System.lineSeparator());
-                }
-                success = 1;
-                newData.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return success;
-    }
-
-    public boolean skillAlreadyIn(ArrayList uQuestion) throws IOException {
-        String actual = Files.readString(dataBase.toPath()).toLowerCase();
-        for(int j = 0; j <= uQuestion.size()-1; j++)
-        {
-            if(actual.contains((String) uQuestion.get(j))){
-                return true;
-            }
-        }
-        return false;
+    private void addRule(){
+        TextField rule = new TextField();
+        rule.setPromptText("If you wish to include a variable, please replace it by <VARIABLE>");
+        rule.setPrefSize(qScroll.getWidth()-20,25);
+        rule.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
+        allQuestions.getChildren().add(rule);
     }
 }
 

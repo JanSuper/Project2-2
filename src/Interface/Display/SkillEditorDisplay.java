@@ -103,6 +103,8 @@ public class SkillEditorDisplay extends VBox {
     }
 
     private void setAddSkillView(){
+        mainScreen.chat.assistant_answer.textRecognition.skillEdit = true;
+        mainScreen.chat.assistant_answer.textRecognition.ruleEdit = false;
         getChildren().add(addSkillEditorVBox);
         mainScreen.chat.receiveMessage("To add a new skill to the assistant you have to follow these rules:" + System.lineSeparator() +
                 "1. Write down the question(s) you will ask to the assistant. If there is more than one question (for the same answer) make sure to separate them with a comma , " + System.lineSeparator() +
@@ -112,8 +114,11 @@ public class SkillEditorDisplay extends VBox {
                 "If you don't want to add a skill write: Cancel");
     }
     private void setEditSkillView(){
+        mainScreen.chat.assistant_answer.textRecognition.ruleEdit = true;
+        mainScreen.chat.assistant_answer.textRecognition.skillEdit = false;
         getChildren().add(addRuleEditorVBox);
-        mainScreen.chat.receiveMessage("To add a new rule, write in the form: LeftHandSide:RightHandSide1,RightHandSide2,...,RightHandSideN and decide, whether the rule is terminal or not.");
+        mainScreen.chat.receiveMessage("To add a new rule, write in the form: LeftHandSide:RightHandSide1,RightHandSide2,...,RightHandSideN and decide, whether the rule is terminal or not by writing + for terminal and - for non terminal at the end of the message."+System.lineSeparator() +
+                "If you don't want to add a skill write: Cancel");
     }
 
 
