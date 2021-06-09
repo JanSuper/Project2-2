@@ -10,6 +10,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.*;
@@ -35,6 +36,7 @@ public class StartScreen extends Application {
     private TextField user;
     private PasswordField psw;
     public Text errorInfo;
+    private CheckBox recognizeUser;
 
     private int counter = 0;
 
@@ -241,20 +243,32 @@ public class StartScreen extends Application {
         faceDetection.setManaged(true);
         menuBox.getChildren().add(faceDetection);
 
+        HBox hBox = new HBox(10);
+        hBox.setAlignment(Pos.CENTER);
+
         Button seeCamera = new Button("Do not require Face Recognition");
         seeCamera.setAlignment(Pos.CENTER);
         seeCamera.setOnAction(event -> {
             if(faceDetection.isVisible()){
                 seeCamera.setText("Require Face Recognition");
+                hBox.getChildren().remove(recognizeUser);
                 faceDetection.setVisible(false);
                 faceDetection.setManaged(false);
             }else{
                 seeCamera.setText("Do not require Face Recognition");
+                hBox.getChildren().add(recognizeUser);
                 faceDetection.setVisible(true);
                 faceDetection.setManaged(true);
             }
         });
-        menuBox.getChildren().add(seeCamera);
+
+        recognizeUser = new CheckBox("Recognize user");
+        recognizeUser.setFont(Font.font("Tahoma", 15));
+        //recognizeUser.setTextFill(MainScreen.themeColor.darker());
+        recognizeUser.setAlignment(Pos.CENTER);
+
+        hBox.getChildren().addAll(seeCamera,recognizeUser);
+        menuBox.getChildren().add(hBox);
 
         root.getChildren().add(menuBox);
     }

@@ -16,7 +16,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.control.TextField;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class AddSkillEditorVBox extends VBox {
