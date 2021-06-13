@@ -30,6 +30,9 @@ public class FD_Controller {
     // checkbox for selecting the LBP Classifier
     @FXML
     private CheckBox lbpClassifier;
+    // checkbox for selecting the Haar eyes Classifier
+    @FXML
+    private CheckBox haarEyesClassifier;
 
     // a timer for acquiring the video stream
     private Timer timer;
@@ -74,6 +77,7 @@ public class FD_Controller {
             // disable setting checkboxes
             this.haarClassifier.setDisable(true);
             this.lbpClassifier.setDisable(true);
+            this.haarEyesClassifier.setDisable(true);
 
             // start the video capture
             this.capture.open(0);
@@ -127,6 +131,7 @@ public class FD_Controller {
             // enable setting checkboxes
             this.haarClassifier.setDisable(false);
             this.lbpClassifier.setDisable(false);
+            this.haarEyesClassifier.setDisable(false);
 
             // stop the timer
             if (this.timer != null)
@@ -240,11 +245,10 @@ public class FD_Controller {
     protected void haarSelected()
     {
         // check whether the lpb checkbox is selected and deselect it
-        if (this.lbpClassifier.isSelected())
-            this.lbpClassifier.setSelected(false);
+        if (this.haarClassifier.isSelected())
+            this.haarClassifier.setSelected(false);
 
         this.checkboxSelection("src/FaceDetection/haarcascade_frontalface_default.xml");
-        //this.checkboxSelection("src/FaceDetection/cascade.xml");
 
     }
 
@@ -257,11 +261,26 @@ public class FD_Controller {
     protected void lbpSelected()
     {
         // check whether the haar checkbox is selected and deselect it
-        if (this.haarClassifier.isSelected())
-            this.haarClassifier.setSelected(false);
+        if (this.lbpClassifier.isSelected())
+            this.lbpClassifier.setSelected(false);
 
         //this.checkboxSelection("src/FaceDetection/lbpcascade_frontalface.xml");
         this.checkboxSelection("src/FaceDetection/cascade.xml");
+    }
+
+    /**
+     *
+     When the Haar checkbox is selected, deselect the other one and load the
+     * proper XML classifier
+     */
+    @FXML
+    protected void haarEyeSelected()
+    {
+        // check whether the haar checkbox is selected and deselect it
+        if (this.haarEyesClassifier.isSelected())
+            this.haarEyesClassifier.setSelected(false);
+
+        this.checkboxSelection("src/FaceDetection/haarcascade_eye_tree_eyeglasses.xml");
     }
 
     /**

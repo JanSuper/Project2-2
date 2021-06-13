@@ -15,6 +15,7 @@
                 </padding>
                 <CheckBox fx:id="haarClassifier" onAction="#haarSelected" text="Haar Classifier"/>
                 <CheckBox fx:id="lbpClassifier" onAction="#lbpSelected" text="LBP Classifier"/>
+                <CheckBox fx:id="haarEyesClassifier" onAction="#haarEyeSelected" text="Haar eyes Classifier"/>
             </HBox>
             <Separator />
         </VBox>

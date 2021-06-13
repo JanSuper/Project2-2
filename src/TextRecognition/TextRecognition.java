@@ -24,7 +24,7 @@ public class TextRecognition {
     private Assistant assistant;
     private SkillEditorHandler skillEditor;
 
-    private int max_Distance = 2;
+    private int max_Distance = 1;
     private String originalCleanM;
     private String actual_lastWord;
     private String response;
