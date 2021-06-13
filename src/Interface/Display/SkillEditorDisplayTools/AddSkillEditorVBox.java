@@ -24,7 +24,7 @@ public class AddSkillEditorVBox extends VBox {
     private FileParser fileParser;
     private SkillEditorHandler skillEditor;
 
-    private File dataBase = new File("src\\DataBase\\textData.txt");
+    private File dataBase = new File("src\\DataBase\\textRecognitionSkills.txt");
 
     private List<List<String>> allSkills;
 

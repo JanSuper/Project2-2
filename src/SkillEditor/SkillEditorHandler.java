@@ -65,7 +65,7 @@ public class SkillEditorHandler {
     public int addSkill(String question, String answer){
         int success = -1;
         try{
-            BufferedWriter newData = new BufferedWriter(new FileWriter(new File("src\\DataBase\\textData.txt"), true));
+            BufferedWriter newData = new BufferedWriter(new FileWriter(new File("src\\DataBase\\textRecognitionSkills.txt"), true));
             success = 1;
             newData.append("U " + question + System.lineSeparator());
             newData.append("B " + answer + System.lineSeparator());

@@ -37,7 +37,6 @@ public class AddRuleEditorVBox extends VBox {
     }
 
     public void createContent(){
-
         allQuestions = new VBox();
         allQuestions.setSpacing(10);
         allQuestions.setAlignment(Pos.CENTER);

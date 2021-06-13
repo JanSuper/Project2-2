@@ -39,7 +39,7 @@ public class TextRecognition {
     public boolean skillEdit = false;
     public boolean ruleEdit = false;
 
-    private final File dataBase = new File("src/DataBase/textData.txt");
+    private final File dataBase = new File("src/DataBase/textRecognitionSkills.txt");
 
     public TextRecognition(Assistant assistant){
         this.assistant = assistant;
@@ -58,11 +58,11 @@ public class TextRecognition {
         thirdPhase = false;
         fourthPhase = false;
         firstPhase = true;
-        //System.out.println("FIRST PHASE");
+        System.out.println("FIRST PHASE");
         //first test without variables
         if(getInfo_withLevenshtein(new Node(originalCleanM))) {
-            //System.out.println("SOLUTION FOUND");
-            //System.out.println("SEARCH DONE in first phase");
+            System.out.println("SOLUTION FOUND");
+            System.out.println("SEARCH DONE in first phase");
         }else{
             firstPhase = false;
             //START BFS
@@ -70,30 +70,30 @@ public class TextRecognition {
             Node root = new Node(originalCleanM);
             //First create tree
             if(createTree(root)){
-                //System.out.println("TREE CREATION DONE");
+                System.out.println("TREE CREATION DONE");
             }else{
-                //System.out.println("smth went wrong creating the tree");
+                System.out.println("smth went wrong creating the tree");
             }
-            //System.out.println("START SEARCHING IN TREE");
+            System.out.println("START SEARCHING IN TREE");
             //Then search in the tree
             secondPhase = true;
             if(search(root)){
-                //System.out.println("SEARCH DONE in second phase");
+                System.out.println("SEARCH DONE in second phase");
             }else{
                 secondPhase = false;
                 thirdPhase = true;
                 if(search(root)){
-                    //System.out.println("SEARCH DONE in third phase");
+                    System.out.println("SEARCH DONE in third phase");
                 }else{
                     thirdPhase = false;
                     fourthPhase = true;
                     if(search(root)){
-                       //System.out.println("SEARCH DONE in fourth phase");
+                        System.out.println("SEARCH DONE in fourth phase");
                     }
                 }
             }
         }
-
+        System.out.println("//////");
         return response;
     }
 
@@ -137,7 +137,6 @@ public class TextRecognition {
             nodeInvestigated = currentNode;
             if(getInfo_withLevenshtein(currentNode)){
                 //found a solution
-                System.out.println("SOLUTION FOUND !");
                 return true;
             }else{
                 queue.addAll(currentNode.getChildren());
@@ -173,6 +172,7 @@ public class TextRecognition {
         return stringBuilder.toString();
     }
 
+
     /**
      * Tries to find the nearest possible answer in a given range of errors max_Distance
      * @param node the user message node without punctuation
@@ -180,7 +180,7 @@ public class TextRecognition {
     public boolean getInfo_withLevenshtein(Node node) throws Exception{
         ArrayList<Answers> res = new ArrayList<>();
         ArrayList<Answers> best_score_res = new ArrayList<>();
-        int score = -1;
+        int score = 0;
         int best_score = Integer.MAX_VALUE;
         try{
             BufferedReader data = new BufferedReader(new FileReader(dataBase));
@@ -191,16 +191,18 @@ public class TextRecognition {
                     //CHECKS SKILLS WITH NO VARIABLES (WITHOUT DELETING WORDS)
                     if (firstPhase) {
                         if(!s.contains("<VARIABLES>")){
-                            String sWithNoVar = s;
-                            score = LevenshteinDistance(node.getSentence().toLowerCase(), sWithNoVar.substring(2).toLowerCase(), max_Distance);
+                            score = LevenshteinDistance(node.getSentence().toLowerCase(), s.substring(2).toLowerCase(), max_Distance);
                             if (score != -1) {
                                 if (score < best_score) {
                                     best_score = score;
                                 }
 
                                 String r;
-                                while ((r = data.readLine()) != null && (r.startsWith("B"))) {
-                                    res.add(new Answers(score, r.substring(2)));
+                                while ((r = data.readLine()) != null) {
+                                    if(r.startsWith("B")){
+                                        res.add(new Answers(score, r.substring(2)));
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -215,15 +217,36 @@ public class TextRecognition {
                                 }
 
                                 String r;
-                                while ((r = data.readLine()) != null && (r.startsWith("B"))) {
-                                    res.add(new Answers(score, r.substring(2)));
+                                while ((r = data.readLine()) != null) {
+                                    if(r.startsWith("B")){
+                                        res.add(new Answers(score, r.substring(2)));
+                                        break;
+                                    }
                                 }
                             }
                         }
                     }else if(thirdPhase){
-                        //CHECKS SKILL ONLY VARIABLES (WITH DELETE WORDS WHICH ALLOWS FOR "TOO MUCH" WORDS)
-                        if (s.contains("<VARIABLE>")){
-                            String sWithVar = s;
+                        String sWithVar = assistant.removeVariables(s);
+                        //CHECKS SKILL WITH AND WITHOUT VARIABLES (WITH DELETE WORDS WHICH ALLOWS FOR "TOO MUCH" WORDS)
+                        score = LevenshteinDistance(node.getSentence().toLowerCase(), sWithVar.substring(2).toLowerCase(), max_Distance);
+                        if (score != -1) {
+                            if (score < best_score) {
+                                best_score = score;
+                            }
+
+                            String r;
+                            while ((r = data.readLine()) != null) {
+                                if(r.startsWith("B")){
+                                    res.add(new Answers(score, r.substring(2)));
+                                    break;
+                                }
+                            }
+                        }
+
+                    }else if(fourthPhase){
+                        if(s.contains("<VARIABLE>")){
+                            //CHECKS SKILL ONLY VARIABLES (WITH DELETE WORDS WHICH ALLOWS FOR "TOO MUCH" WORDS)
+                            String sWithVar = assistant.removeVariables(s);
                             score = LevenshteinDistance(node.getSentence().toLowerCase(), sWithVar.substring(2).toLowerCase(), max_Distance);
                             if (score != -1) {
                                 if (score < best_score) {
@@ -231,24 +254,12 @@ public class TextRecognition {
                                 }
 
                                 String r;
-                                while ((r = data.readLine()) != null && (r.startsWith("B"))) {
-                                    res.add(new Answers(score, r.substring(2)));
+                                while ((r = data.readLine()) != null) {
+                                    if(r.startsWith("B")){
+                                        res.add(new Answers(score, r.substring(2)));
+                                        break;
+                                    }
                                 }
-                            }
-                        }
-
-                    }else if(fourthPhase){
-                        String allS = s;
-                        //CHECKS SKILL WITH AND WITHOUT VARIABLES (WITH DELETE WORDS WHICH ALLOWS FOR "TOO MUCH" WORDS)
-                        score = LevenshteinDistance(node.getSentence().toLowerCase(), allS.substring(2).toLowerCase(), max_Distance);
-                        if (score != -1) {
-                            if (score < best_score) {
-                                best_score = score;
-                            }
-
-                            String r;
-                            while ((r = data.readLine()) != null && (r.startsWith("B"))) {
-                                res.add(new Answers(score, r.substring(2)));
                             }
                         }
                     }
@@ -329,6 +340,7 @@ public class TextRecognition {
         }
         return true;
     }
+
 
     /**
      * @param s message from the skill database

@@ -57,11 +57,11 @@ public class Assistant {
         randomWords = new Stack<>();
         if (System.getProperty("os.name").contains("Mac OS"))
         {
-            dataBase = new File("src/DataBase/textData.txt");
+            dataBase = new File("src/DataBase/textRecognitionSkills.txt");
         }
         else
         {
-            dataBase = new File("src\\DataBase\\textData.txt");
+            dataBase = new File("src\\DataBase\\textRecognitionSkills.txt");
         }
 
         textRecognition = new TextRecognition(this);
