@@ -38,19 +38,25 @@ U What is the weather like
 U Check the weather
 U Give how the weather is
 U What is the weather today
+U What is the temperature
 B 1
 
 U My next lecture
 U When do I have my next lecture
 U What is my next Lecture
+U Which lecture do I have today
 B 10
 U What are my lectures this week
+U Which lecture do I have this week
 U My lectures this week
 U What do I have this week
+U This week planning
 B 11
 U My lectures this month
+U This month planning
 U What do I have this month
 U What are my lectures this month
+U Which lecture do I have this month
 B 12
 
 U Set an alarm
@@ -58,6 +64,8 @@ U Get my alarm
 U Get the alarm
 U See the alarm
 U Add an alarm
+U Show me the alarm
+U Open alarm app
 B 14
 U What time is it
 U Show me the clock
@@ -65,55 +73,70 @@ U What's the time
 U Get the clock
 U See the clock
 U Add a clock
+U Open the clock app
 B 15
 U What are the time-zone IDs
 U What time-zones can I add to the clock
 U What areas can I add to the clock
 U Can I see the possible time-zones
 U Look at the time-zones
+U What are the time-zones
+U Tell me every time-zones
 B 16
 U Set a timer
 U Get the timer
 U See the timer
 U Add a timer
+U Show me the timer
+U Open the timer app
 B 17
 U Start timer
 U Begin a timer
 U I want to begin a timer
+U Launch the timer
 B 18
 U I want to pause the timer
 U Please pause the timer
 U Pause timer
+U Set timer on pause
 B 19
 U I want to resume the timer
 U Please resume the timer
 U Resume timer
+U Restart timer
 B 20
 U Cancel timer
+U Undo the timer
 U I want to cancel the timer
 U Please cancel the timer
 B 21
 U Get the stopwatch
 U See the stopwatch
 U Add a stopwatch
+U Show me the stopwatch
+U Open the stopwatch
 B 22
 U Set a stopwatch
 U Start a stopwatch
 U Start the stopwatch
 U Set the stopwatch
 U Start stopwatch
+U Launch stopwatch
 U Begin a stopwatch
 U I want to begin a stopwatch
 B 23
 U Pause stopwatch
+U Set stopwatch on pause
 U I want to pause the stopwatch
 U Please pause the stopwatch
 B 24
 U Lap stopwatch
+U Add tour to the stopwatch
 U I want to lap the stopwatch
 U Please lap the stopwatch
 B 25
 U Reset stopwatch
+U Cancel stopwatch
 U I want to reset the stopwatch
 U Please reset the stopwatch
 B 26
@@ -127,6 +150,7 @@ U New rule
 U Add Rule
 U Add a rule
 U I want to add rules
+U Add a skill
 B 32
 
 U Look up
@@ -144,6 +168,9 @@ B 50
 U Change music
 U I want to change the music/video
 U Please change the music/video
+U Skip music/video
+U Play next music/video
+U Play previous music/video
 B 51
 
 U Pause music
@@ -154,31 +181,43 @@ B 52
 U Stop music
 U I want to stop the music/video
 U Please stop the music/video
+U End the music/video
 B 53
 
 
 U Calendar
 U See the calendar
 U Add a reminder
+U Open the calendar
+U Show me my calendar
 B 60
 
 U Google
 U Research
+U Open google
 B 71
 
 U Change my personal info
 U I want to change my profile info
 U Please edit my profile info
+U Modify my profile information
+U Update my profile information
 B 81
 U Edit background
+U Change the background
+U Modify the background
 U I want to change my background
 U Please edit my background image
 B 86
 U Edit theme color
+U Change the theme color
+U Modify the colors
 U I want to change my theme color
 U Please edit my theme
 B 87
 U See my info
+U Show me my info
+U Show me my personal information
 U Check my information
 U See my personal information
 B 89
@@ -186,16 +225,22 @@ B 89
 U Bye
 U See you
 U Close assistant
+U Good bye
+U Close the assistant
 B 90
 
 U See all possible operations
 U What can I do
 U Please help me
+U Show all operations
+U Show all skills
+U Show every skill
 B 91
 
 U See camera
 U I want to see myself
 U Change the face detection classifier
+U Open camera
 B 92
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -204,10 +249,13 @@ B 92
 U Route from <VARIABLE> to <VARIABLE>
 U Traject from <VARIABLE> to <VARIABLE>
 U Destination from <VARIABLE> to <VARIABLE>
+U Travel from <VARIABLE> to <VARIABLE>
+U I want to go from <VARIABLE> to <VARIABLE>
 B 70
 U Map of <VARIABLE>
 U See the map of <VARIABLE>
 U Look at the map of <VARIABLE>
+U Open the map of <VARIABLE>
 B 72
 U Show me <VARIABLE> places in <VARIABLE>
 B 73
@@ -215,9 +263,11 @@ B 73
 U How is the weather in <VARIABLE>
 U What is the weather in <VARIABLE>
 U Change weather location to <VARIABLE>
+U Show me the weather in <VARIABLE>
 B 2
 
 U Set an alarm at <VARIABLE> with description <VARIABLE>
+U Add an alarm at <VARIABLE> with description <VARIABLE>
 B 27
 U Set a timer for <VARIABLE>
 U Add a timer for <VARIABLE>
@@ -225,10 +275,13 @@ U Set timer for <VARIABLE>
 U Set the timer for <VARIABLE>
 U Start a timer for <VARIABLE>
 U I want to set a timer for <VARIABLE>
+U Start a timer of <VARIABLE> minutes
 B 28
 U What time is it in <VARIABLE>
 U I want to know the time in <VARIABLE>
 U Clock in <VARIABLE>
+U How late is it in <VARIABLE>
+U How early is it in <VARIABLE>
 B 29
 U Add a clock for <VARIABLE>
 U Add a new clock for <VARIABLE>
@@ -239,6 +292,8 @@ B 30
 U Watch from url <VARIABLE>
 U Watch video <VARIABLE>
 U Look at <VARIABLE>
+U Play from url <VARIABLE>
+U Open url <VARIABLE>
 B 59
 
 U Add a reminder for the <VARIABLE> from <VARIABLE> to <VARIABLE> with description <VARIABLE>
@@ -249,22 +304,29 @@ B 61
 U Change password to <VARIABLE>
 U Set my password to <VARIABLE>
 U Modify password to <VARIABLE>
+U Swap password to <VARIABLE>
 U I want to change my password to <VARIABLE>
 U Please edit my password info to <VARIABLE>
 B 80
 U Change city to <VARIABLE>
+U Modify my location to <VARIABLE>
+U Update my location to <VARIABLE>
 U I want to change my city to <VARIABLE>
 U Please edit my city info to <VARIABLE>
 B 82
 U Change country to <VARIABLE>
+U Modify my country to <VARIABLE>
+U Update my country to <VARIABLE>
 U I want to change my country to <VARIABLE>
 U Please edit my country info to <VARIABLE>
 B 83
 U Change age to <VARIABLE>
+U Modify my age to <VARIABLE>
 U I want to change my age to <VARIABLE>
 U Please edit my age info to <VARIABLE>
 B 84
 U Change profession to <VARIABLE>
+U Modify my profession to <VARIABLE>
 U I want to change my profession to <VARIABLE>
 U Please edit my profession info to <VARIABLE>
 B 85
