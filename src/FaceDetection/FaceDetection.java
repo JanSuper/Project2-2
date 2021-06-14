@@ -5,6 +5,7 @@ import Interface.Screens.StartScreen;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import org.opencv.core.*;
 
@@ -13,12 +14,15 @@ public class FaceDetection extends VBox {
     public FD_Controller controller;
     private final int DELAY = 30;
 
+    public Pane draw;
+
     public FaceDetection(MainScreen mainScreen){
         this.mainScreen = mainScreen;
         // load the native OpenCV library
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         //add content of the pane
         addContent();
+        createDraw();
     }
     public void addContent()
     {
@@ -108,5 +112,8 @@ public class FaceDetection extends VBox {
             }
         };
         new Thread(task).start();
+    }
+
+    private void createDraw(){
     }
 }

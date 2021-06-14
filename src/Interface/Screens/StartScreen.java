@@ -5,6 +5,7 @@ import FileParser.FileParser;
 import FaceDetection.FaceDetection;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -22,6 +23,7 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 import javafx.scene.control.TextField;
 import DataBase.Data;
+import FaceDetection.FaceClassifier;
 
 import java.io.*;
 import java.util.Arrays;
@@ -266,6 +268,9 @@ public class StartScreen extends Application {
         recognizeUser.setFont(Font.font("Tahoma", 15));
         //recognizeUser.setTextFill(MainScreen.themeColor.darker());
         recognizeUser.setAlignment(Pos.CENTER);
+        recognizeUser.setOnMouseClicked(event -> {
+            manageUserDetection();
+        });
 
         hBox.getChildren().addAll(seeCamera,recognizeUser);
         menuBox.getChildren().add(hBox);
@@ -343,6 +348,48 @@ public class StartScreen extends Application {
 
             menuBox.getChildren().add(button);
         });
+    }
+
+    public void manageUserDetection(){
+        if(recognizeUser.isSelected()){
+            faceDetection.draw.setVisible(false);
+            int maxDelay = 30;
+            int nbrFaces = 0;
+            int nbrLEyes = 0;
+            int nbrREyes = 0;
+            int nbrMouth = 0;
+            //start a timer
+            long start = System.currentTimeMillis();
+            final long[] now = {System.currentTimeMillis()};
+            final long[] elapsedTime = {Math.abs(now[0] - start)};
+            Task task = new Task<Void>() {
+                @Override public Void call() throws InterruptedException {
+                    while(elapsedTime[0]/1000<maxDelay){
+                        now[0] = System.currentTimeMillis();
+                        elapsedTime[0] = Math.abs(now[0] - start);
+
+                        if(elapsedTime[0]/1000>5){
+                            //start the analyze of the face
+                            errorInfo.setText("Face being analyzed");
+                        }else{
+                            errorInfo.setText("Face analyzed in " + (maxDelay-25-elapsedTime[0]/1000));
+                        }
+                        if(nbrFaces== FaceClassifier.MAX_FACES&&nbrLEyes==FaceClassifier.MAX_EYES/2&&nbrREyes==FaceClassifier.MAX_EYES/2&&nbrMouth==FaceClassifier.MAX_MOUTHS){
+                            errorInfo.setText("Analysis finished");
+                            break;
+                        }
+                        if(!recognizeUser.isSelected()){
+                            errorInfo.setText("");
+                            break;
+                        }
+                        Thread.sleep(1000);
+                    }
+                    return null;
+                }
+            };
+            new Thread(task).start();
+        }
+
     }
 
     public static class MenuTitle extends Pane {
