@@ -14,6 +14,8 @@ import org.opencv.objdetect.Objdetect;
 import org.opencv.videoio.VideoCapture;
 
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -248,7 +250,6 @@ public class FD_Controller {
             detectFace(rectangle,grayFrame,frame);
             detectLeftEye(rectangle,grayFrame,frame);
             detectRightEye(rectangle,grayFrame,frame);
-            removeInsideEyesRectangles(rectangle,frame);
             detectMouth(rectangle,grayFrame,frame);
         }
     }
@@ -299,6 +300,11 @@ public class FD_Controller {
         this.lEyeCascade.detectMultiScale(grayFrame, rectangle, 1.1, 2, Objdetect.CASCADE_SCALE_IMAGE, new Size(
                 this.absoluteLEyesSizeWidth, this.absoluteLEyesSizeHeight), new Size());
 
+        currentLEyesArray = rectangle.toArray();
+        filterLEyes();
+        // each rectangle in a left eye is a left eye
+        for (int i = 0; i < currentLEyesArray.length; i++)
+            Imgproc.rectangle(frame, currentLEyesArray[i].tl(), currentLEyesArray[i].br(), new Scalar(125,0,0, 128), 3);
     }
 
     public void detectRightEye(MatOfRect rectangle, Mat grayFrame, Mat frame){
@@ -324,24 +330,77 @@ public class FD_Controller {
         // detect right eyes
         this.rEyeCascade.detectMultiScale(grayFrame, rectangle, 1.1, 2, Objdetect.CASCADE_SCALE_IMAGE, new Size(
                 this.absoluteREyesSizeWidth, this.absoluteREyesSizeHeight), new Size());
-    }
 
-    public void removeInsideEyesRectangles(MatOfRect rectangle,Mat frame){
-        currentLEyesArray = rectangle.toArray();
         currentREyesArray = rectangle.toArray();
-        // each rectangle in a left eye is a left eye
-        for (int i = 0; i < currentLEyesArray.length; i++)
-            Imgproc.rectangle(frame, currentLEyesArray[i].tl(), currentLEyesArray[i].br(), new Scalar(255,0,0, 128), 3);
-
-        for (int i = 0; i < currentREyesArray.length; i++)
-            Imgproc.rectangle(frame, currentLEyesArray[i].tl(), currentLEyesArray[i].br(), new Scalar(255,0,0, 128), 3);
-
+        filterREyes();
         // each rectangle in a right eye is a right eye
         for (int i = 0; i < currentREyesArray.length; i++)
             Imgproc.rectangle(frame, currentREyesArray[i].tl(), currentREyesArray[i].br(), new Scalar(255,0,0, 128), 3);
 
-        for (int i = 0; i < currentLEyesArray.length; i++)
-            Imgproc.rectangle(frame, currentREyesArray[i].tl(), currentREyesArray[i].br(), new Scalar(255,0,0, 128), 3);
+    }
+
+    /**
+     * removes eyes detected not in the face
+     */
+    public void filterREyes(){
+        if(currentFacesArray.length!=0){
+            for (int i = 0; i < currentFacesArray.length; i++) {
+                Rect face = currentFacesArray[i];
+                int[] faceCenter = FaceClassifier.calcMiddle(new ArrayList<>(Arrays.asList(face)));
+                for (int j = 0; j < currentREyesArray.length; j++) {
+                    Rect rEye = currentREyesArray[j];
+                    Point p1 = new Point(rEye.x,rEye.y);
+                    Point p2 = new Point(rEye.x+rEye.width,rEye.y+rEye.height);
+                    Point p3 = new Point(rEye.x+rEye.width,rEye.y);
+                    Point p4 = new Point(rEye.x,rEye.y+rEye.height);
+                    //remove if outside of face
+                    if(!face.contains(p1)&&!face.contains(p2)&&!face.contains(p3)&&!face.contains(p4)){
+                        currentREyesArray = removeElement(rEye,currentREyesArray);
+                    }
+                    //remove if below the face center
+                    if(rEye.y>faceCenter[1]){
+                        currentREyesArray = removeElement(rEye, currentREyesArray);
+                    }
+                }
+            }
+        }
+
+    }
+
+    public void filterLEyes(){
+        if(currentFacesArray.length!=0) {
+            for (int i = 0; i < currentFacesArray.length; i++) {
+                Rect face = currentFacesArray[i];
+                int[] faceCenter = FaceClassifier.calcMiddle(new ArrayList<>(Arrays.asList(face)));
+                for (int j = 0; j < currentLEyesArray.length; j++) {
+                    Rect lEye = currentLEyesArray[j];
+                    Point p1 = new Point(lEye.x, lEye.y);
+                    Point p2 = new Point(lEye.x + lEye.width, lEye.y + lEye.height);
+                    Point p3 = new Point(lEye.x + lEye.width, lEye.y);
+                    Point p4 = new Point(lEye.x, lEye.y + lEye.height);
+                    // remove if not inside the face
+                    if (!face.contains(p1) && !face.contains(p2) && !face.contains(p3) && !face.contains(p4)) {
+                        currentLEyesArray = removeElement(lEye, currentLEyesArray);
+                    }
+
+                    //remove if below the face center
+                    if (lEye.y > faceCenter[1]) {
+                        currentLEyesArray = removeElement(lEye, currentLEyesArray);
+                    }
+                }
+            }
+        }
+    }
+
+    public Rect[] removeElement(Rect element, Rect[] list){
+        Rect[] newList = new Rect[list.length-1];
+        int counter = 0;
+        for (int i = 0; i < list.length; i++) {
+            if(!(list[i].x==element.x&&list[i].y==element.y)){
+                newList[counter++] = list[i];
+            }
+        }
+        return newList;
     }
 
     public void detectMouth(MatOfRect rectangle, Mat grayFrame, Mat frame){
@@ -370,8 +429,41 @@ public class FD_Controller {
 
         // each rectangle in mouth is a mouth
         currentMouthArray = rectangle.toArray();
+        filterMouths();
         for (int i = 0; i < currentMouthArray.length; i++)
             Imgproc.rectangle(frame, currentMouthArray[i].tl(), currentMouthArray[i].br(), new Scalar(0,0,255, 128), 3);
+    }
+
+    public void filterMouths(){
+        if(currentFacesArray.length!=0) {
+            //remove mouth outside of the face
+            for (int i = 0; i < currentFacesArray.length; i++) {
+                Rect face = currentFacesArray[i];
+                for (int j = 0; j < currentMouthArray.length; j++) {
+                    Rect mouth = currentMouthArray[j];
+                    Point p1 = new Point(mouth.x, mouth.y);
+                    Point p2 = new Point(mouth.x + mouth.width, mouth.y + mouth.height);
+                    Point p3 = new Point(mouth.x + mouth.width, mouth.y);
+                    Point p4 = new Point(mouth.x, mouth.y + mouth.height);
+                    if (!face.contains(p1) && !face.contains(p2) && !face.contains(p3) && !face.contains(p4)) {
+                        currentMouthArray = removeElement(mouth, currentMouthArray);
+                    }
+                }
+            }
+
+            //remove mouth higher than middle of the face
+            for (int i = 0; i < currentFacesArray.length; i++) {
+                Rect face = currentFacesArray[i];
+                int[] faceCenter = FaceClassifier.calcMiddle(new ArrayList<>(Arrays.asList(face)));
+                for (int j = 0; j < currentMouthArray.length; j++) {
+                    Rect mouth = currentMouthArray[j];
+                    if (mouth.y < faceCenter[1]) {
+                        currentMouthArray = removeElement(mouth, currentMouthArray);
+                    }
+                }
+            }
+        }
+
     }
 
     /**
