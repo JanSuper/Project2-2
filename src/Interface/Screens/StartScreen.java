@@ -24,8 +24,10 @@ import javafx.util.Pair;
 import javafx.scene.control.TextField;
 import DataBase.Data;
 import FaceDetection.FaceClassifier;
+import org.opencv.core.Rect;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -352,12 +354,10 @@ public class StartScreen extends Application {
 
     public void manageUserDetection(){
         if(recognizeUser.isSelected()){
-            faceDetection.draw.setVisible(false);
+            
+
+            //faceDetection.draw.setVisible(false);
             int maxDelay = 30;
-            int nbrFaces = 0;
-            int nbrLEyes = 0;
-            int nbrREyes = 0;
-            int nbrMouth = 0;
             //start a timer
             long start = System.currentTimeMillis();
             final long[] now = {System.currentTimeMillis()};
@@ -368,19 +368,18 @@ public class StartScreen extends Application {
                         now[0] = System.currentTimeMillis();
                         elapsedTime[0] = Math.abs(now[0] - start);
 
-                        if(elapsedTime[0]/1000>5){
-                            //start the analyze of the face
-                            errorInfo.setText("Face being analyzed");
-                        }else{
-                            errorInfo.setText("Face analyzed in " + (maxDelay-25-elapsedTime[0]/1000));
-                        }
-                        if(nbrFaces== FaceClassifier.MAX_FACES&&nbrLEyes==FaceClassifier.MAX_EYES/2&&nbrREyes==FaceClassifier.MAX_EYES/2&&nbrMouth==FaceClassifier.MAX_MOUTHS){
-                            errorInfo.setText("Analysis finished");
-                            break;
-                        }
                         if(!recognizeUser.isSelected()){
                             errorInfo.setText("");
                             break;
+                        }
+
+                        if(elapsedTime[0]/1000>5){
+                            //start the analyze of the face
+                            errorInfo.setText("Face being analyzed");
+                            analyzeFace();
+                            break;
+                        }else {
+                            errorInfo.setText("Face analysis in " + (maxDelay - 25 - elapsedTime[0] / 1000) + " ,please move on the draw");
                         }
                         Thread.sleep(1000);
                     }
@@ -389,7 +388,42 @@ public class StartScreen extends Application {
             };
             new Thread(task).start();
         }
+    }
 
+    public void analyzeFace(){
+        List<Rect> faces = new ArrayList<>();
+        List<Rect> leftEyes = new ArrayList<>();
+        List<Rect> rightEyes = new ArrayList<>();
+        List<Rect> mouth = new ArrayList<>();
+
+        Task task = new Task<Void>() {
+            @Override public Void call() throws InterruptedException {
+                while(true){
+                    if(!recognizeUser.isSelected()){
+                        errorInfo.setText("");
+                        break;
+                    }
+
+                    faces.addAll(Arrays.asList(faceDetection.controller.currentFacesArray));
+                    leftEyes.addAll(Arrays.asList(faceDetection.controller.currentLEyesArray));
+                    rightEyes.addAll(Arrays.asList(faceDetection.controller.currentREyesArray));
+                    mouth.addAll(Arrays.asList(faceDetection.controller.currentMouthArray));
+
+                    FaceClassifier.addFace(faces);
+                    FaceClassifier.addEyes(leftEyes);
+                    FaceClassifier.addEyes(rightEyes);
+                    FaceClassifier.addMouth(mouth);
+                    System.out.println(faces.size() + " " + leftEyes.size() + " " + rightEyes.size() + " " + mouth.size());
+
+                    if(faces.size()==FaceClassifier.MAX_FACES&&leftEyes.size()==FaceClassifier.MAX_EYES/2&&rightEyes.size()==FaceClassifier.MAX_EYES/2&&mouth.size()==FaceClassifier.MAX_MOUTHS){
+                        errorInfo.setText("Face analysis done");
+                        break;
+                    }
+                }
+                return null;
+            }
+        };
+        new Thread(task).start();
     }
 
     public static class MenuTitle extends Pane {

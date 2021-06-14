@@ -12,11 +12,11 @@ public class FaceClassifier {
 
     public static int count = 0;
 
-    public static final int MAX_EYES = 20;
-    public static final int MAX_FACES = 10;
-    public static final int MAX_MOUTHS = 10;
-    public static final int MAX_DIFF = 5;
-    public static final int MAX_CLUSS = 5;
+    static public final int MAX_EYES = 20;
+    static public final int MAX_FACES = 10;
+    static public final int MAX_MOUTHS = 10;
+    static final int MAX_DIFF = 5;
+    static final int MAX_CLUSS = 5;
 
     public static boolean canClassify = false;
 
