@@ -3,6 +3,7 @@ package FaceDetection;
 import org.opencv.core.Rect;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -48,13 +49,23 @@ public class FaceClassifier {
         }
 
         if (eyes.size() == MAX_EYES){
-            //TODO K-clustering
-            kCluster(eyes, 2);
+            int[][] hold = kCluster(eyes, 2);
+            if (hold[0][0] < hold[1][0]){ //Right left
+                rightEyePos = hold[0];
+                leftEyePos = hold[1];
+            }
+            else{ // Left Right
+                leftEyePos = hold[0];
+                rightEyePos = hold[1];
+            }
+
+            System.out.println("Left eye at " + Arrays.toString(leftEyePos));
+            System.out.println("Right eye at " + Arrays.toString(rightEyePos));
         }
     }
 
     public static List<Rect> filter(List<Rect> newParts){
-        return null;
+        return newParts;
     }
 
     public static void addFace(List<Rect> newFace){
@@ -69,6 +80,7 @@ public class FaceClassifier {
 
         if (face.size() == MAX_FACES){
             facePos = calcMiddle(face);
+            System.out.println("Face at " + Arrays.toString(facePos));
         }
     }
 
@@ -100,6 +112,7 @@ public class FaceClassifier {
 
         if (mouth.size() == MAX_MOUTHS){
             mouthPos = calcMiddle(mouth);
+            System.out.println("Mouth at " + Arrays.toString(mouthPos));
         }
     }
 
