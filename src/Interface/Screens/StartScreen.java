@@ -391,29 +391,31 @@ public class StartScreen extends Application {
     }
 
     public void analyzeFace(){
-        List<Rect> faces = new ArrayList<>();
-        List<Rect> leftEyes = new ArrayList<>();
-        List<Rect> rightEyes = new ArrayList<>();
-        List<Rect> mouth = new ArrayList<>();
 
         Task task = new Task<Void>() {
             @Override public Void call() throws InterruptedException {
                 while(true){
-                    if(!recognizeUser.isSelected()){
-                        errorInfo.setText("");
-                        break;
-                    }
+                    List<Rect> faces = new ArrayList<>();
+                    List<Rect> leftEyes = new ArrayList<>();
+                    List<Rect> rightEyes = new ArrayList<>();
+                    List<Rect> mouth = new ArrayList<>();
+//                    if(!recognizeUser.isSelected()){
+//                        errorInfo.setText("");
+//                        break;
+//                    }
 
                     faces.addAll(Arrays.asList(faceDetection.controller.currentFacesArray));
                     leftEyes.addAll(Arrays.asList(faceDetection.controller.currentLEyesArray));
                     rightEyes.addAll(Arrays.asList(faceDetection.controller.currentREyesArray));
                     mouth.addAll(Arrays.asList(faceDetection.controller.currentMouthArray));
 
-                    FaceClassifier.addFace(faces);
-                    FaceClassifier.addEyes(leftEyes);
-                    FaceClassifier.addEyes(rightEyes);
-                    FaceClassifier.addMouth(mouth);
                     System.out.println(faces.size() + " " + leftEyes.size() + " " + rightEyes.size() + " " + mouth.size());
+
+                        FaceClassifier.addFace(faces);
+                        FaceClassifier.addEyes(leftEyes);
+                        FaceClassifier.addEyes(rightEyes);
+                        FaceClassifier.addMouth(mouth);
+
 
                     if(faces.size()==FaceClassifier.MAX_FACES&&leftEyes.size()==FaceClassifier.MAX_EYES/2&&rightEyes.size()==FaceClassifier.MAX_EYES/2&&mouth.size()==FaceClassifier.MAX_MOUTHS){
                         errorInfo.setText("Face analysis done");

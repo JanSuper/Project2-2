@@ -34,10 +34,11 @@ public class FaceClassifier {
     }
 
     public static void addEyes(List<Rect> newEyes){
+
         if(face.size() != MAX_FACES)
             return;
 
-        newEyes = filter(newEyes);
+        newEyes = Eyefilter(newEyes);
 
         int amountToGo = eyes.size() + newEyes.size() - MAX_EYES;
 
@@ -45,10 +46,12 @@ public class FaceClassifier {
             eyes.remove(0);
         }
         for(int i = 0; i <= newEyes.size()-1; i++){
+            System.out.println(newEyes.get(i).x + " " + newEyes.get(i).y);
             eyes.add(newEyes.get(i));
         }
 
         if (eyes.size() == MAX_EYES){
+
             int[][] hold = kCluster(eyes, 2);
             if (hold[0][0] < hold[1][0]){ //Right left
                 rightEyePos = hold[0];
@@ -64,12 +67,27 @@ public class FaceClassifier {
         }
     }
 
-    public static List<Rect> filter(List<Rect> newParts){
+    public static List<Rect> Eyefilter(List<Rect> newParts){
+        for(int i = newParts.size() -1 ; i >= 0; i--){
+            if(newParts.get(i).y > facePos[1]){
+                newParts.remove(i);
+            }
+        }
+        return newParts;
+    }
+
+    public static List<Rect> MouthFilter(List<Rect> newParts){
+        for(int i = newParts.size() -1 ; i >= 0; i--){
+            if(newParts.get(i).y < facePos[1]){
+                newParts.remove(i);
+            }
+        }
         return newParts;
     }
 
     public static void addFace(List<Rect> newFace){
         int amountToGo = face.size() + newFace.size() - MAX_FACES;
+
 
         for(int i = 0; i < amountToGo; i++){
             face.remove(0);
@@ -82,12 +100,13 @@ public class FaceClassifier {
             facePos = calcMiddle(face);
             System.out.println("Face at " + Arrays.toString(facePos));
         }
+
     }
 
     public static int[] calcMiddle(List<Rect> boxes){
         int posX = 0;
         int posY = 0;
-        for (int i = 0; i <= boxes.size(); i++){
+        for (int i = 0; i < boxes.size(); i++){
             Rect hold = boxes.get(i);
             posX += hold.x + hold.height/2;
             posY += hold.y + hold.height/2;
@@ -100,8 +119,9 @@ public class FaceClassifier {
         if(face.size() != MAX_FACES)
             return;
 
-        newMouth = filter(newMouth);
+        newMouth = MouthFilter(newMouth);
         int amountToGo = mouth.size() + newMouth.size() - MAX_MOUTHS;
+
 
         for(int i = 0; i < amountToGo; i++){
             mouth.remove(0);
@@ -140,7 +160,6 @@ public class FaceClassifier {
             holdMeans[i][0] = means[i][0];
             holdMeans[i][1] = means[i][1];
         }
-
         List<ArrayList<Rect>> kLists = new ArrayList(); // List with lists of points that coincide with each mean
         for (int i = 0; i < k; i++){
             kLists.add(new ArrayList());
@@ -151,7 +170,7 @@ public class FaceClassifier {
             double shortest = Double.POSITIVE_INFINITY;
             Rect holdBox = boxes.get(i);
             for(int j = 0; j < k; j++){
-                double distance = Math.sqrt(((double)(Math.pow(holdBox.x - means[j][0],2)) + (double)(Math.pow(holdBox.y - means[j][1],2))));
+                double distance = Math.sqrt(((double)(Math.pow((holdBox.x + holdBox.height/2) - means[j][0],2)) + (double)(Math.pow((holdBox.y + holdBox.width/2) - means[j][1],2))));
                 if (distance < shortest){
                     memK = j;
                     shortest = distance;
@@ -160,20 +179,26 @@ public class FaceClassifier {
             kLists.get(memK).add(holdBox);
         }
 
+
         for(int i = 0; i < k; i++){
             int xPos = 0;
             int yPos = 0;
             List<Rect> holdList = kLists.get(i);
             for (int j = 0; j < holdList.size(); j++){
-                xPos += holdList.get(j).x;
-                xPos += holdList.get(j).y;
+                xPos += holdList.get(j).x + holdList.get(j).height/2;
+                yPos += holdList.get(j).y + holdList.get(j).width/2;
             }
-            xPos /= holdList.size();
-            yPos /= holdList.size();
+            if(holdList.size() != 0) {
+                xPos /= holdList.size();
+                yPos /= holdList.size();
 
-            means[i][0] = xPos;
-            means[i][1] = yPos;
+                means[i][0] = xPos;
+                means[i][1] = yPos;
+            }
+
+
         }
+
 
         if(prevMeans == null){
             count++;
