@@ -199,7 +199,7 @@ public class FD_Controller {
                 // if the frame is not empty, process it
                 if (!frame.empty())
                 {
-                    // face detection
+                    // detection
                     this.detectAndDisplay(frame);
 
                     // convert the Mat object (OpenCV) to Image (JavaFX)
@@ -235,84 +235,101 @@ public class FD_Controller {
         // equalize the frame histogram to improve the result
         Imgproc.equalizeHist(grayFrame, grayFrame);
 
-        if(haarClassifier.isSelected()||lbpClassifier.isSelected()){
-            // compute minimum face size (20% of the frame height)
-            if (this.absoluteFaceSize == 0)
-            {
-                int height = grayFrame.rows();
-                if (Math.round(height * 0.2f) > 0)
-                {
-                    this.absoluteFaceSize = Math.round(height * 0.2f);
-                }
-            }
-
-            // detect faces
-            this.faceCascade.detectMultiScale(grayFrame, rectangle, 1.1, 2, Objdetect.CASCADE_SCALE_IMAGE, new Size(
-                    this.absoluteFaceSize, this.absoluteFaceSize), new Size());
-
-            // each rectangle in faces is a face
-            previousFacesArray = currentFacesArray;
-            currentFacesArray = rectangle.toArray();
-            for (int i = 0; i < currentFacesArray.length; i++)
-                Imgproc.rectangle(frame, currentFacesArray[i].tl(), currentFacesArray[i].br(), new Scalar(0, 255, 0, 128), 3);
+        if(lbpClassifier.isSelected()){
+            detectFace(rectangle,grayFrame,frame);
+        }
+        //COMBINATION OF FACE, EYES, MOUTH HAAR CLASSIFIERS
+        else if(haarClassifier.isSelected()){
+            detectFace(rectangle,grayFrame,frame);
+            detectEyes(rectangle,grayFrame,frame);
+            detectMouth(rectangle,grayFrame,frame);
         }else if(haarEyesClassifier.isSelected()){
-            // compute minimum eyes size width (10% of the frame height)
-            if (this.absoluteEyesSizeWidth == 0&&this.absoluteEyesSizeWidth==0)
-            {
-                int height = grayFrame.rows();
-                if (Math.round(height * 0.1f) > 0)
-                {
-                    this.absoluteEyesSizeWidth = Math.round(height * 0.1f);
-                }
-            }
-            // compute minimum eyes size height (7.5% of the frame height)
-            if (this.absoluteEyesSizeWidth == 0&&this.absoluteEyesSizeWidth==0)
-            {
-                int height = grayFrame.rows();
-                if (Math.round(height * 0.075f) > 0)
-                {
-                    this.absoluteEyesSizeHeight = Math.round(height * 0.075f);
-                }
-            }
-
-            // detect eyes
-            this.eyeCascade.detectMultiScale(grayFrame, rectangle, 1.1, 2, Objdetect.CASCADE_SCALE_IMAGE, new Size(
-                    this.absoluteEyesSizeWidth, this.absoluteEyesSizeHeight), new Size());
-
-            // each rectangle in faces is a face
-            currentEyesArray = rectangle.toArray();
-            for (int i = 0; i < currentEyesArray.length; i++)
-                Imgproc.rectangle(frame, currentEyesArray[i].tl(), currentEyesArray[i].br(), new Scalar(255,0,0, 128), 3);
+            detectEyes(rectangle,grayFrame,frame);
         }else if(haarMouthClassifier.isSelected()){
-            // compute minimum mouth size width (10% of the frame height)
-            if (this.absoluteMouthSizeWidth == 0&&this.absoluteMouthSizeWidth==0)
-            {
-                int height = grayFrame.rows();
-                if (Math.round(height * 0.1f) > 0)
-                {
-                    this.absoluteMouthSizeWidth = Math.round(height * 0.1f);
-                }
-            }
-            // compute minimum mouth size height (7.5% of the frame height)
-            if (this.absoluteMouthSizeWidth == 0&&this.absoluteMouthSizeWidth==0)
-            {
-                int height = grayFrame.rows();
-                if (Math.round(height * 0.075f) > 0)
-                {
-                    this.absoluteMouthSizeHeight = Math.round(height * 0.075f);
-                }
-            }
+            detectMouth(rectangle,grayFrame,frame);
+        }
+    }
 
-            // detect mouth
-            this.mouthCascade.detectMultiScale(grayFrame, rectangle, 1.1, 2, Objdetect.CASCADE_SCALE_IMAGE, new Size(
-                    this.absoluteMouthSizeWidth, this.absoluteMouthSizeHeight), new Size());
-
-            // each rectangle in mouth is a mouth
-            currentMouthArray = rectangle.toArray();
-            for (int i = 0; i < currentMouthArray.length; i++)
-                Imgproc.rectangle(frame, currentMouthArray[i].tl(), currentMouthArray[i].br(), new Scalar(0,255,0, 128), 3);
+    public void detectFace(MatOfRect rectangle, Mat grayFrame, Mat frame){
+        // compute minimum face size (24% of the frame height)
+        if (this.absoluteFaceSize == 0)
+        {
+            int height = grayFrame.rows();
+            if (Math.round(height * 0.24f) > 0)
+            {
+                this.absoluteFaceSize = Math.round(height * 0.24f);
+            }
         }
 
+        // detect faces
+        this.faceCascade.detectMultiScale(grayFrame, rectangle, 1.1, 2, Objdetect.CASCADE_SCALE_IMAGE, new Size(
+                this.absoluteFaceSize, this.absoluteFaceSize), new Size());
+
+        // each rectangle in faces is a face
+        previousFacesArray = currentFacesArray;
+        currentFacesArray = rectangle.toArray();
+        for (int i = 0; i < currentFacesArray.length; i++)
+            Imgproc.rectangle(frame, currentFacesArray[i].tl(), currentFacesArray[i].br(), new Scalar(0, 255, 0, 128), 3);
+    }
+
+    public void detectEyes(MatOfRect rectangle, Mat grayFrame, Mat frame){
+        // compute minimum eyes size width (10% of the frame height)
+        if (this.absoluteEyesSizeWidth == 0&&this.absoluteEyesSizeWidth==0)
+        {
+            int height = grayFrame.rows();
+            if (Math.round(height * 0.1f) > 0)
+            {
+                this.absoluteEyesSizeWidth = Math.round(height * 0.1f);
+            }
+        }
+        // compute minimum eyes size height (7.5% of the frame height)
+        if (this.absoluteEyesSizeWidth == 0&&this.absoluteEyesSizeWidth==0)
+        {
+            int height = grayFrame.rows();
+            if (Math.round(height * 0.075f) > 0)
+            {
+                this.absoluteEyesSizeHeight = Math.round(height * 0.075f);
+            }
+        }
+
+        // detect eyes
+        this.eyeCascade.detectMultiScale(grayFrame, rectangle, 1.1, 2, Objdetect.CASCADE_SCALE_IMAGE, new Size(
+                this.absoluteEyesSizeWidth, this.absoluteEyesSizeHeight), new Size());
+
+        // each rectangle in faces is a face
+        currentEyesArray = rectangle.toArray();
+        for (int i = 0; i < currentEyesArray.length; i++)
+            Imgproc.rectangle(frame, currentEyesArray[i].tl(), currentEyesArray[i].br(), new Scalar(255,0,0, 128), 3);
+    }
+
+    public void detectMouth(MatOfRect rectangle, Mat grayFrame, Mat frame){
+        // compute minimum mouth size width (25% of the frame width)
+        if (this.absoluteMouthSizeWidth == 0&&this.absoluteMouthSizeWidth==0)
+        {
+            int height = grayFrame.rows();
+            if (Math.round(height * 0.25f) > 0)
+            {
+                this.absoluteMouthSizeWidth = Math.round(height * 0.25f);
+            }
+        }
+        // compute minimum mouth size height (15% of the frame height)
+        if (this.absoluteMouthSizeWidth == 0&&this.absoluteMouthSizeWidth==0)
+        {
+            int height = grayFrame.rows();
+            if (Math.round(height * 0.15f) > 0)
+            {
+                this.absoluteMouthSizeHeight = Math.round(height * 0.15f);
+            }
+        }
+
+        // detect mouth
+        this.mouthCascade.detectMultiScale(grayFrame, rectangle, 1.1, 2, Objdetect.CASCADE_SCALE_IMAGE, new Size(
+                this.absoluteMouthSizeWidth, this.absoluteMouthSizeHeight), new Size());
+
+        // each rectangle in mouth is a mouth
+        currentMouthArray = rectangle.toArray();
+        for (int i = 0; i < currentMouthArray.length; i++)
+            Imgproc.rectangle(frame, currentMouthArray[i].tl(), currentMouthArray[i].br(), new Scalar(0,0,255, 128), 3);
     }
 
     /**
@@ -343,8 +360,13 @@ public class FD_Controller {
         if(this.haarMouthClassifier.isSelected()){
             this.haarMouthClassifier.setSelected(false);
         }
-
-        this.checkboxSelection("src/FaceDetection/CascadeClassifiers/haarcascade_frontalface_default.xml");
+        String[] paths = new String[]{"src/FaceDetection/CascadeClassifiers/haarcascade_frontalface_default.xml",
+                "src/FaceDetection/CascadeClassifiers/haarcascade_eye_tree_eyeglasses.xml",
+                "src/FaceDetection/CascadeClassifiers/haarcascade_mouth.xml"
+        };
+        this.checkboxSelection("src/FaceDetection/CascadeClassifiers/haarcascade_frontalface_default.xml",
+                "src/FaceDetection/CascadeClassifiers/haarcascade_eye_tree_eyeglasses.xml",
+                "src/FaceDetection/CascadeClassifiers/haarcascade_mouth.xml");
 
     }
 
@@ -368,7 +390,7 @@ public class FD_Controller {
         }
 
         //this.checkboxSelection("src/FaceDetection/lbpcascade_frontalface.xml");
-        this.checkboxSelection("src/FaceDetection/CascadeClassifiers/cascade.xml");
+        this.checkboxSelection("src/FaceDetection/CascadeClassifiers/cascade.xml",null,null);
     }
 
     /**
@@ -390,7 +412,7 @@ public class FD_Controller {
             this.haarMouthClassifier.setSelected(false);
         }
 
-        this.checkboxSelection("src/FaceDetection/CascadeClassifiers/haarcascade_eye_tree_eyeglasses.xml");
+        this.checkboxSelection("src/FaceDetection/CascadeClassifiers/haarcascade_eye_tree_eyeglasses.xml",null,null);
     }
 
     /**
@@ -412,30 +434,34 @@ public class FD_Controller {
             this.haarEyesClassifier.setSelected(false);
         }
 
-        this.checkboxSelection("src/FaceDetection/CascadeClassifiers/haarcascade_mouth.xml");
+        this.checkboxSelection("src/FaceDetection/CascadeClassifiers/haarcascade_mouth.xml",null,null);
     }
 
     /**
      * Common operation for both checkbox selections
      *
-     * @param classifierPath
-     *            the absolute path where the XML file representing a training
+     * @param classifierPath1
+     *            the first path where the XML file representing a training
      *            set for a classifier is present
      */
-    private void checkboxSelection(String... classifierPath)
+    private void checkboxSelection(String classifierPath1, String classifierPath2, String classifierPath3)
     {
-        if(haarClassifier.isSelected()||lbpClassifier.isSelected()){
+        if(lbpClassifier.isSelected()){
             // load the face classifier(s)
-            for (String xmlClassifier : classifierPath)
-            {
-                this.faceCascade.load(xmlClassifier);
-            }
-        }else{
+            this.faceCascade.load(classifierPath1);
+        }else if(haarClassifier.isSelected()){
+            // load the face classifier(s)
+            this.faceCascade.load(classifierPath1);
             // load the eyes classifier(s)
-            for (String xmlClassifier : classifierPath)
-            {
-                this.eyeCascade.load(xmlClassifier);
-            }
+            this.eyeCascade.load(classifierPath2);
+            // load the eyes classifier(s)
+            this.mouthCascade.load(classifierPath3);
+        }else if(haarEyesClassifier.isSelected()){
+            // load the eyes classifier(s)
+            this.eyeCascade.load(classifierPath1);
+        }else if(haarMouthClassifier.isSelected()){
+            // load the mouth classifier(s)
+            this.mouthCascade.load(classifierPath1);
         }
 
 
