@@ -11,11 +11,11 @@ public class FaceClassifier {
 
     public static int count = 0;
 
-    static final int MAX_EYES = 20;
-    static final int MAX_FACES = 10;
-    static final int MAX_MOUTHS = 10;
-    static final int MAX_DIFF = 5;
-    static final int MAX_CLUSS = 5;
+    public static final int MAX_EYES = 20;
+    public static final int MAX_FACES = 10;
+    public static final int MAX_MOUTHS = 10;
+    public static final int MAX_DIFF = 5;
+    public static final int MAX_CLUSS = 5;
 
     public static boolean canClassify = false;
 
@@ -49,6 +49,7 @@ public class FaceClassifier {
 
         if (eyes.size() == MAX_EYES){
             //TODO K-clustering
+            kCluster(eyes, 2);
         }
     }
 
@@ -151,10 +152,15 @@ public class FaceClassifier {
             int yPos = 0;
             List<Rect> holdList = kLists.get(i);
             for (int j = 0; j < holdList.size(); j++){
-                
+                xPos += holdList.get(j).x;
+                xPos += holdList.get(j).y;
             }
+            xPos /= holdList.size();
+            yPos /= holdList.size();
+
+            means[i][0] = xPos;
+            means[i][1] = yPos;
         }
-        //TODO magic
 
         if(prevMeans == null){
             count++;
