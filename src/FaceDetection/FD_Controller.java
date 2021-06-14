@@ -248,6 +248,7 @@ public class FD_Controller {
             detectFace(rectangle,grayFrame,frame);
             detectLeftEye(rectangle,grayFrame,frame);
             detectRightEye(rectangle,grayFrame,frame);
+            removeInsideEyesRectangles(rectangle,frame);
             detectMouth(rectangle,grayFrame,frame);
         }
     }
@@ -298,14 +299,10 @@ public class FD_Controller {
         this.lEyeCascade.detectMultiScale(grayFrame, rectangle, 1.1, 2, Objdetect.CASCADE_SCALE_IMAGE, new Size(
                 this.absoluteLEyesSizeWidth, this.absoluteLEyesSizeHeight), new Size());
 
-        // each rectangle in an eye is a an eye
-        currentLEyesArray = rectangle.toArray();
-        for (int i = 0; i < currentLEyesArray.length; i++)
-            Imgproc.rectangle(frame, currentLEyesArray[i].tl(), currentLEyesArray[i].br(), new Scalar(255,0,0, 128), 3);
     }
 
     public void detectRightEye(MatOfRect rectangle, Mat grayFrame, Mat frame){
-        // compute minimum left eye size width (10% of the frame height)
+        // compute minimum right eye size width (10% of the frame height)
         if (this.absoluteREyesSizeWidth == 0)
         {
             int width = grayFrame.rows();
@@ -314,7 +311,7 @@ public class FD_Controller {
                 this.absoluteREyesSizeWidth = Math.round(width * 0.18f);
             }
         }
-        // compute minimum left eye size height (7% of the frame height)
+        // compute minimum right eye size height (7% of the frame height)
         if (this.absoluteREyesSizeHeight == 0)
         {
             int height = grayFrame.cols();
@@ -324,14 +321,27 @@ public class FD_Controller {
             }
         }
 
-        // detect left eyes
+        // detect right eyes
         this.rEyeCascade.detectMultiScale(grayFrame, rectangle, 1.1, 2, Objdetect.CASCADE_SCALE_IMAGE, new Size(
                 this.absoluteREyesSizeWidth, this.absoluteREyesSizeHeight), new Size());
+    }
 
-        // each rectangle in an eye is a an eye
+    public void removeInsideEyesRectangles(MatOfRect rectangle,Mat frame){
         currentLEyesArray = rectangle.toArray();
+        currentREyesArray = rectangle.toArray();
+        // each rectangle in a left eye is a left eye
         for (int i = 0; i < currentLEyesArray.length; i++)
             Imgproc.rectangle(frame, currentLEyesArray[i].tl(), currentLEyesArray[i].br(), new Scalar(255,0,0, 128), 3);
+
+        for (int i = 0; i < currentREyesArray.length; i++)
+            Imgproc.rectangle(frame, currentLEyesArray[i].tl(), currentLEyesArray[i].br(), new Scalar(255,0,0, 128), 3);
+
+        // each rectangle in a right eye is a right eye
+        for (int i = 0; i < currentREyesArray.length; i++)
+            Imgproc.rectangle(frame, currentREyesArray[i].tl(), currentREyesArray[i].br(), new Scalar(255,0,0, 128), 3);
+
+        for (int i = 0; i < currentLEyesArray.length; i++)
+            Imgproc.rectangle(frame, currentREyesArray[i].tl(), currentREyesArray[i].br(), new Scalar(255,0,0, 128), 3);
     }
 
     public void detectMouth(MatOfRect rectangle, Mat grayFrame, Mat frame){
