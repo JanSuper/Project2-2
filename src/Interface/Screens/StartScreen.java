@@ -393,7 +393,7 @@ public class StartScreen extends Application {
     public void analyzeFace(){
 
         Task task = new Task<Void>() {
-            @Override public Void call() throws InterruptedException {
+            @Override public Void call() throws InterruptedException, IOException {
                 while(true){
                     List<Rect> faces = new ArrayList<>();
                     List<Rect> leftEyes = new ArrayList<>();
@@ -409,7 +409,7 @@ public class StartScreen extends Application {
                     rightEyes.addAll(Arrays.asList(faceDetection.controller.currentREyesArray));
                     mouth.addAll(Arrays.asList(faceDetection.controller.currentMouthArray));
 
-                    System.out.println(faces.size() + " " + leftEyes.size() + " " + rightEyes.size() + " " + mouth.size());
+                    //System.out.println(faces.size() + " " + leftEyes.size() + " " + rightEyes.size() + " " + mouth.size());
 
                         FaceClassifier.addFace(faces);
                         FaceClassifier.addEyes(leftEyes);
@@ -417,8 +417,13 @@ public class StartScreen extends Application {
                         FaceClassifier.addMouth(mouth);
 
 
-                    if(faces.size()==FaceClassifier.MAX_FACES&&leftEyes.size()==FaceClassifier.MAX_EYES/2&&rightEyes.size()==FaceClassifier.MAX_EYES/2&&mouth.size()==FaceClassifier.MAX_MOUTHS){
+                    if(FaceClassifier.canClassify){
                         errorInfo.setText("Face analysis done");
+//                        if(FaceClassifier.data.size()<51)
+                        System.out.println(FaceClassifier.getPerson());
+                        //break;
+                    }
+                    if (!true){
                         break;
                     }
                 }

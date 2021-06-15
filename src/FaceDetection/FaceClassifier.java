@@ -2,6 +2,7 @@ package FaceDetection;
 
 import org.opencv.core.Rect;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,6 +19,9 @@ public class FaceClassifier {
     static final int MAX_DIFF = 5;
     static final int MAX_CLUSS = 5;
 
+    static boolean eyesDone = false;
+    static boolean mouthDone = false;
+
     public static boolean canClassify = false;
 
     public static List<Rect> eyes = new ArrayList();
@@ -29,8 +33,56 @@ public class FaceClassifier {
     public static int[] mouthPos = new int[2];
     public static int[] facePos = new int[2];
 
-    public static String GetPerson (){
-        return null;
+    public static List<String> data = new ArrayList();
+
+    public static int writeCount = 0;
+
+    public static String getPerson() throws IOException {
+        String eyes = eucDis(leftEyePos, rightEyePos) + ", ";
+        String midMouth = eucDis(facePos, mouthPos) + ", ";
+        String leyeMouth = eucDis(leftEyePos, mouthPos) + ", ";
+        String reyeMouth = eucDis(rightEyePos, mouthPos) + ", ";
+        String leyeMid = eucDis(leftEyePos, facePos) + ", ";
+        String reyeMid = eucDis(rightEyePos, facePos) + "";
+
+        String comb = eyes + midMouth + leyeMouth + reyeMouth + leyeMid + reyeMid;
+//        writeCount++;
+
+//        if(writeCount == 1000) {
+//            data.add(comb);
+//            writeCount = 0;
+//        }
+//
+//        System.out.println(data.size());
+//
+//        if(data.size() == 50 && writeCount == 0)
+//            writeToFile();
+
+        return comb;
+    }
+
+    public static void writeToFile(){
+        System.out.println("writing in data");
+
+        PrintWriter writer = null;
+
+        try {
+            writer = new PrintWriter("F:/Documenten/GitHub/Project2-2/src/FaceDetection/data.txt", "UTF-8");
+            for(int i = 0; i < data.size(); i++) {
+                writer.println(data.get(i));
+            }
+        } catch (IOException ex) {
+            // Report
+            System.out.println("bruuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuh");
+        } finally {
+            try {writer.close();} catch (Exception ex) {/*ignore*/}
+        }
+
+    }
+
+    public static double eucDis(int[] a, int[] b){
+        double distance = Math.sqrt(((double)(Math.pow(a[0] - b[0],2)) + (double)(Math.pow(a[1] - b[1],2))));
+        return distance;
     }
 
     public static void addEyes(List<Rect> newEyes){
@@ -46,7 +98,7 @@ public class FaceClassifier {
             eyes.remove(0);
         }
         for(int i = 0; i <= newEyes.size()-1; i++){
-            System.out.println(newEyes.get(i).x + " " + newEyes.get(i).y);
+//            System.out.println(newEyes.get(i).x + " " + newEyes.get(i).y);
             eyes.add(newEyes.get(i));
         }
 
@@ -61,9 +113,13 @@ public class FaceClassifier {
                 leftEyePos = hold[0];
                 rightEyePos = hold[1];
             }
+            eyesDone = true;
 
-            System.out.println("Left eye at " + Arrays.toString(leftEyePos));
-            System.out.println("Right eye at " + Arrays.toString(rightEyePos));
+            if (mouthDone){
+                canClassify=true;
+            }
+//            System.out.println("Left eye at " + Arrays.toString(leftEyePos));
+//            System.out.println("Right eye at " + Arrays.toString(rightEyePos));
         }
     }
 
@@ -98,7 +154,7 @@ public class FaceClassifier {
 
         if (face.size() == MAX_FACES){
             facePos = calcMiddle(face);
-            System.out.println("Face at " + Arrays.toString(facePos));
+//            System.out.println("Face at " + Arrays.toString(facePos));
         }
 
     }
@@ -132,7 +188,12 @@ public class FaceClassifier {
 
         if (mouth.size() == MAX_MOUTHS){
             mouthPos = calcMiddle(mouth);
-            System.out.println("Mouth at " + Arrays.toString(mouthPos));
+            mouthDone = true;
+
+            if (eyesDone){
+                canClassify=true;
+            }
+//            System.out.println("Mouth at " + Arrays.toString(mouthPos));
         }
     }
 
