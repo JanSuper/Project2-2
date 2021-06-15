@@ -301,10 +301,13 @@ public class FD_Controller {
                 this.absoluteLEyesSizeWidth, this.absoluteLEyesSizeHeight), new Size());
 
         currentLEyesArray = rectangle.toArray();
-        filterLEyes();
-        // each rectangle in a left eye is a left eye
-        for (int i = 0; i < currentLEyesArray.length; i++)
-            Imgproc.rectangle(frame, currentLEyesArray[i].tl(), currentLEyesArray[i].br(), new Scalar(125,0,0, 128), 3);
+        try {
+            filterLEyes();
+            // each rectangle in a left eye is a left eye
+            for (int i = 0; i < currentLEyesArray.length; i++)
+                Imgproc.rectangle(frame, currentLEyesArray[i].tl(), currentLEyesArray[i].br(), new Scalar(125, 0, 0, 128), 3);
+        } catch (NullPointerException e) {
+        }
     }
 
     public void detectRightEye(MatOfRect rectangle, Mat grayFrame, Mat frame){
@@ -332,10 +335,13 @@ public class FD_Controller {
                 this.absoluteREyesSizeWidth, this.absoluteREyesSizeHeight), new Size());
 
         currentREyesArray = rectangle.toArray();
-        filterREyes();
-        // each rectangle in a right eye is a right eye
-        for (int i = 0; i < currentREyesArray.length; i++)
-            Imgproc.rectangle(frame, currentREyesArray[i].tl(), currentREyesArray[i].br(), new Scalar(255,0,0, 128), 3);
+        try {
+            filterREyes();
+            // each rectangle in a right eye is a right eye
+            for (int i = 0; i < currentREyesArray.length; i++)
+                Imgproc.rectangle(frame, currentREyesArray[i].tl(), currentREyesArray[i].br(), new Scalar(255, 0, 0, 128), 3);
+        } catch (NullPointerException e) {
+        }
 
     }
 
@@ -343,7 +349,7 @@ public class FD_Controller {
      * removes eyes detected not in the face
      */
     public void filterREyes(){
-        if(currentFacesArray.length!=0){
+        if(currentFacesArray.length!=0&&currentREyesArray.length!=0){
             for (int i = 0; i < currentFacesArray.length; i++) {
                 Rect face = currentFacesArray[i];
                 int[] faceCenter = FaceClassifier.calcMiddle(new ArrayList<>(Arrays.asList(face)));
@@ -355,11 +361,11 @@ public class FD_Controller {
                     Point p4 = new Point(rEye.x,rEye.y+rEye.height);
                     //remove if outside of face
                     if(!face.contains(p1)&&!face.contains(p2)&&!face.contains(p3)&&!face.contains(p4)){
-                        currentREyesArray = removeElement(rEye,"rEye");
+                        currentREyesArray = removeElement(rEye,currentREyesArray);
                     }
                     //remove if below the face center
                     if(rEye.y>faceCenter[1]){
-                        currentREyesArray = removeElement(rEye, "rEye");
+                        currentREyesArray = removeElement(rEye, currentREyesArray);
                     }
                 }
             }
@@ -368,7 +374,7 @@ public class FD_Controller {
     }
 
     public void filterLEyes(){
-        if(currentFacesArray.length!=0) {
+        if(currentFacesArray.length!=0&&currentLEyesArray.length!=0) {
             for (int i = 0; i < currentFacesArray.length; i++) {
                 Rect face = currentFacesArray[i];
                 int[] faceCenter = FaceClassifier.calcMiddle(new ArrayList<>(Arrays.asList(face)));
@@ -380,37 +386,34 @@ public class FD_Controller {
                     Point p4 = new Point(lEye.x, lEye.y + lEye.height);
                     // remove if not inside the face
                     if (!face.contains(p1) && !face.contains(p2) && !face.contains(p3) && !face.contains(p4)) {
-                        currentLEyesArray = removeElement(lEye, "lEye");
+                        currentLEyesArray = removeElement(lEye, currentLEyesArray);
                     }
 
                     //remove if below the face center
                     if (lEye.y > faceCenter[1]) {
-                        currentLEyesArray = removeElement(lEye, "lEye");
+                        currentLEyesArray = removeElement(lEye, currentLEyesArray);
                     }
                 }
             }
         }
     }
 
-    public Rect[] removeElement(Rect element, String type){
+    public Rect[] removeElement(Rect element, Rect[] list){
         Rect[] newList = null;
-        if(type.equals("lEye")) {
-            newList = getRects(element, newList, currentLEyesArray);
-        }else if(type.equals("rEye")){
-            newList = getRects(element, newList, currentREyesArray);
-        }else if(type.equals("mouth")){
-            newList = getRects(element, newList, currentMouthArray);
-        }
-        return newList;
-    }
-
-    private Rect[] getRects(Rect element, Rect[] newList, Rect[] currentLEyesArray) {
-        if(currentLEyesArray.length!=0) {
-            newList = new Rect[currentLEyesArray.length - 1];
+        if(list.length!=0) {
+            if(list.length==1){
+                newList = new Rect[1];
+            }else {
+                newList = new Rect[list.length - 1];
+            }
             int counter = 0;
-            for (int i = 0; i < currentLEyesArray.length; i++) {
-                if (!(currentLEyesArray[i].x == element.x && currentLEyesArray[i].y == element.y)) {
-                    newList[counter++] = currentLEyesArray[i];
+            for (int i = 0; i < list.length; i++) {
+                if (!(list[i].x == element.x && list[i].y == element.y)) {
+                    try {
+                        newList[counter++] = list[i];
+                    } catch (NullPointerException e){
+                    } catch (ArrayIndexOutOfBoundsException exception){
+                    }
                 }
             }
         }
@@ -443,13 +446,16 @@ public class FD_Controller {
 
         // each rectangle in mouth is a mouth
         currentMouthArray = rectangle.toArray();
-        filterMouths();
-        for (int i = 0; i < currentMouthArray.length; i++)
-            Imgproc.rectangle(frame, currentMouthArray[i].tl(), currentMouthArray[i].br(), new Scalar(0,0,255, 128), 3);
+        try {
+            filterMouths();
+            for (int i = 0; i < currentMouthArray.length; i++)
+                Imgproc.rectangle(frame, currentMouthArray[i].tl(), currentMouthArray[i].br(), new Scalar(0, 0, 255, 128), 3);
+        } catch (NullPointerException e) {
+        }
     }
 
     public void filterMouths(){
-        if(currentFacesArray.length!=0) {
+        if(currentFacesArray.length!=0&&currentMouthArray.length!=0) {
             //remove mouth outside of the face
             for (int i = 0; i < currentFacesArray.length; i++) {
                 Rect face = currentFacesArray[i];
@@ -460,7 +466,7 @@ public class FD_Controller {
                     Point p3 = new Point(mouth.x + mouth.width, mouth.y);
                     Point p4 = new Point(mouth.x, mouth.y + mouth.height);
                     if (!face.contains(p1) && !face.contains(p2) && !face.contains(p3) && !face.contains(p4)) {
-                        currentMouthArray = removeElement(mouth, "mouth");
+                        currentMouthArray = removeElement(mouth, currentMouthArray);
                     }
                 }
             }
@@ -472,7 +478,7 @@ public class FD_Controller {
                 for (int j = 0; j < currentMouthArray.length; j++) {
                     Rect mouth = currentMouthArray[j];
                     if (mouth.y < faceCenter[1]) {
-                        currentMouthArray = removeElement(mouth, "mouth");
+                        currentMouthArray = removeElement(mouth, currentMouthArray);
                     }
                 }
             }
