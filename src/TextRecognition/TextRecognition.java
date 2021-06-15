@@ -374,8 +374,8 @@ public class TextRecognition {
         String final_answer = null;
         if(skill_num == 1)
         {
-            String city = assistant.fileParser.getUserInfo("-City");
-            String country = assistant.fileParser.getUserInfo("-Country");
+            String city = assistant.fileParser.getUserInfo(Data.getUsername(),"-City");
+            String country = assistant.fileParser.getUserInfo(Data.getUsername(),"-Country");
             if(city.isEmpty()||country.isEmpty()){
                 System.out.println("It seems like you haven't completed your location yet.");
                 city = "Maastricht";

@@ -262,7 +262,7 @@ public class Menu {
 
         VBox mapShortcut = getIconShortcut("src/res/shortcutIcons/mapIcon.png", 80);
         mapShortcut.setOnMouseClicked(e-> {
-            String c = FileParser.getUserInfo("-City");
+            String c = FileParser.getUserInfo(Data.getUsername(),"-City");
             if(c.isEmpty()){
                 System.out.println("It seems like you haven't completed your location yet.");
                 c = "Maastricht";
@@ -367,8 +367,8 @@ public class Menu {
     }
 
     private void updateWeatherAndCalendarShortcut() throws Exception {
-        String city = FileParser.getUserInfo("-City");
-        String country = FileParser.getUserInfo("-Country");
+        String city = FileParser.getUserInfo(Data.getUsername(),"-City");
+        String country = FileParser.getUserInfo(Data.getUsername(),"-Country");
         if (city.isEmpty() || country.isEmpty()) {
             System.out.println("It seems like you haven't completed your location yet.");
             city = "Maastricht";

@@ -9,15 +9,22 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import org.opencv.core.*;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class FaceDetection extends VBox {
     public MainScreen mainScreen;
+    public StartScreen startScreen;
     public FD_Controller controller;
     private final int DELAY = 30;
 
     public Pane draw;
 
-    public FaceDetection(MainScreen mainScreen){
+    public FaceDetection(MainScreen mainScreen,StartScreen startScreen){
         this.mainScreen = mainScreen;
+        this.startScreen = startScreen;
         // load the native OpenCV library
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         //add content of the pane
@@ -106,6 +113,45 @@ public class FaceDetection extends VBox {
                             });
                         }
                         faceDetect[0] = true;
+                    }
+                }
+                return null;
+            }
+        };
+        new Thread(task).start();
+    }
+
+    public void analyzeFace(){
+        Task task = new Task<Void>() {
+            @Override public Void call() throws InterruptedException, IOException {
+                while(true){
+                    if(!startScreen.recognizeUser.isSelected()){
+                        startScreen.errorInfo.setText("");
+                        break;
+                    }
+
+                    List<Rect> faces = new ArrayList<>();
+                    List<Rect> leftEyes = new ArrayList<>();
+                    List<Rect> rightEyes = new ArrayList<>();
+                    List<Rect> mouth = new ArrayList<>();
+
+                    faces.addAll(Arrays.asList(controller.currentFacesArray));
+                    leftEyes.addAll(Arrays.asList(controller.currentLEyesArray));
+                    rightEyes.addAll(Arrays.asList(controller.currentREyesArray));
+                    mouth.addAll(Arrays.asList(controller.currentMouthArray));
+
+                    FaceClassifier.addFace(faces);
+                    FaceClassifier.addEyes(leftEyes);
+                    FaceClassifier.addEyes(rightEyes);
+                    FaceClassifier.addMouth(mouth);
+
+
+                    if(FaceClassifier.canClassify){
+                        startScreen.errorInfo.setText("Face analysis done");
+//                        if(FaceClassifier.data.size()<51)
+                        System.out.println(FaceClassifier.getPerson());
+                        System.out.println(FaceClassifier.getClosestPerson());
+                        break;
                     }
                 }
                 return null;
