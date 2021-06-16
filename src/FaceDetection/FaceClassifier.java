@@ -54,17 +54,12 @@ public class FaceClassifier {
         rEyeMidD = eucDis(rightEyePos, facePos);
 
         String comb = eyesD + "," + midMouthD + "," + lEyeMouthD + "," + rEyeMouthD + "," + lEyeMidD + "," + rEyeMidD;
-//        writeCount++;
+        writeCount++;
 
-//        if(writeCount == 1000) {
-//            data.add(comb);
-//            writeCount = 0;
-//        }
-//
-//        System.out.println(data.size());
-//
-//        if(data.size() == 50 && writeCount == 0)
-//            writeToFile();
+        if(writeCount == 1000) {
+            data.add(comb);
+            writeCount = 0;
+        }
 
         return comb;
     }
@@ -92,7 +87,7 @@ public class FaceClassifier {
         PrintWriter writer = null;
 
         try {
-            writer = new PrintWriter("F:/Documenten/GitHub/Project2-2/src/FaceDetection/data.txt", "UTF-8");
+            writer = new PrintWriter("Desktop/data.txt", "UTF-8");
             for(int i = 0; i < data.size(); i++) {
                 writer.println(data.get(i));
             }

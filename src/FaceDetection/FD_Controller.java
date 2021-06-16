@@ -296,17 +296,18 @@ public class FD_Controller {
             }
         }
 
-        // detect left eyes
-        this.lEyeCascade.detectMultiScale(grayFrame, rectangle, 1.1, 2, Objdetect.CASCADE_SCALE_IMAGE, new Size(
-                this.absoluteLEyesSizeWidth, this.absoluteLEyesSizeHeight), new Size());
-
-        currentLEyesArray = rectangle.toArray();
         try {
+            // detect left eyes
+            this.lEyeCascade.detectMultiScale(grayFrame, rectangle, 1.1, 2, Objdetect.CASCADE_SCALE_IMAGE, new Size(
+                    this.absoluteLEyesSizeWidth, this.absoluteLEyesSizeHeight), new Size());
+
+            currentLEyesArray = rectangle.toArray();
             filterLEyes();
             // each rectangle in a left eye is a left eye
             for (int i = 0; i < currentLEyesArray.length; i++)
                 Imgproc.rectangle(frame, currentLEyesArray[i].tl(), currentLEyesArray[i].br(), new Scalar(125, 0, 0, 128), 3);
-        } catch (NullPointerException e) {
+
+        }catch (Exception e){
         }
     }
 
@@ -330,17 +331,18 @@ public class FD_Controller {
             }
         }
 
-        // detect right eyes
-        this.rEyeCascade.detectMultiScale(grayFrame, rectangle, 1.1, 2, Objdetect.CASCADE_SCALE_IMAGE, new Size(
-                this.absoluteREyesSizeWidth, this.absoluteREyesSizeHeight), new Size());
+        try{
+            // detect right eyes
+            this.rEyeCascade.detectMultiScale(grayFrame, rectangle, 1.1, 2, Objdetect.CASCADE_SCALE_IMAGE, new Size(
+                    this.absoluteREyesSizeWidth, this.absoluteREyesSizeHeight), new Size());
 
-        currentREyesArray = rectangle.toArray();
-        try {
+            currentREyesArray = rectangle.toArray();
             filterREyes();
             // each rectangle in a right eye is a right eye
             for (int i = 0; i < currentREyesArray.length; i++)
                 Imgproc.rectangle(frame, currentREyesArray[i].tl(), currentREyesArray[i].br(), new Scalar(255, 0, 0, 128), 3);
-        } catch (NullPointerException e) {
+
+        }catch (Exception e){
         }
 
     }
@@ -440,17 +442,19 @@ public class FD_Controller {
             }
         }
 
-        // detect mouth
-        this.mouthCascade.detectMultiScale(grayFrame, rectangle, 1.1, 2, Objdetect.CASCADE_SCALE_IMAGE, new Size(
-                this.absoluteMouthSizeWidth, this.absoluteMouthSizeHeight), new Size());
-
-        // each rectangle in mouth is a mouth
-        currentMouthArray = rectangle.toArray();
         try {
+            // detect mouth
+            this.mouthCascade.detectMultiScale(grayFrame, rectangle, 1.1, 2, Objdetect.CASCADE_SCALE_IMAGE, new Size(
+                    this.absoluteMouthSizeWidth, this.absoluteMouthSizeHeight), new Size());
+
+            // each rectangle in mouth is a mouth
+            currentMouthArray = rectangle.toArray();
             filterMouths();
             for (int i = 0; i < currentMouthArray.length; i++)
                 Imgproc.rectangle(frame, currentMouthArray[i].tl(), currentMouthArray[i].br(), new Scalar(0, 0, 255, 128), 3);
-        } catch (NullPointerException e) {
+
+        }catch (Exception e){
+
         }
     }
 

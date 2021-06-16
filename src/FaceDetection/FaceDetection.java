@@ -145,14 +145,24 @@ public class FaceDetection extends VBox {
                     FaceClassifier.addEyes(rightEyes);
                     FaceClassifier.addMouth(mouth);
 
+                    System.out.println(FaceClassifier.getPerson());
 
+                    if(FaceClassifier.data.size()>51){
+                        startScreen.errorInfo.setText("Face analysis done");
+                        FaceClassifier.writeToFile();
+                        //System.out.println(FaceClassifier.getClosestPerson());
+                        break;
+                    }
+
+                    /*
                     if(FaceClassifier.canClassify){
                         startScreen.errorInfo.setText("Face analysis done");
-//                        if(FaceClassifier.data.size()<51)
                         System.out.println(FaceClassifier.getPerson());
                         System.out.println(FaceClassifier.getClosestPerson());
                         break;
                     }
+
+                     */
                 }
                 return null;
             }

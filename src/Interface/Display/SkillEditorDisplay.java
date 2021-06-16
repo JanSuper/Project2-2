@@ -2,6 +2,8 @@ package Interface.Display;
 
 import Interface.Display.SkillEditorDisplayTools.AddSkillEditorVBox;
 import Interface.Display.SkillEditorDisplayTools.AddRuleEditorVBox;
+import Interface.Display.SkillEditorDisplayTools.EditRuleEditorVBox;
+import Interface.Display.SkillEditorDisplayTools.EditSkillEditorVBox;
 import Interface.Screens.MainScreen;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -16,19 +18,24 @@ public class SkillEditorDisplay extends VBox {
     private MainScreen mainScreen;
 
     public Button addSkill;
+    public Button editSkill;
     public Button addRule;
+    public Button editRule;
 
     private HBox tabs;
     public Button prevTab;
 
     private AddSkillEditorVBox addSkillEditorVBox;
+    private EditSkillEditorVBox editSkillEditorVBox;
     private AddRuleEditorVBox addRuleEditorVBox;
-
+    private EditRuleEditorVBox editRuleEditorVBox;
 
     public SkillEditorDisplay(MainScreen mainScreen){
         this.mainScreen = mainScreen;
         addSkillEditorVBox = new AddSkillEditorVBox(this.mainScreen);
+        editSkillEditorVBox = new EditSkillEditorVBox(this.mainScreen);
         addRuleEditorVBox = new AddRuleEditorVBox(this.mainScreen);
+        editRuleEditorVBox = new EditRuleEditorVBox(this.mainScreen);
         setBackground(new Background(new BackgroundFill(new Color(0.08,0.12, 0.15, 0.3), CornerRadii.EMPTY, Insets.EMPTY)));
         createContent();
         getChildren().add(tabs);
@@ -43,8 +50,15 @@ public class SkillEditorDisplay extends VBox {
         addSkill = new Button("Add Skill");
         designTab(addSkill);
 
+        editSkill = new Button("Edit skill");
+        designTab(editSkill);
+
         addRule = new Button("Add Rule");
         designTab(addRule);
+
+        editRule = new Button("Edit Rule");
+        designTab(editRule);
+
 
         Button exit = new Button("x");
         exit.setCursor(Cursor.HAND);
@@ -66,7 +80,7 @@ public class SkillEditorDisplay extends VBox {
         Region region = new Region();
         HBox.setHgrow(region, Priority.ALWAYS);
 
-        tabs.getChildren().addAll(addSkill, addRule, region, exit);
+        tabs.getChildren().addAll(addSkill,editSkill, addRule,editRule, region, exit);
     }
 
     private void designTab(Button tab) {
@@ -87,7 +101,9 @@ public class SkillEditorDisplay extends VBox {
 
         switch(selectedTab.getText()) {
             case "Add Skill": setAddSkillView(); break;
-            case "Add Rule": setEditSkillView(); break;
+            case "Edit Skill": setEditSkillView(); break;
+            case "Add Rule": setAddRuleView(); break;
+            case "Edit Rule": setEditRuleView(); break;
         }
     }
 
@@ -98,7 +114,9 @@ public class SkillEditorDisplay extends VBox {
 
         switch(prevTab.getText()) {
             case "Add Skill": getChildren().remove(addSkillEditorVBox); break;
+            case "Edit Skill":getChildren().remove(editSkillEditorVBox); break;
             case "Add Rule": getChildren().remove(addRuleEditorVBox); break;
+            case "Edit Rule":getChildren().remove(editRuleEditorVBox); break;
         }
     }
 
@@ -114,11 +132,22 @@ public class SkillEditorDisplay extends VBox {
                 "If you don't want to add a skill write: Cancel");
     }
     private void setEditSkillView(){
+        mainScreen.chat.assistant_answer.textRecognition.skillEdit = true;
+        mainScreen.chat.assistant_answer.textRecognition.ruleEdit = false;
+        getChildren().add(editSkillEditorVBox);
+    }
+
+    private void setAddRuleView(){
         mainScreen.chat.assistant_answer.textRecognition.ruleEdit = true;
         mainScreen.chat.assistant_answer.textRecognition.skillEdit = false;
         getChildren().add(addRuleEditorVBox);
         mainScreen.chat.receiveMessage("To add a new rule, write in the form: LeftHandSide:RightHandSide1,RightHandSide2,...,RightHandSideN and decide, whether the rule is terminal or not by writing + for terminal and - for non terminal at the end of the message."+System.lineSeparator() +
                 "If you don't want to add a skill write: Cancel");
+    }
+    private void setEditRuleView(){
+        mainScreen.chat.assistant_answer.textRecognition.ruleEdit = true;
+        mainScreen.chat.assistant_answer.textRecognition.skillEdit = false;
+        getChildren().add(editRuleEditorVBox);
     }
 
 
