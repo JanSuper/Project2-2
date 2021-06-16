@@ -15,12 +15,8 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -28,7 +24,6 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -67,6 +62,7 @@ public class MainScreen {
         skillEditorDisplay = new SkillEditorDisplay(this);
         weatherDisplay = new WeatherDisplay(this);
         calendarDisplay = new CalendarDisplay(this);
+        Data.setMp(null);   //resetting mediaPlayer for each login attempt
 
         HandleReminders reminders = new HandleReminders(calendarDisplay);
         //reads the reminder file and add the one of today to the list
@@ -250,8 +246,8 @@ public class MainScreen {
         });
     }
 
-    public void setWeatherDisplay(String city, String country) throws Exception {
-        weatherDisplay.setLocation(city, country);
+    public void setWeatherDisplay(String city, String country, Boolean selectHourly) throws Exception {
+        weatherDisplay.setLocation(city, country, selectHourly);
         weatherDisplay.setSpacing(7);
         weatherDisplay.setBorder(border);
         weatherDisplay.prefHeightProperty().bind(root.heightProperty().subtract(borderWidth*2));

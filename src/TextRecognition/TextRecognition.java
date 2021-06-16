@@ -2,7 +2,6 @@ package TextRecognition;
 
 import Agents.Assistant;
 import DataBase.Data;
-import FileParser.FileParser;
 import Interface.Display.MediaPlayerDisplay;
 import SkillEditor.SkillEditorHandler;
 import Skills.Schedule.Skill_Schedule;
@@ -381,7 +380,8 @@ public class TextRecognition {
                 city = "Maastricht";
                 country = "NL";
             }
-            assistant.mainScreen.setWeatherDisplay(city,country);
+            if (originalCleanM.contains("hourly")) { assistant.mainScreen.setWeatherDisplay(city,country,true); }
+            else  { assistant.mainScreen.setWeatherDisplay(city,country,false); }
             final_answer = "This is what I found for the weather in "+ city + ", " + country + ". " + assistant.mainScreen.weatherDisplay.currentDataString() + "If you want to change the location, type 'Change weather location to City,Country.' (e.g. Amsterdam,NL).";
         }
         else if(skill_num == 2){
@@ -397,7 +397,7 @@ public class TextRecognition {
                 else {
                     city = temp.replace(" ", "");
                 }
-                assistant.mainScreen.setWeatherDisplay(city, country);
+               assistant.mainScreen.setWeatherDisplay(city,country,false);
                 final_answer = "This is what I found for the weather in "+ city + ". " + assistant.mainScreen.weatherDisplay.currentDataString() + "If you want to change the location, type 'Change weather location to City,Country.' (e.g. Amsterdam,NL).";
             }
             catch (Exception ex) {

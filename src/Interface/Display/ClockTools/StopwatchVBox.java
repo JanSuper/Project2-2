@@ -15,6 +15,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 public class StopwatchVBox extends VBox {
     private Label stopwatchTime;
     private HBox buttons;
@@ -24,6 +29,7 @@ public class StopwatchVBox extends VBox {
     public Button startPause;
     public Button lapReset;
     public Label lap;
+    private String prevSplit;
     private VBox laps;
 
     public StopwatchVBox() {
@@ -62,7 +68,11 @@ public class StopwatchVBox extends VBox {
                 resetStopwatch();
             }
             else if(lapReset.getText().equals("Lap")) {
-                lapStopwatch();
+                try {
+                    lapStopwatch();
+                } catch (ParseException ex) {
+                    ex.printStackTrace();
+                }
             }
         });
 
@@ -83,11 +93,28 @@ public class StopwatchVBox extends VBox {
         buttons.getChildren().addAll(lapReset, startPause);
     }
 
-    public void lapStopwatch() {
-        lap = new Label("Lap " + (laps.getChildren().size()+1) + "     " + stopwatchTime.getText());
+    public void lapStopwatch() throws ParseException {
+        String split = stopwatchTime.getText();
+        lap = new Label("Lap/Split  " + (laps.getChildren().size()+1) + ":          " + getLap(split) + "     " + split);
         lap.setFont(Font.font("Tahoma", FontWeight.EXTRA_BOLD, 18));
         lap.setTextFill(Color.LIGHTSLATEGRAY.brighter().brighter());
         laps.getChildren().add(lap);
+        prevSplit = split;
+    }
+
+    private String getLap(String split) throws ParseException {
+        if (laps.getChildren().isEmpty()) { return split; }
+        else {  //lap = split - prevSplit
+            SimpleDateFormat sdf = new SimpleDateFormat("mm:ss.SSS");
+            Date d1 = sdf.parse(prevSplit.substring(0,5)+'.'+prevSplit.substring(6));
+            Date d2 = sdf.parse(split.substring(0,5)+'.'+split.substring(6));
+
+            long diff = d2.getTime() - d1.getTime();
+            long minutes = TimeUnit.MILLISECONDS.toMinutes(diff);
+            long seconds = (TimeUnit.MILLISECONDS.toSeconds(diff) % 60);
+
+            return String.format("%02d:%02d:%03d",   minutes, seconds, diff - TimeUnit.MINUTES.toMillis(minutes) - TimeUnit.SECONDS.toMillis(seconds));
+        }
     }
 
     public void startStopwatch() {

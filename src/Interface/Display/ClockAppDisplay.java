@@ -107,10 +107,8 @@ public class ClockAppDisplay extends VBox {
         tab.setOnAction(e -> {deselectTab(prevTab);
             try {
                 selectTab(tab);
-            } catch (IOException ioException) {
+            } catch (IOException | ParseException ioException) {
                 ioException.printStackTrace();
-            } catch (ParseException parseException) {
-                parseException.printStackTrace();
             }
         });
     }
@@ -201,14 +199,15 @@ public class ClockAppDisplay extends VBox {
                 label = new Label(desc);
                 break;
         }
-        timerLabel.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 17));
+        timerLabel.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 15));
         timerLabel.setTextFill(Color.WHITE);
         timerLabel.setAlignment(Pos.TOP_LEFT);
         timerLabel.setTranslateX(15);
 
-        label.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 26));
+        label.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 25));
         label.setTextFill(Color.WHITESMOKE);
         label.setAlignment(Pos.CENTER);
+        label.setWrapText(true);
 
         Button exit = new Button("x");
         exit.setCursor(Cursor.HAND);

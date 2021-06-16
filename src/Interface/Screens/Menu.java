@@ -20,7 +20,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -374,14 +373,14 @@ public class Menu {
             city = "Maastricht";
             country = "NL";
         }
-        mainScreen.weatherDisplay.setLocation(city, country);
+        mainScreen.weatherDisplay.setLocation(city, country, false);
         VBox weatherShortcut = mainScreen.weatherDisplay.getWeatherShortcut();
         designShortcut(weatherShortcut, Color.LIGHTBLUE, Pos.CENTER, 200);
         String finalCity = city;
         String finalCountry = country;
         weatherShortcut.setOnMouseClicked(e -> {
             try {
-                mainScreen.setWeatherDisplay(finalCity, finalCountry);
+                mainScreen.setWeatherDisplay(finalCity, finalCountry, false);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

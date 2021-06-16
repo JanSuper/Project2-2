@@ -2,7 +2,6 @@ package Interface.Chat;
 
 import Agents.Assistant;
 import CFGrammar.Main_CFG;
-import DataBase.Data;
 import FileParser.FileParser;
 import Interface.Screens.MainScreen;
 import javafx.beans.binding.Bindings;
@@ -24,7 +23,8 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +32,7 @@ public class ChatApp extends VBox {
     public ObservableList messages = FXCollections.observableArrayList();
     private HBox user;
     private Label userNameLabel;
-    private Paint assistantMessageTextColor = Color.WHITE;
+    private Paint assistantMessageTextColor;
     private ScrollPane scroller;
     private HBox typeField;
     private TextField userInput;
@@ -54,12 +54,9 @@ public class ChatApp extends VBox {
         for (MessageBubble mb : messageBubbles) {
             if (mb.getDirection() == 0) {
                 mb.messageLabel.setBackground(new Background(new BackgroundFill(themeColor, new CornerRadii(0, 7, 7, 7, false), Insets.EMPTY)));
-                if (themeColor.equals(Color.LIGHTGRAY)) {
-                    assistantMessageTextColor = Color.BLACK;
-                    mb.messageLabel.setTextFill(assistantMessageTextColor);}
-                else {
-                    assistantMessageTextColor = Color.WHITE;
-                    mb.messageLabel.setTextFill(assistantMessageTextColor); }
+                if (themeColor.equals(Color.LIGHTGRAY)) { assistantMessageTextColor = Color.BLACK; }
+                else { assistantMessageTextColor = Color.WHITE; }
+                mb.messageLabel.setTextFill(assistantMessageTextColor);
             }
         }
         String userProfilePicture = fileParser.getUsersPicture("profilePicture");
@@ -173,6 +170,9 @@ public class ChatApp extends VBox {
 
         user = new HBox(20);
         user.getChildren().addAll(userIcon, userNameLabel);
+
+        if (themeColor.equals(Color.LIGHTGRAY)) { assistantMessageTextColor = Color.BLACK; }
+        else { assistantMessageTextColor = Color.WHITE; }
 
         createComponents();
         getChildren().setAll(user, scroller, typeField);
