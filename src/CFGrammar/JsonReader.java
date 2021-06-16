@@ -121,7 +121,6 @@ public class JsonReader {
             String[] rhs = split[1].split(" ");
             addRul(lhs,rhs);
         }
-        System.out.println(allRules);
     }
     
     public void addRul(String lhs,String[] rhs){
@@ -336,6 +335,11 @@ public class JsonReader {
         FileWriter writer = new FileWriter("src\\CFGrammar\\grammar.json");
         writer.write(grammar.toJSONString());
         writer.close();
+    }
+
+    public void editRule(String rule, boolean terminal,String newRule) throws IOException {
+        removeRule(rule,terminal);
+        addRules(newRule,terminal);
     }
 
     /**
