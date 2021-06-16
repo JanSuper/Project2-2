@@ -48,7 +48,7 @@ public class FaceClassifier {
     public static String getPerson() throws IOException {
         eyesD = eucDis(leftEyePos, rightEyePos);
         midMouthD = eucDis(facePos, mouthPos);
-        lEyeMidD = eucDis(leftEyePos, mouthPos);
+        lEyeMouthD = eucDis(leftEyePos, mouthPos);
         rEyeMouthD = eucDis(rightEyePos, mouthPos);
         lEyeMidD = eucDis(leftEyePos, facePos);
         rEyeMidD = eucDis(rightEyePos, facePos);
