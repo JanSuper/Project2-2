@@ -10,11 +10,13 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 
 
 public class JsonReader {
-    private ArrayList<String> rules = new ArrayList<>();
+    public ArrayList<String> rules = new ArrayList<>();
+    public ArrayList<ArrayList<String>> allRules = new ArrayList<>();;
 
     /**
      * Gets all rules from JSON file and saves them as Strings
@@ -64,7 +66,7 @@ public class JsonReader {
 
             }
         }
-        System.out.println("number of rules: " + rules.size());
+        //System.out.println("number of rules: " + rules.size());
         //System.out.println(rules);
 
         return rules;
@@ -106,6 +108,46 @@ public class JsonReader {
             }
         }
 
+    }
+
+    /**
+     * return arraylist as [RHS1,[LHS11,LHS12,...],RHS2,[LHS21,LHS22,...]]
+     * @return
+     */
+    public void splitRules(){
+        for (String rule:rules) {
+            String[] split = rule.split(" : ");
+            String lhs = split[0];
+            String[] rhs = split[1].split(" ");
+            addRul(lhs,rhs);
+        }
+        System.out.println(allRules);
+    }
+    
+    public void addRul(String lhs,String[] rhs){
+        boolean alreadyContains = false;
+        for (ArrayList<String> rule:allRules) {
+            if(rule.get(0).equals(lhs)){
+                /*
+                for (int i = 0; i < rhs.length; i++) {
+                    rule.add(rhs[i]);
+                }
+                 */
+                rule.add(Arrays.toString(rhs));
+                alreadyContains = true;
+                break;
+            }
+        }
+        if(!alreadyContains){
+            allRules.add(new ArrayList<>());
+            allRules.get(allRules.size()-1).add(lhs);
+            /*
+            for (int i = 0; i < rhs.length; i++) {
+                allRules.get(allRules.size()-1).add(rhs[i]);
+            }
+             */
+            allRules.get(allRules.size()-1).add(Arrays.toString(rhs));
+        }
     }
 
 

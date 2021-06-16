@@ -27,6 +27,7 @@ import FaceDetection.FaceClassifier;
 import org.opencv.core.Rect;
 
 import java.io.*;
+import java.lang.invoke.MutableCallSite;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,7 +41,8 @@ public class StartScreen extends Application {
     private TextField user;
     private PasswordField psw;
     public Text errorInfo;
-    private CheckBox recognizeUser;
+    public CheckBox recognizeUser;
+    private List<Pair<String, Runnable>> menuData;
 
     private int counter = 0;
 
@@ -59,7 +61,7 @@ public class StartScreen extends Application {
         //class used for reading/writing in the text files
         fileParser = new FileParser();
         //class that uses the openCV face detection
-        faceDetection = new FaceDetection(mainScreen);
+        faceDetection = new FaceDetection(mainScreen,this);
 
         root.setBackground(Data.createBackGround());
         Scene scene = new Scene(root, 800, 800);
@@ -321,7 +323,7 @@ public class StartScreen extends Application {
         errorInfo.setFill(Color.RED);
         menuBox.getChildren().add(errorInfo);
 
-        List<Pair<String, Runnable>> menuData = Arrays.asList(
+        menuData = Arrays.asList(
                 new Pair<String, Runnable>("Log in", () -> {
                     try {
                         login();
@@ -354,9 +356,7 @@ public class StartScreen extends Application {
 
     public void manageUserDetection(){
         if(recognizeUser.isSelected()){
-            
-
-            //faceDetection.draw.setVisible(false);
+            //faceDetection.draw.setVisible(true);
             int maxDelay = 30;
             //start a timer
             long start = System.currentTimeMillis();
@@ -376,7 +376,7 @@ public class StartScreen extends Application {
                         if(elapsedTime[0]/1000>5){
                             //start the analyze of the face
                             errorInfo.setText("Face being analyzed");
-                            analyzeFace();
+                            faceDetection.analyzeFace();
                             break;
                         }else {
                             errorInfo.setText("Face analysis in " + (maxDelay - 25 - elapsedTime[0] / 1000) + " ,please move on the draw");
@@ -390,48 +390,6 @@ public class StartScreen extends Application {
         }
     }
 
-    public void analyzeFace(){
-
-        Task task = new Task<Void>() {
-            @Override public Void call() throws InterruptedException, IOException {
-                while(true){
-                    List<Rect> faces = new ArrayList<>();
-                    List<Rect> leftEyes = new ArrayList<>();
-                    List<Rect> rightEyes = new ArrayList<>();
-                    List<Rect> mouth = new ArrayList<>();
-//                    if(!recognizeUser.isSelected()){
-//                        errorInfo.setText("");
-//                        break;
-//                    }
-
-                    faces.addAll(Arrays.asList(faceDetection.controller.currentFacesArray));
-                    leftEyes.addAll(Arrays.asList(faceDetection.controller.currentLEyesArray));
-                    rightEyes.addAll(Arrays.asList(faceDetection.controller.currentREyesArray));
-                    mouth.addAll(Arrays.asList(faceDetection.controller.currentMouthArray));
-
-                    //System.out.println(faces.size() + " " + leftEyes.size() + " " + rightEyes.size() + " " + mouth.size());
-
-                        FaceClassifier.addFace(faces);
-                        FaceClassifier.addEyes(leftEyes);
-                        FaceClassifier.addEyes(rightEyes);
-                        FaceClassifier.addMouth(mouth);
-
-
-                    if(FaceClassifier.canClassify){
-                        errorInfo.setText("Face analysis done");
-//                        if(FaceClassifier.data.size()<51)
-                        System.out.println(FaceClassifier.getPerson());
-                        //break;
-                    }
-                    if (!true){
-                        break;
-                    }
-                }
-                return null;
-            }
-        };
-        new Thread(task).start();
-    }
 
     public static class MenuTitle extends Pane {
         private Text text;

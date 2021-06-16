@@ -50,6 +50,7 @@ public class WeatherDisplay extends VBox {
     private HBox hourlyHBox;
     private ScrollPane scrollPaneDaily;
     private ScrollPane scrollPaneHourly;
+    private Boolean selectHourly;
     private String addressTitle;
     private String currentTemp;
     private String currentSummary;
@@ -62,9 +63,10 @@ public class WeatherDisplay extends VBox {
         this.mainScreen = mainScreen;
     }
 
-    public void setLocation(String city, String country) throws Exception {
+    public void setLocation(String city, String country, Boolean selectHourly) throws Exception {
         this.cityName = city;
         this.countryName = country;
+        this.selectHourly = selectHourly;
 
         getData();
         setTop();
@@ -74,7 +76,8 @@ public class WeatherDisplay extends VBox {
         setHourly();
 
         getChildren().clear();
-        getChildren().addAll(top, current, hourlyDailyChoice, scrollPaneDaily);
+        if (selectHourly) { getChildren().addAll(top, current, hourlyDailyChoice, scrollPaneHourly); }
+        else { getChildren().addAll(top, current, hourlyDailyChoice, scrollPaneDaily); }
         Color bgColor = Color.WHITE;
         setBackground(new Background(new BackgroundFill(new Color(bgColor.getRed(),bgColor.getGreen(), bgColor.getBlue(), 0.38), CornerRadii.EMPTY, Insets.EMPTY)));
         setMaxHeight(Double.MAX_VALUE);
@@ -91,13 +94,18 @@ public class WeatherDisplay extends VBox {
         hourly.setPrefWidth(70);
         hourly.setTextFill(Color.WHITESMOKE);
         hourly.setCursor(Cursor.HAND);
-        hourly.setBackground(new Background(new BackgroundFill(Color.GRAY.darker().darker(), new CornerRadii(10,0,0,10,false), Insets.EMPTY)));
 
         daily.setFont((Font.font("Cambria", FontWeight.EXTRA_BOLD, 15)));
         daily.setPrefWidth(70);
         daily.setTextFill(Color.WHITESMOKE);
         daily.setCursor(Cursor.HAND);
-        daily.setBackground(new Background(new BackgroundFill(Color.DARKBLUE.darker(), new CornerRadii(0,10,10,0,false), Insets.EMPTY)));
+
+        if (selectHourly) { hourly.setBackground(new Background(new BackgroundFill(Color.DARKBLUE.darker(), new CornerRadii(10,0,0,10,false), Insets.EMPTY)));
+            daily.setBackground(new Background(new BackgroundFill(Color.GRAY.darker().darker(), new CornerRadii(0,10,10,0,false), Insets.EMPTY)));
+        }
+        else { hourly.setBackground(new Background(new BackgroundFill(Color.GRAY.darker().darker(), new CornerRadii(10,0,0,10,false), Insets.EMPTY)));
+            daily.setBackground(new Background(new BackgroundFill(Color.DARKBLUE.darker(), new CornerRadii(0,10,10,0,false), Insets.EMPTY)));
+        }
 
         hourly.setOnMouseClicked(e -> {
             if(getChildren().contains(scrollPaneDaily)) {
@@ -557,7 +565,7 @@ public class WeatherDisplay extends VBox {
         change.setTranslateY(30);
         change.setOnAction(e -> {
             try {
-                mainScreen.setWeatherDisplay(city.getText(), country.getText());
+                mainScreen.setWeatherDisplay(city.getText(), country.getText(), false);
                 stage.close();
             } catch (Exception ex) {
                 warning.setText("Please enter a valid location.");

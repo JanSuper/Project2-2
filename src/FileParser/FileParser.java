@@ -65,9 +65,9 @@ public class FileParser {
         }
     }
 
-    public static String getUserInfo(String info){
+    public static String getUserInfo(String username,String info){
         String result = "";
-        File userFile = new File("src/DataBase/Users/"+Data.getUsername()+"/"+Data.getUsername()+".txt");
+        File userFile = new File("src/DataBase/Users/"+username+"/"+username+".txt");
 
         try{
             BufferedReader reader = new BufferedReader(new FileReader(userFile));

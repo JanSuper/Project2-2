@@ -552,14 +552,14 @@ public class Main_CFG {
         String final_answer = null;
         if(skill_num == 1)
         {
-            String city = assistant.fileParser.getUserInfo("-City");
-            String country = assistant.fileParser.getUserInfo("-Country");
+            String city = assistant.fileParser.getUserInfo(Data.getUsername(),"-City");
+            String country = assistant.fileParser.getUserInfo(Data.getUsername(),"-Country");
             if(city.isEmpty()||country.isEmpty()){
                 System.out.println("It seems like you haven't completed your location yet.");
                 city = "Maastricht";
                 country = "NL";
             }
-            assistant.mainScreen.setWeatherDisplay(city,country);
+            assistant.mainScreen.setWeatherDisplay(city,country,false);
             final_answer = "This is what I found for the weather in "+ city + ", " + country + ". " + assistant.mainScreen.weatherDisplay.currentDataString() + "If you want to change the location, type 'Change weather location to City,Country.' (e.g. Amsterdam,NL).";
         }
         else if(skill_num == 2){
@@ -568,14 +568,14 @@ public class Main_CFG {
             if(variable_words_size == 1)
             {
                 city = variable_words.get(0);
-                assistant.mainScreen.setWeatherDisplay(city, country);
+                assistant.mainScreen.setWeatherDisplay(city, country, false);
                 final_answer = "This is what I found for the weather in "+ city + ". " + assistant.mainScreen.weatherDisplay.currentDataString() + "If you want to change the location, type 'Change weather location to City,Country.' (e.g. Amsterdam,NL).";
             }
             else if(variable_words_size == 2)
             {
                 city = variable_words.get(0);
                 country = variable_words.get(1);
-                assistant.mainScreen.setWeatherDisplay(city, country);
+                assistant.mainScreen.setWeatherDisplay(city, country, false);
                 final_answer = "This is what I found for the weather in "+ city + ". " + assistant.mainScreen.weatherDisplay.currentDataString() + "If you want to change the location, type 'Change weather location to City,Country.' (e.g. Amsterdam,NL).";
             }
             else

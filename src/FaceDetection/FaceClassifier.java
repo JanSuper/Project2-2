@@ -1,5 +1,6 @@
 package FaceDetection;
 
+import FileParser.FileParser;
 import org.opencv.core.Rect;
 
 import java.io.*;
@@ -33,33 +34,52 @@ public class FaceClassifier {
     public static int[] mouthPos = new int[2];
     public static int[] facePos = new int[2];
 
+    public static double eyesD;
+    public static double midMouthD;
+    public static double lEyeMouthD;
+    public static double rEyeMouthD;
+    public static double lEyeMidD;
+    public static double rEyeMidD;
+
     public static List<String> data = new ArrayList();
 
     public static int writeCount = 0;
 
     public static String getPerson() throws IOException {
-        String eyes = eucDis(leftEyePos, rightEyePos) + ", ";
-        String midMouth = eucDis(facePos, mouthPos) + ", ";
-        String leyeMouth = eucDis(leftEyePos, mouthPos) + ", ";
-        String reyeMouth = eucDis(rightEyePos, mouthPos) + ", ";
-        String leyeMid = eucDis(leftEyePos, facePos) + ", ";
-        String reyeMid = eucDis(rightEyePos, facePos) + "";
+        eyesD = eucDis(leftEyePos, rightEyePos);
+        midMouthD = eucDis(facePos, mouthPos);
+        lEyeMidD = eucDis(leftEyePos, mouthPos);
+        rEyeMouthD = eucDis(rightEyePos, mouthPos);
+        lEyeMidD = eucDis(leftEyePos, facePos);
+        rEyeMidD = eucDis(rightEyePos, facePos);
 
-        String comb = eyes + midMouth + leyeMouth + reyeMouth + leyeMid + reyeMid;
-//        writeCount++;
+        String comb = eyesD + "," + midMouthD + "," + lEyeMouthD + "," + rEyeMouthD + "," + lEyeMidD + "," + rEyeMidD;
+        writeCount++;
 
-//        if(writeCount == 1000) {
-//            data.add(comb);
-//            writeCount = 0;
-//        }
-//
-//        System.out.println(data.size());
-//
-//        if(data.size() == 50 && writeCount == 0)
-//            writeToFile();
+        if(writeCount == 1000) {
+            data.add(comb);
+            writeCount = 0;
+        }
 
         return comb;
     }
+
+    public static String getClosestPerson(){
+        File[] users = new File("src/DataBase/Users").listFiles();
+        for (File user:users) {
+            String[] distances = FileParser.getUserInfo(user.getName(),"-Face").split(",");
+            double[] dist = new double[distances.length];
+            for (int i = 0; i < distances.length; i++) {
+                dist[i] = Double.parseDouble(distances[i]);
+            }
+            //ANN here
+            if(true){
+                return user.getName();
+            }
+        }
+        return "not found";
+    }
+
 
     public static void writeToFile(){
         System.out.println("writing in data");
@@ -67,7 +87,7 @@ public class FaceClassifier {
         PrintWriter writer = null;
 
         try {
-            writer = new PrintWriter("F:/Documenten/GitHub/Project2-2/src/FaceDetection/data.txt", "UTF-8");
+            writer = new PrintWriter("Desktop/data.txt", "UTF-8");
             for(int i = 0; i < data.size(); i++) {
                 writer.println(data.get(i));
             }

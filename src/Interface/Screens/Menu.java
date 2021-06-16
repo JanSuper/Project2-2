@@ -20,7 +20,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -262,7 +261,7 @@ public class Menu {
 
         VBox mapShortcut = getIconShortcut("src/res/shortcutIcons/mapIcon.png", 80);
         mapShortcut.setOnMouseClicked(e-> {
-            String c = FileParser.getUserInfo("-City");
+            String c = FileParser.getUserInfo(Data.getUsername(),"-City");
             if(c.isEmpty()){
                 System.out.println("It seems like you haven't completed your location yet.");
                 c = "Maastricht";
@@ -367,21 +366,21 @@ public class Menu {
     }
 
     private void updateWeatherAndCalendarShortcut() throws Exception {
-        String city = FileParser.getUserInfo("-City");
-        String country = FileParser.getUserInfo("-Country");
+        String city = FileParser.getUserInfo(Data.getUsername(),"-City");
+        String country = FileParser.getUserInfo(Data.getUsername(),"-Country");
         if (city.isEmpty() || country.isEmpty()) {
             System.out.println("It seems like you haven't completed your location yet.");
             city = "Maastricht";
             country = "NL";
         }
-        mainScreen.weatherDisplay.setLocation(city, country);
+        mainScreen.weatherDisplay.setLocation(city, country, false);
         VBox weatherShortcut = mainScreen.weatherDisplay.getWeatherShortcut();
         designShortcut(weatherShortcut, Color.LIGHTBLUE, Pos.CENTER, 200);
         String finalCity = city;
         String finalCountry = country;
         weatherShortcut.setOnMouseClicked(e -> {
             try {
-                mainScreen.setWeatherDisplay(finalCity, finalCountry);
+                mainScreen.setWeatherDisplay(finalCity, finalCountry, false);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
