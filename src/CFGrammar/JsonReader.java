@@ -338,6 +338,17 @@ public class JsonReader {
         writer.close();
     }
 
+    /**
+     * Change the probability score of a word or production rule.
+     * @param rule
+     * @param new_prob, the new probability of this rule
+     * @param terminal, is the rule terminal or not
+     */
+    private void modifyProp(String rule , double new_prob, boolean terminal)
+    {
+
+    }
+
     public ArrayList<String> getRules() {
         return rules;
     }
