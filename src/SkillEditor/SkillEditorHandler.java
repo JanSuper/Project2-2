@@ -1,7 +1,6 @@
 package SkillEditor;
 
 import FileParser.FileParser;
-import Interface.Screens.MainScreen;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -42,6 +41,35 @@ public class SkillEditorHandler {
             }
         }
         return allTasks;
+    }
+
+    public List<String> getSentences(String task) throws IOException {
+        BufferedReader data = new BufferedReader(new FileReader(new File("src/DataBase/textRecognitionSkills.txt")));
+        List<String> allSentences = new ArrayList<>();
+        List<String> tempSentences = new ArrayList<>();
+        String skillNum = null;
+
+        for (List<String> row:allSkills) {
+            if(row.get(2).equals(task)){
+                skillNum = row.get(1); //getting skill number
+            }
+        }
+
+        String s;
+        while ((s = data.readLine()) != null) { //getting all sentences with skillNum
+            if (s.startsWith("U")) {
+                tempSentences.add(s.substring(2));
+            }
+            if(s.startsWith("B")){
+                if (s.equals("B " + skillNum)) {
+                    for (String str : tempSentences) {
+                        allSentences.add(str); }
+                } else {
+                    tempSentences.clear();
+                }
+            }
+        }
+        return allSentences;
     }
 
     public String handleAddSkill(String question, String answer){

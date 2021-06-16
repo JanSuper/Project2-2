@@ -14,6 +14,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+import java.io.IOException;
+
 public class SkillEditorDisplay extends VBox {
     private MainScreen mainScreen;
 
@@ -30,7 +32,7 @@ public class SkillEditorDisplay extends VBox {
     private AddRuleEditorVBox addRuleEditorVBox;
     private EditRuleEditorVBox editRuleEditorVBox;
 
-    public SkillEditorDisplay(MainScreen mainScreen){
+    public SkillEditorDisplay(MainScreen mainScreen) throws IOException {
         this.mainScreen = mainScreen;
         addSkillEditorVBox = new AddSkillEditorVBox(this.mainScreen);
         editSkillEditorVBox = new EditSkillEditorVBox(this.mainScreen);
@@ -50,7 +52,7 @@ public class SkillEditorDisplay extends VBox {
         addSkill = new Button("Add Skill");
         designTab(addSkill);
 
-        editSkill = new Button("Edit skill");
+        editSkill = new Button("Edit Skill");
         designTab(editSkill);
 
         addRule = new Button("Add Rule");

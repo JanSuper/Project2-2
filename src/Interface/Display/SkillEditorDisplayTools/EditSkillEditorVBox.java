@@ -1,246 +1,128 @@
 package Interface.Display.SkillEditorDisplayTools;
 
-import CFGrammar.JsonReader;
-import FileParser.FileParser;
 import Interface.Screens.MainScreen;
 import SkillEditor.SkillEditorHandler;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.Cursor;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.control.TextField;
-import java.io.*;
-import java.util.List;
+
+import java.io.IOException;
 
 public class EditSkillEditorVBox extends VBox {
     private MainScreen mainScreen;
-    private JsonReader jsonReader;
-    private FileParser fileParser;
     private SkillEditorHandler skillEditor;
 
-    private File dataBase = new File("src\\DataBase\\textRecognitionSkills.txt");
-
-    private List<List<String>> allSkills;
-
-    private VBox allQuestions;
-    private ScrollPane qScroll;
-
-    private HBox howManyQ;
-    private Spinner<Integer> spinner;
-    private int oldValue;
-    private Label qLabel;
-    private Label aLabel;
-    private TextField answer;
     private Label skillDisplayLabel;
-    private Button enter;
     private ObservableList<String> options1;
-    private ComboBox skillDisplay;
+    private ComboBox skills;
     private ObservableList<String> options2;
-    private ComboBox tasksDisplay;
-    private HBox propositions;
+    private ComboBox tasks;
+    private ObservableList<String> options3;
+    private ComboBox sentences;
+    private HBox options;
+    private Label editLabel;
+    private TextField editTextField;
+    private Button edit;
+    private Button delete;
+    private HBox buttons;
 
-    public EditSkillEditorVBox(MainScreen mainScreen){
+    public EditSkillEditorVBox(MainScreen mainScreen) throws IOException {
         this.mainScreen = mainScreen;
-        jsonReader = new JsonReader();
-        fileParser = new FileParser();
         skillEditor = new SkillEditorHandler();
-        allSkills = fileParser.getAllSkills();
 
-        setSpacing(16);
+        setSpacing(25);
         setAlignment(Pos.CENTER);
         setPadding(new Insets(40,0,0,0));
         createContent();
-        getChildren().addAll(howManyQ,qScroll,aLabel,answer,skillDisplayLabel,propositions,enter);
+        getChildren().addAll(skillDisplayLabel, options, editLabel, editTextField, buttons);
     }
 
-    public void createContent(){
-        spinner = new Spinner<Integer>();
-        spinner.setMaxWidth(60);
-        int initialValue = 0;
-        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10, initialValue);
-        spinner.setValueFactory(valueFactory);
-        oldValue = initialValue;
-        spinner.setOnMouseClicked(event -> {
-            int newVal = spinner.getValue();
-            if(newVal>oldValue){
-                addQuestion();
-            }else if(newVal<oldValue){
-                allQuestions.getChildren().remove(allQuestions.getChildren().size()-1);
-            }
-            if(oldValue==4){
-                qScroll.setMaxHeight(qScroll.getHeight());
-            }
-            oldValue = newVal;
-        });
-
-        qLabel = new Label("Question:");
-        qLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
-        qLabel.setTextFill(MainScreen.themeColor.darker());
-        qLabel.setAlignment(Pos.CENTER);
-
-        howManyQ = new HBox();
-        howManyQ.setSpacing(20);
-        howManyQ.setAlignment(Pos.CENTER);
-        howManyQ.getChildren().addAll(qLabel,spinner);
-
-        allQuestions = new VBox();
-        allQuestions.setSpacing(10);
-        allQuestions.setAlignment(Pos.CENTER);
-
-        qScroll = new ScrollPane(allQuestions);
-        qScroll.setMaxWidth(710);
-        qScroll.setBackground(getBackground());
-        qScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-
-        aLabel = new Label("Answer:");
-        aLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
-        aLabel.setTextFill(MainScreen.themeColor.darker());
-        aLabel.setAlignment(Pos.CENTER);
-        aLabel.setPadding(new Insets(35,0,0,0));
-
-        answer = new TextField();
-        answer.setPromptText("Either write an answer for a talk/discussion or select a skill to display");
-        answer.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
-        answer.setPrefSize(10,36);
-        answer.setMaxWidth(710);
-
-        skillDisplayLabel = new Label("Which skill displays:");
+    public void createContent() throws IOException {
+        skillDisplayLabel = new Label("Select Skill-Task-Sentence to edit/delete:");
         skillDisplayLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
         skillDisplayLabel.setTextFill(MainScreen.themeColor.darker());
         skillDisplayLabel.setAlignment(Pos.CENTER);
-        skillDisplayLabel.setPadding(new Insets(35,0,10,0));
+        skillDisplayLabel.setPadding(new Insets(35, 0, 15, 0));
 
-        options1 =
-                FXCollections.observableArrayList(
-                        skillEditor.getMainSkills()
-                );
-        skillDisplay = new ComboBox(options1);
-        skillDisplay.setValue(options1.get(0));
-        skillDisplay.setOnAction(event -> {
-            options2.setAll(FXCollections.observableArrayList(
-                    skillEditor.getTasks((String) skillDisplay.getValue())
-            ));
-            tasksDisplay.setValue(options2.get(0));
+        options1 = FXCollections.observableArrayList(skillEditor.getMainSkills());
+        skills = new ComboBox(options1);
+        skills.setValue(options1.get(0));
+        skills.setOnAction(event -> {
+            options2.setAll(FXCollections.observableArrayList(skillEditor.getTasks((String) skills.getValue())));
+            tasks.setValue(options2.get(0));
         });
 
-        options2 =
-                FXCollections.observableArrayList(
-                        skillEditor.getTasks((String) skillDisplay.getValue())
-                );
-        tasksDisplay = new ComboBox(options2);
-        tasksDisplay.setValue(options2.get(0));
-
-        propositions = new HBox();
-        propositions.setSpacing(20);
-        propositions.setAlignment(Pos.CENTER);
-        propositions.getChildren().addAll(skillDisplay,tasksDisplay);
-
-        enter = new Button("Enter");
-        enter.setScaleX(2);enter.setScaleY(2);
-        enter.setTranslateY(50);
-        enter.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(90,true), Insets.EMPTY)));
-        enter.setOnAction(e-> {
-            mainScreen.chat.assistant_answer.textRecognition.skillEdit = false;
-            for (Node node:allQuestions.getChildren()) {
-                TextField question = (TextField) node;
-                if (question.getText().isEmpty()||question.getText().isBlank()) {
-                    mainScreen.chat.receiveMessage("Question : \"" + question.getText() + "\" is not under the correct form.");
-                } else {
-                    int result = 0;
-                    try {
-                        result = handleAddSkill(question.getText());
-                    } catch (IOException ioException) {
-                        ioException.printStackTrace();
-                    }
-                    String response = "";
-                    if (result == 1) {
-                        response = "Question : \"" + question.getText() + "\" was successfully added to the database.";
-                        question.setText("");
-                    } else if(result == -1) {
-                        response = "Question : \"" + question.getText() + "\" could not be added to the database";
-                    }else if(result==-2){
-                        response = "Question : \"" + question.getText() + "\" does not contain the required number of variables";
-                    }
-                    mainScreen.chat.receiveMessage(response);
-                }
+        options2 = FXCollections.observableArrayList(skillEditor.getTasks((String) skills.getValue()));
+        tasks = new ComboBox(options2);
+        tasks.setValue(options2.get(0));
+        tasks.setOnAction(event -> {
+            try {
+                options3.setAll(FXCollections.observableArrayList(skillEditor.getSentences((String) tasks.getValue())));
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            answer.setText("");
-            skillDisplay.setValue(options1.get(0));
-            tasksDisplay.setValue(options2.get(0));
+            sentences.setValue(options3.get(0));
         });
-    }
 
-    private void addQuestion(){
-        TextField question = new TextField();
-        question.setPromptText("If you wish to include a variable, please replace it by <VARIABLE>");
-        question.setPrefSize(qScroll.getWidth()-20,25);
-        question.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
-        allQuestions.getChildren().add(question);
-    }
+        options3 = FXCollections.observableArrayList(skillEditor.getSentences((String) tasks.getValue()));
+        sentences = new ComboBox(options3);
+        sentences.setValue(options3.get(0));
 
-    public int handleAddSkill(String question) throws IOException {
-        int success = -1;
-        try{
-            BufferedWriter newData = new BufferedWriter(new FileWriter(dataBase, true));
-            if(answer.getText().isEmpty()||answer.getText().isBlank()){
-                String skill = skillToDisplay(question);
-                if(!skill.equals("-1")){
-                    success = 1;
-                    newData.append("U " + question + System.lineSeparator());
-                    newData.append("B " + skill + System.lineSeparator());
-                }else{
-                    success = -2;
-                }
-            }else{
-                success = 1;
-                newData.append("U " + question + System.lineSeparator());
-                newData.append("B " + answer.getText() + System.lineSeparator());
-            }
-            newData.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        options = new HBox();
+        options.setSpacing(20);
+        options.setAlignment(Pos.CENTER);
+        options.getChildren().addAll(skills, tasks, sentences);
+        options.setPadding(new Insets(0, 0, 28, 0));
 
-        return success;
-    }
+        editLabel = new Label("Edit:");
+        editLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
+        editLabel.setTextFill(MainScreen.themeColor.darker());
+        editLabel.setAlignment(Pos.CENTER);
 
-    public String skillToDisplay(String question){
-        String displayNbr = "-1";
-        for (List<String>row:allSkills) {
-            if(row.get(0).equals(skillDisplay.getValue())&&row.get(2).equals(tasksDisplay.getValue())){
-                if(containsSameNbrOfVariables(question,Integer.valueOf(row.get(3)))){
-                    displayNbr = row.get(1);
-                }
-            }
-        }
-        return displayNbr;
-    }
+        editTextField = new TextField();
+        editTextField.setText(sentences.getValue().toString());
+        sentences.setOnAction(e -> editTextField.setText(sentences.getValue().toString()));
+        editTextField.setMinSize(780, 36);
+        editTextField.setMaxSize(780, 36);
+        editTextField.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
 
-    /**
-     * @param s message from the skill database
-     * @return true if s contains the same nbr of variables than the message stored in the current node
-     */
-    public boolean containsSameNbrOfVariables(String s, int nbrOfVar){
-        int nbrOfRandomWords = 0;
-        for (int i = 0; i < s.length(); i++) {
-            if(s.charAt(i)=='<'){
-                nbrOfRandomWords++;
-            }
-        }
-        if(nbrOfRandomWords==nbrOfVar){
-            return true;
-        }
-        return false;
+        edit = new Button("Edit");
+        edit.setPrefSize(100, 60);
+        edit.setMinSize(100, 60);
+        edit.setFont(Font.font("Tahoma", FontWeight.BOLD, 20));
+        edit.setCursor(Cursor.HAND);
+        edit.setTextFill(Color.LIGHTGRAY);
+        edit.setBackground(new Background(new BackgroundFill(Color.GREEN.darker(), new CornerRadii(90, true), Insets.EMPTY)));
+        edit.setOnAction(e -> {
+        });   //TODO
+
+        Label or = new Label("or");
+        or.setFont(Font.font("Tahoma", FontWeight.BOLD, 23));
+        or.setTextFill(MainScreen.themeColor.darker());
+
+        delete = new Button("Delete");
+        delete.setPrefSize(100, 60);
+        delete.setMinSize(100, 60);
+        delete.setFont(Font.font("Tahoma", FontWeight.BOLD, 20));
+        delete.setCursor(Cursor.HAND);
+        delete.setTextFill(Color.LIGHTGRAY);
+        delete.setBackground(new Background(new BackgroundFill(Color.RED.darker(), new CornerRadii(90, true), Insets.EMPTY)));
+        delete.setOnAction(e -> {
+        }); //TODO
+
+        buttons = new HBox(50);
+        buttons.setTranslateY(40);
+        buttons.setAlignment(Pos.CENTER);
+        buttons.getChildren().addAll(edit, or, delete);
     }
 }
-
