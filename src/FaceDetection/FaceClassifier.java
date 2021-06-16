@@ -57,6 +57,7 @@ public class FaceClassifier {
         writeCount++;
 
         if(writeCount == 1000) {
+            System.out.println("add");
             data.add(comb);
             writeCount = 0;
         }
@@ -65,6 +66,19 @@ public class FaceClassifier {
     }
 
     public static String getClosestPerson(){
+        System.out.println("relative to distance middle to Mouth");
+
+        double reyesD = eyesD/midMouthD;
+        double rmidMouthD = midMouthD/midMouthD;
+        double rlEyeMouthD = lEyeMouthD/midMouthD;
+        double rrEyeMouthD = rEyeMouthD/midMouthD;
+        double rlEyeMidD = lEyeMidD/midMouthD;
+        double rrEyeMidD = rEyeMidD/midMouthD;
+
+        String comb = reyesD + "," + rmidMouthD + "," + rlEyeMouthD + "," + rrEyeMouthD + "," + rlEyeMidD + "," + rrEyeMidD;
+
+        System.out.println(comb);
+
         File[] users = new File("src/DataBase/Users").listFiles();
         for (File user:users) {
             String[] distances = FileParser.getUserInfo(user.getName(),"-Face").split(",");
@@ -72,10 +86,11 @@ public class FaceClassifier {
             for (int i = 0; i < distances.length; i++) {
                 dist[i] = Double.parseDouble(distances[i]);
             }
+            System.out.println(Arrays.toString(dist));
             //ANN here
-            if(true){
-                return user.getName();
-            }
+//            if(true){
+//                return user.getName();
+//            }
         }
         return "not found";
     }
