@@ -14,9 +14,9 @@ public class FaceClassifier {
 
     public static int count = 0;
 
-    static public final int MAX_EYES = 20;
-    static public final int MAX_FACES = 10;
-    static public final int MAX_MOUTHS = 10;
+    static public final int MAX_EYES = 40;
+    static public final int MAX_FACES = 20;
+    static public final int MAX_MOUTHS = 20;
     static final int MAX_DIFF = 5;
     static final int MAX_CLUSS = 5;
 
@@ -68,12 +68,39 @@ public class FaceClassifier {
     public static String getClosestPerson(){
         System.out.println("relative to distance middle to Mouth");
 
-        double reyesD = eyesD/midMouthD;
-        double rmidMouthD = midMouthD/midMouthD;
-        double rlEyeMouthD = lEyeMouthD/midMouthD;
-        double rrEyeMouthD = rEyeMouthD/midMouthD;
-        double rlEyeMidD = lEyeMidD/midMouthD;
-        double rrEyeMidD = rEyeMidD/midMouthD;
+        double eyd = 0;
+        double mmo = 0;
+        double lemo = 0;
+        double remo = 0;
+        double lemi = 0;
+        double remi = 0;
+
+        for(int i = 0; i< data.size(); i++){
+            String[] hold = data.get(i).split(",");
+            eyd += Double.parseDouble(hold[0]);
+            mmo += Double.parseDouble(hold[1]);
+            lemo += Double.parseDouble(hold[2]);
+            remo += Double.parseDouble(hold[3]);
+            lemi += Double.parseDouble(hold[4]);
+            remi += Double.parseDouble(hold[5]);
+            System.out.println(i);
+        }
+
+        eyd /= data.size();
+        mmo /= data.size();
+        lemo /= data.size();
+        remo /= data.size();
+        lemi /= data.size();
+        remi /= data.size();
+
+        System.out.println("here");
+
+        double reyesD = eyd/mmo;
+        double rmidMouthD = mmo/mmo;
+        double rlEyeMouthD = lemo/mmo;
+        double rrEyeMouthD = remo/mmo;
+        double rlEyeMidD = lemi/mmo;
+        double rrEyeMidD = remi/mmo;
 
         String comb = reyesD + "," + rmidMouthD + "," + rlEyeMouthD + "," + rrEyeMouthD + "," + rlEyeMidD + "," + rrEyeMidD;
 
@@ -81,6 +108,7 @@ public class FaceClassifier {
 
         File[] users = new File("src/DataBase/Users").listFiles();
         for (File user:users) {
+            //System.out.println(user.toString());
             String[] distances = FileParser.getUserInfo(user.getName(),"-Face").split(",");
             double[] dist = new double[distances.length];
             for (int i = 0; i < distances.length; i++) {
@@ -160,7 +188,7 @@ public class FaceClassifier {
 
     public static List<Rect> Eyefilter(List<Rect> newParts){
         for(int i = newParts.size() -1 ; i >= 0; i--){
-            if(newParts.get(i).y > facePos[1]){
+            if(newParts.get(i).y > facePos[1] || newParts.get(i).y < face.get(0).y){
                 newParts.remove(i);
             }
         }

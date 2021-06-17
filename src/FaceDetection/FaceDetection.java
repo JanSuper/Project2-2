@@ -147,7 +147,7 @@ public class FaceDetection extends VBox {
 
                     FaceClassifier.getPerson();
 
-                    if(FaceClassifier.data.size()>51){
+                    if(FaceClassifier.data.size()>100){
                         startScreen.errorInfo.setText("Face analysis done");
                         //FaceClassifier.writeToFile();
                         System.out.println(FaceClassifier.getClosestPerson());
