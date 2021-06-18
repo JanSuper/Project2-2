@@ -16,11 +16,17 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class EditSkillEditorVBox extends VBox {
     private MainScreen mainScreen;
     private SkillEditorHandler skillEditor;
+    private File dataBase = new File("src\\DataBase\\textRecognitionSkills.txt");
 
     private Label skillDisplayLabel;
     private ObservableList<String> options1;
@@ -54,35 +60,7 @@ public class EditSkillEditorVBox extends VBox {
         skillDisplayLabel.setAlignment(Pos.CENTER);
         skillDisplayLabel.setPadding(new Insets(35, 0, 15, 0));
 
-        options1 = FXCollections.observableArrayList(skillEditor.getMainSkills());
-        skills = new ComboBox(options1);
-        skills.setValue(options1.get(0));
-        skills.setOnAction(event -> {
-            options2.setAll(FXCollections.observableArrayList(skillEditor.getTasks((String) skills.getValue())));
-            tasks.setValue(options2.get(0));
-        });
-
-        options2 = FXCollections.observableArrayList(skillEditor.getTasks((String) skills.getValue()));
-        tasks = new ComboBox(options2);
-        tasks.setValue(options2.get(0));
-        tasks.setOnAction(event -> {
-            try {
-                options3.setAll(FXCollections.observableArrayList(skillEditor.getSentences((String) tasks.getValue())));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            sentences.setValue(options3.get(0));
-        });
-
-        options3 = FXCollections.observableArrayList(skillEditor.getSentences((String) tasks.getValue()));
-        sentences = new ComboBox(options3);
-        sentences.setValue(options3.get(0));
-
-        options = new HBox();
-        options.setSpacing(20);
-        options.setAlignment(Pos.CENTER);
-        options.getChildren().addAll(skills, tasks, sentences);
-        options.setPadding(new Insets(0, 0, 28, 0));
+        handleComboBoxes(false);
 
         editLabel = new Label("Edit:");
         editLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
@@ -118,11 +96,78 @@ public class EditSkillEditorVBox extends VBox {
         delete.setTextFill(Color.LIGHTGRAY);
         delete.setBackground(new Background(new BackgroundFill(Color.RED.darker(), new CornerRadii(90, true), Insets.EMPTY)));
         delete.setOnAction(e -> {
-        }); //TODO
+            String sentenceToDelete = sentences.getValue().toString();
+            String response = "Sentence : \"" + sentenceToDelete + "\" could not be deleted from the database.";
+
+            if (editTextField.getText().equals(sentenceToDelete)) {
+                if (sentences.getItems().size() == 1) {
+                    response = "Sentence : \"" + sentenceToDelete + "\" could not be deleted since it is the only sentence defined in the database for this task.";
+                }
+                else {
+                    try {
+                        deleteSentenceFromFile(sentenceToDelete);
+                        response = "Sentence : \"" + sentenceToDelete + "\" was successfully deleted from the database.";
+                        handleComboBoxes(true);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }else {
+                response = "Are you sure you want to delete this sentence? It seems like you started editing it. Please try again.";
+            }
+            mainScreen.chat.receiveMessage(response);
+        });
 
         buttons = new HBox(50);
         buttons.setTranslateY(40);
         buttons.setAlignment(Pos.CENTER);
         buttons.getChildren().addAll(edit, or, delete);
+    }
+
+    private void handleComboBoxes(Boolean isUpdate) throws IOException {
+        options1 = FXCollections.observableArrayList(skillEditor.getMainSkills());
+        skills = new ComboBox(options1);
+        skills.setValue(options1.get(0));
+        skills.setOnAction(event -> {
+            options2.setAll(FXCollections.observableArrayList(skillEditor.getTasks((String) skills.getValue())));
+            tasks.setValue(options2.get(0));
+        });
+
+        options2 = FXCollections.observableArrayList(skillEditor.getTasks((String) skills.getValue()));
+        tasks = new ComboBox(options2);
+        tasks.setValue(options2.get(0));
+        tasks.setOnAction(event -> {
+            try {
+                options3.setAll(FXCollections.observableArrayList(skillEditor.getSentences((String) tasks.getValue())));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            sentences.setValue(options3.get(0));
+        });
+
+        options3 = FXCollections.observableArrayList(skillEditor.getSentences((String) tasks.getValue()));
+        sentences = new ComboBox(options3);
+        sentences.setValue(options3.get(0));
+
+        options = new HBox();
+        options.setSpacing(20);
+        options.setAlignment(Pos.CENTER);
+        options.getChildren().addAll(skills, tasks, sentences);
+        options.setPadding(new Insets(0, 0, 28, 0));
+
+        if (isUpdate) {
+            editTextField.setText(sentences.getValue().toString());
+            sentences.setOnAction(e -> editTextField.setText(sentences.getValue().toString()));
+            getChildren().remove(1);
+            getChildren().add(1, options);
+        }
+    }
+
+    private void deleteSentenceFromFile(String lineContent) throws IOException
+    {
+        List<String> out = Files.lines(dataBase.toPath())
+                .filter(line -> !line.contains("U " + lineContent))
+                .collect(Collectors.toList());
+        Files.write(dataBase.toPath(), out, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
     }
 }
