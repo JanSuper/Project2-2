@@ -88,6 +88,7 @@ VB -> check # 0.04
 VB -> see # 0.04
 VB -> set # 0.04
 VB -> get # 0.04
+VB -> restart # 0.04
 VB -> reset # 0.04
 VB -> add # 0.04
 VB -> start # 0.03
@@ -130,7 +131,8 @@ Weather_word -> weather # 0.06
 Weather_word -> temperature # 0.06
 Weather_word -> climate # 0.06
 Weather_word -> clima # 0.07
-Weather_word -> sun sunny # 0.06
+Weather_word -> sun # 0.07
+Weather_word -> sunny # 0.06
 Weather_word -> rain # 0.06
 Weather_word -> rainy # 0.06
 Weather_word -> snow # 0.07

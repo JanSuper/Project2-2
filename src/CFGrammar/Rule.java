@@ -7,6 +7,7 @@ public class Rule
     private ArrayList<String> RHS_Branch = null;
     private String RHS_Word = null;
     private String LHS = null;
+    private double word_prob = 0;
 
     /**
      * Can be both, Branch_Rule and Word_Rule.
@@ -22,6 +23,7 @@ public class Rule
         Rule rule = new Rule();
         rule.LHS = rules[0];
         rule.RHS_Word = rules[2];
+        rule.word_prob = Double.parseDouble(rules[4]);
         return rule;
     }
 
@@ -116,5 +118,15 @@ public class Rule
     public int getScore()
     {
         return 1;
+    }
+
+    public double getWord_prob()
+    {
+        return word_prob;
+    }
+
+    public void setWord_prob(double word_prob)
+    {
+        this.word_prob = word_prob;
     }
 }

@@ -5,11 +5,15 @@ import java.util.ArrayList;
 public class Word_Rule {
     private ArrayList<Rule> word_Rules = null;
     private ArrayList<String> result_array = null;
+    private ArrayList<Double> prob_word = null;
+
+    //TODO add a probability part in here for each words
 
     public Word_Rule()
     {
         word_Rules = new ArrayList<>();
         result_array = new ArrayList<>();
+        prob_word = new ArrayList<>();
     }
 
     public void addRule(String[] rules)

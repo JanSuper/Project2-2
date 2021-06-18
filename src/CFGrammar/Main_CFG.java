@@ -29,9 +29,9 @@ public class Main_CFG {
      * @param args
      */
     public static void main(String[] args) throws IOException {
-        /*String test = "What is my next lecture?";
+        String test = "How to restart a timer?";
 
-        Main_CFG cfg = new Main_CFG(test);*/
+        Main_CFG cfg = new Main_CFG(test);
 
         //JsonReader jr = new JsonReader();
         //ArrayList<String> grammar = jr.getAllRules();
@@ -50,28 +50,45 @@ public class Main_CFG {
     private Assistant assistant;
     private SkillEditorHandler skillEditor;
 
-    public Main_CFG(String pUser_message)
+    private double verb_weight;
+    private double noun_weight;
+    private double var_weight;
+    private double threshold;
+
+    public Main_CFG(String pUser_message) throws IOException
     {
         user_message = removePunctuation(pUser_message).toLowerCase();
         u_message = user_message.split("\\s");
         message_length = u_message.length;
 
-        JsonReader reader = new JsonReader();
+        /*JsonReader reader = new JsonReader();
         ArrayList<String> checkgrammar = reader.getAllRules();
         splitGrammar(checkgrammar);
         initialize_Tree();
+        implement_Tree();*/
+
+        ArrayList<String> grammar = getAllRules();
+        splitGrammar(grammar);
+        initialize_Tree();
         implement_Tree();
+
+        verb_weight = 2;
+        noun_weight = 3;
+        var_weight = 1;
+        threshold = 0.5;
 
         StringBuffer result = new StringBuffer();
         getEndSplit(result);
         System.out.println(result.toString());
 
+        toPrint();
         getSkill();
     }
 
     public Main_CFG(String pUser_message, Assistant assistant)
     {
-        user_message = removePunctuation(pUser_message).toLowerCase();
+        System.out.println("Wrong constructor !");
+        /*user_message = removePunctuation(pUser_message).toLowerCase();
         u_message = user_message.split("\\s");
         message_length = u_message.length;
 
@@ -88,7 +105,8 @@ public class Main_CFG {
         getEndSplit(result);
         System.out.println(result.toString());
 
-        getSkill();
+        toPrint();
+        getSkill();*/
     }
 
     public String removePunctuation(String uMessage)
@@ -109,11 +127,11 @@ public class Main_CFG {
         for(int i = 0; i < rules.size(); i++)
         {
             String[] rule = rules.get(i).split("\\s");
-            if(rule.length < 3)
+            if(rule.length < 5)
             {
                 continue;
             }
-            else if(rule.length == 3)
+            else if(rule.length == 5)
             {
                 //System.out.println("Word rule : "+rule[0]);
                 WR.addRule(rule);
@@ -133,8 +151,8 @@ public class Main_CFG {
 
     public int getSkill()
     {
-        int score = 0;
-        int best_score = 0;
+        double score = 0;
+        double best_score = 0;
         int final_skill_nbr = 0;
         ArrayList<Integer> possible_skills = new ArrayList<>();
         ArrayList<String> words_toSearch = new ArrayList<>();
@@ -146,6 +164,7 @@ public class Main_CFG {
         {
             System.out.println(main_words.get(i));
         }
+        System.out.println("");
         FileParser sk_file = new FileParser();
         List<List<String>> allSkills = sk_file.getAllSkills();
 
@@ -155,9 +174,9 @@ public class Main_CFG {
             String category = main_word[0];
             String word = main_word[1];
 
-            if(category.contains("_word") || category.equals("VB") || category.equals(("VBZ")))
+            if(category.contains("_word") || category.equals("VB") || category.equals("VBZ") || category.equals("N"))
             {
-                System.out.println("Added word to the list: "+ word);
+                //System.out.println("Added word to the list: "+ word);
                 words_toSearch.add(word);
             }
 
@@ -171,64 +190,82 @@ public class Main_CFG {
         for(int i = 0; i < allSkills.size(); i++)
         {
             score = 0;
-            String verb = allSkills.get(i).get(4);
-            String noun = allSkills.get(i).get(5);
-            String var = allSkills.get(i).get(6);
-            String skill_nbr = allSkills.get(i).get(1);
+            ArrayList<String> verbs = new ArrayList<>();
+            ArrayList<String> nouns = new ArrayList<>();
+            int var = Integer.parseInt(allSkills.get(i).get(3));
+            int skill_nbr = Integer.parseInt(allSkills.get(i).get(1));
 
-            //TODO: adapt the score!
+            for(int h = 0; h < 4; h++)
+            {
+                verbs.add(allSkills.get(i).get(h+4));
+                nouns.add(allSkills.get(i).get(h+8));
+            }
+
+            //TODO: adapt the score! with weights GA
             for(int j = 0; j < words_toSearch.size(); j++)
             {
-                if(words_toSearch.get(j).equals(verb))
+                for(int z = 0; z < verbs.size(); z++)
                 {
-                    //System.out.println("Added to score: "+verb);
-                    score = score +2;
+                    String[] temp = verbs.get(z).split("#");
+                    String verb = temp[0];
+                    Double v_prob = Double.parseDouble(temp[1]);
+                    if(words_toSearch.get(j).equals(verb))
+                    {
+                        //TODO add with levenshtein dis.
+                        score = score + verb_weight*v_prob;
+                        //System.out.println("Score after verb = "+score);
+                    }
                 }
-                if(words_toSearch.get(j).equals(noun))
+                for(int z = 0; z < nouns.size(); z++)
                 {
-                    //System.out.println("Added to score: "+noun);
-                    score = score + 3;
+                    String[] temp = nouns.get(z).split("#");
+                    String noun = temp[0];
+                    Double n_prob = Double.parseDouble(temp[1]);
+                    if(words_toSearch.get(j).equals(noun))
+                    {
+                        //TODO add with levenshtein dis.
+                        score = score + noun_weight*n_prob;
+                        //System.out.println("Score after noun = "+score);
+                    }
                 }
             }
 
-            // "y" means there is a variable for this skill
-            if(var.equals("y"))
+            // nbr of variable for this skill
+            if(var != 0)
             {
-                String var_nbr_s = allSkills.get(i).get(3);
-                int var_nbr = Integer.parseInt(var_nbr_s);
-                if(var_nbr == variable_words.size())
+                if(var == variable_words.size())
                 {
-                    score++;
+                    score = score + var_weight;
+                    //System.out.println("Score after variable = "+score);
                 }
-                //score++;
             }
 
             if(score > best_score)
             {
                 possible_skills.clear();
-                possible_skills.add(Integer.parseInt(skill_nbr));
+                possible_skills.add(skill_nbr);
                 best_score = score;
             }
             else if(score == best_score)
             {
-                possible_skills.add(Integer.parseInt(skill_nbr));
+                possible_skills.add(skill_nbr);
             }
         }
 
         for(int i = 0; i < variable_words.size(); i++)
         {
-            System.out.println("Final variable : "+ variable_words.get(i));
+            System.out.println("Final variable :   "+ variable_words.get(i));
         }
 
-        System.out.println("Final skill list size : "+possible_skills.size());
+        //System.out.println("Final skill list size : "+possible_skills.size());
         for(int z = 0; z < possible_skills.size(); z++)
         {
-            System.out.println("Skill nbr : "+possible_skills.get(z));
+            System.out.println("Skill nbr :        "+possible_skills.get(z));
         }
 
-        System.out.println("With best score: "+ best_score);
+            System.out.println("With best score:   "+ best_score);
 
-        if(best_score > 3)
+        if(best_score >= threshold)
         {
             int n = new Random().nextInt(possible_skills.size());
             final_skill_nbr = possible_skills.get(n);
@@ -534,6 +571,7 @@ public class Main_CFG {
 
             cost_memory = cost_previous;
             cost_previous = cost_distance;
+
             cost_distance = cost_memory;
         }
 
@@ -883,4 +921,35 @@ public class Main_CFG {
         return final_answer;
     }
 
+    public void setVerb_weight(double verb_weight) {
+        this.verb_weight = verb_weight;
+    }
+
+    public void setVar_weight(double var_weight) {
+        this.var_weight = var_weight;
+    }
+
+    public void setNoun_weight(double noun_weight) {
+        this.noun_weight = noun_weight;
+    }
+
+    public void setThreshold(double threshold) {
+        this.threshold = threshold;
+    }
+
+    public double getThreshold() {
+        return threshold;
+    }
+
+    public double getNoun_weight() {
+        return noun_weight;
+    }
+
+    public double getVar_weight() {
+        return var_weight;
+    }
+
+    public double getVerb_weight() {
+        return verb_weight;
+    }
 }
