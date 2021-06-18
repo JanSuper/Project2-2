@@ -8,17 +8,17 @@ import java.util.List;
 
 public class SkillEditorHandler {
 
-    private List<List<String>> allSkills;
+    private List<List<String>> allSkillsKind;
     private FileParser fileParser;
 
     public SkillEditorHandler(){
         fileParser = new FileParser();
-        allSkills = fileParser.getAllSkills();
+        allSkillsKind = fileParser.getAllSkillsKind();
     }
 
     public String allOperations(){
         String r = "";
-        for (List<String> operation:allSkills) {
+        for (List<String> operation: allSkillsKind) {
             r+=("Main skill: " + operation.get(0) +", description the operation: " + operation.get(2) +  ", required nbr of variables: " + operation.get(3)+", corresponding task number: " + operation.get(1) + "\n");
         }
         return r;
@@ -26,7 +26,7 @@ public class SkillEditorHandler {
 
     public List<String> getMainSkills(){
         List<String> mainSkills = new ArrayList<>();
-        for (List<String> row:allSkills) {
+        for (List<String> row: allSkillsKind) {
             if(!mainSkills.contains(row.get(0))){
                 mainSkills.add(row.get(0));
             }
@@ -35,7 +35,7 @@ public class SkillEditorHandler {
     }
     public List<String> getTasks(String skill){
         List<String> allTasks = new ArrayList<>();
-        for (List<String> row:allSkills) {
+        for (List<String> row: allSkillsKind) {
             if(row.get(0).equals(skill)){
                 allTasks.add(row.get(2));
             }
@@ -49,7 +49,7 @@ public class SkillEditorHandler {
         List<String> tempSentences = new ArrayList<>();
         String skillNum = null;
 
-        for (List<String> row:allSkills) {
+        for (List<String> row: allSkillsKind) {
             if(row.get(2).equals(task)){
                 skillNum = row.get(1); //getting skill number
             }
@@ -110,7 +110,7 @@ public class SkillEditorHandler {
 
     public String skillToDisplay(String question,String skill,String task){
         String displayNbr = "-1";
-        for (List<String> row:allSkills) {
+        for (List<String> row: allSkillsKind) {
             if(row.get(0).equals(skill)&&row.get(2).equals(task)){
                 if(containsSameNbrOfVariables(question,Integer.valueOf(row.get(3)))){
                     displayNbr = row.get(1);

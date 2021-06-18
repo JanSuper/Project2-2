@@ -37,17 +37,16 @@ public class EditRuleEditorVBox extends VBox {
     private int oldValue;
     private Label titleLabel;
     private TextField lhs;
-    private CheckBox isTerminal;
     private Button enter;
 
     private VBox editor = null;
 
+    private String newRule;
 
-    public EditRuleEditorVBox(MainScreen mainScreen){
+
+    public EditRuleEditorVBox(MainScreen mainScreen) throws IOException {
         this.mainScreen = mainScreen;
         jsonReader=new JsonReader();
-        jsonReader.getAllRules();
-        jsonReader.splitRules();
 
         setSpacing(16);
         setAlignment(Pos.CENTER);
@@ -83,32 +82,14 @@ public class EditRuleEditorVBox extends VBox {
         return -1;
     }
 
-    public void createContent(){
+    public void createContent() throws IOException {
 
         titleLabel1 = new Label("Title (LHS):");
         titleLabel1.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
         titleLabel1.setTextFill(MainScreen.themeColor.darker());
         titleLabel1.setAlignment(Pos.CENTER);
 
-        options1 =
-                FXCollections.observableArrayList(
-                       allKind(-1)
-                );
-        lhsC = new ComboBox(options1);
-        lhsC.setValue(options1.get(0));
-        lhsC.setOnAction(event -> {
-            options2.setAll(FXCollections.observableArrayList(
-                    allKind(getIndexOfRhs((String) lhsC.getValue()))
-            ));
-            rhsC.setValue(options2.get(0));
-        });
-
-        options2 =
-                FXCollections.observableArrayList(
-                        allKind(getIndexOfRhs((String) lhsC.getValue()))
-                );
-        rhsC = new ComboBox(options2);
-        rhsC.setValue(options2.get(0));
+        handleComboBoxes(false);
 
         ruleLabel = new Label("Rule (RHS):");
         ruleLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
@@ -121,13 +102,20 @@ public class EditRuleEditorVBox extends VBox {
         edit.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(90,true), Insets.EMPTY)));
         edit.setOnAction(event -> {
             if(editor==null){
+                lhsC.setDisable(true);
+                rhsC.setDisable(true);
+
                 String rhs1 = (String) rhsC.getValue();
                 String noBrackets = rhs1.substring( 1, rhs1.length() - 1 );
                 String[] rhs = noBrackets.split(",");
                 showEditor((String)lhsC.getValue(),rhs);
             }else if(getChildren().contains(editor)){
+                lhsC.setDisable(false);
+                rhsC.setDisable(false);
                 getChildren().remove(editor);
             }else{
+                lhsC.setDisable(true);
+                rhsC.setDisable(true);
                 getChildren().add(editor);
             }
         });
@@ -166,13 +154,14 @@ public class EditRuleEditorVBox extends VBox {
         return rule;
     }
 
-    public void refresh(){
+    private void handleComboBoxes(Boolean isUpdate) throws IOException {
         jsonReader.getAllRules();
         jsonReader.splitRules();
         options1 =
                 FXCollections.observableArrayList(
                         allKind(-1)
                 );
+        lhsC = new ComboBox(options1);
         lhsC.setValue(options1.get(0));
         lhsC.setOnAction(event -> {
             options2.setAll(FXCollections.observableArrayList(
@@ -185,7 +174,15 @@ public class EditRuleEditorVBox extends VBox {
                 FXCollections.observableArrayList(
                         allKind(getIndexOfRhs((String) lhsC.getValue()))
                 );
+        rhsC = new ComboBox(options2);
         rhsC.setValue(options2.get(0));
+
+
+        if (isUpdate) {
+            getChildren().remove(editor);
+            getChildren().remove(1);getChildren().add(1,lhsC);
+            getChildren().remove(3);getChildren().add(3,rhsC);
+        }
     }
 
     public boolean isTerminal(String rule){
@@ -197,6 +194,8 @@ public class EditRuleEditorVBox extends VBox {
     }
 
     public void showEditor(String lhs1,String[]rhs){
+        String rule = convertToRule((String)lhsC.getValue(), (String) rhsC.getValue());
+
         editor = new VBox(10);
         editor.setTranslateY(50);
         editor.setAlignment(Pos.CENTER);
@@ -223,24 +222,29 @@ public class EditRuleEditorVBox extends VBox {
         spinner = new Spinner<Integer>();
         spinner.setMaxWidth(60);
 
-        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10, oldValue);
-        spinner.setValueFactory(valueFactory);
+        SpinnerValueFactory<Integer> valueFactory;
+        if(isTerminal(rule)){
+            valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 1, oldValue);
+        }else {
+            valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10, oldValue);
+        }
         spinner.setOnMouseClicked(event -> {
             int newVal = spinner.getValue();
-            if(newVal>oldValue){
-                if(newVal<=rhs.length){
-                    addRule(rhs[newVal-1]);
-                }else {
+            if (newVal > oldValue) {
+                if (newVal <= rhs.length) {
+                    addRule(rhs[newVal - 1]);
+                } else {
                     addRule("-1");
                 }
-            }else if(newVal<oldValue){
-                allQuestions.getChildren().remove(allQuestions.getChildren().size()-1);
+            } else if (newVal < oldValue) {
+                allQuestions.getChildren().remove(allQuestions.getChildren().size() - 1);
             }
-            if(oldValue==4){
+            if (oldValue == 4) {
                 qScroll.setMaxHeight(qScroll.getHeight());
             }
             oldValue = newVal;
         });
+        spinner.setValueFactory(valueFactory);
 
         Label ruleLabel = new Label("New rule (RHS):");
         ruleLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
@@ -252,42 +256,39 @@ public class EditRuleEditorVBox extends VBox {
         howManyQ.setAlignment(Pos.CENTER);
         howManyQ.getChildren().addAll(ruleLabel,spinner);
 
-        isTerminal = new CheckBox("Is terminal");
-        isTerminal.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
-        isTerminal.setTextFill(MainScreen.themeColor.darker());
-        isTerminal.setAlignment(Pos.CENTER);
-
         enter = new Button("Add");
         enter.setScaleX(2);enter.setScaleY(2);
         enter.setTranslateY(50);
         enter.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(90,true), Insets.EMPTY)));
         enter.setOnAction(e-> {
-            try {
-                String rhs1 = "";
-                for (int i=0;i<allQuestions.getChildren().size()-1;i++) {
+            String rhs1 = "";
+            if(isTerminal(rule)){
+                TextField question = (TextField) allQuestions.getChildren().get(0);
+                rhs1 = question.getText();
+            }else {
+                for (int i = 0; i < allQuestions.getChildren().size() - 1; i++) {
                     TextField question = (TextField) allQuestions.getChildren().get(i);
-                    rhs1 += question.getText()+",";
+                    rhs1 += question.getText() + ",";
                 }
-                TextField question = (TextField) allQuestions.getChildren().get(allQuestions.getChildren().size()-1);
-                rhs1+=question.getText();
-                try {
-                    String newRule = lhs.getText()+":"+rhs1;
-                    jsonReader.editRule(lhs1,isTerminal(newRule),newRule);
-                    mainScreen.chat.receiveMessage("Rule " + lhs1 + " has been edited into " + newRule + ".");
-                    refresh();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-                jsonReader.addRules(lhs.getText()+":"+rhs1,isTerminal.isSelected());
-            } catch (Exception exception) {
-                mainScreen.chat.receiveMessage("The rule could not be added for some reason, please recheck its format");
+                TextField question = (TextField) allQuestions.getChildren().get(allQuestions.getChildren().size() - 1);
+                rhs1 += question.getText();
+            }
+            newRule = lhs.getText()+":"+rhs1;
+            try {
+                jsonReader.editRule(rule,isTerminal(rule),newRule);
+                mainScreen.chat.receiveMessage("Rule " + rule + " has been edited into " + newRule + ".");
+                handleComboBoxes(true);
+            } catch (IOException ex) {
+                mainScreen.chat.receiveMessage("Rule " + rule + " could not be edited into " + newRule + ".");
+                ex.printStackTrace();
             }
             lhs.setText("");
-            isTerminal.setSelected(false);
-            mainScreen.chat.receiveMessage("The rule has been added in the database");
+            lhsC.setDisable(false);
+            rhsC.setDisable(false);
+            getChildren().remove(editor);
         });
 
-        editor.getChildren().addAll(titleLabel,lhs,howManyQ,qScroll,isTerminal,enter);
+        editor.getChildren().addAll(titleLabel,lhs,howManyQ,qScroll,enter);
 
         getChildren().add(editor);
     }

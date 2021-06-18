@@ -12,10 +12,6 @@ import java.util.Scanner;
 
 public class FileParser {
 
-    public FileParser(){
-
-    }
-
     public String getUsersPicture(String type){
         File userPicture = new File("src/DataBase/Users/"+ Data.getUsername()+"/"+type+".png");
         if(!userPicture.exists()||!userPicture.isFile()){
@@ -171,7 +167,7 @@ public class FileParser {
      * @return a matrix so that each row is [mainSkill, task nbr, task description,nbr of variables required]
      * EXAMPLE: [Weather,1,How is the weather here,0]
      */
-    public List<List<String>> getAllSkills(){
+    public List<List<String>> getAllSkillsKind(){
         // this gives you a 2-dimensional array of strings
         List<List<String>> lines = new ArrayList<>();
         Scanner inputStream;
@@ -191,5 +187,17 @@ public class FileParser {
             e.printStackTrace();
         }
         return lines;
+    }
+
+    /**
+     *
+     * @return a matrix so that each row is [answer, question1,question2,...,questionN]
+     * EXAMPLE: [Hi,Hello,Hi]
+     */
+    public List<List<String>> getAllSkills(){
+        // this gives you a 2-dimensional array of strings
+        List<List<String>> skills = new ArrayList<>();
+
+        return skills;
     }
 }

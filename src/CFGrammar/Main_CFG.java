@@ -17,7 +17,6 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -166,7 +165,7 @@ public class Main_CFG {
         }
         System.out.println("");
         FileParser sk_file = new FileParser();
-        List<List<String>> allSkills = sk_file.getAllSkills();
+        List<List<String>> allSkills = sk_file.getAllSkillsKind();
 
         for(int i = 0; i < main_words.size(); i++)
         {

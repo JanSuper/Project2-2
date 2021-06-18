@@ -50,7 +50,7 @@ public class AddSkillEditorVBox extends VBox {
         jsonReader = new JsonReader();
         fileParser = new FileParser();
         skillEditor = new SkillEditorHandler();
-        allSkills = fileParser.getAllSkills();
+        allSkills = fileParser.getAllSkillsKind();
 
         setSpacing(16);
         setAlignment(Pos.CENTER);

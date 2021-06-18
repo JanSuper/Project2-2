@@ -266,7 +266,6 @@ U Can you show me my personal info
 U What is my current personal info
 B 89
 
-U Bye
 U See you
 U Close assistant
 U Good bye
@@ -411,7 +410,3 @@ U Add an alarm for <VARIABLE> with <VARIABLE>
 B 27
 U rule editor
 B 32
-U test1
-B oui
-U test2
-B oui
