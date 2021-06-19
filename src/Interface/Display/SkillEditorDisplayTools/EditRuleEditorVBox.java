@@ -64,10 +64,11 @@ public class EditRuleEditorVBox extends VBox {
             }
         }else{
             //get all LHS of RHS of index index
-            for (int i = 0; i < jsonReader.allRules.get(index).size(); i++) {
-                if(i!=0){
-                    kind.add(jsonReader.allRules.get(index).get(i));
-                }
+            int i = 0;
+            for (String l : jsonReader.allRules.get(index)) {
+                if(i!=0 && !kind.contains(l)) {
+                    kind.add(l);
+                } i++;
             }
         }
         return kind;
@@ -116,6 +117,12 @@ public class EditRuleEditorVBox extends VBox {
             }else{
                 lhsC.setDisable(true);
                 rhsC.setDisable(true);
+
+                lhs.setText(lhsC.getValue().toString());
+                String rhs1 = (String) rhsC.getValue();
+                String noBrackets = rhs1.substring( 1, rhs1.length() - 1 );
+                String[] rhs = noBrackets.split(",");
+                handleSpinner(true, rhs);   //updating spinner for the selected rhs
                 getChildren().add(editor);
             }
         });
@@ -129,6 +136,7 @@ public class EditRuleEditorVBox extends VBox {
             try {
                 jsonReader.removeRule(rule,isTerminal(rule));
                 mainScreen.chat.receiveMessage("Rule " + rule + " has been removed.");
+                handleComboBoxes(true);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -179,7 +187,9 @@ public class EditRuleEditorVBox extends VBox {
 
 
         if (isUpdate) {
-            getChildren().remove(editor);
+            if (getChildren().contains(editor)) {
+                getChildren().remove(editor);
+            }
             getChildren().remove(1);getChildren().add(1,lhsC);
             getChildren().remove(3);getChildren().add(3,rhsC);
         }
@@ -193,7 +203,7 @@ public class EditRuleEditorVBox extends VBox {
         return true;
     }
 
-    public void showEditor(String lhs1,String[]rhs){
+    public void showEditor(String lhs1,String[] rhs){
         String rule = convertToRule((String)lhsC.getValue(), (String) rhsC.getValue());
 
         editor = new VBox(10);
@@ -219,32 +229,7 @@ public class EditRuleEditorVBox extends VBox {
         lhs.setPrefSize(10,36);
         lhs.setMaxWidth(710);
 
-        spinner = new Spinner<Integer>();
-        spinner.setMaxWidth(60);
-
-        SpinnerValueFactory<Integer> valueFactory;
-        if(isTerminal(rule)){
-            valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 1, oldValue);
-        }else {
-            valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10, oldValue);
-        }
-        spinner.setOnMouseClicked(event -> {
-            int newVal = spinner.getValue();
-            if (newVal > oldValue) {
-                if (newVal <= rhs.length) {
-                    addRule(rhs[newVal - 1]);
-                } else {
-                    addRule("-1");
-                }
-            } else if (newVal < oldValue) {
-                allQuestions.getChildren().remove(allQuestions.getChildren().size() - 1);
-            }
-            if (oldValue == 4) {
-                qScroll.setMaxHeight(qScroll.getHeight());
-            }
-            oldValue = newVal;
-        });
-        spinner.setValueFactory(valueFactory);
+        handleSpinner(false, rhs);
 
         Label ruleLabel = new Label("New rule (RHS):");
         ruleLabel.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
@@ -290,6 +275,57 @@ public class EditRuleEditorVBox extends VBox {
         editor.getChildren().addAll(titleLabel,lhs,howManyQ,qScroll,enter);
 
         getChildren().add(editor);
+    }
+
+    private void handleSpinner(boolean isUpdate, String[] rhs) {
+        if (isUpdate) {
+            allQuestions = new VBox();
+            allQuestions.setSpacing(10);
+            allQuestions.setAlignment(Pos.CENTER);
+
+            qScroll = new ScrollPane(allQuestions);
+            qScroll.setMaxWidth(710);
+            qScroll.setBackground(getBackground());
+            qScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+            oldValue = 0;
+        }
+        String rule = convertToRule((String)lhsC.getValue(), (String) rhsC.getValue());
+
+        spinner = new Spinner<>();
+        spinner.setMaxWidth(60);
+
+        SpinnerValueFactory<Integer> valueFactory;
+        if(isTerminal(rule)){
+            valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 1, oldValue);
+        }else {
+            valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10, oldValue);
+        }
+        spinner.setOnMouseClicked(event -> {
+            int newVal = spinner.getValue();
+            if (newVal > oldValue) {
+                if (newVal <= rhs.length) {
+                    addRule(rhs[newVal - 1]);
+                } else {
+                    addRule("-1");
+                }
+            } else if (newVal < oldValue) {
+                allQuestions.getChildren().remove(allQuestions.getChildren().size() - 1);
+            }
+            if (oldValue == 4) {
+                qScroll.setMaxHeight(qScroll.getHeight());
+            }
+            oldValue = newVal;
+        });
+        spinner.setValueFactory(valueFactory);
+
+        if (isUpdate) {
+            howManyQ.getChildren().remove(1);
+            howManyQ.getChildren().add(1,spinner);
+            editor.getChildren().remove(2);
+            editor.getChildren().add(2,howManyQ);
+            editor.getChildren().remove(3);
+            editor.getChildren().add(3,qScroll);
+        }
     }
 
     private void addRule(String txt){
