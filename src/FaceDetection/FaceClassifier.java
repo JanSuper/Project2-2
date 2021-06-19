@@ -57,7 +57,7 @@ public class FaceClassifier {
         writeCount++;
 
         if(writeCount == 1000) {
-            System.out.println("add");
+            System.out.println(comb);
             data.add(comb);
             writeCount = 0;
         }
