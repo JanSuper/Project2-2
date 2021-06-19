@@ -123,6 +123,12 @@ public class Experiments extends Application {
     }
 
     public void getInfo() throws IOException {
+        FaceClassifier.MAX_EYES = 2;
+        FaceClassifier.MAX_FACES = 1;
+        FaceClassifier.MAX_MOUTHS = 1;
+        FaceClassifier.MAX_WRITECOUNT = 1;
+
+
         List<Rect> faces = new ArrayList<>();
         List<Rect> leftEyes = new ArrayList<>();
         List<Rect> rightEyes = new ArrayList<>();
@@ -133,13 +139,19 @@ public class Experiments extends Application {
         rightEyes.addAll(Arrays.asList(faceDetection.controller.currentREyesArray));
         mouth.addAll(Arrays.asList(faceDetection.controller.currentMouthArray));
 
-        FaceClassifier.addFace(faces);
-        FaceClassifier.addEyes(leftEyes);
-        FaceClassifier.addEyes(rightEyes);
-        FaceClassifier.addMouth(mouth);
+        if (faces.size() > 0 && leftEyes.size()+rightEyes.size() > 1 && mouth.size() > 0) {
 
-        FaceClassifier.getPerson();
-        System.out.println(FaceClassifier.comb);
-        System.out.println(FaceClassifier.getClosestPerson());
+            FaceClassifier.addFace(faces);
+            FaceClassifier.addEyes(leftEyes);
+            FaceClassifier.addEyes(rightEyes);
+            FaceClassifier.addMouth(mouth);
+
+            FaceClassifier.getPerson();
+            System.out.println(FaceClassifier.comb);
+            System.out.println(FaceClassifier.getClosestPerson());
+        }
+        else{
+            System.out.println("no person found");
+        }
     }
 }

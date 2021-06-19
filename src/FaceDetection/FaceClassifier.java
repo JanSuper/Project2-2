@@ -14,9 +14,10 @@ public class FaceClassifier {
 
     public static int count = 0;
 
-    static public final int MAX_EYES = 40;
-    static public final int MAX_FACES = 20;
-    static public final int MAX_MOUTHS = 20;
+    static public int MAX_EYES = 40;
+    static public int MAX_FACES = 20;
+    static public int MAX_MOUTHS = 20;
+    static public int MAX_WRITECOUNT = 1000;
     static final int MAX_DIFF = 5;
     static final int MAX_CLUSS = 5;
 
@@ -58,7 +59,7 @@ public class FaceClassifier {
         comb = eyesD + "," + midMouthD + "," + lEyeMouthD + "," + rEyeMouthD + "," + lEyeMidD + "," + rEyeMidD;
         writeCount++;
 
-        if(writeCount == 1000) {
+        if(writeCount == MAX_WRITECOUNT) {
             System.out.println(comb);
             data.add(comb);
             writeCount = 0;
@@ -112,15 +113,30 @@ public class FaceClassifier {
         for (File user:users) {
             //System.out.println(user.toString());
             String[] distances = FileParser.getUserInfo(user.getName(),"-Face").split(",");
+            String[] faceStat = comb.split(",");
             double[] dist = new double[distances.length];
+            double difference = 10000;
+            String finalUser = "";
             for (int i = 0; i < distances.length; i++) {
-                dist[i] = Double.parseDouble(distances[i]);
+                if (i != 1) {
+                    dist[i] = Double.parseDouble(distances[i]);
+                    double a = Double.parseDouble(distances[i]);
+                    double b = Double.parseDouble(faceStat[i]);
+                    double newdiff = Math.min(Math.abs(Math.pow(a, 2) - Math.pow(b, 2)), difference);
+
+                    if (newdiff != difference) {
+                        difference = Math.min(Math.abs(Math.pow(a, 2) - Math.pow(b, 2)), difference);
+                        finalUser = user.getName();
+                    }
+
+                }
             }
             System.out.println(Arrays.toString(dist));
-            //ANN here
-//            if(true){
-//                return user.getName();
-//            }
+            difference /= faceStat.length;
+            System.out.println(difference);
+            if(difference < 0.001){
+                return finalUser;
+            }
         }
         return "not found";
     }
