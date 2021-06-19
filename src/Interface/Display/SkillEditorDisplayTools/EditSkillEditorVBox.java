@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 public class EditSkillEditorVBox extends VBox {
     private MainScreen mainScreen;
     private SkillEditorHandler skillEditor;
-    private File dataBase = new File("src\\DataBase\\textRecognitionSkills.txt");
 
     private Label skillDisplayLabel;
     private ObservableList<String> options1;
@@ -82,7 +81,23 @@ public class EditSkillEditorVBox extends VBox {
         edit.setTextFill(Color.LIGHTGRAY);
         edit.setBackground(new Background(new BackgroundFill(Color.GREEN.darker(), new CornerRadii(90, true), Insets.EMPTY)));
         edit.setOnAction(e -> {
-        });   //TODO
+            String sentenceToEdit = sentences.getValue().toString();
+            String newSentence = editTextField.getText();
+            String response = "Sentence : \"" + sentenceToEdit + "\" could not be edited.";
+
+            if (!editTextField.getText().equals(sentenceToEdit)) {
+                try {
+                    skillEditor.editSentence(sentenceToEdit,newSentence);
+                    response = "Sentence : \"" + sentenceToEdit + "\" was successfully edited to \"" + newSentence + "\".";
+                    handleComboBoxes(true);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }else {
+                response = "You have not changed the sentence.";
+            }
+            mainScreen.chat.receiveMessage(response);
+        });
 
         Label or = new Label("or");
         or.setFont(Font.font("Tahoma", FontWeight.BOLD, 23));
@@ -105,7 +120,7 @@ public class EditSkillEditorVBox extends VBox {
                 }
                 else {
                     try {
-                        deleteSentenceFromFile(sentenceToDelete);
+                        skillEditor.deleteSentenceFromFile(sentenceToDelete);
                         response = "Sentence : \"" + sentenceToDelete + "\" was successfully deleted from the database.";
                         handleComboBoxes(true);
                     } catch (IOException ex) {
@@ -163,11 +178,4 @@ public class EditSkillEditorVBox extends VBox {
         }
     }
 
-    private void deleteSentenceFromFile(String lineContent) throws IOException
-    {
-        List<String> out = Files.lines(dataBase.toPath())
-                .filter(line -> !line.contains("U " + lineContent))
-                .collect(Collectors.toList());
-        Files.write(dataBase.toPath(), out, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
-    }
 }

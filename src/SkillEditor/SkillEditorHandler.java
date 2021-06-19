@@ -3,13 +3,19 @@ package SkillEditor;
 import FileParser.FileParser;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class SkillEditorHandler {
 
     private List<List<String>> allSkillsKind;
     private FileParser fileParser;
+
+    private File dataBase = new File("src\\DataBase\\textRecognitionSkills.txt");
 
     public SkillEditorHandler(){
         fileParser = new FileParser();
@@ -43,34 +49,6 @@ public class SkillEditorHandler {
         return allTasks;
     }
 
-    public List<String> getSentences(String task) throws IOException {
-        BufferedReader data = new BufferedReader(new FileReader(new File("src/DataBase/textRecognitionSkills.txt")));
-        List<String> allSentences = new ArrayList<>();
-        List<String> tempSentences = new ArrayList<>();
-        String skillNum = null;
-
-        for (List<String> row: allSkillsKind) {
-            if(row.get(2).equals(task)){
-                skillNum = row.get(1); //getting skill number
-            }
-        }
-
-        String s;
-        while ((s = data.readLine()) != null) { //getting all sentences with skillNum
-            if (s.startsWith("U")) {
-                tempSentences.add(s.substring(2));
-            }
-            if(s.startsWith("B")){
-                if (s.equals("B " + skillNum)) {
-                    for (String str : tempSentences) {
-                        allSentences.add(str); }
-                } else {
-                    tempSentences.clear();
-                }
-            }
-        }
-        return allSentences;
-    }
 
     public String handleAddSkill(String question, String answer){
         String response = "";
@@ -135,5 +113,66 @@ public class SkillEditorHandler {
             return true;
         }
         return false;
+    }
+
+    public List<String> getSentences(String task) throws IOException {
+        BufferedReader data = new BufferedReader(new FileReader(dataBase));
+        List<String> allSentences = new ArrayList<>();
+        List<String> tempSentences = new ArrayList<>();
+        String skillNum = null;
+
+        for (List<String> row: allSkillsKind) {
+            if(row.get(2).equals(task)){
+                skillNum = row.get(1); //getting skill number
+            }
+        }
+
+        String s;
+        while ((s = data.readLine()) != null) { //getting all sentences with skillNum
+            if (s.startsWith("U")) {
+                tempSentences.add(s.substring(2));
+            }
+            if(s.startsWith("B")){
+                if (s.equals("B " + skillNum)) {
+                    for (String str : tempSentences) {
+                        allSentences.add(str); }
+                } else {
+                    tempSentences.clear();
+                }
+            }
+        }
+        return allSentences;
+    }
+
+    public void deleteSentenceFromFile(String lineContent) throws IOException
+    {
+        List<String> out = Files.lines(dataBase.toPath())
+                .filter(line -> !line.contains("U " + lineContent))
+                .collect(Collectors.toList());
+        Files.write(dataBase.toPath(), out, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+    }
+
+    public void editSentence(String oldSentence, String newSentence) throws IOException {
+        String data = "";
+        try {
+            Scanner myReader = new Scanner(dataBase);
+            while (myReader.hasNextLine()) {
+                String line = myReader.nextLine();
+                if (line.startsWith("U") && line.equals("U " + oldSentence)) {
+                    data += ("U " + newSentence) + "\n";
+                } else {
+                    data += line + "\n";
+                }
+            }
+            myReader.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+        System.out.println(data);
+
+        FileWriter fileWriter = new FileWriter(dataBase);
+        fileWriter.write(data);
+        fileWriter.close();
     }
 }

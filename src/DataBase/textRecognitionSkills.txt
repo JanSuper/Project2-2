@@ -33,7 +33,7 @@ B I can show you the weather (type "Weather") or your UM schedule (type "this we
 // SKILLS WITHOUT VARIABLES
 /////////////////////////////////////////////////////////////////////////////////////////
 
-U How is the weather
+U How is the weather ?
 U What is the weather like
 U Check the weather
 U Give how the weather is
@@ -315,7 +315,7 @@ U How is the weather in <VARIABLE>
 U What is the weather in <VARIABLE>
 U Change weather location to <VARIABLE>
 U Show me the weather in <VARIABLE>
-U Will it be nice wether in <VARIABLE>
+U Will it be nice weather in <VARIABLE>
 U Is there a storm coming in <VARIABLE>
 B 2
 
