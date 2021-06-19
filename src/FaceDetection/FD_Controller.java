@@ -398,7 +398,7 @@ public class FD_Controller {
         if(currentFacesArray.length!=0&&currentLEyesArray.length!=0) {
             for (int i = 0; i < currentFacesArray.length; i++) {
                 Rect face = currentFacesArray[i];
-                System.out.println("face " + face.width + " " + face.height);
+                //System.out.println("face " + face.width + " " + face.height);
                 int[] faceCenter = FaceClassifier.calcMiddle(new ArrayList<>(Arrays.asList(face)));
                 for (int j = 0; j < currentLEyesArray.length; j++) {
                     Rect lEye = currentLEyesArray[j];
@@ -407,7 +407,7 @@ public class FD_Controller {
                         currentLEyesArray = removeElement(lEye, currentLEyesArray);
                     }
                     //remove if too big or too small
-                    System.out.println("left eye " + lEye.width + " " + lEye.height);
+                    //System.out.println("left eye " + lEye.width + " " + lEye.height);
                     if(lEye.height>face.height*EYES_HEIGHT_MAX&&lEye.height<face.height*EYES_HEIGHT_MIN&&lEye.width>face.width*EYES_WIDTH_MAX&&lEye.width<face.width*EYES_WIDTH_MIN){
                         currentLEyesArray = removeElement(lEye, currentLEyesArray);
                     }
@@ -427,11 +427,11 @@ public class FD_Controller {
         if(currentFacesArray.length!=0&&currentREyesArray.length!=0){
             for (int i = 0; i < currentFacesArray.length; i++) {
                 Rect face = currentFacesArray[i];
-                System.out.println("face " + face.width + " " + face.height);
+                //System.out.println("face " + face.width + " " + face.height);
                 int[] faceCenter = FaceClassifier.calcMiddle(new ArrayList<>(Arrays.asList(face)));
                 for (int j = 0; j < currentREyesArray.length; j++) {
                     Rect rEye = currentREyesArray[j];
-                    System.out.println("right eye " + rEye.width + " " + rEye.height);
+                    //System.out.println("right eye " + rEye.width + " " + rEye.height);
                     int nbrPtsOutside = nbrOfPtsOutside(face,rEye);
                     if(nbrPtsOutside>0){
                         currentREyesArray = removeElement(rEye, currentREyesArray);
@@ -454,11 +454,11 @@ public class FD_Controller {
             //remove mouth outside of the face
             for (int i = 0; i < currentFacesArray.length; i++) {
                 Rect face = currentFacesArray[i];
-                System.out.println("face " + face.width + " " + face.height);
+                //System.out.println("face " + face.width + " " + face.height);
                 int[] faceCenter = FaceClassifier.calcMiddle(new ArrayList<>(Arrays.asList(face)));
                 for (int j = 0; j < currentMouthArray.length; j++) {
                     Rect mouth = currentMouthArray[j];
-                    System.out.println("mouth " + mouth.width + " " + mouth.height);
+                    //System.out.println("mouth " + mouth.width + " " + mouth.height);
                     int nbrPtsOutside = nbrOfPtsOutside(face,mouth);
                     if(nbrPtsOutside>2){
                         currentMouthArray = removeElement(mouth, currentMouthArray);
