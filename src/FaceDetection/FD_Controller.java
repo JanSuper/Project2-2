@@ -29,7 +29,7 @@ public class FD_Controller {
     private ImageView originalFrame;
     // checkbox for selecting the Haar Classifier
     @FXML
-    private CheckBox haarClassifier;
+    public CheckBox haarClassifier;
     // checkbox for selecting the LBP Classifier
     @FXML
     private CheckBox lbpClassifier;
@@ -45,7 +45,7 @@ public class FD_Controller {
     private Imgcodecs Highgui;
 
     // the face cascade classifier object
-    private CascadeClassifier faceCascade;
+    public CascadeClassifier faceCascade;
     // minimum face size
     public int absoluteFaceSize;
     // each rectangle in faces is a face
@@ -53,7 +53,7 @@ public class FD_Controller {
     public Rect[] previousFacesArray;
 
     // the eye cascade classifier object
-    private CascadeClassifier rEyeCascade;
+    public CascadeClassifier rEyeCascade;
     // minimum eye size width
     public int absoluteREyesSizeWidth;
     // minimum eye size height
@@ -62,7 +62,7 @@ public class FD_Controller {
     public Rect[] currentREyesArray;
 
     // the eye cascade classifier object
-    private CascadeClassifier lEyeCascade;
+    public CascadeClassifier lEyeCascade;
     // minimum eye size width
     public int absoluteLEyesSizeWidth;
     // minimum eye size height
@@ -71,7 +71,7 @@ public class FD_Controller {
     public Rect[] currentLEyesArray;
 
     // the face cascade classifier object
-    private CascadeClassifier mouthCascade;
+    public CascadeClassifier mouthCascade;
     // minimum face size width
     public int absoluteMouthSizeWidth;
     // minimum face size height

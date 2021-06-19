@@ -14,6 +14,7 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.objdetect.CascadeClassifier;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -21,12 +22,11 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class Experiments extends Application {
-    FaceDetection faceDetection;
+    FaceDetection faceDetection = new FaceDetection();
 
     private Imgcodecs Highgui;
 
-    public Experiments(FaceDetection faceDetection){
-        this.faceDetection = faceDetection;
+    public Experiments() throws IOException {
     }
 
     public Mat imageToMat(Image image) {
@@ -44,8 +44,6 @@ public class Experiments extends Application {
     }
 
     public Image detectFaceFromFrame(Mat frame){
-        // init everything
-        Image imageToShow = null;
 
         // detection
         faceDetection.controller.detectAndDisplay(frame);
@@ -72,13 +70,30 @@ public class Experiments extends Application {
         return new Image(new ByteArrayInputStream(buffer.toArray()));
     }
 
+    public void initialize(){
+        faceDetection.controller.faceCascade = new CascadeClassifier();
+        faceDetection.controller.absoluteFaceSize = 0;
+
+        faceDetection.controller.rEyeCascade = new CascadeClassifier();
+        faceDetection.controller.absoluteREyesSizeWidth = 0;
+        faceDetection.controller.absoluteREyesSizeHeight = 0;
+        faceDetection.controller.lEyeCascade = new CascadeClassifier();
+        faceDetection.controller.absoluteLEyesSizeWidth = 0;
+        faceDetection.controller.absoluteLEyesSizeHeight = 0;
+
+        faceDetection.controller.mouthCascade = new CascadeClassifier();
+        faceDetection.controller.absoluteMouthSizeWidth = 0;
+        faceDetection.controller.absoluteMouthSizeHeight = 0;
+
+        faceDetection.controller.haarClassifier.setSelected(true);
+        faceDetection.controller.haarSelected();
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
+        initialize();
 
-        FaceDetection faceDetection = new FaceDetection();
-        this.faceDetection = faceDetection;
-
-        Image image = new Image(new File(Data.getImage()).toURI().toString(),Double.MAX_VALUE,Double.MAX_VALUE,false,true);
+        Image image = new Image(new File("src/DataBase/me.jpg").toURI().toString(), Double.MAX_VALUE, Double.MAX_VALUE, false, true);
         Mat frame = imageToMat(image);
 
         Image imageDetected = detectFaceFromFrame(frame);
@@ -94,7 +109,7 @@ public class Experiments extends Application {
         imageView.setPreserveRatio(true);
         //Setting the Scene object
         Group root = new Group(imageView);
-        Scene scene = new Scene(root, 595, 370);
+        Scene scene = new Scene(root, imageDetected.getWidth(), imageDetected.getHeight());
         primaryStage.setTitle("Displaying Image");
         primaryStage.setScene(scene);
         primaryStage.show();
