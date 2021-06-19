@@ -16,13 +16,15 @@ import java.util.Iterator;
 
 public class JsonReader {
     public ArrayList<String> rules = new ArrayList<>();
-    public ArrayList<ArrayList<String>> allRules = new ArrayList<>();;
+    public ArrayList<ArrayList<String>> allRules = new ArrayList<>();
 
     /**
      * Gets all rules from JSON file and saves them as Strings
      * @return ArrayList filled with String Rules
      */
     public ArrayList<String> getAllRules() {
+        rules = new ArrayList<>();
+        allRules = new ArrayList<>();
         /*
         Open file
          */
