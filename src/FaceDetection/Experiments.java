@@ -93,7 +93,7 @@ public class Experiments extends Application {
     public void start(Stage primaryStage) throws Exception {
         initialize();
 
-        Image image = new Image(new File("src/DataBase/me.jpg").toURI().toString(), Double.MAX_VALUE, Double.MAX_VALUE, false, true);
+        Image image = new Image(new File("src/DataBase/jan.jpg").toURI().toString(), Double.MAX_VALUE, Double.MAX_VALUE, false, true);
         Mat frame = imageToMat(image);
 
         Image imageDetected = detectFaceFromFrame(frame);
@@ -105,7 +105,7 @@ public class Experiments extends Application {
         //Setting the image view parameters
         imageView.setX(10);
         imageView.setY(10);
-        imageView.setFitWidth(575);
+        imageView.setFitWidth(0);
         imageView.setPreserveRatio(true);
         //Setting the Scene object
         Group root = new Group(imageView);
