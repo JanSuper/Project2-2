@@ -190,6 +190,8 @@ public class JsonReader {
         else {
             rhs = new String[]{righthand};
         }
+        String[] rElements = rhs[rhs.length-1].split("#");
+        String probability = rElements[rElements.length-1];
         if(terminal){
             if(grammar.containsKey("terminals")){
                 if(grammar.get("terminals") instanceof JSONObject){
@@ -201,6 +203,7 @@ public class JsonReader {
                             {
                                 values.add(rhs[k]);
                             }
+                            values.add(probability);
                             terminals.put(lhs,values);
                         }
                     }
@@ -210,6 +213,7 @@ public class JsonReader {
                         {
                             values.add(rhs[k]);
                         }
+                        values.add(probability);
                         terminals.put(lhs,values);
                     }
                 }
@@ -223,6 +227,7 @@ public class JsonReader {
                 {
                     value.add(rhs[k]);
                 }
+                value.add(probability);
                 values.add(value);
                 grammar.put(lhs,values);
             }
@@ -234,6 +239,7 @@ public class JsonReader {
             {
                 value.add(rhs[k]);
             }
+            value.add(probability);
             values.add(value);
             grammar.put(lhs,values);
         }
@@ -350,9 +356,15 @@ public class JsonReader {
      * @param new_prob, the new probability of this rule
      * @param terminal, is the rule terminal or not
      */
-    private void modifyProp(String rule , double new_prob, boolean terminal)
-    {
-
+    private void modifyProp(String rule , double new_prob, boolean terminal) throws IOException {
+        String[] r = rule.split("#");
+        r[r.length-1] = Double.toString(new_prob);
+        StringBuffer rulemaker = new StringBuffer();
+        for(int i = 0; i < r.length; i++){
+            rulemaker.append(r[i]);
+        }
+        String new_rule = rulemaker.toString();
+        editRule(rule, terminal, new_rule);
     }
 
     public ArrayList<String> getRules() {
