@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
+import org.opencv.core.Rect;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.objdetect.CascadeClassifier;
 
@@ -20,6 +21,9 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Experiments extends Application {
     FaceDetection faceDetection = new FaceDetection();
@@ -98,6 +102,9 @@ public class Experiments extends Application {
 
         Image imageDetected = detectFaceFromFrame(frame);
 
+        getInfo();
+
+
         //Creating the image view
         ImageView imageView = new ImageView();
         //Setting image to the image view
@@ -113,5 +120,26 @@ public class Experiments extends Application {
         primaryStage.setTitle("Displaying Image");
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    public void getInfo() throws IOException {
+        List<Rect> faces = new ArrayList<>();
+        List<Rect> leftEyes = new ArrayList<>();
+        List<Rect> rightEyes = new ArrayList<>();
+        List<Rect> mouth = new ArrayList<>();
+
+        faces.addAll(Arrays.asList(faceDetection.controller.currentFacesArray));
+        leftEyes.addAll(Arrays.asList(faceDetection.controller.currentLEyesArray));
+        rightEyes.addAll(Arrays.asList(faceDetection.controller.currentREyesArray));
+        mouth.addAll(Arrays.asList(faceDetection.controller.currentMouthArray));
+
+        FaceClassifier.addFace(faces);
+        FaceClassifier.addEyes(leftEyes);
+        FaceClassifier.addEyes(rightEyes);
+        FaceClassifier.addMouth(mouth);
+
+        FaceClassifier.getPerson();
+        System.out.println(FaceClassifier.comb);
+        System.out.println(FaceClassifier.getClosestPerson());
     }
 }

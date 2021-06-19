@@ -23,12 +23,12 @@ public class FD_Controller {
     //FACE PERCENTAGE BOUNDARIES
 
     private final float EYES_WIDTH_MAX = 0.45f;
-    private final float EYES_WIDTH_MIN = 0.25f;
+    private final float EYES_WIDTH_MIN = 0.2f;
     private final float EYES_HEIGHT_MAX = 0.35f;
     private final float EYES_HEIGHT_MIN = 0.15f;
 
     private final float MOUTH_WIDTH_MAX = 0.6f;
-    private final float MOUTH_WIDTH_MIN = 0.4f;
+    private final float MOUTH_WIDTH_MIN = 0.3f;
     private final float MOUTH_HEIGHT_MAX = 0.4f;
     private final float MOUTH_HEIGHT_MIN = 0.2f;
 

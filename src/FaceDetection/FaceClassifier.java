@@ -43,6 +43,8 @@ public class FaceClassifier {
 
     public static List<String> data = new ArrayList();
 
+    public static String comb;
+
     public static int writeCount = 0;
 
     public static String getPerson() throws IOException {
@@ -53,7 +55,7 @@ public class FaceClassifier {
         lEyeMidD = eucDis(leftEyePos, facePos);
         rEyeMidD = eucDis(rightEyePos, facePos);
 
-        String comb = eyesD + "," + midMouthD + "," + lEyeMouthD + "," + rEyeMouthD + "," + lEyeMidD + "," + rEyeMidD;
+        comb = eyesD + "," + midMouthD + "," + lEyeMouthD + "," + rEyeMouthD + "," + lEyeMidD + "," + rEyeMidD;
         writeCount++;
 
         if(writeCount == 1000) {
