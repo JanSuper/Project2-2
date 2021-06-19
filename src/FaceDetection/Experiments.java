@@ -1,6 +1,8 @@
 package FaceDetection;
 
 import DataBase.Data;
+import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritablePixelFormat;
@@ -11,6 +13,7 @@ import org.opencv.imgcodecs.Imgcodecs;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class Experiments {
@@ -22,13 +25,23 @@ public class Experiments {
         this.faceDetection = faceDetection;
     }
 
-    public static void main(String[]args) throws Exception {
-        Experiments experiments = new Experiments(new FaceDetection());
+    public static void main(String[]args) {
+        Platform.startup(new Runnable() {
+            @Override
+            public void run() {
+                Experiments experiments = null;
+                try {
+                    experiments = new Experiments(new FaceDetection());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-        Image image = new Image(new File(Data.getImage()).toURI().toString(),Double.MAX_VALUE,Double.MAX_VALUE,false,true);
-        Mat frame = experiments.imageToMat(image);
+                Image image = new Image(new File(Data.getImage()).toURI().toString(),Double.MAX_VALUE,Double.MAX_VALUE,false,true);
+                Mat frame = experiments.imageToMat(image);
 
-        experiments.detectFaceFromFrame(frame);
+                Image imageDetected = experiments.detectFaceFromFrame(frame);
+            }
+        });
     }
 
     public Mat imageToMat(Image image) {
@@ -45,7 +58,7 @@ public class Experiments {
         return mat;
     }
 
-    public void detectFaceFromFrame(Mat frame){
+    public Image detectFaceFromFrame(Mat frame){
         // init everything
         Image imageToShow = null;
 
@@ -53,7 +66,7 @@ public class Experiments {
         faceDetection.controller.detectAndDisplay(frame);
 
         // convert the Mat object (OpenCV) to Image (JavaFX)
-        imageToShow = mat2Image(frame);
+        return mat2Image(frame);
     }
 
     /**
