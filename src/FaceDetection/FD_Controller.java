@@ -20,6 +20,18 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class FD_Controller {
+    //FACE PERCENTAGE BOUNDARIES
+
+    private final float EYES_WIDTH_MAX = 0.45f;
+    private final float EYES_WIDTH_MIN = 0.25f;
+    private final float EYES_HEIGHT_MAX = 0.35f;
+    private final float EYES_HEIGHT_MIN = 0.15f;
+
+    private final float MOUTH_WIDTH_MAX = 0.6f;
+    private final float MOUTH_WIDTH_MIN = 0.4f;
+    private final float MOUTH_HEIGHT_MAX = 0.4f;
+    private final float MOUTH_HEIGHT_MIN = 0.2f;
+
     public MainScreen mainScreen = null;
     // FXML buttons
     @FXML
@@ -277,22 +289,22 @@ public class FD_Controller {
     }
 
     public void detectLeftEye(MatOfRect rectangle, Mat grayFrame, Mat frame){
-        // compute minimum left eye size width (10% of the frame height)
-        if (this.absoluteLEyesSizeWidth == 0)
-        {
-            int width = grayFrame.rows();
-            if (Math.round(width * 0.18f) > 0)
-            {
-                this.absoluteLEyesSizeWidth = Math.round(width * 0.18f);
-            }
-        }
-        // compute minimum left eye size height (7% of the frame height)
+        // compute minimum left eye size height
         if (this.absoluteLEyesSizeHeight == 0)
         {
-            int height = grayFrame.cols();
+            int height = grayFrame.rows();
             if (Math.round(height * 0.12f) > 0)
             {
                 this.absoluteLEyesSizeHeight = Math.round(height * 0.12f);
+            }
+        }
+        // compute minimum left eye size width
+        if (this.absoluteLEyesSizeWidth == 0)
+        {
+            int width = grayFrame.cols();
+            if (Math.round(width * 0.18f) > 0)
+            {
+                this.absoluteLEyesSizeWidth = Math.round(width * 0.18f);
             }
         }
 
@@ -312,22 +324,22 @@ public class FD_Controller {
     }
 
     public void detectRightEye(MatOfRect rectangle, Mat grayFrame, Mat frame){
-        // compute minimum right eye size width (10% of the frame height)
-        if (this.absoluteREyesSizeWidth == 0)
-        {
-            int width = grayFrame.rows();
-            if (Math.round(width * 0.18f) > 0)
-            {
-                this.absoluteREyesSizeWidth = Math.round(width * 0.18f);
-            }
-        }
-        // compute minimum right eye size height (7% of the frame height)
+        // compute minimum right eye size heidht
         if (this.absoluteREyesSizeHeight == 0)
         {
-            int height = grayFrame.cols();
+            int height = grayFrame.rows();
             if (Math.round(height * 0.12f) > 0)
             {
                 this.absoluteREyesSizeHeight = Math.round(height * 0.12f);
+            }
+        }
+        // compute minimum right eye size width
+        if (this.absoluteREyesSizeWidth == 0)
+        {
+            int width= grayFrame.cols();
+            if (Math.round(width * 0.18f) > 0)
+            {
+                this.absoluteREyesSizeWidth = Math.round(width * 0.18f);
             }
         }
 
@@ -344,7 +356,68 @@ public class FD_Controller {
 
         }catch (Exception e){
         }
+    }
 
+    public void detectMouth(MatOfRect rectangle, Mat grayFrame, Mat frame){
+        // compute minimum mouth size width (13% of the frame width)
+        if (this.absoluteMouthSizeHeight == 0)
+        {
+            int height = grayFrame.rows();
+            if (Math.round(height * 0.15f) > 0)
+            {
+                this.absoluteMouthSizeHeight = Math.round(height * 0.15f);
+            }
+        }
+        // compute minimum mouth size height (10% of the frame height)
+        if (this.absoluteMouthSizeWidth == 0)
+        {
+            int width = grayFrame.cols();
+            if (Math.round(width * 0.25f) > 0)
+            {
+                this.absoluteMouthSizeWidth = Math.round(width * 0.25f);
+            }
+        }
+
+        try {
+            // detect mouth
+            this.mouthCascade.detectMultiScale(grayFrame, rectangle, 1.1, 2, Objdetect.CASCADE_SCALE_IMAGE, new Size(
+                    this.absoluteMouthSizeWidth, this.absoluteMouthSizeHeight), new Size());
+
+            // each rectangle in mouth is a mouth
+            currentMouthArray = rectangle.toArray();
+            filterMouths();
+            for (int i = 0; i < currentMouthArray.length; i++)
+                Imgproc.rectangle(frame, currentMouthArray[i].tl(), currentMouthArray[i].br(), new Scalar(0, 0, 255, 128), 3);
+
+        }catch (Exception e){
+
+        }
+    }
+
+    public void filterLEyes(){
+        if(currentFacesArray.length!=0&&currentLEyesArray.length!=0) {
+            for (int i = 0; i < currentFacesArray.length; i++) {
+                Rect face = currentFacesArray[i];
+                System.out.println("face " + face.width + " " + face.height);
+                int[] faceCenter = FaceClassifier.calcMiddle(new ArrayList<>(Arrays.asList(face)));
+                for (int j = 0; j < currentLEyesArray.length; j++) {
+                    Rect lEye = currentLEyesArray[j];
+                    int nbrPtsOutside = nbrOfPtsOutside(face,lEye);
+                    if(nbrPtsOutside>0){
+                        currentLEyesArray = removeElement(lEye, currentLEyesArray);
+                    }
+                    //remove if too big or too small
+                    System.out.println("left eye " + lEye.width + " " + lEye.height);
+                    if(lEye.height>face.height*EYES_HEIGHT_MAX&&lEye.height<face.height*EYES_HEIGHT_MIN&&lEye.width>face.width*EYES_WIDTH_MAX&&lEye.width<face.width*EYES_WIDTH_MIN){
+                        currentLEyesArray = removeElement(lEye, currentLEyesArray);
+                    }
+                    //remove if below the face center
+                    if (lEye.y > faceCenter[1]) {
+                        currentLEyesArray = removeElement(lEye, currentLEyesArray);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -354,16 +427,18 @@ public class FD_Controller {
         if(currentFacesArray.length!=0&&currentREyesArray.length!=0){
             for (int i = 0; i < currentFacesArray.length; i++) {
                 Rect face = currentFacesArray[i];
+                System.out.println("face " + face.width + " " + face.height);
                 int[] faceCenter = FaceClassifier.calcMiddle(new ArrayList<>(Arrays.asList(face)));
                 for (int j = 0; j < currentREyesArray.length; j++) {
                     Rect rEye = currentREyesArray[j];
-                    Point p1 = new Point(rEye.x,rEye.y);
-                    Point p2 = new Point(rEye.x+rEye.width,rEye.y+rEye.height);
-                    Point p3 = new Point(rEye.x+rEye.width,rEye.y);
-                    Point p4 = new Point(rEye.x,rEye.y+rEye.height);
-                    //remove if outside of face
-                    if(!face.contains(p1)&&!face.contains(p2)&&!face.contains(p3)&&!face.contains(p4)){
-                        currentREyesArray = removeElement(rEye,currentREyesArray);
+                    System.out.println("right eye " + rEye.width + " " + rEye.height);
+                    int nbrPtsOutside = nbrOfPtsOutside(face,rEye);
+                    if(nbrPtsOutside>0){
+                        currentREyesArray = removeElement(rEye, currentREyesArray);
+                    }
+                    //remove if too big or too small
+                    if(rEye.height>face.height*EYES_HEIGHT_MAX&&rEye.height<face.height*EYES_HEIGHT_MIN&&rEye.width>face.width*EYES_WIDTH_MAX&&rEye.width<face.width*EYES_WIDTH_MIN){
+                        currentREyesArray = removeElement(rEye, currentREyesArray);
                     }
                     //remove if below the face center
                     if(rEye.y>faceCenter[1]){
@@ -372,33 +447,52 @@ public class FD_Controller {
                 }
             }
         }
-
     }
 
-    public void filterLEyes(){
-        if(currentFacesArray.length!=0&&currentLEyesArray.length!=0) {
+    public void filterMouths(){
+        if(currentFacesArray.length!=0&&currentMouthArray.length!=0) {
+            //remove mouth outside of the face
             for (int i = 0; i < currentFacesArray.length; i++) {
                 Rect face = currentFacesArray[i];
+                System.out.println("face " + face.width + " " + face.height);
                 int[] faceCenter = FaceClassifier.calcMiddle(new ArrayList<>(Arrays.asList(face)));
-                for (int j = 0; j < currentLEyesArray.length; j++) {
-                    Rect lEye = currentLEyesArray[j];
-                    Point p1 = new Point(lEye.x, lEye.y);
-                    Point p2 = new Point(lEye.x + lEye.width, lEye.y + lEye.height);
-                    Point p3 = new Point(lEye.x + lEye.width, lEye.y);
-                    Point p4 = new Point(lEye.x, lEye.y + lEye.height);
-                    // remove if not inside the face
-                    if (!face.contains(p1) && !face.contains(p2) && !face.contains(p3) && !face.contains(p4)) {
-                        currentLEyesArray = removeElement(lEye, currentLEyesArray);
+                for (int j = 0; j < currentMouthArray.length; j++) {
+                    Rect mouth = currentMouthArray[j];
+                    System.out.println("mouth " + mouth.width + " " + mouth.height);
+                    int nbrPtsOutside = nbrOfPtsOutside(face,mouth);
+                    if(nbrPtsOutside>2){
+                        currentMouthArray = removeElement(mouth, currentMouthArray);
                     }
-
-                    //remove if below the face center
-                    if (lEye.y > faceCenter[1]) {
-                        currentLEyesArray = removeElement(lEye, currentLEyesArray);
+                    //remove if too big or too small
+                    if(mouth.height>face.height*MOUTH_HEIGHT_MAX&&mouth.height<face.height*MOUTH_HEIGHT_MIN&&mouth.width>face.width*MOUTH_WIDTH_MAX&&mouth.width<face.width*MOUTH_WIDTH_MIN){
+                        currentMouthArray = removeElement(mouth, currentMouthArray);
+                    }
+                    //remove mouth higher than middle of the face
+                    if (mouth.y < faceCenter[1]) {
+                        currentMouthArray = removeElement(mouth, currentMouthArray);
                     }
                 }
             }
         }
+
     }
+
+    public int nbrOfPtsOutside(Rect face,Rect rect){
+        Point p1 = new Point(rect.x, rect.y);
+        Point p2 = new Point(rect.x + rect.width, rect.y + rect.height);
+        Point p3 = new Point(rect.x + rect.width, rect.y);
+        Point p4 = new Point(rect.x, rect.y + rect.height);
+        Point[] points = new Point[]{p1,p2,p3,p4};
+        int counterOutPts = 0;
+        for (int k = 0; k < points.length; k++) {
+            if(!face.contains(points[k])){
+                counterOutPts++;
+            }
+        }
+        return counterOutPts;
+    }
+
+
 
     public Rect[] removeElement(Rect element, Rect[] list){
         Rect[] newList = null;
@@ -420,74 +514,6 @@ public class FD_Controller {
             }
         }
         return newList;
-    }
-
-    public void detectMouth(MatOfRect rectangle, Mat grayFrame, Mat frame){
-        // compute minimum mouth size width (13% of the frame width)
-        if (this.absoluteMouthSizeWidth == 0)
-        {
-            int width = grayFrame.rows();
-            if (Math.round(width * 0.13f) > 0)
-            {
-                this.absoluteMouthSizeWidth = Math.round(width * 0.25f);
-            }
-        }
-        // compute minimum mouth size height (10% of the frame height)
-        if (this.absoluteMouthSizeHeight == 0)
-        {
-            int height = grayFrame.cols();
-            if (Math.round(height * 0.1f) > 0)
-            {
-                this.absoluteMouthSizeHeight = Math.round(height * 0.1f);
-            }
-        }
-
-        try {
-            // detect mouth
-            this.mouthCascade.detectMultiScale(grayFrame, rectangle, 1.1, 2, Objdetect.CASCADE_SCALE_IMAGE, new Size(
-                    this.absoluteMouthSizeWidth, this.absoluteMouthSizeHeight), new Size());
-
-            // each rectangle in mouth is a mouth
-            currentMouthArray = rectangle.toArray();
-            filterMouths();
-            for (int i = 0; i < currentMouthArray.length; i++)
-                Imgproc.rectangle(frame, currentMouthArray[i].tl(), currentMouthArray[i].br(), new Scalar(0, 0, 255, 128), 3);
-
-        }catch (Exception e){
-
-        }
-    }
-
-    public void filterMouths(){
-        if(currentFacesArray.length!=0&&currentMouthArray.length!=0) {
-            //remove mouth outside of the face
-            for (int i = 0; i < currentFacesArray.length; i++) {
-                Rect face = currentFacesArray[i];
-                for (int j = 0; j < currentMouthArray.length; j++) {
-                    Rect mouth = currentMouthArray[j];
-                    Point p1 = new Point(mouth.x, mouth.y);
-                    Point p2 = new Point(mouth.x + mouth.width, mouth.y + mouth.height);
-                    Point p3 = new Point(mouth.x + mouth.width, mouth.y);
-                    Point p4 = new Point(mouth.x, mouth.y + mouth.height);
-                    if (!face.contains(p1) && !face.contains(p2) && !face.contains(p3) && !face.contains(p4)) {
-                        currentMouthArray = removeElement(mouth, currentMouthArray);
-                    }
-                }
-            }
-
-            //remove mouth higher than middle of the face
-            for (int i = 0; i < currentFacesArray.length; i++) {
-                Rect face = currentFacesArray[i];
-                int[] faceCenter = FaceClassifier.calcMiddle(new ArrayList<>(Arrays.asList(face)));
-                for (int j = 0; j < currentMouthArray.length; j++) {
-                    Rect mouth = currentMouthArray[j];
-                    if (mouth.y < faceCenter[1]) {
-                        currentMouthArray = removeElement(mouth, currentMouthArray);
-                    }
-                }
-            }
-        }
-
     }
 
     /**
