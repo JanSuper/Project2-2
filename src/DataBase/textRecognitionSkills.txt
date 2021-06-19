@@ -33,7 +33,7 @@ B I can show you the weather (type "Weather") or your UM schedule (type "this we
 // SKILLS WITHOUT VARIABLES
 /////////////////////////////////////////////////////////////////////////////////////////
 
-U How is the weather ?
+U How is the weather
 U What is the weather like
 U Check the weather
 U Give how the weather is
@@ -167,19 +167,28 @@ U Please reset the stopwatch
 U Can you reset the stopwatch
 B 26
 
+U Add skill
+U Skill editor
+U Create a skill
+U Can we create a skill
+B 31
+U New rule
+U Add Rule
+U I want to add rules
+U Add skill
+U Can we create a new rule
+B 32
 U Edit skill
 U Skill editor
 U Change a skill
 U Edit a skill
 U Can we edit a skill
-B 31
-U New rule
-U Add Rule
-U Add a rule
-U I want to add rules
-U Add a skill
-U Can we create a new rule
-B 32
+B 33
+U Change rule
+U Edit rule
+U I want to modify rules
+U Can we edit a rule
+B 34
 
 U Look up
 B 40

@@ -147,7 +147,6 @@ public class AddSkillEditorVBox extends VBox {
         enter.setTranslateY(50);
         enter.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(90,true), Insets.EMPTY)));
         enter.setOnAction(e-> {
-            mainScreen.chat.assistant_answer.textRecognition.skillEdit = false;
             for (Node node:allQuestions.getChildren()) {
                 TextField question = (TextField) node;
                 if (question.getText().isEmpty()||question.getText().isBlank()) {

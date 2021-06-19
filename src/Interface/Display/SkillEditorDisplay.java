@@ -27,10 +27,10 @@ public class SkillEditorDisplay extends VBox {
     private HBox tabs;
     public Button prevTab;
 
-    private AddSkillEditorVBox addSkillEditorVBox;
-    private EditSkillEditorVBox editSkillEditorVBox;
-    private AddRuleEditorVBox addRuleEditorVBox;
-    private EditRuleEditorVBox editRuleEditorVBox;
+    public AddSkillEditorVBox addSkillEditorVBox;
+    public EditSkillEditorVBox editSkillEditorVBox;
+    public AddRuleEditorVBox addRuleEditorVBox;
+    public EditRuleEditorVBox editRuleEditorVBox;
 
     public SkillEditorDisplay(MainScreen mainScreen) throws IOException {
         this.mainScreen = mainScreen;
@@ -123,8 +123,7 @@ public class SkillEditorDisplay extends VBox {
     }
 
     private void setAddSkillView(){
-        mainScreen.chat.assistant_answer.textRecognition.skillEdit = true;
-        mainScreen.chat.assistant_answer.textRecognition.ruleEdit = false;
+        mainScreen.chat.assistant_answer.textRecognition.skillEditorState = "skill adder";
         getChildren().add(addSkillEditorVBox);
         mainScreen.chat.receiveMessage("To add a new skill to the assistant you have to follow these rules:" + System.lineSeparator() +
                 "1. Write down the question(s) you will ask to the assistant. If there is more than one question (for the same answer) make sure to separate them with a comma , " + System.lineSeparator() +
@@ -134,21 +133,28 @@ public class SkillEditorDisplay extends VBox {
                 "If you don't want to add a skill write: Cancel");
     }
     private void setEditSkillView(){
-        mainScreen.chat.assistant_answer.textRecognition.skillEdit = true;
-        mainScreen.chat.assistant_answer.textRecognition.ruleEdit = false;
+        mainScreen.chat.assistant_answer.textRecognition.skillEditorState = "skill editor";
         getChildren().add(editSkillEditorVBox);
+        mainScreen.chat.receiveMessage(
+                "To edit an existing sentence in the skills database write first the old sentence, "+"\r\n"+
+                        "and then the new one as follow: oldSentence/newSentence"+"\r\n"+
+                        "To remove, write REMOVE/sentence"+"\r\n"+
+                        "If you don't want to edit a skill write: Cancel");
     }
 
     private void setAddRuleView(){
-        mainScreen.chat.assistant_answer.textRecognition.ruleEdit = true;
-        mainScreen.chat.assistant_answer.textRecognition.skillEdit = false;
+        mainScreen.chat.assistant_answer.textRecognition.skillEditorState = "rule adder";
         getChildren().add(addRuleEditorVBox);
         mainScreen.chat.receiveMessage("To add a new rule, write in the form: LeftHandSide:RightHandSide1,RightHandSide2,...,RightHandSideN and decide, whether the rule is terminal or not by writing + for terminal and - for non terminal at the end of the message."+System.lineSeparator() +
                 "If you don't want to add a skill write: Cancel");
     }
     private void setEditRuleView(){
-        mainScreen.chat.assistant_answer.textRecognition.ruleEdit = true;
-        mainScreen.chat.assistant_answer.textRecognition.skillEdit = false;
+        mainScreen.chat.receiveMessage(
+                "To edit an existing rule in the grammar database grammar write first the old rule, "+"\r\n"+
+                "and then the new one as follow: oldLHS:oldRHS1,...,oldRHSn/newLHS:newRHS1,...,newRHSm"+"\r\n"+
+                "To remove, write REMOVE/LHS:RHS1,...,RHSn"+"\r\n"+
+                        "If you don't want to edit a rule write: Cancel");
+        mainScreen.chat.assistant_answer.textRecognition.skillEditorState = "rule editor";
         getChildren().add(editRuleEditorVBox);
     }
 

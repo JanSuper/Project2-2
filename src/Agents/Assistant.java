@@ -146,6 +146,26 @@ public class Assistant {
         return success;
     }
 
+    public void editSkill(String message) throws IOException {
+        String[] split = message.split("/");
+        if(split[0].equals("REMOVE")){
+            skillEditor.deleteSentenceFromFile(split[1]);
+        }else{
+            skillEditor.editSentence(split[0],split[1]);
+        }
+        mainScreen.skillEditorDisplay.editSkillEditorVBox.handleComboBoxes(true);
+    }
+
+    public void editRule(String message) throws IOException {
+        String[] split = message.split("/");
+        if(split[0].equals("REMOVE")){
+            mainScreen.skillEditorDisplay.editRuleEditorVBox.jsonReader.removeRule(split[1],mainScreen.skillEditorDisplay.editRuleEditorVBox.isTerminal(split[1]));
+        }else{
+            mainScreen.skillEditorDisplay.editRuleEditorVBox.editRule(split[0],split[1],mainScreen.skillEditorDisplay.editRuleEditorVBox.isTerminal(split[0]));
+        }
+        mainScreen.skillEditorDisplay.editRuleEditorVBox.handleComboBoxes(true);
+    }
+
     /**
      * Adds a new rule in the database, the user has to follow a specific structure to
      * add question(s) and answer(s) to the database.

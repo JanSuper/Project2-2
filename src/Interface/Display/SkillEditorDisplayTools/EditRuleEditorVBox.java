@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 public class EditRuleEditorVBox extends VBox {
     private MainScreen mainScreen;
-    private JsonReader jsonReader;
+    public JsonReader jsonReader;
 
     private Label titleLabel1;
     private Label ruleLabel;
@@ -154,7 +154,7 @@ public class EditRuleEditorVBox extends VBox {
         return rule;
     }
 
-    private void handleComboBoxes(Boolean isUpdate) throws IOException {
+    public void handleComboBoxes(Boolean isUpdate) throws IOException {
         jsonReader.getAllRules();
         jsonReader.splitRules();
         options1 =
@@ -274,18 +274,17 @@ public class EditRuleEditorVBox extends VBox {
                 rhs1 += question.getText();
             }
             newRule = lhs.getText()+":"+rhs1;
-            try {
-                jsonReader.editRule(rule,isTerminal(rule),newRule);
-                mainScreen.chat.receiveMessage("Rule " + rule + " has been edited into " + newRule + ".");
-                handleComboBoxes(true);
-            } catch (IOException ex) {
-                mainScreen.chat.receiveMessage("Rule " + rule + " could not be edited into " + newRule + ".");
-                ex.printStackTrace();
+            if(editRule(rule,newRule,isTerminal(rule))){
+                try {
+                    handleComboBoxes(true);
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+                lhs.setText("");
+                lhsC.setDisable(false);
+                rhsC.setDisable(false);
+                getChildren().remove(editor);
             }
-            lhs.setText("");
-            lhsC.setDisable(false);
-            rhsC.setDisable(false);
-            getChildren().remove(editor);
         });
 
         editor.getChildren().addAll(titleLabel,lhs,howManyQ,qScroll,enter);
@@ -303,6 +302,18 @@ public class EditRuleEditorVBox extends VBox {
         rule.setPrefSize(qScroll.getWidth()-20,25);
         rule.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
         allQuestions.getChildren().add(rule);
+    }
+
+    public boolean editRule(String oldRule,String newRule,boolean isTerminal) {
+        try {
+            jsonReader.editRule(oldRule, isTerminal, newRule);
+            mainScreen.chat.receiveMessage("Rule " + oldRule + " has been edited into " + newRule + ".");
+            return true;
+        } catch (IOException ex) {
+            mainScreen.chat.receiveMessage("Rule " + oldRule + " could not be edited into " + newRule + ".");
+            ex.printStackTrace();
+        }
+        return false;
     }
 }
 

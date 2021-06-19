@@ -25,7 +25,6 @@ public class TextRecognition {
 
     private int max_Distance = 1;
     private String originalCleanM;
-    private String actual_lastWord;
     private String response;
 
     private boolean firstPhase;
@@ -35,8 +34,7 @@ public class TextRecognition {
     private int BFSdepth;
     private Node nodeInvestigated;
 
-    public boolean skillEdit = false;
-    public boolean ruleEdit = false;
+    public String skillEditorState = "";
 
     private final File dataBase = new File("src/DataBase/textRecognitionSkills.txt");
 
@@ -50,7 +48,6 @@ public class TextRecognition {
     public String getResponse(String uMessage) throws Exception
     {
         originalCleanM = assistant.removePunctuation(uMessage);
-        actual_lastWord = uMessage.substring(originalCleanM.lastIndexOf(" ")+1);
         max_Distance = Math.max(2, (int)(originalCleanM.length()*0.15));
 
         secondPhase = false;
@@ -273,11 +270,11 @@ public class TextRecognition {
             e.printStackTrace();
         }
 
-        if(skillEdit)
+        if(skillEditorState.equals("skill adder"))
         {
             if(node.getSentence().equals("cancel") || node.getSentence().equals("cancel skill editor"))
             {
-                skillEdit = false;
+                skillEditorState = "";
                 response = "Canceled the skill editor, you can now type in your request.";
             }
             else if(node.getSentence().equals("See all possible operations")){
@@ -285,21 +282,47 @@ public class TextRecognition {
             }
             else
             {
-                skillEdit = false;
+                skillEditorState = "";
                 response = assistant.handleNewSkill(node.getSentence());
             }
         }
-        else if(ruleEdit){
+        else if(skillEditorState.equals("skill editor")){
             if(node.getSentence().equals("cancel") || node.getSentence().equals("cancel skill editor"))
             {
-                ruleEdit = false;
+                skillEditorState = "";
                 response = "Canceled the rule editor, you can now type in your request.";
             }
             else
             {
-                ruleEdit = false;
+                skillEditorState = "";
+                assistant.editSkill(node.getSentence());
+                response = "Sentence has been edited to the database with success.";
+            }
+        }
+        else if(skillEditorState.equals("rule adder")){
+            if(node.getSentence().equals("cancel") || node.getSentence().equals("cancel skill editor"))
+            {
+                skillEditorState = "";
+                response = "Canceled the rule editor, you can now type in your request.";
+            }
+            else
+            {
+                skillEditorState = "";
                 assistant.addNewRule(node.getSentence());
                 response = "Rules have been added to the database with success.";
+            }
+        }
+        else if(skillEditorState.equals("rule editor")){
+            if(node.getSentence().equals("cancel") || node.getSentence().equals("cancel skill editor"))
+            {
+                skillEditorState = "";
+                response = "Canceled the rule editor, you can now type in your request.";
+            }
+            else
+            {
+                skillEditorState = "";
+                assistant.editRule(node.getSentence());
+                response = "Rule have been edited in the database with success.";
             }
         }
         else if(res.isEmpty()||best_score>1)
@@ -563,10 +586,17 @@ public class TextRecognition {
         }
         else if(skill_num == 31)
         {
-            skillEdit = true;
+            skillEditorState = "skill adder";
             assistant.mainScreen.setSkillEditorAppDisplay("Add skill");
         }else if(skill_num == 32){
+            skillEditorState = "rule adder";
             assistant.mainScreen.setSkillEditorAppDisplay("Add rule");
+        }else if(skill_num == 33){
+            skillEditorState = "skill editor";
+            assistant.mainScreen.setSkillEditorAppDisplay("Edit skill");
+        }else if(skill_num == 34){
+            skillEditorState = "rule editor";
+            assistant.mainScreen.setSkillEditorAppDisplay("Edit rule");
         }
         else if(skill_num == 40){
             String searchURL = "https://www.google.com/search" + "?q=" + assistant.messageToUrl(nodeInvestigated.getWordsRemoved().get(0));

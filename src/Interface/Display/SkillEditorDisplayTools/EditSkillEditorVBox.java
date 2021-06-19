@@ -139,7 +139,7 @@ public class EditSkillEditorVBox extends VBox {
         buttons.getChildren().addAll(edit, or, delete);
     }
 
-    private void handleComboBoxes(Boolean isUpdate) throws IOException {
+    public void handleComboBoxes(Boolean isUpdate) throws IOException {
         options1 = FXCollections.observableArrayList(skillEditor.getMainSkills());
         skills = new ComboBox(options1);
         skills.setValue(options1.get(0));
