@@ -22,6 +22,19 @@ public class FaceDetection extends VBox {
 
     public Pane draw;
 
+    public FaceDetection() throws IOException {
+        // load the native OpenCV library
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+
+        // load the FXML resource
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("FD_FX.fxml"));
+        getChildren().add(loader.load());
+        // set a whitesmoke background
+        setStyle("-fx-background-color: whitesmoke;");
+        // init the controller
+        controller = loader.getController();
+    }
+
     public FaceDetection(MainScreen mainScreen,StartScreen startScreen){
         this.mainScreen = mainScreen;
         this.startScreen = startScreen;
