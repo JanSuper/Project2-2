@@ -27,9 +27,9 @@ public class FD_Controller {
     private final float EYES_HEIGHT_MAX = 0.35f;
     private final float EYES_HEIGHT_MIN = 0.15f;
 
-    private final float MOUTH_WIDTH_MAX = 0.6f;
+    private final float MOUTH_WIDTH_MAX = 0.76f;
     private final float MOUTH_WIDTH_MIN = 0.3f;
-    private final float MOUTH_HEIGHT_MAX = 0.4f;
+    private final float MOUTH_HEIGHT_MAX = 0.5f;
     private final float MOUTH_HEIGHT_MIN = 0.2f;
 
     public MainScreen mainScreen = null;
@@ -293,18 +293,18 @@ public class FD_Controller {
         if (this.absoluteLEyesSizeHeight == 0)
         {
             int height = grayFrame.rows();
-            if (Math.round(height * 0.12f) > 0)
+            if (Math.round(height * 0.075f) > 0)
             {
-                this.absoluteLEyesSizeHeight = Math.round(height * 0.12f);
+                this.absoluteLEyesSizeHeight = Math.round(height * 0.075f);
             }
         }
         // compute minimum left eye size width
         if (this.absoluteLEyesSizeWidth == 0)
         {
             int width = grayFrame.cols();
-            if (Math.round(width * 0.18f) > 0)
+            if (Math.round(width * 0.135f) > 0)
             {
-                this.absoluteLEyesSizeWidth = Math.round(width * 0.18f);
+                this.absoluteLEyesSizeWidth = Math.round(width * 0.135f);
             }
         }
 
@@ -328,18 +328,18 @@ public class FD_Controller {
         if (this.absoluteREyesSizeHeight == 0)
         {
             int height = grayFrame.rows();
-            if (Math.round(height * 0.12f) > 0)
+            if (Math.round(height * 0.075f) > 0)
             {
-                this.absoluteREyesSizeHeight = Math.round(height * 0.12f);
+                this.absoluteREyesSizeHeight = Math.round(height * 0.075f);
             }
         }
         // compute minimum right eye size width
         if (this.absoluteREyesSizeWidth == 0)
         {
             int width= grayFrame.cols();
-            if (Math.round(width * 0.18f) > 0)
+            if (Math.round(width * 0.135f) > 0)
             {
-                this.absoluteREyesSizeWidth = Math.round(width * 0.18f);
+                this.absoluteREyesSizeWidth = Math.round(width * 0.135f);
             }
         }
 
@@ -403,7 +403,7 @@ public class FD_Controller {
                 for (int j = 0; j < currentLEyesArray.length; j++) {
                     Rect lEye = currentLEyesArray[j];
                     int nbrPtsOutside = nbrOfPtsOutside(face,lEye);
-                    if(nbrPtsOutside>0){
+                    if(nbrPtsOutside>2){
                         currentLEyesArray = removeElement(lEye, currentLEyesArray);
                     }
                     //remove if too big or too small
@@ -412,7 +412,7 @@ public class FD_Controller {
                         currentLEyesArray = removeElement(lEye, currentLEyesArray);
                     }
                     //remove if below the face center
-                    if (lEye.y > faceCenter[1]) {
+                    if (lEye.y+10 > faceCenter[1]) {
                         currentLEyesArray = removeElement(lEye, currentLEyesArray);
                     }
                 }
@@ -433,7 +433,7 @@ public class FD_Controller {
                     Rect rEye = currentREyesArray[j];
                     //System.out.println("right eye " + rEye.width + " " + rEye.height);
                     int nbrPtsOutside = nbrOfPtsOutside(face,rEye);
-                    if(nbrPtsOutside>0){
+                    if(nbrPtsOutside>2){
                         currentREyesArray = removeElement(rEye, currentREyesArray);
                     }
                     //remove if too big or too small
@@ -441,7 +441,7 @@ public class FD_Controller {
                         currentREyesArray = removeElement(rEye, currentREyesArray);
                     }
                     //remove if below the face center
-                    if(rEye.y>faceCenter[1]){
+                    if(rEye.y+10>faceCenter[1]){
                         currentREyesArray = removeElement(rEye, currentREyesArray);
                     }
                 }
@@ -454,11 +454,11 @@ public class FD_Controller {
             //remove mouth outside of the face
             for (int i = 0; i < currentFacesArray.length; i++) {
                 Rect face = currentFacesArray[i];
-                //System.out.println("face " + face.width + " " + face.height);
+                System.out.println("face " + face.width + " " + face.height);
                 int[] faceCenter = FaceClassifier.calcMiddle(new ArrayList<>(Arrays.asList(face)));
                 for (int j = 0; j < currentMouthArray.length; j++) {
                     Rect mouth = currentMouthArray[j];
-                    //System.out.println("mouth " + mouth.width + " " + mouth.height);
+                    System.out.println("mouth " + mouth.width + " " + mouth.height);
                     int nbrPtsOutside = nbrOfPtsOutside(face,mouth);
                     if(nbrPtsOutside>2){
                         currentMouthArray = removeElement(mouth, currentMouthArray);
@@ -467,8 +467,11 @@ public class FD_Controller {
                     if(mouth.height>face.height*MOUTH_HEIGHT_MAX&&mouth.height<face.height*MOUTH_HEIGHT_MIN&&mouth.width>face.width*MOUTH_WIDTH_MAX&&mouth.width<face.width*MOUTH_WIDTH_MIN){
                         currentMouthArray = removeElement(mouth, currentMouthArray);
                     }
+                    System.out.println(mouth.y + " " + faceCenter[1]);
+
                     //remove mouth higher than middle of the face
                     if (mouth.y < faceCenter[1]) {
+                        System.out.println("oui");
                         currentMouthArray = removeElement(mouth, currentMouthArray);
                     }
                 }

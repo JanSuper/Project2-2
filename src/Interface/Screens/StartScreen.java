@@ -379,7 +379,7 @@ public class StartScreen extends Application {
                             faceDetection.analyzeFace();
                             break;
                         }else {
-                            errorInfo.setText("Face analysis in " + (maxDelay - 25 - elapsedTime[0] / 1000) + " ,please move on the draw");
+                            errorInfo.setText("Face analysis in " + (maxDelay - 25 - elapsedTime[0] / 1000) + ", please get close to the camera so that your face, eyes and mouth are detected");
                         }
                         Thread.sleep(1000);
                     }
