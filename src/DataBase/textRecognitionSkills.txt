@@ -33,6 +33,11 @@ B I can show you the weather (type "Weather") or your UM schedule (type "this we
 // SKILLS WITHOUT VARIABLES
 /////////////////////////////////////////////////////////////////////////////////////////
 
+U Weather
+U Is it sunny
+U Is it rainy
+U sunny
+U rainy
 U How is the weather
 U What is the weather like
 U Check the weather
@@ -44,12 +49,15 @@ U Do I need an umbrella today
 B 1
 
 U My next lecture
+U Next lecture
+U Lecture today
 U When do I have my next lecture
 U What is my next Lecture
 U Which lecture do I have today
 U Which is my next class
 U What course do I have next
 B 10
+U Lecture week
 U What are my lectures this week
 U Which lecture do I have this week
 U My lectures this week
@@ -58,6 +66,7 @@ U This week planning
 U What is my schedule for this week
 U What classes do I have this week
 B 11
+U Lecture month
 U My lectures this month
 U This month planning
 U What do I have this month
@@ -67,6 +76,7 @@ U What is my schedule for this month
 U What classes do I have this month
 B 12
 
+U Alarm
 U Set an alarm
 U Get my alarm
 U Get the alarm
@@ -77,6 +87,7 @@ U Open alarm app
 U Can you set an alarm
 U What are my current alarms
 B 14
+U Time
 U What time is it
 U Show me the clock
 U What's the time
@@ -87,6 +98,7 @@ U Open the clock app
 U What time is it
 U How late is it
 B 15
+U Time-zone
 U What are the time-zone IDs
 U What time-zones can I add to the clock
 U What areas can I add to the clock
@@ -97,7 +109,7 @@ U Tell me every time-zones
 U Can you show me all avalable time-zones
 U What time zones do you cover
 B 16
-U Set a timer
+U Set timer
 U Get the timer
 U See the timer
 U Add a timer
@@ -130,11 +142,11 @@ U I want to cancel the timer
 U Please cancel the timer
 U Can you cancel the timer
 B 21
-U Get the stopwatch
-U See the stopwatch
-U Add a stopwatch
-U Show me the stopwatch
-U Open the stopwatch
+U Get stopwatch
+U See stopwatch
+U Add stopwatch
+U Show stopwatch
+U Open stopwatch
 U Can you show me the stopwatch
 U Do you have a stopwatch ready
 B 22
@@ -154,9 +166,9 @@ U Set stopwatch on pause
 U I want to pause the stopwatch
 U Please pause the stopwatch
 B 24
-U can you lap the stopwatch
+U Can you lap the stopwatch
 U Lap stopwatch
-U Add tour to the stopwatch
+U Add tour stopwatch
 U I want to lap the stopwatch
 U Please lap the stopwatch
 B 25
@@ -193,9 +205,11 @@ B 34
 U Look up
 B 40
 
-U Listen to music
-U Listen to a song
-U Watch a video
+U Listen music
+U Play music
+U Play song
+U Listen song
+U Watch video
 U Music
 U Play music
 U Make me listen to music/video
@@ -242,6 +256,7 @@ U Research
 U Open google
 B 71
 
+U Personal info
 U Change my personal info
 U I want to change my profile info
 U Please edit my profile info
@@ -266,7 +281,7 @@ U Please edit my theme
 U Can I change my theme color
 U How do I change my theme color
 B 87
-U See my info
+U See info
 U Show me my info
 U Show me my personal information
 U Check my information
@@ -291,9 +306,10 @@ U Show all skills
 U Show every skill
 U Can you show me all system tasks
 U What are all available system tasks
+U Help
 B 91
 
-U See camera
+U Camera
 U I want to see myself
 U Change the face detection classifier
 U Open camera
