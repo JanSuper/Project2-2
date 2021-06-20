@@ -22,8 +22,8 @@ Clock App,29,What time is it in <VARIABLE>,1,is#0.6,want#0.1,early#0.1,late#0.1,
 Clock App,30,Add a clock for <VARIABLE>,1,add#0.8,set#0.1,want#0.1,a#0,clock#0.9,a#0,a#0,a#0
 Skill Editor,31,Add a skill,0,edit#0.7,change#0.2,modify#0.1,a#0,skill#0.8,editor#0.2,a#0,a#0
 Skill Editor,32,Create a new rule,0,create#0.3,add#0.7,a#0,a#0,rule#0.7,skill#0.3,a#0,a#0
-Skill Editor,33,Edit a skill,0
-Skill Editor,34,Edit a rule,0
+Skill Editor,33,Edit a skill,0,edit#0.7,change#0.2,modify#0.1,a#0,skill#0.8,editor#0.2,a#0,a#0
+Skill Editor,34,Edit a rule,0,change#0.5,modify#0.2,edit#0.2,a#0,rule#0.7,skill#0.2,production#0.1,a#0
 Music Player,50,Listen to music/video,0,listen#0.5,watch#0.2,play#0.2,put#0.1,music#0.4,video#0.4,song#0.1,movie#0.1
 Music Player,51,Change music/video,0,change#0.6,skip#0.2,next#0.1,previous#0.1,music#0.4,video#0.4,song#0.1,movie#0.1
 Music Player,52,Pause music/video,0,pause#0.8,want#0.1,a#0,a#0,music#0.4,video#0.4,song#0.1,movie#0.1

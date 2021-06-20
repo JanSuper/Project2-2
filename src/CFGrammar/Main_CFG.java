@@ -15,6 +15,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
+import org.opencv.core.Mat;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -28,7 +29,7 @@ public class Main_CFG {
      * @param args
      */
     public static void main(String[] args) throws IOException {
-        String test = "How to restart a timer?";
+        String test = "What is the weather like?";
 
         Main_CFG cfg = new Main_CFG(test);
 
@@ -53,6 +54,7 @@ public class Main_CFG {
     private double noun_weight;
     private double var_weight;
     private double threshold;
+    private int total_score = 0;
 
     public Main_CFG(String pUser_message) throws IOException
     {
@@ -106,6 +108,49 @@ public class Main_CFG {
 
         toPrint();
         getSkill();*/
+    }
+
+    /**
+     * Constructor for the Genetic algorithm experience
+     * @param weights
+     */
+    public Main_CFG(double[] weights) throws IOException
+    {
+        verb_weight = weights[0];
+        noun_weight = weights[1];
+        var_weight = weights[2];
+        threshold = weights[3];
+
+        ArrayList<String> sentences = getAllSentences();
+
+        for(int i = 1; i <= 50; i++)
+        {
+            int index = (int)(Math.random()*sentences.size());
+            String[] temp = sentences.get(i).split(",");
+            int skill_nbr = Integer.parseInt(temp[0]);
+            String sentence = temp[1];
+
+            user_message = removePunctuation(sentence).toLowerCase();
+            u_message = user_message.split("\\s");
+            message_length = u_message.length;
+
+            ArrayList<String> grammar = getAllRules();
+            splitGrammar(grammar);
+            initialize_Tree();
+            implement_Tree();
+
+            StringBuffer result = new StringBuffer();
+            getEndSplit(result);
+            System.out.println(result.toString());
+
+            toPrint();
+            int skill_found = getSkill();
+
+            if(skill_found == skill_nbr)
+            {
+                setTotal_score(total_score++);
+            }
+        }
     }
 
     public String removePunctuation(String uMessage)
@@ -262,7 +307,7 @@ public class Main_CFG {
             System.out.println("Skill nbr :        "+possible_skills.get(z));
         }
 
-            System.out.println("With best score:   "+ best_score);
+        System.out.println("With best score:   "+ best_score);
 
         if(best_score >= threshold)
         {
@@ -920,6 +965,10 @@ public class Main_CFG {
         return final_answer;
     }
 
+    public void setTotal_score(int total_score) {
+        this.total_score = total_score;
+    }
+
     public void setVerb_weight(double verb_weight) {
         this.verb_weight = verb_weight;
     }
@@ -940,6 +989,10 @@ public class Main_CFG {
         return threshold;
     }
 
+    public int getTotal_score() {
+        return total_score;
+    }
+
     public double getNoun_weight() {
         return noun_weight;
     }
@@ -950,5 +1003,45 @@ public class Main_CFG {
 
     public double getVerb_weight() {
         return verb_weight;
+    }
+
+    public ArrayList<String> getAllSentences() throws IOException
+    {
+        ArrayList<String> sentences = null;
+        FileReader file = null;
+        BufferedReader buffer = null;
+
+        try{
+            file = new FileReader(new File("src\\CFGrammar\\TrainCFG.txt"));
+            buffer = new BufferedReader(file);
+            sentences = new ArrayList<>();
+            String rule = null;
+            while((rule = buffer.readLine()) != null)
+            {
+                sentences.add(rule);
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            if(file != null)
+            {
+                try{
+                    file.close();
+                }
+                catch(Exception e) {}
+            }
+            if(buffer != null)
+            {
+                try{
+                    buffer.close();
+                }
+                catch(Exception e) {}
+            }
+        }
+        return sentences;
     }
 }
