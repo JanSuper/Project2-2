@@ -141,6 +141,10 @@ public class Experiments extends Application {
         FaceClassifier.MAX_MOUTHS = 1;
         FaceClassifier.MAX_WRITECOUNT = 1;
 
+        FaceClassifier.face = new ArrayList();
+        FaceClassifier.eyes = new ArrayList();
+        FaceClassifier.mouth = new ArrayList();
+
 
         List<Rect> faces = new ArrayList<>();
         List<Rect> leftEyes = new ArrayList<>();
