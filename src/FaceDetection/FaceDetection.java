@@ -157,10 +157,10 @@ public class FaceDetection extends VBox {
                     FaceClassifier.getPerson();
 
                     if(FaceClassifier.data.size()>300){
-                        if(startScreen.signUp){
-                            Platform.runLater(new Runnable() {
-                                @Override
-                                public void run() {
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(startScreen.signUp) {
                                     startScreen.errorInfo.setText("Face analysis done");
                                     try {
                                         startScreen.initialize(true);
@@ -169,17 +169,22 @@ public class FaceDetection extends VBox {
                                     }
                                     FaceClassifier.getClosestPerson(true);
                                     startScreen.signUp = false;
+                                }else{
+                                    String userDetected = FaceClassifier.getClosestPerson(false);
+                                    if (userDetected.equals("not found")) {
+                                        startScreen.errorInfo.setText("Face analysis done, no one found");
+                                    } else {
+                                        startScreen.errorInfo.setText("Face analysis done");
+                                        try {
+                                            startScreen.loginFace(userDetected);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                    startScreen.recognizeUser.setSelected(false);
                                 }
-                            });
-                        }else {
-                            String userDetected = FaceClassifier.getClosestPerson(false);
-                            if (userDetected.equals("not found")) {
-                                startScreen.errorInfo.setText("Face analysis done, no one found");
-                            } else {
-                                startScreen.errorInfo.setText("Face analysis done");
-                                startScreen.loginFace(userDetected);
                             }
-                        }
+                        });
                         break;
                     }
                 }

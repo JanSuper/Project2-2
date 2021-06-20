@@ -388,7 +388,7 @@ public class StartScreen extends Application {
         }
     }
 
-    public void loginFace(String username){
+    public void loginFace(String username) throws Exception {
         File[] users = new File("src/DataBase/Users").listFiles();
 
         for (File file:users) {
@@ -398,6 +398,7 @@ public class StartScreen extends Application {
                 break;
             }
         }
+        initialize(false);
     }
 
 
