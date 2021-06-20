@@ -14,16 +14,17 @@ public class CFG_GA {
 
     ////////////////////////////////////////////////////////////////////////////
 
-    private int pop_size = 50;
+    private int pop_size = 80;
     private int weight_size = 4;
 
     public CFG_GA() throws IOException, FileNotFoundException
     {
         String best_w = "";
         int generation = 1;
+        int loops = 0;
         Weights[] pop = initializeWeights();
 
-        while (!intersected(pop) && generation < 10) //Ici limite de génération
+        while (!intersected(pop) && generation < 20) //Ici limite de génération
         {
             System.out.println("Generation: "+ generation + "\nWeights: ");
             int r;
@@ -50,6 +51,7 @@ public class CFG_GA {
             pop = crossOver(pop);
 
             generation++;
+            loops++;
         }
 
         System.out.print("Generation: "+generation+"\nWeights: ");
@@ -63,6 +65,7 @@ public class CFG_GA {
             for(int y = 0; y < r+2; y++)
             {
                 System.out.println("");
+                loops++;
             }
         }
 
@@ -72,6 +75,7 @@ public class CFG_GA {
         System.out.println(Arrays.toString(pop[0].getWeights()) + "\nGenerations: "+ generation);
         best_w = best_w + Arrays.toString(pop[0].getWeights()) +"\n";
         saveAll(pop[0].getWeights(),"weights.txt", best_w, "best.txt");
+        System.out.println("Total loops : "+ loops);
     }
 
     public Weights[] initializeWeights()
@@ -158,7 +162,7 @@ public class CFG_GA {
     public double getFitness(Weights weight) throws IOException
     {
         int score = 0;
-        int n = 50;
+        int n = 70;
 
         for(int j = 1; j <= n; j++)
         {

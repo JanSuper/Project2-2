@@ -29,7 +29,7 @@ public class Main_CFG {
      * @param args
      */
     public static void main(String[] args) throws IOException {
-        String test = "What is the weather like?";
+        String test = "What is the weatherm like?";
 
         Main_CFG cfg = new Main_CFG(test);
 
@@ -76,7 +76,7 @@ public class Main_CFG {
         verb_weight = 2;
         noun_weight = 3;
         var_weight = 1;
-        threshold = 0.5;
+        threshold = 3;
 
         StringBuffer result = new StringBuffer();
         getEndSplit(result);
@@ -123,9 +123,10 @@ public class Main_CFG {
 
         ArrayList<String> sentences = getAllSentences();
 
-        for(int i = 1; i <= 50; i++)
+        for(int i = 1; i <= 100; i++)
         {
-            int index = (int)(Math.random()*sentences.size());
+            Random rand = new Random();
+            int index = rand.nextInt((sentences.size()) + 1);
             String[] temp = sentences.get(i).split(",");
             int skill_nbr = Integer.parseInt(temp[0]);
             String sentence = temp[1];
@@ -245,7 +246,6 @@ public class Main_CFG {
                 nouns.add(allSkills.get(i).get(h+8));
             }
 
-            //TODO: adapt the score! with weights GA
             for(int j = 0; j < words_toSearch.size(); j++)
             {
                 for(int z = 0; z < verbs.size(); z++)
@@ -255,7 +255,6 @@ public class Main_CFG {
                     Double v_prob = Double.parseDouble(temp[1]);
                     if(words_toSearch.get(j).equals(verb))
                     {
-                        //TODO add with levenshtein dis.
                         score = score + verb_weight*v_prob;
                         //System.out.println("Score after verb = "+score);
                     }
@@ -267,7 +266,6 @@ public class Main_CFG {
                     Double n_prob = Double.parseDouble(temp[1]);
                     if(words_toSearch.get(j).equals(noun))
                     {
-                        //TODO add with levenshtein dis.
                         score = score + noun_weight*n_prob;
                         //System.out.println("Score after noun = "+score);
                     }
@@ -542,88 +540,6 @@ public class Main_CFG {
             System.out.println();
         }
 
-    }
-
-    /**
-     * Compares the difference between two Strings using the Levenshtein algorithm.
-     * @param uMessage the user message without punctuation
-     * @param dataBase_message the message in the database
-     * @param threshold the maximum accepted distance between the Strings
-     * @return the score between -1 and threshold
-     */
-    public int LevenshteinDistance(String uMessage, String dataBase_message, int threshold)
-    {
-        int uM = uMessage.length();
-        int dB = dataBase_message.length();
-        int[] cost_previous = new int[uM + 1];
-        int[] cost_distance = new int[uM + 1];
-        int[] cost_memory;
-        int limit = Math.min(uM,threshold);
-        int score = -1;
-
-        if(uM == 0 || dB == 0)
-        {
-            return score;
-        }
-
-        if(uM > dB)
-        {
-            String temp = uMessage;
-            uMessage = dataBase_message;
-            dataBase_message = temp;
-            int temp2 = uM;
-            uM = dB;
-            dB = temp2;
-        }
-
-        for(int i = 0; i <= limit; i++)
-        {
-            cost_previous[i] = i;
-        }
-        Arrays.fill(cost_previous, limit, cost_previous.length, Integer.MAX_VALUE);
-        Arrays.fill(cost_distance, Integer.MAX_VALUE);
-
-        for(int i = 1; i <= dB; i++)
-        {
-            char database_char = dataBase_message.charAt(i-1);
-            cost_distance[0] = i;
-
-            int min = Math.max(1, i-threshold);
-            int max = i > Integer.MAX_VALUE - threshold ? uM : Math.min(uM,threshold+i);
-
-            if(min > max)
-            {
-                return -1;
-            }
-
-            if(min > 1)
-            {
-                cost_distance[min-1] = Integer.MAX_VALUE;
-            }
-
-            for(int j = min; j <= max; j++)
-            {
-                if(uMessage.charAt(j-1) == database_char)
-                {
-                    cost_distance[j] = cost_previous[j-1];
-                }
-                else
-                {
-                    cost_distance[j] = 1 + Math.min(Math.min(cost_distance[j-1], cost_previous[j]), cost_previous[j-1]);
-                }
-            }
-
-            cost_memory = cost_previous;
-            cost_previous = cost_distance;
-
-            cost_distance = cost_memory;
-        }
-
-        if(cost_previous[uM] <= threshold)
-        {
-            score = cost_previous[uM];
-        }
-        return score;
     }
 
     public String getSkill(String pNumb, ArrayList<String> variable_words) throws Exception

@@ -1,5 +1,5 @@
 Weather,1,How is the weather here,0,is#0.8,give#0.1,check#0.1,a#0,weather#0.8,today#0.1,temperature#0.1,a#0
-Weather,2,Weather in <VARIABLE>,1,is#0.8,show#0.1,give#0.1,a#0,weather#0.9,location#0.1,a#0,a#0
+Weather,2,Weather in <VARIABLE>,1,is#0.8,show#0.1,give#0.1,a#0,weather#0.8,location#0.1,temperature#0.1,a#0
 Schedule,10,What is my next lecture,0,is#0.2,have#0.2,next#0.6,a#0,lecture#0.9,today#0.1,a#0,a#0
 Schedule,11,What are my lectures this week,0,are#0.4,have#0.6,a#0,a#0,lecture#0.7,week#0.2,planning#0.1,a#0
 Schedule,12,What are my lectures this month,0,are#0.4,have#0.6,a#0,a#0,lecture#0.7,month#0.3,a#0,a#0
