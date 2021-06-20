@@ -73,10 +73,10 @@ public class Main_CFG {
         initialize_Tree();
         implement_Tree();
 
-        verb_weight = 2.5;
-        noun_weight = 7.95;
-        var_weight = 8.39;
-        threshold = 1.78;
+        verb_weight = 8.416;
+        noun_weight = 6.606;
+        var_weight = 13.241;
+        threshold = 15.238;
 
         StringBuffer result = new StringBuffer();
         getEndSplit(result);
@@ -106,10 +106,10 @@ public class Main_CFG {
         initialize_Tree();
         implement_Tree();
 
-        verb_weight = 2.5;
-        noun_weight = 7.95;
-        var_weight = 8.39;
-        threshold = 1.78;
+        verb_weight = 8.416;
+        noun_weight = 6.606;
+        var_weight = 13.241;
+        threshold = 15.238;
 
         StringBuffer result = new StringBuffer();
         getEndSplit(result);

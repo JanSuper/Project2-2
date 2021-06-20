@@ -72,6 +72,8 @@ Prep -> in # 0.11
 Prep -> from # 0.11
 Prep -> to # 0.11
 Prep -> of # 0.11
+Prep -> all # 0.11
+Prep -> every # 0.11
 Prep -> by # 0.11
 VB -> have # 0.04
 VB -> can # 0.04
@@ -84,6 +86,7 @@ VB -> edit # 0.04
 VB -> like # 0.04
 VB -> give # 0.04
 VB -> look # 0.04
+VB -> undo # 0.04
 VB -> will # 0.04
 VB -> modify # 0.04
 VB -> cancel # 0.04
@@ -147,8 +150,10 @@ N -> background # 0.04
 N -> theme # 0.04
 N -> color # 0.04
 N -> url # 0.04
-FW -> maastricht # 0.5
-FW -> amsterdam # 0.5
+FW -> maastricht # 0.2
+FW -> amsterdam # 0.2
+FW -> please # 0.2
+FW -> begin # 0.2
 Weather_word -> weather # 0.06
 Weather_word -> temperature # 0.06
 Weather_word -> climate # 0.06
@@ -179,6 +184,7 @@ Alarm_word -> alarms # 0.33
 Alarm_word -> alarmclock # 0.33
 Alarm_word -> alarwatch # 0.34
 Clock_word -> time # 0.2
+Clock_word -> zones # 0.2
 Clock_word -> clock # 0.2
 Clock_word -> watchclock # 0.2
 Clock_word -> o'clock # 0.2
