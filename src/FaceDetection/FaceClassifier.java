@@ -48,6 +48,12 @@ public class FaceClassifier {
 
     public static int writeCount = 0;
 
+    public static void wipe(){
+        List<Rect> eyes = new ArrayList();
+        List<Rect> face = new ArrayList();
+        List<Rect> mouth = new ArrayList();
+    }
+
     public static String getPerson() throws IOException {
         eyesD = eucDis(leftEyePos, rightEyePos);
         midMouthD = eucDis(facePos, mouthPos);
@@ -110,13 +116,13 @@ public class FaceClassifier {
         System.out.println(comb);
 
         File[] users = new File("src/DataBase/Users").listFiles();
+        double difference = 10000;
+        String finalUser = "";
         for (File user:users) {
             //System.out.println(user.toString());
             String[] distances = FileParser.getUserInfo(user.getName(),"-Face").split(",");
             String[] faceStat = comb.split(",");
             double[] dist = new double[distances.length];
-            double difference = 10000;
-            String finalUser = "";
             for (int i = 0; i < distances.length; i++) {
                 if (i != 1) {
                     dist[i] = Double.parseDouble(distances[i]);
@@ -124,7 +130,7 @@ public class FaceClassifier {
                     double b = Double.parseDouble(faceStat[i]);
                     double newdiff = Math.min(Math.abs(Math.pow(a, 2) - Math.pow(b, 2)), difference);
 
-                    if (newdiff != difference) {
+                    if (newdiff < difference) {
                         difference = Math.min(Math.abs(Math.pow(a, 2) - Math.pow(b, 2)), difference);
                         finalUser = user.getName();
                     }
@@ -132,11 +138,11 @@ public class FaceClassifier {
                 }
             }
             System.out.println(Arrays.toString(dist));
-            difference /= faceStat.length;
             System.out.println(difference);
-            if(difference < 0.001){
-                return finalUser;
-            }
+
+        }
+        if(difference < 0.005){
+            return finalUser;
         }
         return "not found";
     }

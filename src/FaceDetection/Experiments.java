@@ -95,14 +95,27 @@ public class Experiments extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        initialize();
+        List<String> results = new ArrayList();
 
-        Image image = new Image(new File("src/DataBase/jan.jpg").toURI().toString(), Double.MAX_VALUE, Double.MAX_VALUE, false, true);
-        Mat frame = imageToMat(image);
 
-        Image imageDetected = detectFaceFromFrame(frame);
+        File[] users = new File("src/DataBase/FaceImages/").listFiles();
 
-        getInfo();
+        Image imageDetected = null;
+
+        for (int i = 0; i < users.length; i++) {
+            initialize();
+            Image image = new Image(new File(users[i].getAbsolutePath()).toURI().toString(), Double.MAX_VALUE, Double.MAX_VALUE, false, true);
+            Mat frame = imageToMat(image);
+
+            imageDetected = detectFaceFromFrame(frame);
+
+            String output = getInfo();
+
+            results.add(output + " " + image.getUrl());
+            System.out.println(output + " " + image.getUrl());
+
+            FaceClassifier.wipe();
+        }
 
 
         //Creating the image view
@@ -122,7 +135,7 @@ public class Experiments extends Application {
         primaryStage.show();
     }
 
-    public void getInfo() throws IOException {
+    public String getInfo() throws IOException {
         FaceClassifier.MAX_EYES = 2;
         FaceClassifier.MAX_FACES = 1;
         FaceClassifier.MAX_MOUTHS = 1;
@@ -147,11 +160,11 @@ public class Experiments extends Application {
             FaceClassifier.addMouth(mouth);
 
             FaceClassifier.getPerson();
-            System.out.println(FaceClassifier.comb);
-            System.out.println(FaceClassifier.getClosestPerson());
+//            System.out.println(FaceClassifier.comb);
+            return FaceClassifier.getClosestPerson();
         }
         else{
-            System.out.println("no person found");
+            return "no person found";
         }
     }
 }
