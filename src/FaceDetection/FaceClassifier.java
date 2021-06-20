@@ -66,7 +66,7 @@ public class FaceClassifier {
         writeCount++;
 
         if(writeCount == MAX_WRITECOUNT) {
-            System.out.println(comb);
+            //System.out.println(comb);
             data.add(comb);
             writeCount = 0;
         }
@@ -75,7 +75,7 @@ public class FaceClassifier {
     }
 
     public static String getClosestPerson(){
-        System.out.println("relative to distance middle to Mouth");
+        //System.out.println("relative to distance middle to Mouth");
 
         double eyd = 0;
         double mmo = 0;
@@ -92,7 +92,7 @@ public class FaceClassifier {
             remo += Double.parseDouble(hold[3]);
             lemi += Double.parseDouble(hold[4]);
             remi += Double.parseDouble(hold[5]);
-            System.out.println(i);
+            //System.out.println(i);
         }
 
         eyd /= data.size();
@@ -102,7 +102,7 @@ public class FaceClassifier {
         lemi /= data.size();
         remi /= data.size();
 
-        System.out.println("here");
+        //System.out.println("here");
 
         double reyesD = eyd/mmo;
         double rmidMouthD = mmo/mmo;
@@ -113,7 +113,7 @@ public class FaceClassifier {
 
         String comb = reyesD + "," + rmidMouthD + "," + rlEyeMouthD + "," + rrEyeMouthD + "," + rlEyeMidD + "," + rrEyeMidD;
 
-        System.out.println(comb);
+        //System.out.println(comb);
 
         File[] users = new File("src/DataBase/Users").listFiles();
         double difference = 10000;
@@ -128,17 +128,17 @@ public class FaceClassifier {
                     dist[i] = Double.parseDouble(distances[i]);
                     double a = Double.parseDouble(distances[i]);
                     double b = Double.parseDouble(faceStat[i]);
-                    double newdiff = Math.min(Math.abs(Math.pow(a, 2) - Math.pow(b, 2)), difference);
+                    double newdiff = Math.min(Math.abs(Math.pow(a, 1) - Math.pow(b, 1)), difference);
 
                     if (newdiff < difference) {
-                        difference = Math.min(Math.abs(Math.pow(a, 2) - Math.pow(b, 2)), difference);
+                        difference = Math.min(Math.abs(Math.pow(a, 1) - Math.pow(b, 1)), difference);
                         finalUser = user.getName();
                     }
 
                 }
             }
-            System.out.println(Arrays.toString(dist));
-            System.out.println(difference);
+            //System.out.println(Arrays.toString(dist));
+            //System.out.println(difference);
 
         }
         if(difference < 0.005){
