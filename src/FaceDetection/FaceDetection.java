@@ -20,8 +20,6 @@ public class FaceDetection extends VBox {
     public FD_Controller controller;
     private final int DELAY = 30;
 
-    public Pane draw;
-
     public FaceDetection() throws IOException {
         // load the native OpenCV library
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -42,7 +40,6 @@ public class FaceDetection extends VBox {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         //add content of the pane
         addContent();
-        createDraw();
     }
     public void addContent()
     {
@@ -161,28 +158,19 @@ public class FaceDetection extends VBox {
                     FaceClassifier.getPerson();
 
                     if(FaceClassifier.data.size()>300){
-                        startScreen.errorInfo.setText("Face analysis done");
-                        //FaceClassifier.writeToFile();
-                        System.out.println(FaceClassifier.getClosestPerson());
+                        String userDetected = FaceClassifier.getClosestPerson();
+                        if(userDetected.equals("not found")){
+                            startScreen.errorInfo.setText("Face analysis done, no one found");
+                        }else{
+                            startScreen.errorInfo.setText("Face analysis done");
+                            startScreen.loginFace(userDetected);
+                        }
                         break;
                     }
-
-                    /*
-                    if(FaceClassifier.canClassify){
-                        startScreen.errorInfo.setText("Face analysis done");
-                        System.out.println(FaceClassifier.getPerson());
-                        System.out.println(FaceClassifier.getClosestPerson());
-                        break;
-                    }
-
-                     */
                 }
                 return null;
             }
         };
         new Thread(task).start();
-    }
-
-    private void createDraw(){
     }
 }

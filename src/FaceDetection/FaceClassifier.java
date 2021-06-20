@@ -223,7 +223,7 @@ public class FaceClassifier {
     }
 
     public static List<Rect> MouthFilter(List<Rect> newParts){
-        System.out.println(newParts.size());
+        //System.out.println(newParts.size());
         for(int i = newParts.size() -1 ; i >= 0; i--){
             if(newParts.get(i) == null){
                 newParts.remove(i);

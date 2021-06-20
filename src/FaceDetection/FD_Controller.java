@@ -454,11 +454,11 @@ public class FD_Controller {
             //remove mouth outside of the face
             for (int i = 0; i < currentFacesArray.length; i++) {
                 Rect face = currentFacesArray[i];
-                System.out.println("face " + face.width + " " + face.height);
+                //System.out.println("face " + face.width + " " + face.height);
                 int[] faceCenter = FaceClassifier.calcMiddle(new ArrayList<>(Arrays.asList(face)));
                 for (int j = 0; j < currentMouthArray.length; j++) {
                     Rect mouth = currentMouthArray[j];
-                    System.out.println("mouth " + mouth.width + " " + mouth.height);
+                    //System.out.println("mouth " + mouth.width + " " + mouth.height);
                     int nbrPtsOutside = nbrOfPtsOutside(face,mouth);
                     if(nbrPtsOutside>2){
                         currentMouthArray = removeElement(mouth, currentMouthArray);
@@ -467,11 +467,9 @@ public class FD_Controller {
                     if(mouth.height>face.height*MOUTH_HEIGHT_MAX&&mouth.height<face.height*MOUTH_HEIGHT_MIN&&mouth.width>face.width*MOUTH_WIDTH_MAX&&mouth.width<face.width*MOUTH_WIDTH_MIN){
                         currentMouthArray = removeElement(mouth, currentMouthArray);
                     }
-                    System.out.println(mouth.y + " " + faceCenter[1]);
 
                     //remove mouth higher than middle of the face
                     if (mouth.y < faceCenter[1]) {
-                        System.out.println("oui");
                         currentMouthArray = removeElement(mouth, currentMouthArray);
                     }
                 }

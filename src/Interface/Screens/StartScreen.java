@@ -390,6 +390,18 @@ public class StartScreen extends Application {
         }
     }
 
+    public void loginFace(String username){
+        File[] users = new File("src/DataBase/Users").listFiles();
+
+        for (File file:users) {
+            if(file.getName().equals(username)){
+                user.setText(username);
+                psw.setText(FileParser.getUserInfo(username,"-Password"));
+                break;
+            }
+        }
+    }
+
 
     public static class MenuTitle extends Pane {
         private Text text;
