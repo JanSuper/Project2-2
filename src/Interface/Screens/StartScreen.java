@@ -23,22 +23,18 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 import javafx.scene.control.TextField;
 import DataBase.Data;
-import FaceDetection.FaceClassifier;
-import org.opencv.core.Rect;
 
 import java.io.*;
-import java.lang.invoke.MutableCallSite;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class StartScreen extends Application {
 
     public Stage stage;
-    private MainScreen mainScreen;
+    public MainScreen mainScreen;
 
     private VBox menuBox;
-    private TextField user;
+    public TextField user;
     private PasswordField psw;
     public Text errorInfo;
     public CheckBox recognizeUser;
@@ -50,6 +46,7 @@ public class StartScreen extends Application {
 
     private FileParser fileParser;
     public FaceDetection faceDetection;
+    public boolean signUp = false;
 
     /**
      * initializer method
@@ -99,8 +96,7 @@ public class StartScreen extends Application {
                             //check if password is correct
                             if(fileParser.checkUserInfo("-Password",user.getText(),psw.getText())){
                                 //start mainscreen and initialize
-                                initializeAgents(false);
-                                mainScreen = new MainScreen(faceDetection,stage);
+                                initialize(false);
                             }else{
                                 if(counter ==1 ) {
                                     errorInfo.setText("Username or password is wrong, 2 attempts left");
@@ -136,8 +132,7 @@ public class StartScreen extends Application {
                 counter++;
                 if(userAlreadyExists()){
                     if(fileParser.checkUserInfo("-Password",user.getText(),psw.getText())){
-                        initializeAgents(false);
-                        mainScreen = new MainScreen(faceDetection,stage);
+                        initialize(false);
                     }else{
                         if(counter ==1 ) {
                             errorInfo.setText("Username or password is wrong, 2 attempts left");
@@ -176,9 +171,7 @@ public class StartScreen extends Application {
                     } else {
                         //if the username is not already used
                         if (!userAlreadyExists()) {
-                            //out.println(user.getText() + " "+psw.getText());
-                            initializeAgents(true);
-                            mainScreen = new MainScreen(faceDetection,stage);
+                            handleSignUp();
                         } else {
                             if (user.getText().isEmpty()) {
                                 errorInfo.setText("Sorry, username not possible");
@@ -198,9 +191,7 @@ public class StartScreen extends Application {
                 errorInfo.setText("Sorry, username or password not possible");
             } else {
                 if (!userAlreadyExists()) {
-                    //out.println(user.getText() + " "+psw.getText());
-                    initializeAgents(true);
-                    mainScreen = new MainScreen(faceDetection,stage);
+                    handleSignUp();
                 } else {
                     if (user.getText().isEmpty()) {
                         errorInfo.setText("Sorry, username not possible");
@@ -211,6 +202,12 @@ public class StartScreen extends Application {
             }
         }
 
+    }
+
+    public void handleSignUp(){
+        recognizeUser.setSelected(true);
+        signUp = true;
+        manageUserDetection();
     }
 
     /**
@@ -226,7 +223,7 @@ public class StartScreen extends Application {
      * initialize user and assistant
      * @param signup is true if it's a new user, false else
      */
-    public void initializeAgents(boolean signup){
+    public void initialize(boolean signup) throws Exception {
         if(signup){
             fileParser.createUser(user.getText(),psw.getText(), errorInfo);
         }
@@ -237,6 +234,7 @@ public class StartScreen extends Application {
         if(fileParser.getUsersPicture("background")!=null){
             Data.setImage(fileParser.getUsersPicture("background"));
         }
+        mainScreen = new MainScreen(faceDetection,stage);
     }
 
     /**

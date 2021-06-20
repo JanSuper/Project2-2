@@ -161,7 +161,7 @@ public class Experiments extends Application {
 
             FaceClassifier.getPerson();
 //            System.out.println(FaceClassifier.comb);
-            return FaceClassifier.getClosestPerson();
+            return FaceClassifier.getClosestPerson(false);
         }
         else{
             return "no person found";

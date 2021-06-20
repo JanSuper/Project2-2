@@ -50,6 +50,7 @@ public class FileParser {
                     out.println("-Location: "+"\n" + "/");
                     out.println("-Age: "+"\n" + "/");
                     out.println("-Profession: "+"\n" + "/");
+                    out.println("-Face: "+"\n" + "/");
                     writer.close();
                 } catch (IOException e) {
                     left.setText("Sorry, something went wrong");
@@ -121,7 +122,9 @@ public class FileParser {
             FileWriter writer = new FileWriter(userFile);
             writer.write(str);
             writer.close();
-            mainScreen.chat.receiveMessage("Your new "+info+ " is " + edit);
+            if(mainScreen!=null) {
+                mainScreen.chat.receiveMessage("Your new " + info + " is " + edit);
+            }
             return true;
         } catch (FileNotFoundException e) {
             e.printStackTrace();

@@ -1,5 +1,6 @@
 package FaceDetection;
 
+import DataBase.Data;
 import FileParser.FileParser;
 import org.opencv.core.Rect;
 
@@ -48,6 +49,9 @@ public class FaceClassifier {
 
     public static int writeCount = 0;
 
+    public static FileParser fileReader = new FileParser();
+
+
     public static void wipe(){
         List<Rect> eyes = new ArrayList();
         List<Rect> face = new ArrayList();
@@ -74,7 +78,7 @@ public class FaceClassifier {
         return comb;
     }
 
-    public static String getClosestPerson(){
+    public static String getClosestPerson(boolean signup){
         //System.out.println("relative to distance middle to Mouth");
 
         double eyd = 0;
@@ -113,36 +117,38 @@ public class FaceClassifier {
 
         String comb = reyesD + "," + rmidMouthD + "," + rlEyeMouthD + "," + rrEyeMouthD + "," + rlEyeMidD + "," + rrEyeMidD;
 
-        //System.out.println(comb);
+        if(signup){
+            fileReader.changeUserInfo("-Face", comb,null);
+        }else {
+            File[] users = new File("src/DataBase/Users").listFiles();
+            double difference = 10000;
+            String finalUser = "";
+            for (File user : users) {
+                //System.out.println(user.toString());
+                String[] distances = FileParser.getUserInfo(user.getName(), "-Face").split(",");
+                String[] faceStat = comb.split(",");
+                double[] dist = new double[distances.length];
+                for (int i = 0; i < distances.length; i++) {
+                    if (i != 1) {
+                        dist[i] = Double.parseDouble(distances[i]);
+                        double a = Double.parseDouble(distances[i]);
+                        double b = Double.parseDouble(faceStat[i]);
+                        double newdiff = Math.min(Math.abs(Math.pow(a, 1) - Math.pow(b, 1)), difference);
 
-        File[] users = new File("src/DataBase/Users").listFiles();
-        double difference = 10000;
-        String finalUser = "";
-        for (File user:users) {
-            //System.out.println(user.toString());
-            String[] distances = FileParser.getUserInfo(user.getName(),"-Face").split(",");
-            String[] faceStat = comb.split(",");
-            double[] dist = new double[distances.length];
-            for (int i = 0; i < distances.length; i++) {
-                if (i != 1) {
-                    dist[i] = Double.parseDouble(distances[i]);
-                    double a = Double.parseDouble(distances[i]);
-                    double b = Double.parseDouble(faceStat[i]);
-                    double newdiff = Math.min(Math.abs(Math.pow(a, 1) - Math.pow(b, 1)), difference);
+                        if (newdiff < difference) {
+                            difference = Math.min(Math.abs(Math.pow(a, 1) - Math.pow(b, 1)), difference);
+                            finalUser = user.getName();
+                        }
 
-                    if (newdiff < difference) {
-                        difference = Math.min(Math.abs(Math.pow(a, 1) - Math.pow(b, 1)), difference);
-                        finalUser = user.getName();
                     }
-
                 }
-            }
-            //System.out.println(Arrays.toString(dist));
-            //System.out.println(difference);
+                //System.out.println(Arrays.toString(dist));
+                //System.out.println(difference);
 
-        }
-        if(difference < 0.005){
-            return finalUser;
+            }
+            if (difference < 0.005) {
+                return finalUser;
+            }
         }
         return "not found";
     }

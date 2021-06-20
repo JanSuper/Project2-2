@@ -1,12 +1,11 @@
 package FaceDetection;
-import DataBase.Data;
 import Interface.Screens.MainScreen;
 import Interface.Screens.StartScreen;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import org.opencv.core.*;
 
 import java.io.IOException;
@@ -133,7 +132,7 @@ public class FaceDetection extends VBox {
 
     public void analyzeFace(){
         Task task = new Task<Void>() {
-            @Override public Void call() throws InterruptedException, IOException {
+            @Override public Void call() throws Exception {
                 while(true){
                     if(!startScreen.recognizeUser.isSelected()){
                         startScreen.errorInfo.setText("");
@@ -158,12 +157,28 @@ public class FaceDetection extends VBox {
                     FaceClassifier.getPerson();
 
                     if(FaceClassifier.data.size()>300){
-                        String userDetected = FaceClassifier.getClosestPerson();
-                        if(userDetected.equals("not found")){
-                            startScreen.errorInfo.setText("Face analysis done, no one found");
-                        }else{
-                            startScreen.errorInfo.setText("Face analysis done");
-                            startScreen.loginFace(userDetected);
+                        if(startScreen.signUp){
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    startScreen.errorInfo.setText("Face analysis done");
+                                    try {
+                                        startScreen.initialize(true);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                    FaceClassifier.getClosestPerson(true);
+                                    startScreen.signUp = false;
+                                }
+                            });
+                        }else {
+                            String userDetected = FaceClassifier.getClosestPerson(false);
+                            if (userDetected.equals("not found")) {
+                                startScreen.errorInfo.setText("Face analysis done, no one found");
+                            } else {
+                                startScreen.errorInfo.setText("Face analysis done");
+                                startScreen.loginFace(userDetected);
+                            }
                         }
                         break;
                     }
