@@ -212,7 +212,10 @@ public class FaceClassifier {
 
     public static List<Rect> Eyefilter(List<Rect> newParts){
         for(int i = newParts.size() -1 ; i >= 0; i--){
-            if(newParts.get(i).y > facePos[1] || newParts.get(i).y < face.get(0).y){
+            if(newParts.get(i) == null){
+                newParts.remove(i);
+            }
+            else if(newParts.get(i).y > facePos[1] || newParts.get(i).y < face.get(0).y){
                 newParts.remove(i);
             }
         }
@@ -220,8 +223,12 @@ public class FaceClassifier {
     }
 
     public static List<Rect> MouthFilter(List<Rect> newParts){
+        System.out.println(newParts.size());
         for(int i = newParts.size() -1 ; i >= 0; i--){
-            if(newParts.get(i).y < facePos[1]){
+            if(newParts.get(i) == null){
+                newParts.remove(i);
+            }
+            else if(newParts.get(i).y < facePos[1]){
                 newParts.remove(i);
             }
         }
