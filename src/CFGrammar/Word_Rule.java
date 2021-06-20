@@ -40,7 +40,7 @@ public class Word_Rule {
                 word_Branch.setWord(word_Rules.get(i).getRHS_Word());
                 subTree.add(word_Branch);
                 foreign_word = false;
-                System.out.println("Added word : "+ word);
+                //System.out.println("Added word : "+ word);
             }
         }
         if(foreign_word)

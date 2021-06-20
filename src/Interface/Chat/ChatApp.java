@@ -251,7 +251,7 @@ public class ChatApp extends VBox {
         typeField.getChildren().setAll(userInput, sendMessageButton);
     }
 
-    private boolean CFG_on = false;
+    private boolean CFG_on = true;
     public void sendMessage(String message) throws Exception {
         messages.add(new MessageBubble(message, 1));
         assistant_answer.setAssistantMessage(assistantMessages);
@@ -269,7 +269,7 @@ public class ChatApp extends VBox {
             {
                 Main_CFG cfg = new Main_CFG(message, assistant_answer);
 
-                int skill_nbr = cfg.getSkill();
+                int skill_nbr = cfg.getSkillNbr();
                 if(skill_nbr == 0)
                 {
                     //Pas de Skill
@@ -277,14 +277,10 @@ public class ChatApp extends VBox {
                 }
                 else
                 {
-                    //Lancer ce skill
                     String skillnbr = String.valueOf(skill_nbr);
                     ArrayList<String> words_for_variables = cfg.getVariable_words();
                     receiveMessage(cfg.getSkill(skillnbr,words_for_variables));
-                    //receiveMessage("Found skill number: "+skill_nbr); //Juste pour tester
-                    //Si le skill a besoin de variables
                 }
-                //receiveMessage(); the answer
             }
         }
         else

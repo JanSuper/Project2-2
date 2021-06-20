@@ -29,7 +29,7 @@ public class Main_CFG {
      * @param args
      */
     public static void main(String[] args) throws IOException {
-        String test = "What is the weatherm like?";
+        String test = "What is the weather like?";
 
         Main_CFG cfg = new Main_CFG(test);
 
@@ -73,41 +73,50 @@ public class Main_CFG {
         initialize_Tree();
         implement_Tree();
 
-        verb_weight = 2;
-        noun_weight = 3;
-        var_weight = 1;
-        threshold = 3;
+        verb_weight = 2.5;
+        noun_weight = 7.95;
+        var_weight = 8.39;
+        threshold = 1.78;
 
         StringBuffer result = new StringBuffer();
         getEndSplit(result);
         System.out.println(result.toString());
 
-        toPrint();
-        getSkill();
+        //toPrint();
+        getSkillNbr();
     }
 
-    public Main_CFG(String pUser_message, Assistant assistant)
+    public Main_CFG(String pUser_message, Assistant assistant) throws IOException
     {
-        System.out.println("Wrong constructor !");
-        /*user_message = removePunctuation(pUser_message).toLowerCase();
+        user_message = removePunctuation(pUser_message).toLowerCase();
         u_message = user_message.split("\\s");
         message_length = u_message.length;
 
         this.assistant = assistant;
         skillEditor = assistant.skillEditor;
 
-        JsonReader reader = new JsonReader();
+        /*JsonReader reader = new JsonReader();
         ArrayList<String> checkgrammar = reader.getAllRules();
         splitGrammar(checkgrammar);
         initialize_Tree();
+        implement_Tree();*/
+
+        ArrayList<String> grammar = getAllRules();
+        splitGrammar(grammar);
+        initialize_Tree();
         implement_Tree();
+
+        verb_weight = 2.5;
+        noun_weight = 7.95;
+        var_weight = 8.39;
+        threshold = 1.78;
 
         StringBuffer result = new StringBuffer();
         getEndSplit(result);
         System.out.println(result.toString());
 
         toPrint();
-        getSkill();*/
+        getSkillNbr();
     }
 
     /**
@@ -145,7 +154,7 @@ public class Main_CFG {
             System.out.println(result.toString());
 
             toPrint();
-            int skill_found = getSkill();
+            int skill_found = getSkillNbr();
 
             if(skill_found == skill_nbr)
             {
@@ -194,7 +203,7 @@ public class Main_CFG {
         return 1;
     }
 
-    public int getSkill()
+    public int getSkillNbr()
     {
         double score = 0;
         double best_score = 0;
@@ -279,6 +288,10 @@ public class Main_CFG {
                 {
                     score = score + var_weight;
                     //System.out.println("Score after variable = "+score);
+                }
+                else
+                {
+                    score = score - verb_weight;
                 }
             }
 

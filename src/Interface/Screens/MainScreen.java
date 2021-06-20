@@ -98,7 +98,7 @@ public class MainScreen {
                             @Override
                             public void run() {
                                 chat.receiveMessage("Welcome " + Data.getUsername() + "! How may I help you?"+"\r\n"+
-                                        "To use CFG-parser type in: CFG on");
+                                        "The CFG parser is on, if you want to turn it off write: CFG off");
                             }
                         });
                         firstFaceViewed = true;

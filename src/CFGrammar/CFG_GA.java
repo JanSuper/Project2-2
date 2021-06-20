@@ -66,6 +66,7 @@ public class CFG_GA {
             {
                 System.out.println("");
                 loops++;
+
             }
         }
 

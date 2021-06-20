@@ -105,6 +105,10 @@ VB -> pause # 0.03
 VB -> stop # 0.03
 VB -> resume # 0.03
 VB -> go # 0.03
+VB -> want # 0.03
+VB -> launch # 0.03
+VB -> tell # 0.03
+VB -> display # 0.03
 Adj -> next # 0.2
 Adj -> later # 0.2
 Adj -> new # 0.2
@@ -118,7 +122,9 @@ N -> help # 0.05
 N -> password # 0.05
 N -> country # 0.05
 N -> city # 0.05
+N -> camera # 0.05
 N -> app # 0.05
+N -> face # 0.05
 N -> areas # 0.05
 N -> location # 0.05
 N -> course # 0.05
