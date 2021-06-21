@@ -75,8 +75,8 @@ public class Main_CFG {
 
         verb_weight = 8.416;
         noun_weight = 6.606;
-        var_weight = 13.241;
-        threshold = 15.238;
+        var_weight = 3.241;
+        threshold = 4.238;
 
         StringBuffer result = new StringBuffer();
         getEndSplit(result);
@@ -108,8 +108,8 @@ public class Main_CFG {
 
         verb_weight = 8.416;
         noun_weight = 6.606;
-        var_weight = 13.241;
-        threshold = 15.238;
+        var_weight = 3.241;
+        threshold = 4.238;
 
         StringBuffer result = new StringBuffer();
         getEndSplit(result);
@@ -291,7 +291,7 @@ public class Main_CFG {
                 }
                 else
                 {
-                    score = score - verb_weight;
+                    score = score - var_weight;
                 }
             }
 
@@ -616,6 +616,7 @@ public class Main_CFG {
         }
         else if(skill_num == 14) {
             assistant.mainScreen.setClockAppDisplay("Alarm");
+            final_answer = " This is what I found for your request.";
         }
         else if(skill_num == 15) {
             assistant.mainScreen.setClockAppDisplay("Clock");
@@ -646,6 +647,10 @@ public class Main_CFG {
             if (assistant.mainScreen.clockAppDisplay.timerVBox.startPauseResume.getText().equals("Pause")) {
                 assistant.mainScreen.clockAppDisplay.timerVBox.pauseTimer();
                 final_answer = "The timer is paused. Type 'Resume/Cancel timer' or use the options on the left screen.";
+            }
+            else
+            {
+                final_answer = "Can not pause the timer if it is not running.";
             }
             assistant.mainScreen.setClockAppDisplay("Timer");
         }
@@ -704,6 +709,7 @@ public class Main_CFG {
         else if(skill_num == 27) {
             assistant.mainScreen.setClockAppDisplay("Alarm");
             assistant.mainScreen.clockAppDisplay.alarmVBox.addAlarm(variable_words.get(0),variable_words.get(1));
+            final_answer = " This is what I found for your request.";
         }
         else if(skill_num == 28) {
             String err = "Something went wrong! To set a new timer use the options on the left screen or type 'Set/Start a timer for hh:mm:ss'.";
@@ -754,18 +760,22 @@ public class Main_CFG {
         else if(skill_num == 31)
         {
             assistant.mainScreen.setSkillEditorAppDisplay("Add skill");
+            final_answer = " This is what I found for your request.";
         }else if(skill_num == 32){
             assistant.mainScreen.setSkillEditorAppDisplay("Add rule");
+            final_answer = " This is what I found for your request.";
         }
         else if(skill_num == 40){
             String searchURL = "https://www.google.com/search" + "?q=" + assistant.messageToUrl(variable_words.get(0));
             Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start chrome.exe " + searchURL});
+            final_answer = " This is what I found for your request.";
         }
         else if(skill_num == 50){
             if(Data.getMp()!=null){
                 Data.getMp().play();
                 MediaPlayerDisplay mediaControl = new MediaPlayerDisplay(Data.getMp());
                 assistant.mainScreen.displayUrlMediaPlayer(mediaControl);
+                final_answer = " This is what I found for your request.";
             }else{
                 FileChooser fileChooser = new FileChooser();
                 File selectedFile = fileChooser.showOpenDialog(assistant.mainScreen.stage);
@@ -797,20 +807,24 @@ public class Main_CFG {
                     assistant.mainScreen.displayUrlMediaPlayer(mediaControl);
                 } catch(NullPointerException e){
                     Data.getMp().play();
-                    assistant.mainScreen.chat.receiveMessage("No file chosen");
+                    //assistant.mainScreen.chat.receiveMessage("No file chosen");
+                    final_answer = "No file chosen";
                 } catch(MediaException e){
                     Data.getMp().play();
-                    assistant.mainScreen.chat.receiveMessage("Filetype not supported");
+                    //assistant.mainScreen.chat.receiveMessage("Filetype not supported");
+                    final_answer = "Filetype not supported";
                 }
             }else{
-                assistant.mainScreen.chat.receiveMessage("No music is being played");
+                final_answer = "No music is being played";
             }
         }
         else if(skill_num==52){
             Data.getMp().pause();
+            final_answer = " This is what I found for your request.";
         }
         else if(skill_num==53){
             Data.getMp().stop();
+            final_answer = " This is what I found for your request.";
         }
         else if(skill_num == 59){
             WebView webview = new WebView();
@@ -820,13 +834,16 @@ public class Main_CFG {
             Pane pane = new Pane();
             pane.getChildren().add(webview);
             assistant.mainScreen.displaySkill(pane,"ytb watcher");
+            final_answer = " This is what I found for your request.";
         }
         else if(skill_num == 60){
             assistant.mainScreen.displaySkill(assistant.mainScreen.calendarDisplay,"calendar");
+            final_answer = " This is what I found for your request.";
         }
         else if(skill_num == 61){
             assistant.mainScreen.displaySkill(assistant.mainScreen.calendarDisplay,"calendar");
             assistant.mainScreen.clockAppDisplay.alarmVBox.createAlert(variable_words.get(0),variable_words.get(1),variable_words.get(2),variable_words.get(3), Color.ORANGE);
+            final_answer = " This is what I found for your request.";
         }
         else if(skill_num == 70){
             assistant.mainScreen.chat.receiveMessage("Route from " + variable_words.get(0) + " to "+variable_words.get(1) + " being computed");
@@ -834,9 +851,11 @@ public class Main_CFG {
         }
         else if(skill_num == 71){
             assistant.mainScreen.setMapDisplay("google",null,null);
+            final_answer = " This is what I found for your request.";
         }
         else if(skill_num == 72){
             assistant.mainScreen.setMapDisplay("map",variable_words.get(0),null);
+            final_answer = " This is what I found for your request.";
         }
         else if(skill_num == 80){
             if(!variable_words.get(0).contains(" ")){
@@ -872,9 +891,11 @@ public class Main_CFG {
         }
         else if(skill_num==86){
             assistant.mainScreen.setMenu("Background");
+            final_answer = " This is what I found for your request.";
         }
         else if(skill_num==87){
             assistant.mainScreen.setMenu("ThemeColors");
+            final_answer = " This is what I found for your request.";
         }
         else if(skill_num==89){
             String info = Files.readString(Path.of("src/DataBase/Users/" + Data.getUsername() + "/" + Data.getUsername() + ".txt"));
@@ -890,6 +911,7 @@ public class Main_CFG {
         }
         else if(skill_num == 92){
             assistant.mainScreen.displayCamera();
+            final_answer = " This is what I found for your request.";
         }
         return final_answer;
     }

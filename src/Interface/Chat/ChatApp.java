@@ -257,9 +257,31 @@ public class ChatApp extends VBox {
         assistant_answer.setAssistantMessage(assistantMessages);
         //receiveMessage(assistant_answer.getResponseWithRandom(message));
 
-        if(CFG_on)
+        if(!CFG_on)
         {
-            if(message.contains("ADD/") || message.contains("REMOVE/"))
+            if(message.contains("CFG on"))
+            {
+                CFG_on = true;
+                String answer = "Context-free grammar parser turned on"+"\r\n"+
+                        "To add a production rule to the grammar write: ADD/LHS:RHS1,RHS2"+"\r\n"+
+                        "To add a terminal to the grammar write: ADD/LHS:Word"+"\r\n"+
+                        "To remove same with REMOVE/...";
+                receiveMessage(answer);
+            }
+            else
+            {
+                System.out.println("Deng mamm!");
+                receiveMessage(assistant_answer.textRecognition.getResponse(message));
+            }
+        }
+        else
+        {
+            if(message.contains("CFG off"))
+            {
+                CFG_on = false;
+                receiveMessage("Context-free grammar parser turned on");
+            }
+            else if(message.contains("ADD/") || message.contains("REMOVE/"))
             {
                 Main_CFG cfg = new Main_CFG(message);
                 String answer = cfg.addOrRemoveRule(message);
@@ -281,27 +303,6 @@ public class ChatApp extends VBox {
                     ArrayList<String> words_for_variables = cfg.getVariable_words();
                     receiveMessage(cfg.getSkill(skillnbr,words_for_variables));
                 }
-            }
-        }
-        else
-        {
-            if(message.contains("CFG on"))
-            {
-                CFG_on = true;
-                String answer = "Context-free grammar parser turned on"+"\r\n"+
-                                "To add a production rule to the grammar write: ADD/LHS:RHS1,RHS2"+"\r\n"+
-                                "To add a terminal to the grammar write: ADD/LHS:Word"+"\r\n"+
-                                "To remove same with REMOVE/...";
-                receiveMessage(answer);
-            }
-            else if(message.contains("CFG off"))
-            {
-                CFG_on = false;
-                receiveMessage("Context-free grammar parser turned on");
-            }
-            else
-            {
-                receiveMessage(assistant_answer.textRecognition.getResponse(message));
             }
         }
     }
