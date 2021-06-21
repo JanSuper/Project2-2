@@ -6,6 +6,8 @@ Before starting the code, please make sure to have downloaded and added the foll
 - Javafx11
 - Httpcomponents
 - Simple-Json-11 library
+- OpenCV version: 3.4.14 (for Windows users) 
+	Link: https://opencv.org/releases/
 
 Once the packages are added and loaded correctly into your environment, please add the following vm-option:
 
