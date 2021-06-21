@@ -14,7 +14,7 @@ public class CFG_GA {
 
     ////////////////////////////////////////////////////////////////////////////
 
-    private int pop_size = 80;
+    private int pop_size = 60;
     private int weight_size = 4;
 
     public CFG_GA() throws IOException, FileNotFoundException
@@ -24,7 +24,7 @@ public class CFG_GA {
         int loops = 0;
         Weights[] pop = initializeWeights();
 
-        while (!intersected(pop) && generation < 20) //Ici limite de génération
+        while (!intersected(pop) && generation < 40) //Ici limite de génération
         {
             System.out.println("Generation: "+ generation + "\nWeights: ");
             int r;

@@ -117,6 +117,8 @@ public class FaceClassifier {
 
         String comb = reyesD + "," + rmidMouthD + "," + rlEyeMouthD + "," + rrEyeMouthD + "," + rlEyeMidD + "," + rrEyeMidD;
 
+//        System.out.println(comb);
+
         if(signup){
             fileReader.changeUserInfo("-Face", comb,null);
         }else {
@@ -124,15 +126,17 @@ public class FaceClassifier {
             double difference = 10000;
             String finalUser = "";
             for (File user : users) {
+                double holddiff = 0;
                 //System.out.println(user.toString());
                 String[] distances = FileParser.getUserInfo(user.getName(), "-Face").split(",");
                 String[] faceStat = comb.split(",");
                 double[] dist = new double[distances.length];
                 for (int i = 0; i < distances.length; i++) {
-                    if (i != 1) {
-                        dist[i] = Double.parseDouble(distances[i]);
-                        double a = Double.parseDouble(distances[i]);
-                        double b = Double.parseDouble(faceStat[i]);
+                    double a = Double.parseDouble(distances[i]);
+                    double b = Double.parseDouble(faceStat[i]);
+                    dist[i] = Double.parseDouble(distances[i]);
+                    if (false) {
+
                         double newdiff = Math.min(Math.abs(Math.pow(a, 1) - Math.pow(b, 1)), difference);
 
                         if (newdiff < difference) {
@@ -141,15 +145,62 @@ public class FaceClassifier {
                         }
 
                     }
+                    else{
+                        holddiff += Math.abs(a - b)/(distances.length-1);
+                    }
                 }
-                //System.out.println(Arrays.toString(dist));
-                //System.out.println(difference);
+                if (holddiff < difference) {
+                    difference = holddiff;
+                    finalUser = user.getName();
+                }
+//                System.out.println(Arrays.toString(dist));
+//                System.out.println(difference);
 
             }
-            if (difference < 0.005) {
+            if (difference < 0.05) {
+
+//                System.out.println(difference);
+
+                data = new ArrayList();
+
+                eyesDone = false;
+                mouthDone = false;
+                canClassify = false;
+
+                leftEyePos = new int[2];
+                rightEyePos = new int[2];
+                mouthPos = new int[2];
+                facePos = new int[2];
+
+                eyesD = 0;
+                midMouthD = 0;
+                lEyeMouthD = 0;
+                rEyeMouthD = 0;
+                lEyeMidD = 0;
+                rEyeMidD = 0;
+
                 return finalUser;
             }
         }
+
+        data = new ArrayList();
+
+        eyesDone = false;
+        mouthDone = false;
+        canClassify = false;
+
+        leftEyePos = new int[2];
+        rightEyePos = new int[2];
+        mouthPos = new int[2];
+        facePos = new int[2];
+
+        eyesD = 0;
+        midMouthD = 0;
+        lEyeMouthD = 0;
+        rEyeMouthD = 0;
+        lEyeMidD = 0;
+        rEyeMidD = 0;
+
         return "not found";
     }
 
@@ -187,7 +238,8 @@ public class FaceClassifier {
 
         int amountToGo = eyes.size() + newEyes.size() - MAX_EYES;
 
-        for(int i = 0; i < amountToGo; i++){
+
+        for(int i = 0; i < Math.min(amountToGo,eyes.size()); i++){
             eyes.remove(0);
         }
         for(int i = 0; i <= newEyes.size()-1; i++){
@@ -245,7 +297,7 @@ public class FaceClassifier {
         int amountToGo = face.size() + newFace.size() - MAX_FACES;
 
 
-        for(int i = 0; i < amountToGo; i++){
+        for(int i = 0; i < Math.min(amountToGo, face.size()); i++){
             face.remove(0);
         }
         for(int i = 0; i <= newFace.size()-1; i++){
@@ -279,7 +331,7 @@ public class FaceClassifier {
         int amountToGo = mouth.size() + newMouth.size() - MAX_MOUTHS;
 
 
-        for(int i = 0; i < amountToGo; i++){
+        for(int i = 0; i < Math.min(amountToGo, mouth.size()); i++){
             mouth.remove(0);
         }
         for(int i = 0; i <= newMouth.size()-1; i++){

@@ -66,6 +66,15 @@ public class MapDisplay extends VBox {
             topBox.setMaxHeight(45);
             current.getChildren().addAll(myWebView);
         }
+        else if (type.equals("moon")) {
+            myWebView = new WebView();
+            WebEngine engine = myWebView.getEngine();
+            File f_new = new File("src/res/requestMoon.html");
+            engine.load(f_new.toURI().toString());
+            current = new VBox(0);
+            topBox.setMaxHeight(45);
+            current.getChildren().addAll(myWebView);
+        }
         // DISPLAY GOOGLE MAPS:
         // show a interactive google map without routes
         // read description below
@@ -76,8 +85,8 @@ public class MapDisplay extends VBox {
 
             // First I need to transform the google maps location names into coordinates
             // which I do by using another google maps api called: google maps geocoding.
-            // For that I send a request to the google maps directions api servers by adding the locations
-            // "googlewebview" to the url - the response will be json data format (xml is also possible):
+            // For that I send a request to the google maps geocoding api servers by adding the locations
+            // "loc1" to the url - the response will be json data format (xml is also possible):
 
             // 1. Filter the location words from the string and replace " " through "+" (to add it to the url)
             // 2. Send a request to google servers:
@@ -122,11 +131,11 @@ public class MapDisplay extends VBox {
             FileWriter writer = new FileWriter("src/res/requestgooglemaps.html");
             writer.write(content);
             writer.close();
-            File f_new = new File("src/res/requestgooglemaps.html");
 
             // Next I call the google maps javascript api by loading my new requestgooglemaps.html file
             // (see /res/googlemaps.html or once created /res/googlemapsrequest.html)
 
+            File f_new = new File("src/res/requestgooglemaps.html");
             engine.load(f_new.toURI().toString());
             current = new VBox(0);
             topBox.setMaxHeight(45);

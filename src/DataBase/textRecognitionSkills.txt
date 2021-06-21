@@ -256,6 +256,11 @@ U Research
 U Open google
 B 71
 
+U Moon
+U Map of Moon
+U Map Moon
+B 74
+
 U Personal info
 U Change my personal info
 U I want to change my profile info
