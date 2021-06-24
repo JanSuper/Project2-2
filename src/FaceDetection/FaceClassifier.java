@@ -129,24 +129,27 @@ public class FaceClassifier {
                 double holddiff = 0;
                 //System.out.println(user.toString());
                 String[] distances = FileParser.getUserInfo(user.getName(), "-Face").split(",");
-                String[] faceStat = comb.split(",");
-                double[] dist = new double[distances.length];
-                for (int i = 0; i < distances.length; i++) {
-                    double a = Double.parseDouble(distances[i]);
-                    double b = Double.parseDouble(faceStat[i]);
-                    dist[i] = Double.parseDouble(distances[i]);
-                    if (false) {
+                System.out.println(Arrays.toString(distances) + " " + distances.length);
+                if(distances.length >1){
+                    String[] faceStat = comb.split(",");
+                    double[] dist = new double[distances.length];
+                    for (int i = 0; i < distances.length; i++) {
+                        double a = Double.parseDouble(distances[i]);
+                        double b = Double.parseDouble(faceStat[i]);
+                        dist[i] = Double.parseDouble(distances[i]);
+                        if (false) {
 
-                        double newdiff = Math.min(Math.abs(Math.pow(a, 1) - Math.pow(b, 1)), difference);
+                            double newdiff = Math.min(Math.abs(Math.pow(a, 1) - Math.pow(b, 1)), difference);
 
-                        if (newdiff < difference) {
-                            difference = Math.min(Math.abs(Math.pow(a, 1) - Math.pow(b, 1)), difference);
-                            finalUser = user.getName();
+                            if (newdiff < difference) {
+                                difference = Math.min(Math.abs(Math.pow(a, 1) - Math.pow(b, 1)), difference);
+                                finalUser = user.getName();
+                            }
+
                         }
-
-                    }
-                    else{
-                        holddiff += Math.abs(a - b)/(distances.length-1);
+                        else{
+                            holddiff += Math.abs(a - b)/(distances.length-1);
+                        }
                     }
                 }
                 if (holddiff < difference) {
