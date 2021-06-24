@@ -222,24 +222,6 @@ public class TextRecognition {
                             }
                         }
                     }else if(thirdPhase){
-                        String sWithVar = assistant.removeVariables(s);
-                        //CHECKS SKILL WITH AND WITHOUT VARIABLES (WITH DELETE WORDS WHICH ALLOWS FOR "TOO MUCH" WORDS)
-                        score = LevenshteinDistance(node.getSentence().toLowerCase(), sWithVar.substring(2).toLowerCase(), max_Distance);
-                        if (score != -1) {
-                            if (score < best_score) {
-                                best_score = score;
-                            }
-
-                            String r;
-                            while ((r = data.readLine()) != null) {
-                                if(r.startsWith("B")){
-                                    res.add(new Answers(score, r.substring(2)));
-                                    break;
-                                }
-                            }
-                        }
-
-                    }else if(fourthPhase){
                         if(s.contains("<VARIABLE>")){
                             //CHECKS SKILL ONLY VARIABLES (WITH DELETE WORDS WHICH ALLOWS FOR "TOO MUCH" WORDS)
                             String sWithVar = assistant.removeVariables(s);
@@ -255,6 +237,24 @@ public class TextRecognition {
                                         res.add(new Answers(score, r.substring(2)));
                                         break;
                                     }
+                                }
+                            }
+                        }
+
+                    }else if(fourthPhase){
+                        String sWithVar = assistant.removeVariables(s);
+                        //CHECKS SKILL WITH AND WITHOUT VARIABLES (WITH DELETE WORDS WHICH ALLOWS FOR "TOO MUCH" WORDS)
+                        score = LevenshteinDistance(node.getSentence().toLowerCase(), sWithVar.substring(2).toLowerCase(), max_Distance);
+                        if (score != -1) {
+                            if (score < best_score) {
+                                best_score = score;
+                            }
+
+                            String r;
+                            while ((r = data.readLine()) != null) {
+                                if(r.startsWith("B")){
+                                    res.add(new Answers(score, r.substring(2)));
+                                    break;
                                 }
                             }
                         }
@@ -411,7 +411,14 @@ public class TextRecognition {
             try {
                 String city;
                 String country = "";
-                String temp = nodeInvestigated.getWordsRemoved().get(0);
+                String temp = "";
+                if(nodeInvestigated.getWordsRemoved().size()>1){
+                    for (String result:nodeInvestigated.getWordsRemoved()) {
+                        temp+=result + ",";
+                    }
+                }else{
+                    temp = nodeInvestigated.getWordsRemoved().get(0);
+                }
                 if (temp.contains(",")) {
                     String[] split2 = temp.split(",");
                     city = split2[0].replace(" ", "");

@@ -46,6 +46,7 @@ U What is the weather today
 U What is the temperature
 U Will it rain
 U Do I need an umbrella today
+U How is the weather in my favourite location
 B 1
 
 U My next lecture
